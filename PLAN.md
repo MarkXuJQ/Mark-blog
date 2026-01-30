@@ -2,9 +2,9 @@
 
 ## 目标
 
-- 构建一个可长期维护的个人技术博客与作品集网站
+- 构建一个可长期维护的个人技术博客与作品集网站（Personal Website & Portfolio）
 - 通过该项目系统掌握前端（React/TypeScript/现代工程化）与后端（Node/数据库/部署）
-- 支持文章发布、标签分类、全文搜索、评论（可选）、RSS、站点统计
+- 支持文章发布、项目展示（作品集）、关于我、标签分类、全文搜索、评论（可选）、RSS、站点统计
 - 优先使用 GitHub Pages 进行前端静态托管；后端采用独立服务（如 Supabase/Render/Cloudflare Workers）以便学习与实践
 
 ## 技术选型
@@ -44,6 +44,10 @@ Mark-blog/
   - 文章显示：列表页面、详情页面（支持 MDX）
   - 标签与分类；面包屑与导航
   - 基础 SEO：Meta、Open Graph、Sitemap、RSS
+- M1.5 作品集系统
+  - 项目展示页：项目卡片、筛选（技术栈/类型）
+  - 项目详情页：图文介绍、演示链接、GitHub 链接
+  - “关于我”页面：简历、技能栈可视化
 - M2 增强功能
   - 全文搜索（本地索引：Lunr.js/elasticlunr）
   - 评论系统（第三方：Giscus/Utterances 或自建）

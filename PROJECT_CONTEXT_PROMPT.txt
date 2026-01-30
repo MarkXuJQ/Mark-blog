@@ -3,7 +3,7 @@
 ## User Profile
 - **Background**: Experienced Python developer.
 - **Current Level**: Beginner in Frontend/Web Development.
-- **Goal**: Build a personal blog/portfolio ("Mark-blog") to master the full stack (Frontend + Backend).
+- **Goal**: Build a personal website & portfolio ("Mark-blog") to master the full stack (Frontend + Backend). The site will host blog posts and a portfolio of projects.
 - **Learning Style**: Needs to understand the "Why" behind choices, how things work under the hood (the "kernel"), and prefers comparisons to Python concepts where applicable.
 
 ## Project Context
