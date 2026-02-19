@@ -11,3 +11,12 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
+
+/* 概念示例：给所有 a 一个默认样式 */
+a {
+  color: #3b82f6; /* Tailwind 的 blue-500 */
+  text-decoration: underline;
+}
+a:hover {
+  color: #2563eb; /* blue-600 */
+}
