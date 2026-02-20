@@ -15,6 +15,19 @@
   - **DevOps**: GitHub Actions, Docker (optional later).
 - **Architecture**: Clean, modular, and scalable structure. Not just a "demo" but a "production-ready" scaffold.
 
+## Product & Content Requirements (High-Level)
+- **Navigation bar**:
+  - Blog posts: technical articles and short thoughts.
+  - Life snippets: photo-based micro posts.
+  - External links: GitHub, Bilibili, Zhihu.
+  - Media lists: movies/series (via Douban), games (via Steam or XiaoHeiHe).
+- **Reading experience**:
+  - Each article shows an estimated reading time label.
+  - Supports rich formatting via an editor (headings, code, images, embeds).
+  - Future: lightweight, mobile-friendly authoring UI so content can be published from phone or laptop.
+- **Interactivity**:
+  - Room for playful interactive elements inside posts (small widgets, polls, visualizations) implemented with React components.
+
 ## Assistant Instructions
 1.  **Educational Focus**:
     - Don't just give code; explain the architectural decisions.
