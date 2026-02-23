@@ -3,6 +3,7 @@ import { estimateReadingTime } from './utils/readingTime'
 import { messages, type Lang } from './i18n'
 import { ThemeToggle, type ThemeMode } from './components/ThemeToggle'
 import { NavBar } from './components/NavBar'
+import { Card } from './components/Card'
 
 const sampleText =
   'This is a personal blog website where I share my thoughts, experiences, and knowledge about various topics.'
@@ -42,29 +43,31 @@ function App() {
     <div className={rootClassName}>
       <NavBar lang={lang} t={t} onLangChange={setLang} />
 
-      <main>
-        <h1 className="text-3xl font-bold underline">{t.home.title}</h1>
+      <main className="mx-auto max-w-3xl">
+        <Card>
+          <h1 className="text-3xl font-bold underline">{t.home.title}</h1>
 
-        <p className="mt-4">{t.home.intro}</p>
+          <p className="mt-4">{t.home.intro}</p>
 
-        <img
-          src="/images/logo.png"
-          alt="Mark's Blog Logo"
-          className="mt-4 h-16 w-auto"
-        />
+          <img
+            src="/images/logo.png"
+            alt="Mark's Blog Logo"
+            className="mt-4 h-16 w-auto"
+          />
 
-        <p className="mt-4">{t.home.description}</p>
+          <p className="mt-4">{t.home.description}</p>
 
-        <p className="mt-2 text-sm text-slate-500">
-          {t.readingTimeLabel(readingMinutes)}
-        </p>
+          <p className="mt-2 text-sm text-slate-500">
+            {t.readingTimeLabel(readingMinutes)}
+          </p>
 
-        <a
-          href="https://github.com/MarkXuJQ"
-          className="mt-4 inline-block text-blue-500 underline hover:text-blue-600"
-        >
-          {t.githubLabel}
-        </a>
+          <a
+            href="https://github.com/MarkXuJQ"
+            className="mt-4 inline-block text-blue-500 underline hover:text-blue-600"
+          >
+            {t.githubLabel}
+          </a>
+        </Card>
       </main>
 
       <ThemeToggle mode={themeMode} onModeChange={setThemeMode} />
