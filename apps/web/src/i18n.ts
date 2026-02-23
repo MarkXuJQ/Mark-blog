@@ -4,6 +4,7 @@ export const messages = {
   zh: {
     siteTitle: 'Mark 的小屋',
     nav: {
+      Homepage: '主页',
       blog: '文章',
       life: '生活随笔',
       movies: '影视',
@@ -23,6 +24,7 @@ export const messages = {
   en: {
     siteTitle: "Mark's Blog & Portfolio",
     nav: {
+      Homepage: 'Homepage',
       blog: 'Blog',
       life: 'Life',
       movies: 'Movies',

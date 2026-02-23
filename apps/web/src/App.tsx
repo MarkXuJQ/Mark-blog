@@ -1,63 +1,51 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { estimateReadingTime } from './utils/readingTime'
 import { messages, type Lang } from './i18n'
+import { ThemeToggle, type ThemeMode } from './components/ThemeToggle'
+import { NavBar } from './components/NavBar'
 
 const sampleText =
-  "This is a personal blog website where I share my thoughts, experiences, and knowledge about various topics."
+  'This is a personal blog website where I share my thoughts, experiences, and knowledge about various topics.'
 
 function App() {
   const [lang, setLang] = useState<Lang>('zh')
+  const [themeMode, setThemeMode] = useState<ThemeMode>('system')
+  const [isSystemDark, setIsSystemDark] = useState(false)
   const t = messages[lang]
   const readingMinutes = estimateReadingTime(sampleText)
 
+  useEffect(() => {
+    if (!window.matchMedia) return
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+
+    const updateSystemPreference = (event: MediaQueryListEvent) => {
+      setIsSystemDark(event.matches)
+    }
+
+    setIsSystemDark(mediaQuery.matches)
+    mediaQuery.addEventListener('change', updateSystemPreference)
+
+    return () => {
+      mediaQuery.removeEventListener('change', updateSystemPreference)
+    }
+  }, [])
+
+  const effectiveDark =
+    themeMode === 'dark' || (themeMode === 'system' && isSystemDark)
+
+  const rootClassName = `min-h-screen p-4 transition-colors duration-300 ${
+    effectiveDark ? 'bg-slate-900 text-slate-50' : 'bg-white text-slate-900'
+  }`
+
   return (
-    <div className="p-4">
-      <header className="mb-6 flex items-center justify-between">
-        <div className="text-lg font-semibold">{t.siteTitle}</div>
-        <nav className="flex items-center gap-4 text-sm">
-          <button type="button" className="hover:underline">
-            {t.nav.blog}
-          </button>
-          <button type="button" className="hover:underline">
-            {t.nav.life}
-          </button>
-          <button type="button" className="hover:underline">
-            {t.nav.movies}
-          </button>
-          <button type="button" className="hover:underline">
-            {t.nav.games}
-          </button>
-          <button type="button" className="hover:underline">
-            {t.nav.links}
-          </button>
-          <div className="ml-4 flex items-center gap-2">
-            <button
-              type="button"
-              className={lang === 'zh' ? 'font-semibold underline' : 'opacity-60 hover:opacity-100'}
-              onClick={() => setLang('zh')}
-            >
-              中
-            </button>
-            <span>/</span>
-            <button
-              type="button"
-              className={lang === 'en' ? 'font-semibold underline' : 'opacity-60 hover:opacity-100'}
-              onClick={() => setLang('en')}
-            >
-              EN
-            </button>
-          </div>
-        </nav>
-      </header>
+    <div className={rootClassName}>
+      <NavBar lang={lang} t={t} onLangChange={setLang} />
 
       <main>
-        <h1 className="text-3xl font-bold underline">
-          {t.home.title}
-        </h1>
+        <h1 className="text-3xl font-bold underline">{t.home.title}</h1>
 
-        <p className="mt-4">
-          {t.home.intro}
-        </p>
+        <p className="mt-4">{t.home.intro}</p>
 
         <img
           src="/images/logo.png"
@@ -65,13 +53,11 @@ function App() {
           className="mt-4 h-16 w-auto"
         />
 
-        <p className="mt-4">
-          {t.home.description}
-        </p>
+        <p className="mt-4">{t.home.description}</p>
 
         <p className="mt-2 text-sm text-slate-500">
           {t.readingTimeLabel(readingMinutes)}
-        </p>  
+        </p>
 
         <a
           href="https://github.com/MarkXuJQ"
@@ -80,6 +66,8 @@ function App() {
           {t.githubLabel}
         </a>
       </main>
+
+      <ThemeToggle mode={themeMode} onModeChange={setThemeMode} />
     </div>
   )
 }
