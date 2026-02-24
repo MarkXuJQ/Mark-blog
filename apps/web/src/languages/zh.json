@@ -14,5 +14,10 @@
     "description": "未来这里会有：技术文章、生活照片和碎碎念，以及我看过的影视与玩过的游戏清单。",
     "readingTime": "预计阅读时间：{{minutes}} 分钟",
     "github": "我的 GitHub"
+  },
+  "footer": {
+    "copyright": "© {{year}} Mark Xu. 保留所有权利。",
+    "builtWith": "本站由 React, Tailwind CSS & Vite 构建",
+    "license": "本博客所有文章除特别声明外，均采用 <0>CC BY-NC-SA 4.0</0> 许可协议，转载请注明出处。"
   }
 }

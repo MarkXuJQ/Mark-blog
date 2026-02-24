@@ -3,6 +3,7 @@ import { estimateReadingTime } from './utils/readingTime'
 import { ThemeToggle } from './components/ThemeToggle'
 import { useTheme } from './hooks/useTheme'
 import { NavBar } from './components/NavBar'
+import { Footer } from './components/Footer'
 import { Card } from './components/Card'
 import { Github } from 'lucide-react'
 
@@ -58,6 +59,8 @@ function App() {
             </div>
           </Card>
         </main>
+
+        <Footer />
       </div>
 
       <ThemeToggle mode={mode} onModeChange={setMode} />

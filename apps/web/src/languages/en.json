@@ -9,10 +9,15 @@
     "links": "Links"
   },
   "home": {
-    "title": "Welcome to Mark's Cabin",
+    "title": "Welcome to Mark's House",
     "intro": "This is my personal space for technical thoughts, daily notes, and side projects.",
     "description": "In the future you'll find: blog posts, life snippets, photos, and lists of movies & games I've enjoyed.",
     "readingTime": "Estimated reading time: {{minutes}} min",
     "github": "My GitHub"
+  },
+  "footer": {
+    "copyright": "© {{year}} Mark Xu. All rights reserved.",
+    "builtWith": "Built with React, Tailwind CSS & Vite",
+    "license": "All articles in this blog are licensed under <0>CC BY-NC-SA 4.0</0> unless stating otherwise."
   }
 }
