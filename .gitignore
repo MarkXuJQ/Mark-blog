@@ -97,7 +97,6 @@ dist
 
 # Sveltekit cache directory
 .svelte-kit/
-
 # vitepress build output
 **/.vitepress/dist
 
@@ -137,3 +136,15 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Project context prompts
+PROJECT_CONTEXT_PROMPT.txt
