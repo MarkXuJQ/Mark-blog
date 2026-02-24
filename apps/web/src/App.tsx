@@ -5,7 +5,6 @@ import { useTheme } from './hooks/useTheme'
 import { NavBar } from './components/NavBar'
 import { Footer } from './components/Footer'
 import { Card } from './components/Card'
-import { Github } from 'lucide-react'
 
 const sampleText =
   'This is a personal blog website where I share my thoughts, experiences, and knowledge about various topics.'
@@ -21,7 +20,11 @@ function App() {
         <NavBar />
 
         <main className="mt-8">
-          <Card>
+          <Card className="relative">
+            <div className="absolute right-6 top-6 text-sm text-slate-500 dark:text-slate-400">
+              {t('home.readingTime', { minutes: readingMinutes })}
+            </div>
+
             <h1 className="text-3xl font-bold underline decoration-sky-500 decoration-4 underline-offset-4">
               {t('home.title')}
             </h1>
@@ -41,22 +44,6 @@ function App() {
             <p className="mt-4 text-slate-700 dark:text-slate-300">
               {t('home.description')}
             </p>
-
-            <div className="mt-8 flex items-center justify-between border-t border-slate-200 pt-6 dark:border-slate-700">
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {t('home.readingTime', { minutes: readingMinutes })}
-              </p>
-
-              <a
-                href="https://github.com/MarkXuJQ"
-                className="group flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors hover:text-sky-600 dark:text-slate-400 dark:hover:text-sky-400"
-              >
-                <span className="h-5 w-5 text-current">
-                  <Github size={20} />
-                </span>
-                {t('home.github')}
-              </a>
-            </div>
           </Card>
         </main>
 
