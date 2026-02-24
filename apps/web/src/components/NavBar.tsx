@@ -1,47 +1,46 @@
-import type { Lang } from '../i18n'
-import { messages } from '../i18n'
+import { useTranslation } from 'react-i18next'
 
-type Messages = (typeof messages)[Lang]
+export function NavBar() {
+  const { t, i18n } = useTranslation()
 
-export type NavBarProps = {
-  lang: Lang
-  t: Messages
-  onLangChange: (lang: Lang) => void
-}
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng)
+  }
 
-export function NavBar({ lang, t, onLangChange }: NavBarProps) {
+  const currentLang = i18n.language
+
   return (
-    <header className="mb-6 flex items-center justify-between rounded-full border px-6 py-3">
-      <div className="text-lg font-semibold">Mark&apos;s house</div>
+    <header className="mb-6 flex items-center justify-between rounded-full border border-slate-200/70 bg-white/80 px-6 py-3 backdrop-blur transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-100">
+      <div className="text-lg font-semibold">{t('siteTitle')}</div>
       <nav className="flex items-center gap-4 text-sm">
         <button type="button" className="hover:underline">
-          {t.nav.Homepage}
+          {t('nav.homepage')}
         </button>
         <button type="button" className="hover:underline">
-          {t.nav.blog}
+          {t('nav.blog')}
         </button>
         <button type="button" className="hover:underline">
-          {t.nav.life}
+          {t('nav.life')}
         </button>
         <button type="button" className="hover:underline">
-          {t.nav.movies}
+          {t('nav.movies')}
         </button>
         <button type="button" className="hover:underline">
-          {t.nav.games}
+          {t('nav.games')}
         </button>
         <button type="button" className="hover:underline">
-          {t.nav.links}
+          {t('nav.links')}
         </button>
         <div className="ml-6 flex items-center gap-4">
           <div className="flex items-center gap-2">
             <button
               type="button"
               className={
-                lang === 'zh'
+                currentLang === 'zh'
                   ? 'font-semibold underline'
                   : 'opacity-60 hover:opacity-100'
               }
-              onClick={() => onLangChange('zh')}
+              onClick={() => changeLanguage('zh')}
             >
               中
             </button>
@@ -49,11 +48,11 @@ export function NavBar({ lang, t, onLangChange }: NavBarProps) {
             <button
               type="button"
               className={
-                lang === 'en'
+                currentLang === 'en'
                   ? 'font-semibold underline'
                   : 'opacity-60 hover:opacity-100'
               }
-              onClick={() => onLangChange('en')}
+              onClick={() => changeLanguage('en')}
             >
               EN
             </button>
@@ -63,4 +62,3 @@ export function NavBar({ lang, t, onLangChange }: NavBarProps) {
     </header>
   )
 }
-

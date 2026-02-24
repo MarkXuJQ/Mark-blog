@@ -1,0 +1,18 @@
+{
+  "siteTitle": "Mark's House",
+  "nav": {
+    "homepage": "Homepage",
+    "blog": "Blog",
+    "life": "Life",
+    "movies": "Movies",
+    "games": "Games",
+    "links": "Links"
+  },
+  "home": {
+    "title": "Welcome to Mark's Cabin",
+    "intro": "This is my personal space for technical thoughts, daily notes, and side projects.",
+    "description": "In the future you'll find: blog posts, life snippets, photos, and lists of movies & games I've enjoyed.",
+    "readingTime": "Estimated reading time: {{minutes}} min",
+    "github": "My GitHub"
+  }
+}

@@ -1,76 +1,66 @@
-import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { estimateReadingTime } from './utils/readingTime'
-import { messages, type Lang } from './i18n'
-import { ThemeToggle, type ThemeMode } from './components/ThemeToggle'
+import { ThemeToggle } from './components/ThemeToggle'
+import { useTheme } from './hooks/useTheme'
 import { NavBar } from './components/NavBar'
 import { Card } from './components/Card'
+import { Github } from 'lucide-react'
 
 const sampleText =
   'This is a personal blog website where I share my thoughts, experiences, and knowledge about various topics.'
 
 function App() {
-  const [lang, setLang] = useState<Lang>('zh')
-  const [themeMode, setThemeMode] = useState<ThemeMode>('system')
-  const [isSystemDark, setIsSystemDark] = useState(false)
-  const t = messages[lang]
+  const { t } = useTranslation()
+  const { mode, setMode } = useTheme()
   const readingMinutes = estimateReadingTime(sampleText)
 
-  useEffect(() => {
-    if (!window.matchMedia) return
-
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-
-    const updateSystemPreference = (event: MediaQueryListEvent) => {
-      setIsSystemDark(event.matches)
-    }
-
-    setIsSystemDark(mediaQuery.matches)
-    mediaQuery.addEventListener('change', updateSystemPreference)
-
-    return () => {
-      mediaQuery.removeEventListener('change', updateSystemPreference)
-    }
-  }, [])
-
-  const effectiveDark =
-    themeMode === 'dark' || (themeMode === 'system' && isSystemDark)
-
-  const rootClassName = `min-h-screen p-4 transition-colors duration-300 ${
-    effectiveDark ? 'bg-slate-900 text-slate-50' : 'bg-white text-slate-900'
-  }`
-
   return (
-    <div className={rootClassName}>
-      <NavBar lang={lang} t={t} onLangChange={setLang} />
+    <div className="min-h-screen bg-slate-50 p-4 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
+      <div className="mx-auto max-w-3xl">
+        <NavBar />
 
-      <main className="mx-auto max-w-3xl">
-        <Card>
-          <h1 className="text-3xl font-bold underline">{t.home.title}</h1>
+        <main className="mt-8">
+          <Card>
+            <h1 className="text-3xl font-bold underline decoration-sky-500 decoration-4 underline-offset-4">
+              {t('home.title')}
+            </h1>
 
-          <p className="mt-4">{t.home.intro}</p>
+            <p className="mt-6 text-lg leading-relaxed text-slate-600 dark:text-slate-300">
+              {t('home.intro')}
+            </p>
 
-          <img
-            src="/images/logo.png"
-            alt="Mark's Blog Logo"
-            className="mt-4 h-16 w-auto"
-          />
+            <div className="my-8 flex justify-center">
+              <img
+                src="/images/IMG_1766.JPG"
+                alt="Mark's Blog Logo"
+                className="h-32 w-32 rounded-full border-4 border-white shadow-lg dark:border-slate-800"
+              />
+            </div>
 
-          <p className="mt-4">{t.home.description}</p>
+            <p className="mt-4 text-slate-700 dark:text-slate-300">
+              {t('home.description')}
+            </p>
 
-          <p className="mt-2 text-sm text-slate-500">
-            {t.readingTimeLabel(readingMinutes)}
-          </p>
+            <div className="mt-8 flex items-center justify-between border-t border-slate-200 pt-6 dark:border-slate-700">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {t('home.readingTime', { minutes: readingMinutes })}
+              </p>
 
-          <a
-            href="https://github.com/MarkXuJQ"
-            className="mt-4 inline-block text-blue-500 underline hover:text-blue-600"
-          >
-            {t.githubLabel}
-          </a>
-        </Card>
-      </main>
+              <a
+                href="https://github.com/MarkXuJQ"
+                className="group flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors hover:text-sky-600 dark:text-slate-400 dark:hover:text-sky-400"
+              >
+                <span className="h-5 w-5 text-current">
+                  <Github size={20} />
+                </span>
+                {t('home.github')}
+              </a>
+            </div>
+          </Card>
+        </main>
+      </div>
 
-      <ThemeToggle mode={themeMode} onModeChange={setThemeMode} />
+      <ThemeToggle mode={mode} onModeChange={setMode} />
     </div>
   )
 }

@@ -1,45 +1,37 @@
-export type Lang = 'zh' | 'en'
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
+import LanguageDetector from 'i18next-browser-languagedetector'
 
-export const messages = {
+import zh from './languages/zh.json'
+import en from './languages/en.json'
+
+// 资源文件
+const resources = {
   zh: {
-    siteTitle: 'Mark 的小屋',
-    nav: {
-      Homepage: '主页',
-      blog: '文章',
-      life: '生活随笔',
-      movies: '影视',
-      games: '游戏',
-      links: '链接',
-    },
-    home: {
-      title: '欢迎来到 Mark 的小屋',
-      intro:
-        '这里是我的个人网站，用来记录技术思考、生活随笔和一些有趣的作品。',
-      description:
-        '未来这里会有：技术文章、生活照片和碎碎念，以及我看过的影视与玩过的游戏清单。',
-    },
-    readingTimeLabel: (minutes: number) => `预计阅读时间：${minutes} 分钟`,
-    githubLabel: '我的 GitHub',
+    translation: zh,
   },
   en: {
-    siteTitle: "Mark's Blog & Portfolio",
-    nav: {
-      Homepage: 'Homepage',
-      blog: 'Blog',
-      life: 'Life',
-      movies: 'Movies',
-      games: 'Games',
-      links: 'Links',
-    },
-    home: {
-      title: "Welcome to Mark's Cabin",
-      intro:
-        "This is my personal space for technical thoughts, daily notes, and side projects.",
-      description:
-        "In the future you'll find: blog posts, life snippets, photos, and lists of movies & games I've enjoyed.",
-    },
-    readingTimeLabel: (minutes: number) => `Estimated reading time: ${minutes} min`,
-    githubLabel: 'My GitHub',
+    translation: en,
   },
-} as const
+}
 
+i18n
+  // 自动检测浏览器语言
+  .use(LanguageDetector)
+  // 注入 react-i18next
+  .use(initReactI18next)
+  // 初始化
+  .init({
+    resources,
+    // 默认语言（如果检测失败）
+    fallbackLng: 'zh',
+    // 调试模式，开发时可以设为 true
+    debug: false,
+    
+    interpolation: {
+      // React 已经内置了 XSS 防护，所以这里不需要转义
+      escapeValue: false, 
+    },
+  })
+
+export default i18n
