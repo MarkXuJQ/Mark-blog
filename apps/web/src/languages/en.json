@@ -28,6 +28,11 @@
     "description": "This section is still being built. Check back later!",
     "backHome": "Back to Homepage"
   },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you are looking for does not exist.",
+    "backHome": "Back to Homepage"
+  },
   "footer": {
     "copyright": "© {{year}} Mark Xu. All rights reserved.",
     "builtWith": "Built with React, Tailwind CSS & Vite",

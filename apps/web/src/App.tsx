@@ -5,6 +5,7 @@ import { Blog } from './pages/Blog'
 import { BlogPost } from './pages/BlogPost'
 import { UnderConstruction } from './pages/UnderConstruction'
 import { Timeline } from './pages/Timeline'
+import { NotFound } from './pages/NotFound'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="movies" element={<UnderConstruction />} />
           <Route path="games" element={<UnderConstruction />} />
           <Route path="links" element={<UnderConstruction />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>

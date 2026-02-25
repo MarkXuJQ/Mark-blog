@@ -28,6 +28,11 @@
     "description": "该板块正在建设中，请稍后再来！",
     "backHome": "返回主页"
   },
+  "notFound": {
+    "title": "页面未找到",
+    "description": "抱歉，您访问的页面不存在。",
+    "backHome": "返回主页"
+  },
   "footer": {
     "copyright": "© {{year}} Mark Xu. 保留所有权利。",
     "builtWith": "本站由 React, Tailwind CSS & Vite 构建",
