@@ -1,7 +1,9 @@
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Calendar, Clock, FileText } from 'lucide-react'
 import { Card } from '../components/Card'
 import { getPostBySlug } from '../lib/posts'
+import { estimateReadingTime, countWords } from '../utils/readingTime'
 
 export function BlogPost() {
   const { slug } = useParams()
@@ -26,6 +28,9 @@ export function BlogPost() {
     )
   }
 
+  const minutes = estimateReadingTime(post.content)
+  const words = countWords(post.content)
+
   return (
     <Card>
       <Link
@@ -41,9 +46,19 @@ export function BlogPost() {
         </h1>
 
         <div className="mb-8 flex flex-wrap items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-          <time dateTime={post.date}>
-            {t('blog.publishedOn')} {post.date}
-          </time>
+          <div className="flex items-center gap-1">
+            <Calendar className="h-4 w-4" />
+            <time dateTime={post.date}>
+              {t('blog.publishedOn')} {post.date}
+            </time>
+          </div>
+
+          {post.updated && post.updated !== post.date && (
+            <div className="flex items-center gap-1 text-slate-400">
+              <span>(Updated: {post.updated})</span>
+            </div>
+          )}
+
           {post.tags && post.tags.length > 0 && (
             <div className="flex gap-2">
               {post.tags.map((tag) => (
@@ -56,6 +71,16 @@ export function BlogPost() {
               ))}
             </div>
           )}
+          <span className="hidden sm:inline">·</span>
+          <div className="flex items-center gap-1">
+            <Clock className="h-4 w-4" />
+            <span>{t('blog.readingTime', { minutes })}</span>
+          </div>
+          <span className="hidden sm:inline">·</span>
+          <div className="flex items-center gap-1">
+            <FileText className="h-4 w-4" />
+            <span>{t('blog.wordCount', { count: words })}</span>
+          </div>
         </div>
 
         <div

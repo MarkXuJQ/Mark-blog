@@ -17,6 +17,7 @@ export const getAllPosts = (): BlogPost[] => {
         slug,
         title: attributes.title,
         date: attributes.date,
+        updated: attributes.updated,
         summary: attributes.summary,
         content: html,
         tags: attributes.tags,

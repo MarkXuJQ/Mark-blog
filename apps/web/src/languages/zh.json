@@ -20,7 +20,8 @@
     "readMore": "阅读全文",
     "publishedOn": "发布于",
     "back": "返回文章列表",
-    "readingTime": "阅读时间 {{minutes}} 分钟"
+    "readingTime": "阅读时间 {{minutes}} 分钟",
+    "wordCount": "字数 {{count}} 字"
   },
   "underConstruction": {
     "title": "施工进行中",

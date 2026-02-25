@@ -20,7 +20,8 @@
     "readMore": "Read More",
     "publishedOn": "Published on",
     "back": "Back to Blog",
-    "readingTime": "Reading time: {{minutes}} min"
+    "readingTime": "Reading time: {{minutes}} min",
+    "wordCount": "{{count}} words"
   },
   "underConstruction": {
     "title": "Construction in Progress",

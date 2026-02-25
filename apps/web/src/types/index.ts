@@ -3,6 +3,7 @@ export interface BlogPost {
   title: string
   slug: string
   date: string
+  updated?: string
   summary: string
   content: string
   tags?: string[]
@@ -12,6 +13,7 @@ export interface MarkdownPost {
   attributes: {
     title: string
     date: string
+    updated?: string
     summary: string
     tags?: string[]
     [key: string]: any
