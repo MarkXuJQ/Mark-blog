@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { NavLink } from 'react-router-dom'
 
 export function NavBar() {
   const { t, i18n } = useTranslation()
@@ -9,26 +10,34 @@ export function NavBar() {
 
   const currentLang = i18n.language
 
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    isActive
+      ? 'font-bold text-slate-900 dark:text-slate-100'
+      : 'font-normal text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors'
+
+  const navItemClass =
+    'font-normal text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors'
+
   return (
     <header className="mb-6 flex items-center justify-between rounded-full border border-slate-200/70 bg-white/80 px-6 py-3 backdrop-blur transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-100">
       <div className="text-lg font-semibold">{t('siteTitle')}</div>
       <nav className="flex items-center gap-4 text-sm">
-        <button type="button" className="hover:underline">
+        <NavLink to="/" className={navLinkClass}>
           {t('nav.homepage')}
-        </button>
-        <button type="button" className="hover:underline">
+        </NavLink>
+        <NavLink to="/blog" className={navLinkClass}>
           {t('nav.blog')}
-        </button>
-        <button type="button" className="hover:underline">
+        </NavLink>
+        <button type="button" className={navItemClass}>
           {t('nav.life')}
         </button>
-        <button type="button" className="hover:underline">
+        <button type="button" className={navItemClass}>
           {t('nav.movies')}
         </button>
-        <button type="button" className="hover:underline">
+        <button type="button" className={navItemClass}>
           {t('nav.games')}
         </button>
-        <button type="button" className="hover:underline">
+        <button type="button" className={navItemClass}>
           {t('nav.links')}
         </button>
         <div className="ml-6 flex items-center gap-4">
@@ -37,20 +46,20 @@ export function NavBar() {
               type="button"
               className={
                 currentLang === 'zh'
-                  ? 'font-semibold underline'
-                  : 'opacity-60 hover:opacity-100'
+                  ? 'font-bold text-slate-900 dark:text-slate-100'
+                  : 'opacity-60 hover:opacity-100 transition-opacity'
               }
               onClick={() => changeLanguage('zh')}
             >
               中
             </button>
-            <span>/</span>
+            <span className="opacity-30">/</span>
             <button
               type="button"
               className={
                 currentLang === 'en'
-                  ? 'font-semibold underline'
-                  : 'opacity-60 hover:opacity-100'
+                  ? 'font-bold text-slate-900 dark:text-slate-100'
+                  : 'opacity-60 hover:opacity-100 transition-opacity'
               }
               onClick={() => changeLanguage('en')}
             >

@@ -12,8 +12,14 @@
     "title": "欢迎来到 Mark 的小屋",
     "intro": "这里是我的个人网站，用来记录技术思考、生活随笔和一些有趣的作品。",
     "description": "未来这里会有：技术文章、生活照片和碎碎念，以及我看过的影视与玩过的游戏清单。",
-    "readingTime": "预计阅读时间：{{minutes}} 分钟",
+    "readingTime": "阅读时间：{{minutes}} 分钟",
     "github": "我的 GitHub"
+  },
+  "blog": {
+    "readMore": "阅读全文",
+    "publishedOn": "发布于",
+    "back": "返回文章列表",
+    "readingTime": "阅读时间 {{minutes}} 分钟"
   },
   "footer": {
     "copyright": "© {{year}} Mark Xu. 保留所有权利。",

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mark's Blog</title>
+    <link>https://mark-blog.com/</link>
+    <description>Mark Xu's Personal Blog - Tech, Life, and Thoughts</description>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 24 Feb 2026 00:00:00 GMT</lastBuildDate>
+    <atom:link href="https://mark-blog.com/rss.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Welcome to my blog</title>
+      <link>https://mark-blog.com/welcome</link>
+      <guid isPermaLink="true">https://mark-blog.com/welcome</guid>
+      <pubDate>Tue, 24 Feb 2026 00:00:00 GMT</pubDate>
+      <description>This is the first post on my new blog. Stay tuned for more content!</description>
+    </item>
+  </channel>
+</rss>

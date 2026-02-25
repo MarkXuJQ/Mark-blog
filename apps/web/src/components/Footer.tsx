@@ -1,6 +1,7 @@
 import { Trans, useTranslation } from 'react-i18next'
-import { Github } from 'lucide-react'
+import { LuGithub } from "react-icons/lu";
 import { RiBilibiliLine } from "react-icons/ri";
+import { RiRssLine } from 'react-icons/ri'
 
 export function Footer() {
   const { t } = useTranslation()
@@ -17,7 +18,7 @@ export function Footer() {
             className="transition-colors hover:text-slate-900 dark:hover:text-slate-200"
             aria-label="GitHub"
           >
-            <Github size={20} />
+            <LuGithub size={20} />
           </a>
           <a
             href="https://space.bilibili.com/351772037"
@@ -27,6 +28,15 @@ export function Footer() {
             aria-label="Bilibili"
           >
             <RiBilibiliLine size={20} />
+          </a>
+          <a
+            href="/rss.xml"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-slate-900 dark:hover:text-slate-200"
+            aria-label="RSS"
+          >
+            <RiRssLine size={20} />
           </a>
           {/* Add more social links here */}
           {/* Example:

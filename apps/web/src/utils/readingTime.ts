@@ -1,5 +1,7 @@
 export function countWords(text: string): number {
-  return text
+  // Strip HTML tags
+  const plainText = text.replace(/<[^>]*>?/gm, '')
+  return plainText
     .trim()
     .split(/\s+/)
     .filter(Boolean).length

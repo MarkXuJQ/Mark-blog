@@ -12,8 +12,14 @@
     "title": "Welcome to Mark's House",
     "intro": "This is my personal space for technical thoughts, daily notes, and side projects.",
     "description": "In the future you'll find: blog posts, life snippets, photos, and lists of movies & games I've enjoyed.",
-    "readingTime": "Estimated reading time: {{minutes}} min",
+    "readingTime": "Reading time: {{minutes}} min",
     "github": "My GitHub"
+  },
+  "blog": {
+    "readMore": "Read More",
+    "publishedOn": "Published on",
+    "back": "Back to Blog",
+    "readingTime": "Reading time: {{minutes}} min"
   },
   "footer": {
     "copyright": "© {{year}} Mark Xu. All rights reserved.",
