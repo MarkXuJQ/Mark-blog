@@ -3,6 +3,8 @@ import { RootLayout } from './layouts/RootLayout'
 import { Home } from './pages/Home'
 import { Blog } from './pages/Blog'
 import { BlogPost } from './pages/BlogPost'
+import { UnderConstruction } from './pages/UnderConstruction'
+import { Timeline } from './pages/Timeline'
 
 function App() {
   return (
@@ -12,6 +14,11 @@ function App() {
           <Route index element={<Home />} />
           <Route path="blog" element={<Blog />} />
           <Route path="blog/:slug" element={<BlogPost />} />
+          <Route path="timeline" element={<Timeline />} />
+          <Route path="life" element={<UnderConstruction />} />
+          <Route path="movies" element={<UnderConstruction />} />
+          <Route path="games" element={<UnderConstruction />} />
+          <Route path="links" element={<UnderConstruction />} />
         </Route>
       </Routes>
     </BrowserRouter>

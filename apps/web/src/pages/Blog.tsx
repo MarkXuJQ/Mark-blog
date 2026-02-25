@@ -1,11 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Card } from '../components/Card'
-import { posts } from '../data/posts'
+import { getAllPosts } from '../lib/posts'
 import { estimateReadingTime } from '../utils/readingTime'
 
 export function Blog() {
   const { t } = useTranslation()
+  const posts = getAllPosts()
 
   return (
     <div className="space-y-8">

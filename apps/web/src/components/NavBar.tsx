@@ -28,18 +28,21 @@ export function NavBar() {
         <NavLink to="/blog" className={navLinkClass}>
           {t('nav.blog')}
         </NavLink>
-        <button type="button" className={navItemClass}>
+        <NavLink to="/timeline" className={navLinkClass}>
+          {t('nav.timeline')}
+        </NavLink>
+        <NavLink to="/life" className={navLinkClass}>
           {t('nav.life')}
-        </button>
-        <button type="button" className={navItemClass}>
+        </NavLink>
+        <NavLink to="/movies" className={navLinkClass}>
           {t('nav.movies')}
-        </button>
-        <button type="button" className={navItemClass}>
+        </NavLink>
+        <NavLink to="/games" className={navLinkClass}>
           {t('nav.games')}
-        </button>
-        <button type="button" className={navItemClass}>
+        </NavLink>
+        <NavLink to="/links" className={navLinkClass}>
           {t('nav.links')}
-        </button>
+        </NavLink>
         <div className="ml-6 flex items-center gap-4">
           <div className="flex items-center gap-2">
             <button

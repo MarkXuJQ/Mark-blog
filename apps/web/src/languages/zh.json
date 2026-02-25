@@ -3,6 +3,7 @@
   "nav": {
     "homepage": "主页",
     "blog": "Blog",
+    "timeline": "归档",
     "life": "生活随笔",
     "movies": "影视",
     "games": "游戏",
@@ -20,6 +21,11 @@
     "publishedOn": "发布于",
     "back": "返回文章列表",
     "readingTime": "阅读时间 {{minutes}} 分钟"
+  },
+  "underConstruction": {
+    "title": "施工进行中",
+    "description": "该板块正在建设中，请稍后再来！",
+    "backHome": "返回主页"
   },
   "footer": {
     "copyright": "© {{year}} Mark Xu. 保留所有权利。",

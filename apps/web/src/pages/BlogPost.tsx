@@ -1,12 +1,12 @@
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Card } from '../components/Card'
-import { posts } from '../data/posts'
+import { getPostBySlug } from '../lib/posts'
 
 export function BlogPost() {
   const { slug } = useParams()
   const { t } = useTranslation()
-  const post = posts.find((p) => p.slug === slug)
+  const post = slug ? getPostBySlug(slug) : undefined
 
   if (!post) {
     return (

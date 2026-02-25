@@ -3,6 +3,7 @@
   "nav": {
     "homepage": "Homepage",
     "blog": "Blog",
+    "timeline": "Timeline",
     "life": "Life",
     "movies": "Movies",
     "games": "Games",
@@ -20,6 +21,11 @@
     "publishedOn": "Published on",
     "back": "Back to Blog",
     "readingTime": "Reading time: {{minutes}} min"
+  },
+  "underConstruction": {
+    "title": "Construction in Progress",
+    "description": "This section is still being built. Check back later!",
+    "backHome": "Back to Homepage"
   },
   "footer": {
     "copyright": "© {{year}} Mark Xu. All rights reserved.",
