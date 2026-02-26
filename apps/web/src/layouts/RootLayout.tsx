@@ -16,11 +16,7 @@ export function RootLayout() {
       {/* Sticky NavBar Container - Floating Effect */}
       <div className="sticky top-6 z-50 w-full pointer-events-none mb-8">
         <div 
-          className={`mx-auto w-full pointer-events-auto transition-all duration-300 ${
-            isBlogPage 
-              ? 'max-w-[1400px] px-4' 
-              : 'max-w-[640px] md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px]'
-          }`}
+          className="mx-auto w-full pointer-events-auto max-w-[640px] md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px] px-4 transition-all duration-300"
         >
           <NavBar />
         </div>
