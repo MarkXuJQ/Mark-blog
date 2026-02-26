@@ -6,6 +6,8 @@ import { getPostBySlug } from '../utils/posts'
 import { estimateReadingTime, countWords } from '../utils/readingTime'
 import { cn } from '../utils/cn'
 
+import { Comments } from '../components/Comments'
+
 export function BlogPost() {
   const { slug } = useParams()
   const { t } = useTranslation()
@@ -35,7 +37,7 @@ export function BlogPost() {
   const words = countWords(post.content)
 
   return (
-    <div className="mx-auto w-full">
+    <div className="mx-auto w-full space-y-8">
       <Card className={styles.postCard}>
         <Link
           to="/blog"
@@ -94,6 +96,12 @@ export function BlogPost() {
         />
       </article>
     </Card>
+
+    {/* <Card className="p-6"> */}
+    <Card className="p-6">
+      <Comments />
+    </Card>
+    {/* </Card> */}
     </div>
   )
 }

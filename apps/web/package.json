@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tippyjs/react": "^4.2.6",
     "clsx": "^2.1.1",
     "i18next": "^25.8.13",
     "i18next-browser-languagedetector": "^8.2.1",
@@ -21,7 +22,8 @@
     "react-i18next": "^16.5.4",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.13.1",
-    "tailwind-merge": "^3.5.0"
+    "tailwind-merge": "^3.5.0",
+    "tippy.js": "^6.3.7"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
