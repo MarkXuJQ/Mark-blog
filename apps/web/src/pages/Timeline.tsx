@@ -27,86 +27,89 @@ export function Timeline() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>{t('nav.timeline')}</h1>
-      </div>
+      <div className={styles.contentWrapper}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>{t('nav.timeline')}</h1>
+        </div>
 
-      <div className={styles.timelineWrapper}>
-        {timelineEvents.map((event, index) => (
-          <div key={index} className={styles.eventContainer}>
-            {/* Level 1: Milestone (Big Node) */}
-            <MilestoneMarker />
+        <div className={styles.timelineWrapper}>
+          {timelineEvents.map((event, index) => (
+            <div key={index} className={styles.eventContainer}>
+              {/* Level 1: Milestone (Big Node) */}
+              <MilestoneMarker />
 
-            <div className={styles.eventHeader}>
-              <div className={styles.eventMeta}>
-                <time className={styles.milestoneDate}>{event.date}</time>
-                {event.categories && (
-                  <span className={styles.milestoneStats}>
-                    {event.categories.reduce(
-                      (acc, cat) => acc + cat.items.length,
-                      0,
-                    )}{' '}
-                    items
-                  </span>
+              <div className={styles.eventHeader}>
+                <div className={styles.eventMeta}>
+                  <time className={styles.milestoneDate}>{event.date}</time>
+                  {event.categories && (
+                    <span className={styles.milestoneStats}>
+                      {event.categories.reduce(
+                        (acc, cat) => acc + cat.items.length,
+                        0,
+                      )}{' '}
+                      items
+                    </span>
+                  )}
+                </div>
+                <h2 className={styles.milestoneTitle}>{event.title}</h2>
+                {event.description && (
+                  <p className={styles.milestoneDesc}>{event.description}</p>
                 )}
               </div>
-              <h2 className={styles.milestoneTitle}>{event.title}</h2>
-              {event.description && (
-                <p className={styles.milestoneDesc}>{event.description}</p>
+
+              {/* Level 2 & 3: Tree Structure */}
+              {event.categories && (
+                <div className={styles.categoryWrapper}>
+                  {event.categories.map((category, catIndex) => (
+                    <div
+                      key={catIndex}
+                      className={styles.categoryContainer}
+                    >
+                      <h3 className={styles.categoryTitle}>
+                        {category.title}
+                      </h3>
+
+                      <ul className={styles.itemList}>
+                        {category.items.map((item) => (
+                          <li
+                            key={item.id}
+                            className={styles.item}
+                          >
+                            {/* Item Dot */}
+                            <ItemMarker />
+
+                            <span className={styles.itemDate}>{item.date}</span>
+
+                            {item.link ? (
+                              <Link
+                                to={item.link}
+                                className={styles.itemLink}
+                              >
+                                {item.content}
+                              </Link>
+                            ) : (
+                              <span className={styles.itemContent}>
+                                {item.content}
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
-
-            {/* Level 2 & 3: Tree Structure */}
-            {event.categories && (
-              <div className={styles.categoryWrapper}>
-                {event.categories.map((category, catIndex) => (
-                  <div
-                    key={catIndex}
-                    className={styles.categoryContainer}
-                  >
-                    <h3 className={styles.categoryTitle}>
-                      {category.title}
-                    </h3>
-
-                    <ul className={styles.itemList}>
-                      {category.items.map((item) => (
-                        <li
-                          key={item.id}
-                          className={styles.item}
-                        >
-                          {/* Item Dot */}
-                          <ItemMarker />
-
-                          <span className={styles.itemDate}>{item.date}</span>
-
-                          {item.link ? (
-                            <Link
-                              to={item.link}
-                              className={styles.itemLink}
-                            >
-                              {item.content}
-                            </Link>
-                          ) : (
-                            <span className={styles.itemContent}>
-                              {item.content}
-                            </span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   )
 }
 
 const styles = {
-  container: "mx-auto max-w-3xl space-y-8",
+  container: "mx-auto w-full max-w-[1400px] px-4 py-8 flex justify-center",
+  contentWrapper: "w-full max-w-3xl space-y-8",
   header: "flex items-center justify-between",
   title: "text-3xl font-bold",
   timelineWrapper: "relative border-l-2 border-slate-200 pl-8 dark:border-slate-800",

@@ -3,7 +3,7 @@
   "nav": {
     "homepage": "主页",
     "blog": "Blog",
-    "timeline": "归档",
+    "timeline": "时间线",
     "life": "生活随笔",
     "movies": "影视",
     "games": "游戏",
@@ -24,7 +24,7 @@
     "wordCount": "字数 {{count}} 字",
     "sidebar": {
       "profile": {
-        "signature": "代码、咖啡与思考"
+        "signature": "健身完顺路取快递，乔装成大神改简历。"
       },
       "search": {
         "placeholder": "搜索文章..."

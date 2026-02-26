@@ -35,8 +35,8 @@ export function BlogPost() {
   const words = countWords(post.content)
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <Card>
+    <div className="mx-auto w-full">
+      <Card className={styles.postCard}>
         <Link
           to="/blog"
           className={styles.backLink}
@@ -99,6 +99,7 @@ export function BlogPost() {
 }
 
 const styles = {
+  postCard: "block w-full transition-transform",
   notFoundContainer: "flex flex-col items-center justify-center py-12",
   notFoundTitle: "mb-4 text-2xl font-bold text-slate-900 dark:text-slate-100",
   notFoundLink: "text-blue-600 hover:underline dark:text-blue-400",

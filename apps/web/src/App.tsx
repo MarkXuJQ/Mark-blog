@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { RootLayout } from './layouts/RootLayout'
 import { HomeLayout } from './layouts/HomeLayout'
+import { BlogLayout } from './layouts/BlogLayout'
 import { MinimalLayout } from './layouts/MinimalLayout'
 import { Home } from './pages/Home'
 import { Blog } from './pages/Blog'
@@ -20,9 +21,12 @@ function App() {
           <Route element={<HomeLayout />}>
             <Route path="/" element={<Home />} />
           </Route>
-          
-          <Route path="blog" element={<Blog />} />
-          <Route path="blog/:slug" element={<BlogPost />} />
+
+          {/* Blog Layout - Three columns with fixed sidebars */}
+          <Route element={<BlogLayout />}>
+            <Route path="blog" element={<Blog />} />
+            <Route path="blog/:slug" element={<BlogPost />} />
+          </Route>
           <Route path="timeline" element={<Timeline />} />
           <Route path="life" element={<UnderConstruction />} />
           <Route path="movies" element={<UnderConstruction />} />
