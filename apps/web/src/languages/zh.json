@@ -33,6 +33,10 @@
     "description": "抱歉，您访问的页面不存在。",
     "backHome": "返回主页"
   },
+  "zenMode": {
+    "title": "专注模式",
+    "description": "此页面使用了不同的布局结构 (MinimalLayout)。没有导航栏，没有页脚，只有内容。非常适合阅读、专注任务或特殊展示。"
+  },
   "footer": {
     "copyright": "© {{year}} Mark Xu. 保留所有权利。",
     "builtWith": "本站由 React, Tailwind CSS & Vite 构建",

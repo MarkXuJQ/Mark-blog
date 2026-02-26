@@ -33,6 +33,10 @@
     "description": "Sorry, the page you are looking for does not exist.",
     "backHome": "Back to Homepage"
   },
+  "zenMode": {
+    "title": "ZEN MODE",
+    "description": "This page uses a different layout structure (MinimalLayout). No navigation bar, no footer, just content. Perfect for reading, focused tasks, or special presentations."
+  },
   "footer": {
     "copyright": "© {{year}} Mark Xu. All rights reserved.",
     "builtWith": "Built with React, Tailwind CSS & Vite",

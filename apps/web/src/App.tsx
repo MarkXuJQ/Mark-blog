@@ -1,8 +1,10 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { RootLayout } from './layouts/RootLayout'
+import { MinimalLayout } from './layouts/MinimalLayout'
 import { Home } from './pages/Home'
 import { Blog } from './pages/Blog'
 import { BlogPost } from './pages/BlogPost'
+import { ZenMode } from './pages/ZenMode'
 import { UnderConstruction } from './pages/UnderConstruction'
 import { Timeline } from './pages/Timeline'
 import { NotFound } from './pages/NotFound'
@@ -11,8 +13,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<RootLayout />}>
-          <Route index element={<Home />} />
+        {/* Main Layout Routes */}
+        <Route element={<RootLayout />}>
+          <Route path="/" element={<Home />} />
           <Route path="blog" element={<Blog />} />
           <Route path="blog/:slug" element={<BlogPost />} />
           <Route path="timeline" element={<Timeline />} />
@@ -21,6 +24,11 @@ function App() {
           <Route path="games" element={<UnderConstruction />} />
           <Route path="links" element={<UnderConstruction />} />
           <Route path="*" element={<NotFound />} />
+        </Route>
+
+        {/* Minimal Layout Routes */}
+        <Route element={<MinimalLayout />}>
+          <Route path="/zen" element={<ZenMode />} />
         </Route>
       </Routes>
     </BrowserRouter>

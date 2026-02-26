@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Calendar, Clock, FileText } from 'lucide-react'
 import { Card } from '../components/Card'
-import { getAllPosts } from '../lib/posts'
+import { getAllPosts } from '../utils/posts'
 import { estimateReadingTime, countWords } from '../utils/readingTime'
 
 export function Blog() {
