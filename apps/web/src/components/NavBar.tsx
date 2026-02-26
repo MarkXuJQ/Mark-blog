@@ -40,9 +40,6 @@ export function NavBar() {
         <NavLink to="/games" className={navLinkClass}>
           {t('nav.games')}
         </NavLink>
-        <NavLink to="/links" className={navLinkClass}>
-          {t('nav.links')}
-        </NavLink>
         <div className="ml-6 flex items-center gap-4">
           <div className="flex items-center gap-2">
             <button

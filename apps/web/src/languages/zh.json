@@ -10,7 +10,7 @@
     "links": "链接"
   },
   "home": {
-    "title": "欢迎来到 Mark 的小屋",
+    "title": "欢迎来到 <0>Mark</0> 的小屋",
     "intro": "这里是我的个人网站，用来记录技术思考、生活随笔和一些有趣的作品。",
     "description": "未来这里会有：技术文章、生活照片和碎碎念，以及我看过的影视与玩过的游戏清单。",
     "readingTime": "阅读时间：{{minutes}} 分钟",
@@ -21,7 +21,26 @@
     "publishedOn": "发布于",
     "back": "返回文章列表",
     "readingTime": "阅读时间 {{minutes}} 分钟",
-    "wordCount": "字数 {{count}} 字"
+    "wordCount": "字数 {{count}} 字",
+    "sidebar": {
+      "profile": {
+        "signature": "代码、咖啡与思考"
+      },
+      "search": {
+        "placeholder": "搜索文章..."
+      },
+      "archive": {
+        "title": "归档"
+      },
+      "stats": {
+        "title": "站点统计",
+        "runningTime": "运行时间",
+        "articleCount": "文章数目",
+        "lastUpdate": "最后更新",
+        "wordCount": "全站字数",
+        "days": "天"
+      }
+    }
   },
   "underConstruction": {
     "title": "施工进行中",

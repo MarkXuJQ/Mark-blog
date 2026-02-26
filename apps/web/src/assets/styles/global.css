@@ -15,45 +15,4 @@ body {
   min-height: 100vh;
 }
 
-/* Timeline Components */
-@layer components {
-  .timeline-milestone-marker {
-    @apply absolute -left-[45px] flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white ring-4 ring-white dark:bg-slate-100 dark:text-slate-900 dark:ring-slate-950;
-  }
 
-  .timeline-item-marker {
-    @apply absolute -left-[30px] flex h-2.5 w-2.5 items-center justify-center rounded-full bg-slate-400 ring-2 ring-white dark:bg-slate-600 dark:ring-slate-950;
-  }
-
-  .timeline-milestone-date {
-    @apply text-sm font-semibold text-blue-600 dark:text-blue-400;
-  }
-
-  .timeline-milestone-title {
-    @apply text-2xl font-bold text-slate-900 dark:text-slate-100;
-  }
-
-  .timeline-milestone-desc {
-    @apply mt-2 text-slate-600 dark:text-slate-400;
-  }
-
-  .timeline-milestone-stats {
-    @apply ml-3 inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400;
-  }
-
-  .timeline-category-title {
-    @apply mb-3 text-lg font-semibold text-slate-800 dark:text-slate-200;
-  }
-
-  .timeline-item-date {
-    @apply min-w-[80px] text-xs font-mono text-slate-400 dark:text-slate-500;
-  }
-
-  .timeline-item-content {
-    @apply text-slate-600 dark:text-slate-400;
-  }
-
-  .timeline-item-link {
-    @apply text-slate-700 hover:text-blue-600 hover:underline dark:text-slate-300 dark:hover:text-blue-400;
-  }
-}

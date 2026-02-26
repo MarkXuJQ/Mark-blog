@@ -10,7 +10,7 @@
     "links": "Links"
   },
   "home": {
-    "title": "Welcome to Mark's House",
+    "title": "Welcome to <0>Mark</0>'s House",
     "intro": "This is my personal space for technical thoughts, daily notes, and side projects.",
     "description": "In the future you'll find: blog posts, life snippets, photos, and lists of movies & games I've enjoyed.",
     "readingTime": "Reading time: {{minutes}} min",
@@ -21,7 +21,26 @@
     "publishedOn": "Published on",
     "back": "Back to Blog",
     "readingTime": "Reading time: {{minutes}} min",
-    "wordCount": "{{count}} words"
+    "wordCount": "{{count}} words",
+    "sidebar": {
+      "profile": {
+        "signature": "Code, Coffee, and Contemplation"
+      },
+      "search": {
+        "placeholder": "Search articles..."
+      },
+      "archive": {
+        "title": "Archives"
+      },
+      "stats": {
+        "title": "Site Stats",
+        "runningTime": "Running Time",
+        "articleCount": "Articles",
+        "lastUpdate": "Last Update",
+        "wordCount": "Total Words",
+        "days": "Days"
+      }
+    }
   },
   "underConstruction": {
     "title": "Construction in Progress",
