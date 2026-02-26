@@ -9,6 +9,10 @@
   font-weight: 400;
 }
 
+html {
+  overflow-y: scroll;
+}
+
 body {
   margin: 0;
   min-width: 320px;

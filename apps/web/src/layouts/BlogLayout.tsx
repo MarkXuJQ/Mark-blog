@@ -3,10 +3,10 @@ import { useRef } from 'react'
 import { Card } from '../components/Card'
 import { LeftSidebarWidget, StatsWidget } from '../components/BlogWidgets'
 import { TocList } from '../components/TocList'
+import { Footer } from '../components/Footer'
 import { getAllPosts } from '../utils/posts'
 import { cn } from '../utils/cn'
 import { useToc } from '../hooks/useToc'
-import { useSidebarPosition } from '../hooks/useSidebarPosition'
 import { useScrollToTop } from '../hooks/useScrollToTop'
 import { ArrowUpCircle, MessageSquareText } from 'lucide-react'
 import { IoArrowUpSharp } from "react-icons/io5";
@@ -21,27 +21,33 @@ export function BlogLayout() {
   const containerRef = useRef<HTMLDivElement | null>(null)
   
   const { toc, activeId } = useToc(mainRef, pathname)
-  const sidePos = useSidebarPosition(containerRef)
   const { showTopBtn, scrollToTop } = useScrollToTop()
   
-  const topClass = 'top-24'
+  // Adjusted to match the sticky header height + margin + breathing room
+  // Header height (54px) + Top (24px) + MB (32px) = 110px approx, but we want it to align with main content
+  // Main content starts at natural flow. Setting top too high pushes it down initially.
+  // We set it to a value close to the header bottom (24+54=78) to ensure it sticks but doesn't shift down initially.
+  const topClass = 'top-[86px]'
 
   return (
     <div ref={containerRef} className={styles.container}>
       <span id="page-top" />
       <div className={styles.layoutGrid}>
-        <aside className={cn(styles.leftSidebar, topClass)} style={{ left: sidePos.left }}>
-          <div className={styles.stickyWrapper}>
+        <aside className={styles.leftSidebar}>
+          <div className={cn(styles.stickyWrapper, topClass)}>
             <LeftSidebarWidget posts={posts} />
           </div>
         </aside>
 
         <main id="main-content" ref={mainRef} className={styles.mainContent}>
           <Outlet />
+          <div className="mt-auto w-full px-4 pb-8 pt-8 relative z-20">
+            <Footer />
+          </div>
         </main>
 
-        <aside className={cn(styles.rightSidebar, topClass)} style={{ left: sidePos.right - 280 }}>
-          <div className={styles.stickyWrapper}>
+        <aside className={styles.rightSidebar}>
+          <div className={cn(styles.stickyWrapper, topClass)}>
             {isBlogList && <StatsWidget posts={posts} />}
             {isBlogPost && (
               <Card className={styles.tocCard}>
@@ -94,14 +100,14 @@ export function BlogLayout() {
 }
 
 const styles = {
-  container: "mx-auto w-full max-w-[1400px] px-4",
-  layoutGrid: "flex justify-center gap-8 items-start",
+  container: "mx-auto w-full max-w-[1400px] px-4 flex flex-col flex-1",
+  layoutGrid: "flex justify-center gap-8 items-stretch flex-1",
 
-  leftSidebar: "hidden lg:block fixed w-[280px] self-start",
-  rightSidebar: "hidden xl:block fixed w-[280px] self-start",
-  stickyWrapper: "h-[calc(100vh-8rem)] overflow-y-auto space-y-6 pb-10",
+  leftSidebar: "hidden lg:block w-[280px] shrink-0",
+  rightSidebar: "hidden xl:block w-[280px] shrink-0",
+  stickyWrapper: "sticky h-[calc(100vh-8rem)] overflow-y-auto space-y-6 pb-10 scrollbar-hide",
 
-  mainContent: "flex-1 min-w-0 w-full max-w-[640px] md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px]",
+  mainContent: "flex flex-col flex-1 min-w-0 w-full max-w-[640px] md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px]",
 
   tocCard: cn("p-4"),
   tocHeader: cn(
