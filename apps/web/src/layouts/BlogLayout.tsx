@@ -20,7 +20,7 @@ export function BlogLayout() {
   const mainRef = useRef<HTMLElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
   
-  const { toc, activeId } = useToc(mainRef, isBlogPost)
+  const { toc, activeId } = useToc(mainRef, pathname)
   const sidePos = useSidebarPosition(containerRef)
   const { showTopBtn, scrollToTop } = useScrollToTop()
   

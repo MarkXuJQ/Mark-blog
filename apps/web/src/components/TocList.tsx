@@ -31,6 +31,17 @@ export function TocList({ toc, activeId }: TocListProps) {
     return false
   }
 
+  function handleLinkClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
+    e.preventDefault()
+    const element = document.getElementById(id)
+    if (element) {
+      const top = element.getBoundingClientRect().top + window.scrollY - 100 // Offset for sticky header
+      window.scrollTo({ top, behavior: 'smooth' })
+      // Update URL hash without scrolling
+      window.history.pushState({}, '', `#${id}`)
+    }
+  }
+
   function render(nodes: Node[]) {
     return nodes.map((n) => (
       <li
@@ -43,6 +54,7 @@ export function TocList({ toc, activeId }: TocListProps) {
       >
         <a
           href={`#${n.id}`}
+          onClick={(e) => handleLinkClick(e, n.id)}
           className={cn(
             n.id === activeId ? styles.tocItemActive : styles.tocItem,
             n.level > 1 && "border-l border-slate-200 dark:border-slate-800"
