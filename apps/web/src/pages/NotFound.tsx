@@ -29,7 +29,7 @@ export function NotFound() {
 }
 
 const styles = {
-  card: "flex flex-col items-center justify-center py-20 text-center",
+  card: "mx-auto max-w-2xl flex flex-col items-center justify-center py-20 text-center",
   iconContainer: "mb-6 rounded-full bg-slate-100 p-6 dark:bg-slate-800",
   icon: "text-slate-400 dark:text-slate-500",
   title: "mb-4 text-3xl font-bold text-slate-800 dark:text-slate-200",

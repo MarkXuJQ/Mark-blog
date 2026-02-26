@@ -106,7 +106,7 @@ export function Timeline() {
 }
 
 const styles = {
-  container: "space-y-8",
+  container: "mx-auto max-w-3xl space-y-8",
   header: "flex items-center justify-between",
   title: "text-3xl font-bold",
   timelineWrapper: "relative border-l-2 border-slate-200 pl-8 dark:border-slate-800",
