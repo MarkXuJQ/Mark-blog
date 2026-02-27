@@ -1,10 +1,7 @@
 import { useEffect, useRef } from 'react'
-// import Tippy from '@tippyjs/react'
-// import 'tippy.js/dist/tippy.css' // optional
 import { useTranslation } from 'react-i18next'
-// import { Card } from './Card'
-// import { cn } from '../utils/cn'
-// import { CornerUpLeft, ExternalLink } from 'lucide-react'
+import { cn } from '../utils/cn'
+import { LinkGuard } from './LinkGuard'
 
 // Declare Twikoo on window
 declare global {
@@ -16,11 +13,6 @@ declare global {
 export function Comments() {
   const { t } = useTranslation()
   const commentRef = useRef<HTMLDivElement>(null)
-  // const [popoverVisible, setPopoverVisible] = useState(false)
-  // const [popoverJumpTo, setPopoverJumpTo] = useState('')
-  // const [popoverInput, setPopoverInput] = useState('')
-  // const [showUndo, setShowUndo] = useState(false)
-  // const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   
   // Twikoo Environment ID
   // 1. 如果你有腾讯云开发环境 ID，请直接填入，例如：'your-env-id'
@@ -90,73 +82,6 @@ export function Comments() {
     }
   }, [TWIKOO_ENV_ID])
 
-  // Link Guard Logic
-  // useEffect(() => {
-  //   const handleLinkClick = (e: MouseEvent) => {
-  //     if (!(e.target instanceof Element)) return
-  //
-  //     // Skip avatar clicks if needed (based on original code)
-  //     if (e.target.matches('.tk-avatar-img')) {
-  //       e.stopPropagation()
-  //       return
-  //     }
-  //
-  //     const targetLink = e.target.closest('a[target="_blank"]')
-  //     if (!(targetLink instanceof HTMLAnchorElement)) return
-  //
-  //     // Only intercept links inside the comment section
-  //     if (!commentRef.current?.contains(targetLink)) return
-  //
-  //     e.preventDefault()
-  //     e.stopPropagation()
-  //
-  //     const href = targetLink.href
-  //     const decodedHref = decodeURIComponent(href)
-  //     
-  //     setPopoverJumpTo(decodedHref)
-  //     setPopoverInput(decodedHref)
-  //     setReferenceElement(targetLink)
-  //     setPopoverVisible(true)
-  //     setShowUndo(false)
-  //   }
-  //
-  //   // Attach listener to the comment section or document
-  //   // Using document capture phase to ensure we catch it before navigation
-  //   const commentEl = commentRef.current
-  //   if (commentEl) {
-  //     commentEl.addEventListener('click', handleLinkClick, { capture: true })
-  //   }
-  //
-  //   return () => {
-  //     if (commentEl) {
-  //       commentEl.removeEventListener('click', handleLinkClick, { capture: true })
-  //     }
-  //   }
-  // }, [])
-
-  // const handleInputChange = (e: React.FormEvent<HTMLSpanElement>) => {
-  //   const newVal = e.currentTarget.textContent || ''
-  //   setPopoverInput(newVal)
-  //   setShowUndo(newVal !== popoverJumpTo)
-  // }
-  //
-  // const handleUndo = () => {
-  //   setPopoverInput(popoverJumpTo)
-  //   setShowUndo(false)
-  //   // We need to update the content editable text manually
-  //   const inputEl = document.getElementById('popover-input')
-  //   if (inputEl) {
-  //     inputEl.textContent = popoverJumpTo
-  //   }
-  // }
-  //
-  // const confirmOpen = () => {
-  //   if (popoverInput) {
-  //     window.open(popoverInput, '_blank')
-  //     setPopoverVisible(false)
-  //   }
-  // }
-
   return (
     <section ref={commentRef} className="mt-12 mb-8">
       <div className="flex items-center gap-2 mb-6">
@@ -167,57 +92,7 @@ export function Comments() {
       </div>
 
       {/* Popover for Link Guard */}
-      {/* {referenceElement && (
-        <Tippy
-          visible={popoverVisible}
-          onClickOutside={() => setPopoverVisible(false)}
-          interactive={true}
-          reference={referenceElement}
-          placement="top"
-          appendTo={document.body}
-          render={attrs => (
-            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 p-1 flex items-stretch overflow-hidden animate-in fade-in zoom-in-95 duration-200" {...attrs}>
-              <span
-                id="popover-input"
-                key={popoverJumpTo} // Re-render when target changes to reset content
-                className="min-w-[200px] max-w-[300px] px-3 py-1.5 text-sm outline-none break-all text-slate-600 dark:text-slate-300 font-mono"
-                contentEditable="plaintext-only"
-                suppressContentEditableWarning
-                spellCheck={false}
-                onInput={handleInputChange}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    confirmOpen()
-                  }
-                }}
-              >
-                {popoverJumpTo}
-              </span>
-
-              {showUndo && (
-                <button
-                  className="px-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors border-l border-slate-100 dark:border-slate-700"
-                  onClick={handleUndo}
-                  title="恢复链接"
-                >
-                  <CornerUpLeft size={16} />
-                </button>
-              )}
-
-              <button
-                className="px-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors flex items-center gap-1 rounded-r"
-                onClick={confirmOpen}
-              >
-                <span>访问</span>
-                <ExternalLink size={12} />
-              </button>
-            </div>
-          )}
-        >
-          <span /> 
-        </Tippy>
-      )} */}
+      <LinkGuard containerRef={commentRef} />
 
       {/* Twikoo Container */}
       <div id="twikoo" className="twikoo-container">
