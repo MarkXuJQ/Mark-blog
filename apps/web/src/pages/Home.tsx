@@ -1,5 +1,6 @@
 import { useTranslation, Trans } from 'react-i18next'
 import { cn } from '../utils/cn'
+import { getImageUrl } from '../utils/image'
 
 export function Home() {
   const { t } = useTranslation()
@@ -8,7 +9,7 @@ export function Home() {
     <div className={styles.container}>
       <div className={styles.avatarContainer}>
         <img
-          src="/images/IMG_1766.JPG"
+          src={getImageUrl('/images/IMG_1766.JPG')}
           alt="Mark's Blog Logo"
           className={styles.avatar}
         />

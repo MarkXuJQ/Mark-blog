@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { SearchInput } from '../search/SearchInput'
 import { Card } from '../ui/Card'
 import { cn } from '../../utils/cn'
+import { getImageUrl } from '../../utils/image'
 import { Link } from 'react-router-dom'
 import { Calendar, Clock, FileText, Activity, Hash, Layers } from 'lucide-react'
 import { LuGithub } from 'react-icons/lu'
@@ -53,7 +54,7 @@ function ProfileContent() {
       <div className={styles.profileContainer}>
         <div className={styles.avatarWrapper}>
           <img
-            src="/images/IMG_1766.JPG"
+            src={getImageUrl('/images/IMG_1766.JPG')}
             alt="Profile Avatar"
             className={styles.avatar}
           />
