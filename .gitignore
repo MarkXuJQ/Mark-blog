@@ -50,6 +50,10 @@ web_modules/
 # Optional npm cache directory
 .npm
 
+# Local plan
+PLAN.md
+.npm
+
 # Optional eslint cache
 .eslintcache
 
