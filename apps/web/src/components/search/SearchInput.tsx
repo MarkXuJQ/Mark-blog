@@ -1,5 +1,5 @@
 import { Search } from 'lucide-react'
-import { cn } from '../utils/cn'
+import { cn } from '../../utils/cn'
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   onSearch?: (value: string) => void

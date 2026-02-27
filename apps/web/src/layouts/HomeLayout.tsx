@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom'
+import { getImageUrl } from '../utils/image'
 // import { cn } from '../utils/cn'
 
 export function HomeLayout() {
@@ -7,7 +8,7 @@ export function HomeLayout() {
       {/* Home Specific Background */}
       <div 
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url("/images/image1.jpg")' }} 
+        style={{ backgroundImage: `url("${getImageUrl('/images/image1.jpg')}")` }} 
       />
       <div className="fixed inset-0 z-0 bg-white/60 backdrop-blur-md transition-colors duration-500 dark:bg-black/50" />
 

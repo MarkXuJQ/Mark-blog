@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom'
-import { NavBar } from '../components/NavBar'
-import { Footer } from '../components/Footer'
-import { ThemeToggle } from '../components/ThemeToggle'
+import { NavBar } from '../components/layout/NavBar'
+import { Footer } from '../components/layout/Footer'
+import { ThemeToggle } from '../components/ui/ThemeToggle'
 import { useTheme } from '../hooks/useTheme'
 
 export function RootLayout() {

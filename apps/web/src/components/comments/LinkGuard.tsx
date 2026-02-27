@@ -8,7 +8,7 @@ interface LinkGuardProps {
    * The container element to monitor for link clicks.
    * Only links within this container will be intercepted.
    */
-  containerRef: React.RefObject<HTMLElement>
+  containerRef: React.RefObject<HTMLElement | null>
 }
 
 export function LinkGuard({ containerRef }: LinkGuardProps) {
@@ -95,6 +95,9 @@ export function LinkGuard({ containerRef }: LinkGuardProps) {
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 p-1 flex items-stretch overflow-hidden animate-in fade-in zoom-in-95 duration-200" {...attrs}>
           <span
             id="link-guard-input"
+            role="textbox"
+            tabIndex={0}
+            aria-label="Edit link"
             key={popoverJumpTo} // Re-render when target changes to reset content
             className="min-w-[200px] max-w-[300px] px-3 py-1.5 text-sm outline-none break-all text-slate-600 dark:text-slate-300 font-mono"
             contentEditable="plaintext-only"

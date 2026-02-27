@@ -1,18 +1,21 @@
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '../utils/cn'
 import { LinkGuard } from './LinkGuard'
+
+interface TwikooStatic {
+  init: (options: { envId: string; el: string }) => void
+}
 
 // Declare Twikoo on window
 declare global {
   interface Window {
-    twikoo: any
+    twikoo: TwikooStatic
   }
 }
 
 export function Comments() {
   const { t } = useTranslation()
-  const commentRef = useRef<HTMLDivElement>(null)
+  const commentRef = useRef<HTMLElement>(null)
   
   // Twikoo Environment ID
   // 1. 如果你有腾讯云开发环境 ID，请直接填入，例如：'your-env-id'
@@ -31,11 +34,14 @@ export function Comments() {
     // 定义加载完成后的回调
     const loadSecondScript = () => {
       try {
-        if (window.twikoo) {
+        if (window.twikoo && typeof window.twikoo.init === 'function') {
           window.twikoo.init({
             envId: TWIKOO_ENV_ID,
             el: '#twikoo',
           })
+        } else {
+          // Retry if not ready yet
+          setTimeout(loadSecondScript, 500)
         }
       } catch (e) {
         console.error('Twikoo init error:', e)
@@ -72,6 +78,7 @@ export function Comments() {
       cdnScript.src = 'https://registry.npmmirror.com/twikoo/1.6.45/files/dist/twikoo.min.js'
       cdnScript.async = true
       cdnScript.id = 'twikoo-script'
+      cdnScript.crossOrigin = 'anonymous'
       
       cdnScript.addEventListener('load', loadSecondScript)
       document.body.appendChild(cdnScript)

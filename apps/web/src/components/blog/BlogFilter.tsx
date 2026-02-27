@@ -7,8 +7,8 @@ import {
   ArrowDown,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '../utils/cn'
-import type { SortBy } from '../hooks/useBlogPosts'
+import { cn } from '../../utils/cn'
+import type { SortBy } from '../../hooks/useBlogPosts'
 
 interface BlogFilterProps {
   allTags: string[]

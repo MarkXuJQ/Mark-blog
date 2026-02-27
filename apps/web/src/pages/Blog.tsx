@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useBlogPosts } from '../hooks/useBlogPosts'
-import { BlogFilter } from '../components/BlogFilter'
-import { BlogPostCard } from '../components/BlogPostCard'
-import { SearchStatus } from '../components/SearchStatus'
+import { BlogFilter } from '../components/blog/BlogFilter'
+import { BlogPostCard } from '../components/blog/BlogPostCard'
+import { SearchStatus } from '../components/search/SearchStatus'
 
 export function Blog() {
   const { t } = useTranslation()
