@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 // import Tippy from '@tippyjs/react'
 // import 'tippy.js/dist/tippy.css' // optional
 import { useTranslation } from 'react-i18next'
-import { Card } from './Card'
-import { cn } from '../utils/cn'
-import { CornerUpLeft, ExternalLink } from 'lucide-react'
+// import { Card } from './Card'
+// import { cn } from '../utils/cn'
+// import { CornerUpLeft, ExternalLink } from 'lucide-react'
 
 // Declare Twikoo on window
 declare global {
@@ -16,11 +16,11 @@ declare global {
 export function Comments() {
   const { t } = useTranslation()
   const commentRef = useRef<HTMLDivElement>(null)
-  const [popoverVisible, setPopoverVisible] = useState(false)
-  const [popoverJumpTo, setPopoverJumpTo] = useState('')
-  const [popoverInput, setPopoverInput] = useState('')
-  const [showUndo, setShowUndo] = useState(false)
-  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
+  // const [popoverVisible, setPopoverVisible] = useState(false)
+  // const [popoverJumpTo, setPopoverJumpTo] = useState('')
+  // const [popoverInput, setPopoverInput] = useState('')
+  // const [showUndo, setShowUndo] = useState(false)
+  // const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   
   // Twikoo Environment ID
   // 1. 如果你有腾讯云开发环境 ID，请直接填入，例如：'your-env-id'
@@ -83,71 +83,71 @@ export function Comments() {
   }, [TWIKOO_ENV_ID])
 
   // Link Guard Logic
-  useEffect(() => {
-    const handleLinkClick = (e: MouseEvent) => {
-      if (!(e.target instanceof Element)) return
+  // useEffect(() => {
+  //   const handleLinkClick = (e: MouseEvent) => {
+  //     if (!(e.target instanceof Element)) return
+  //
+  //     // Skip avatar clicks if needed (based on original code)
+  //     if (e.target.matches('.tk-avatar-img')) {
+  //       e.stopPropagation()
+  //       return
+  //     }
+  //
+  //     const targetLink = e.target.closest('a[target="_blank"]')
+  //     if (!(targetLink instanceof HTMLAnchorElement)) return
+  //
+  //     // Only intercept links inside the comment section
+  //     if (!commentRef.current?.contains(targetLink)) return
+  //
+  //     e.preventDefault()
+  //     e.stopPropagation()
+  //
+  //     const href = targetLink.href
+  //     const decodedHref = decodeURIComponent(href)
+  //     
+  //     setPopoverJumpTo(decodedHref)
+  //     setPopoverInput(decodedHref)
+  //     setReferenceElement(targetLink)
+  //     setPopoverVisible(true)
+  //     setShowUndo(false)
+  //   }
+  //
+  //   // Attach listener to the comment section or document
+  //   // Using document capture phase to ensure we catch it before navigation
+  //   const commentEl = commentRef.current
+  //   if (commentEl) {
+  //     commentEl.addEventListener('click', handleLinkClick, { capture: true })
+  //   }
+  //
+  //   return () => {
+  //     if (commentEl) {
+  //       commentEl.removeEventListener('click', handleLinkClick, { capture: true })
+  //     }
+  //   }
+  // }, [])
 
-      // Skip avatar clicks if needed (based on original code)
-      if (e.target.matches('.tk-avatar-img')) {
-        e.stopPropagation()
-        return
-      }
-
-      const targetLink = e.target.closest('a[target="_blank"]')
-      if (!(targetLink instanceof HTMLAnchorElement)) return
-
-      // Only intercept links inside the comment section
-      if (!commentRef.current?.contains(targetLink)) return
-
-      e.preventDefault()
-      e.stopPropagation()
-
-      const href = targetLink.href
-      const decodedHref = decodeURIComponent(href)
-      
-      setPopoverJumpTo(decodedHref)
-      setPopoverInput(decodedHref)
-      setReferenceElement(targetLink)
-      setPopoverVisible(true)
-      setShowUndo(false)
-    }
-
-    // Attach listener to the comment section or document
-    // Using document capture phase to ensure we catch it before navigation
-    const commentEl = commentRef.current
-    if (commentEl) {
-      commentEl.addEventListener('click', handleLinkClick, { capture: true })
-    }
-
-    return () => {
-      if (commentEl) {
-        commentEl.removeEventListener('click', handleLinkClick, { capture: true })
-      }
-    }
-  }, [])
-
-  const handleInputChange = (e: React.FormEvent<HTMLSpanElement>) => {
-    const newVal = e.currentTarget.textContent || ''
-    setPopoverInput(newVal)
-    setShowUndo(newVal !== popoverJumpTo)
-  }
-
-  const handleUndo = () => {
-    setPopoverInput(popoverJumpTo)
-    setShowUndo(false)
-    // We need to update the content editable text manually
-    const inputEl = document.getElementById('popover-input')
-    if (inputEl) {
-      inputEl.textContent = popoverJumpTo
-    }
-  }
-
-  const confirmOpen = () => {
-    if (popoverInput) {
-      window.open(popoverInput, '_blank')
-      setPopoverVisible(false)
-    }
-  }
+  // const handleInputChange = (e: React.FormEvent<HTMLSpanElement>) => {
+  //   const newVal = e.currentTarget.textContent || ''
+  //   setPopoverInput(newVal)
+  //   setShowUndo(newVal !== popoverJumpTo)
+  // }
+  //
+  // const handleUndo = () => {
+  //   setPopoverInput(popoverJumpTo)
+  //   setShowUndo(false)
+  //   // We need to update the content editable text manually
+  //   const inputEl = document.getElementById('popover-input')
+  //   if (inputEl) {
+  //     inputEl.textContent = popoverJumpTo
+  //   }
+  // }
+  //
+  // const confirmOpen = () => {
+  //   if (popoverInput) {
+  //     window.open(popoverInput, '_blank')
+  //     setPopoverVisible(false)
+  //   }
+  // }
 
   return (
     <section ref={commentRef} className="mt-12 mb-8">

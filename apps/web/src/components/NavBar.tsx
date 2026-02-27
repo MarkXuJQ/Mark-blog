@@ -15,9 +15,6 @@ export function NavBar() {
       ? 'font-bold text-slate-900 dark:text-slate-100'
       : 'font-normal text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors'
 
-  const navItemClass =
-    'font-normal text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors'
-
   return (
     <header className="mb-6 flex items-center justify-between rounded-full border border-slate-200/70 bg-white/80 px-6 py-3 backdrop-blur transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-100">
       <div className="text-lg font-semibold">{t('siteTitle')}</div>

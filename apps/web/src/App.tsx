@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import { RootLayout } from './layouts/RootLayout'
 import { HomeLayout } from './layouts/HomeLayout'
 import { BlogLayout } from './layouts/BlogLayout'
@@ -13,8 +15,11 @@ import { NotFound } from './pages/NotFound'
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <>
+      <Analytics />
+      <SpeedInsights />
+      <BrowserRouter>
+        <Routes>
         {/* Main Layout Routes - Handles Home, Blog, and all other pages */}
         <Route element={<RootLayout />}>
           {/* Nested Home Layout */}
@@ -40,7 +45,8 @@ function App() {
           <Route path="/zen" element={<ZenMode />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+      </BrowserRouter>
+    </>
   )
 }
 

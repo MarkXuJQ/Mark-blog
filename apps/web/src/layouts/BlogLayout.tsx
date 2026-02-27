@@ -20,7 +20,7 @@ export function BlogLayout() {
   const mainRef = useRef<HTMLElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
   
-  const { toc, activeId } = useToc(mainRef, pathname)
+  const { toc, activeId } = useToc(mainRef as React.RefObject<HTMLElement>, pathname)
   const { showTopBtn, scrollToTop } = useScrollToTop()
   
   // Adjusted to match the sticky header height + margin + breathing room

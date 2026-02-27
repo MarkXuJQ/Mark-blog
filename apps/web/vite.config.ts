@@ -6,7 +6,7 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss(), markdown({ mode: ['html', 'toc'] })],
+  plugins: [react(), tailwindcss(), markdown({ mode: ['html', 'toc'] } as any)],
   resolve: {
     alias: {
       '@content': path.resolve(__dirname, '../../content'),
