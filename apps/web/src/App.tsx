@@ -11,6 +11,7 @@ import { BlogPost } from './pages/BlogPost'
 import { ZenMode } from './pages/ZenMode'
 import { UnderConstruction } from './pages/UnderConstruction'
 import { Timeline } from './pages/Timeline'
+import { Archive } from './pages/Archive'
 import { NotFound } from './pages/NotFound'
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
           <Route element={<BlogLayout />}>
             <Route path="blog" element={<Blog />} />
             <Route path="blog/:slug" element={<BlogPost />} />
+            <Route path="archive" element={<Archive />} />
           </Route>
           <Route path="timeline" element={<Timeline />} />
           <Route path="life" element={<UnderConstruction />} />

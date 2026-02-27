@@ -40,6 +40,18 @@
         "wordCount": "Total Words",
         "days": "Days"
       }
+    },
+    "filter": {
+      "allTags": "All Tags"
+    },
+    "sort": {
+      "created": "Date Created",
+      "updated": "Date Updated"
+    },
+    "search": {
+      "resultsFor": "Results for:",
+      "clear": "Clear Search",
+      "noResults": "No articles found"
     }
   },
   "underConstruction": {

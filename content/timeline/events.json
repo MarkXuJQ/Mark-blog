@@ -1,7 +1,7 @@
 [
   {
-    "date": "2026-02-25",
-    "title": "Alpha Release",
+    "date": "2026-02-27",
+    "title": "网页上线",
     "description": "Initial public release with core features.",
     "categories": [
       {
@@ -12,13 +12,6 @@
           { "id": "f3", "content": "Responsive Design", "date": "2026-02-25" },
           { "id": "f4", "content": "Timeline Page", "date": "2026-02-25" }
         ]
-      },
-      {
-        "title": "New Articles",
-        "items": [
-          { "id": "a1", "content": "Hello World", "link": "/blog/hello-world", "date": "2024-02-24" },
-          { "id": "a2", "content": "Learning React", "link": "/blog/learning-react", "date": "2024-02-25" }
-        ]
       }
     ]
   },
@@ -28,7 +21,6 @@
     "description": "Started the project with a vision to create a personal knowledge base.",
     "categories": [
       {
-        "title": "Milestones",
         "items": [
           { "id": "m1", "content": "Repository Created", "date": "2026-01-31" },
           { "id": "m2", "content": "Tech Stack Selection", "date": "2026-01-31" }
