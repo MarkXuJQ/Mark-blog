@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 
 export function NavBar() {
   const { t, i18n } = useTranslation()
@@ -17,7 +17,12 @@ export function NavBar() {
 
   return (
     <header className="mb-6 flex items-center justify-between rounded-full border border-slate-200/70 bg-white/80 px-6 py-3 backdrop-blur transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-100">
-      <div className="text-lg font-semibold">{t('siteTitle')}</div>
+      <Link
+        to="/"
+        className="text-lg font-semibold transition-opacity hover:opacity-80"
+      >
+        {t('siteTitle')}
+      </Link>
       <nav className="flex items-center gap-4 text-sm">
         <NavLink to="/" className={navLinkClass}>
           {t('nav.homepage')}
@@ -44,7 +49,7 @@ export function NavBar() {
               className={
                 currentLang === 'zh'
                   ? 'font-bold text-slate-900 dark:text-slate-100'
-                  : 'opacity-60 hover:opacity-100 transition-opacity'
+                  : 'opacity-60 transition-opacity hover:opacity-100'
               }
               onClick={() => changeLanguage('zh')}
             >
@@ -56,7 +61,7 @@ export function NavBar() {
               className={
                 currentLang === 'en'
                   ? 'font-bold text-slate-900 dark:text-slate-100'
-                  : 'opacity-60 hover:opacity-100 transition-opacity'
+                  : 'opacity-60 transition-opacity hover:opacity-100'
               }
               onClick={() => changeLanguage('en')}
             >
