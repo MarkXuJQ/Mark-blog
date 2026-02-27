@@ -28,7 +28,7 @@ export function Comments() {
   //    注意：Vercel 默认域名 (*.vercel.app) 在国内被墙，必须绑定自定义域名才能访问！
   //    例如：'https://comments.yourdomain.com'
   // 3. 这里暂时留空或使用示例，请务必替换为你自己的！
-  const TWIKOO_ENV_ID = import.meta.env.VITE_TWIKOO_ENV_ID || 'https://blog-comments-pearl-theta.vercel.app/' 
+  const TWIKOO_ENV_ID = import.meta.env.VITE_TWIKOO_ENV_ID || 'https://comments.markxu.icu' 
 
   // Initialize Twikoo
   useEffect(() => {
