@@ -1,13 +1,13 @@
 import { useTranslation } from 'react-i18next'
-import { SearchInput } from './SearchInput'
-import { Card } from './Card'
-import { cn } from '../utils/cn'
+import { SearchInput } from '../search/SearchInput'
+import { Card } from '../ui/Card'
+import { cn } from '../../utils/cn'
 import { Link } from 'react-router-dom'
 import { Calendar, Clock, FileText, Activity, Hash, Layers } from 'lucide-react'
 import { LuGithub } from 'react-icons/lu'
 import { RiBilibiliLine } from 'react-icons/ri'
-import type { BlogPost } from '../types'
-import { countWords } from '../utils/readingTime'
+import type { BlogPost } from '../../types'
+import { countWords } from '../../utils/readingTime'
 
 import { useNavigate } from 'react-router-dom'
 

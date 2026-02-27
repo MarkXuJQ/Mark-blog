@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom'
 import { Calendar, Clock, FileText } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Card } from './Card'
-import { estimateReadingTime, countWords } from '../utils/readingTime'
-import { cn } from '../utils/cn'
+import { Card } from '../ui/Card'
+import { estimateReadingTime, countWords } from '../../utils/readingTime'
+import { cn } from '../../utils/cn'
 
 interface Post {
   id: string

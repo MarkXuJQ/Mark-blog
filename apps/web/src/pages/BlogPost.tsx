@@ -1,12 +1,12 @@
 import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Clock, FileText } from 'lucide-react'
-import { Card } from '../components/Card'
+import { Card } from '../components/ui/Card'
 import { getPostBySlug } from '../utils/posts'
 import { estimateReadingTime, countWords } from '../utils/readingTime'
 import { cn } from '../utils/cn'
 
-import { Comments } from '../components/Comments'
+import { Comments } from '../components/comments/Comments'
 
 export function BlogPost() {
   const { slug } = useParams()

@@ -1,5 +1,5 @@
 import { Outlet, Link } from 'react-router-dom'
-import { ThemeToggle } from '../components/ThemeToggle'
+import { ThemeToggle } from '../components/ui/ThemeToggle'
 import { useTheme } from '../hooks/useTheme'
 import { ArrowLeft } from 'lucide-react'
 

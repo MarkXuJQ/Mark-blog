@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '../utils/cn'
+import { cn } from '../../utils/cn'
 import { LinkGuard } from './LinkGuard'
 
 // Declare Twikoo on window

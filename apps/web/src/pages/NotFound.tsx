@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { Card } from '../components/Card'
+import { Card } from '../components/ui/Card'
 import { FileQuestion } from 'lucide-react'
 import { cn } from '../utils/cn'
 
