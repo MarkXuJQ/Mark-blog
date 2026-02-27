@@ -1,0 +1,45 @@
+[
+  {
+    "date": "2026-02-27",
+    "title": "First Release",
+    "description": "Mark's House is officially online, including basic features and blog module.",
+    "categories": [
+      {
+        "title": "Core Features",
+        "items": [
+          { "id": "f1", "content": "English/Chinese i18n Support", "date": "2026-02-05" },
+          { "id": "f2", "content": "Dark/Light Mode Toggle", "date": "2026-02-04" }
+        ]
+      },
+      {
+        "title": "Pages",
+        "items": [
+          { "id": "p1", "content": "Blog Page Construction (List & Detail)", "date": "2026-02-27" },
+          { "id": "p2", "content": "Home Page Construction", "date": "2026-02-24" }
+        ]
+      },
+      {
+        "title": "Blog Features",
+        "items": [
+          { "id": "b1", "content": "Article Search", "date": "2026-02-27" },
+          { "id": "b2", "content": "Reading Time & Other Utilities", "date": "2026-02-27" },
+          { "id": "b3", "content": "Table of Contents (TOC)", "date": "2026-02-25" }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-01-31",
+    "title": "Project Kickoff",
+    "description": "Project goals established and tech stack selected.",
+    "categories": [
+      {
+        "title": "Infrastructure",
+        "items": [
+          { "id": "i1", "content": "Repository Initialization", "date": "2026-01-31" },
+          { "id": "i2", "content": "Tech Stack: React + Vite + Tailwind CSS", "date": "2026-01-31" }
+        ]
+      }
+    ]
+  }
+]

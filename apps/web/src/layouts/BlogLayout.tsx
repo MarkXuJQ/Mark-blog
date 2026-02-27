@@ -35,7 +35,7 @@ export function BlogLayout() {
       <div className={styles.layoutGrid}>
         <aside className={styles.leftSidebar}>
           <div className={cn(styles.stickyWrapper, topClass)}>
-            <LeftSidebarWidget posts={posts} />
+            <LeftSidebarWidget />
           </div>
         </aside>
 

@@ -40,6 +40,18 @@
         "wordCount": "全站字数",
         "days": "天"
       }
+    },
+    "filter": {
+      "allTags": "全部标签"
+    },
+    "sort": {
+      "created": "创建日期",
+      "updated": "更新日期"
+    },
+    "search": {
+      "resultsFor": "搜索结果：",
+      "clear": "清除搜索",
+      "noResults": "没有找到相关文章"
     }
   },
   "underConstruction": {
