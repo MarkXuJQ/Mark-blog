@@ -28,7 +28,8 @@ export function Comments() {
   //    注意：Vercel 默认域名 (*.vercel.app) 在国内被墙，必须绑定自定义域名才能访问！
   //    例如：'https://comments.yourdomain.com'
   // 3. 这里暂时留空或使用示例，请务必替换为你自己的！
-  const TWIKOO_ENV_ID = import.meta.env.VITE_TWIKOO_ENV_ID || 'https://blog-comments-pearl-theta.vercel.app/' 
+  // 确保指向云函数路径（/api），避免请求根路径（/）导致的 405
+  const TWIKOO_ENV_ID = import.meta.env.VITE_TWIKOO_ENV_ID || 'https://comments.markxu.icu/api' 
 
   // Initialize Twikoo
   useEffect(() => {
@@ -58,18 +59,25 @@ export function Comments() {
         // 全局对象已就绪，直接初始化
         loadSecondScript()
       } else {
-        // 脚本存在但全局对象未就绪（可能还在加载中），添加监听
+        // 脚本存在但全局对象未就绪，添加监听，同时增加轮询兜底
         existingScript.addEventListener('load', loadSecondScript)
         
-        // 清理监听（仅针对这种情况）
+        const intervalId = setInterval(() => {
+          if (window.twikoo) {
+            loadSecondScript()
+            clearInterval(intervalId)
+          }
+        }, 500)
+        
         return () => {
           existingScript.removeEventListener('load', loadSecondScript)
+          clearInterval(intervalId)
         }
       }
     } else {
       // 脚本不存在，创建并插入
       const cdnScript = document.createElement('script')
-      cdnScript.src = 'https://cdn.staticfile.org/twikoo/1.6.39/twikoo.all.min.js'
+      cdnScript.src = 'https://registry.npmmirror.com/twikoo/1.6.45/files/dist/twikoo.min.js'
       cdnScript.async = true
       cdnScript.id = 'twikoo-script'
       
