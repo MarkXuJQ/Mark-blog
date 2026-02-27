@@ -58,18 +58,25 @@ export function Comments() {
         // 全局对象已就绪，直接初始化
         loadSecondScript()
       } else {
-        // 脚本存在但全局对象未就绪（可能还在加载中），添加监听
+        // 脚本存在但全局对象未就绪，添加监听，同时增加轮询兜底
         existingScript.addEventListener('load', loadSecondScript)
         
-        // 清理监听（仅针对这种情况）
+        const intervalId = setInterval(() => {
+          if (window.twikoo) {
+            loadSecondScript()
+            clearInterval(intervalId)
+          }
+        }, 500)
+        
         return () => {
           existingScript.removeEventListener('load', loadSecondScript)
+          clearInterval(intervalId)
         }
       }
     } else {
       // 脚本不存在，创建并插入
       const cdnScript = document.createElement('script')
-      cdnScript.src = 'https://cdn.staticfile.org/twikoo/1.6.39/twikoo.all.min.js'
+      cdnScript.src = 'https://registry.npmmirror.com/twikoo/1.6.45/files/dist/twikoo.min.js'
       cdnScript.async = true
       cdnScript.id = 'twikoo-script'
       
