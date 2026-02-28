@@ -24,7 +24,7 @@ export function Comments() {
   //    例如：'https://comments.yourdomain.com'
   // 3. 这里暂时留空或使用示例，请务必替换为你自己的！
   // 确保指向云函数路径（/api），避免请求根路径（/）导致的 405
-  const TWIKOO_ENV_ID = import.meta.env.VITE_TWIKOO_ENV_ID || 'https://comments.markxu.icu/api' 
+  const TWIKOO_ENV_ID = import.meta.env.VITE_TWIKOO_ENV_ID || 'https://comments.markxu.icu/api/twikoo' 
 
   // Initialize Twikoo
   useEffect(() => {
@@ -75,7 +75,7 @@ export function Comments() {
     } else {
       // 脚本不存在，创建并插入
       const cdnScript = document.createElement('script')
-      cdnScript.src = 'https://registry.npmmirror.com/twikoo/1.6.45/files/dist/twikoo.min.js'
+      cdnScript.src = 'https://registry.npmmirror.com/twikoo/1.7.0/files/dist/twikoo.min.js'
       cdnScript.async = true
       cdnScript.id = 'twikoo-script'
       cdnScript.crossOrigin = 'anonymous'

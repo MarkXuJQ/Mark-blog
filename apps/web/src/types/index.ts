@@ -16,10 +16,10 @@ export interface MarkdownPost {
     updated?: string
     summary: string
     tags?: string[]
-    [key: string]: any
+    [key: string]: unknown
   }
   html: string
-  toc: any
+  toc: { level: string; content: string }[]
 }
 
 export interface TimelineItem {
