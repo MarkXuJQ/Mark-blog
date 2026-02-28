@@ -75,7 +75,7 @@ export function Comments() {
     } else {
       // 脚本不存在，创建并插入
       const cdnScript = document.createElement('script')
-      cdnScript.src = 'https://registry.npmmirror.com/twikoo/1.6.45/files/dist/twikoo.min.js'
+      cdnScript.src = 'https://registry.npmmirror.com/twikoo/1.7.0/files/dist/twikoo.min.js'
       cdnScript.async = true
       cdnScript.id = 'twikoo-script'
       cdnScript.crossOrigin = 'anonymous'
