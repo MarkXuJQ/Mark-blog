@@ -6,6 +6,7 @@ import zhEvents from '@content/timeline/zh.json'
 import enEvents from '@content/timeline/en.json'
 import type { TimelineEvent } from '../types'
 import { GitCommit, ChevronDown, ChevronRight } from 'lucide-react'
+import { Seo } from '../components/seo/Seo'
 
 // Cast the JSON data to the correct type
 const zhTimelineEvents = zhEvents as TimelineEvent[]
@@ -39,6 +40,7 @@ export function Timeline() {
 
   return (
     <div className={styles.container}>
+      <Seo title={t('nav.timeline')} />
       <div className={styles.wrapper}>
         <div className={styles.header}>
           <h1 className={styles.title}>{t('nav.timeline')}</h1>

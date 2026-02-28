@@ -6,6 +6,7 @@ import { getPostBySlug } from '../utils/posts'
 import { estimateReadingTime, countWords } from '../utils/readingTime'
 import { cn } from '../utils/cn'
 import { rewriteHtmlImageSrc } from '../utils/image'
+import { Seo } from '../components/seo/Seo'
 
 import { Comments } from '../components/comments/Comments'
 
@@ -17,6 +18,7 @@ export function BlogPost() {
   if (!post) {
     return (
       <div className="mx-auto max-w-4xl">
+        <Seo title="Post Not Found" />
         <Card>
           <div className={styles.notFoundContainer}>
             <h1 className={styles.notFoundTitle}>
@@ -41,6 +43,12 @@ export function BlogPost() {
 
   return (
     <div className="mx-auto w-full space-y-8">
+      <Seo
+        title={post.title}
+        description={post.summary}
+        keywords={post.tags?.join(', ')}
+        url={window.location.href}
+      />
       <Card className={styles.postCard}>
         <Link
           to="/blog"
