@@ -40,6 +40,11 @@ export function Seo({
 
       {/* Canonical URL */}
       <link rel="canonical" href={url} />
+      
+      {/* RSS Feed */}
+      <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml" />
+      <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="/atom.xml" />
+      <link rel="alternate" type="application/json" title="JSON Feed" href="/feed.json" />
     </Helmet>
   )
 }
