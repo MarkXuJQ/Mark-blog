@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Layers, Calendar } from 'lucide-react'
 import { getAllPosts } from '../utils/posts'
 import { cn } from '../utils/cn'
+import { Seo } from '../components/seo/Seo'
 import type { BlogPost } from '../types'
 
 export function Archive() {
@@ -29,6 +30,7 @@ export function Archive() {
 
   return (
     <div className={styles.container}>
+      <Seo title={t('blog.sidebar.archive.title')} />
       <div className={styles.header}>
         <Layers className={styles.headerIcon} />
         <h1 className={styles.title}>{t('blog.sidebar.archive.title')}</h1>

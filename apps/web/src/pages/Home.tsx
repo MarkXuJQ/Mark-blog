@@ -1,12 +1,14 @@
 import { useTranslation, Trans } from 'react-i18next'
 import { cn } from '../utils/cn'
 import { getImageUrl } from '../utils/image'
+import { Seo } from '../components/seo/Seo'
 
 export function Home() {
   const { t } = useTranslation()
 
   return (
     <div className={styles.container}>
+      <Seo />
       <div className={styles.avatarContainer}>
         <img
           src={getImageUrl('/images/IMG_1766.JPG')}
