@@ -31,7 +31,7 @@ export function useToc(mainRef: React.RefObject<HTMLElement>, pathname: string) 
       clearTimeout(timer)
       if (cleanup) cleanup()
     }
-  }, [pathname, mainRef]) // Use pathname instead of isBlogPost to refresh on route change
+  }, [pathname, mainRef, isBlogPost]) // Use pathname instead of isBlogPost to refresh on route change
 
   return { toc, activeId }
 }

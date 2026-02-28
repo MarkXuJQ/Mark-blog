@@ -20,6 +20,9 @@ export function BlogPost() {
   // We don't need useRef anymore for the content container
   // But we need to make sure contentHtml is calculated before calling useImageLightbox
 
+  const contentHtml = post ? rewriteHtmlImageSrc(post.content) : ''
+  const contentRef = useImageLightbox([contentHtml])
+
   if (!post) {
     return (
       <div className="mx-auto max-w-4xl">
@@ -43,10 +46,6 @@ export function BlogPost() {
 
   const minutes = estimateReadingTime(post.content)
   const words = countWords(post.content)
-
-  const contentHtml = rewriteHtmlImageSrc(post.content)
-
-  const contentRef = useImageLightbox([contentHtml])
 
   return (
     <div className="mx-auto w-full space-y-8">

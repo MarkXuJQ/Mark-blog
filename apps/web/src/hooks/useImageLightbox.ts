@@ -8,7 +8,7 @@ import { useLightbox } from '../components/ui/Lightbox'
  * @param deps - Dependencies that should trigger a re-scan of images (e.g. content changes)
  * @returns A callback ref that should be attached to the container element
  */
-export function useImageLightbox(deps: any[] = []) {
+export function useImageLightbox(deps: unknown[] = []) {
   const { openLightbox } = useLightbox()
   const cleanupRef = useRef<(() => void) | null>(null)
 
