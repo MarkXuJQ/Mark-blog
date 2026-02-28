@@ -37,6 +37,7 @@ function App() {
               <Route path="archive" element={<Archive />} />
             </Route>
             <Route path="timeline" element={<Timeline />} />
+            <Route path="about" element={<UnderConstruction />} />
             <Route path="life" element={<UnderConstruction />} />
             <Route path="movies" element={<UnderConstruction />} />
             <Route path="games" element={<UnderConstruction />} />
