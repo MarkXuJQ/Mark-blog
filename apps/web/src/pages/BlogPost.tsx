@@ -7,6 +7,7 @@ import { estimateReadingTime, countWords } from '../utils/readingTime'
 import { cn } from '../utils/cn'
 import { rewriteHtmlImageSrc } from '../utils/image'
 import { Seo } from '../components/seo/Seo'
+import { useImageLightbox } from '../hooks/useImageLightbox'
 
 import { Comments } from '../components/comments/Comments'
 
@@ -14,6 +15,10 @@ export function BlogPost() {
   const { slug } = useParams()
   const { t } = useTranslation()
   const post = slug ? getPostBySlug(slug) : undefined
+  
+  // We use a callback ref to handle the DOM node changes robustly
+  // We don't need useRef anymore for the content container
+  // But we need to make sure contentHtml is calculated before calling useImageLightbox
 
   if (!post) {
     return (
@@ -40,6 +45,8 @@ export function BlogPost() {
   const words = countWords(post.content)
 
   const contentHtml = rewriteHtmlImageSrc(post.content)
+
+  const contentRef = useImageLightbox([contentHtml])
 
   return (
     <div className="mx-auto w-full space-y-8">
@@ -102,6 +109,7 @@ export function BlogPost() {
         </div>
 
         <div
+          ref={contentRef}
           className="markdown-body"
           dangerouslySetInnerHTML={{ __html: contentHtml }}
         />

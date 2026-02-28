@@ -59,6 +59,9 @@ importers:
       tippy.js:
         specifier: ^6.3.7
         version: 6.3.7
+      yet-another-react-lightbox:
+        specifier: ^3.29.1
+        version: 3.29.1(@types/react-dom@19.2.3(@types/react@19.2.13))(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -2700,6 +2703,20 @@ packages:
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
 
+  yet-another-react-lightbox@3.29.1:
+    resolution: {integrity: sha512-0cpa+wlleiy2cWNjS9qrcY0+SgZQH/4PDx2uupLMI9Ofip1f7pCgZ95PlVp/EsFsO4ufwOTea51bkLhcEXJJSg==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      '@types/react': ^16 || ^17 || ^18 || ^19
+      '@types/react-dom': ^16 || ^17 || ^18 || ^19
+      react: ^16.8.0 || ^17 || ^18 || ^19
+      react-dom: ^16.8.0 || ^17 || ^18 || ^19
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
@@ -5282,5 +5299,13 @@ snapshots:
       sax: 1.4.4
 
   yallist@3.1.1: {}
+
+  yet-another-react-lightbox@3.29.1(@types/react-dom@19.2.3(@types/react@19.2.13))(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+    dependencies:
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+    optionalDependencies:
+      '@types/react': 19.2.13
+      '@types/react-dom': 19.2.3(@types/react@19.2.13)
 
   yocto-queue@0.1.0: {}
