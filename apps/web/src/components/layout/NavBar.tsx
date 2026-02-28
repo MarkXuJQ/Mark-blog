@@ -19,8 +19,9 @@ export function NavBar() {
     <header className="mb-6 flex items-center justify-between rounded-full border border-slate-200/70 bg-white/80 px-6 py-3 backdrop-blur transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-100">
       <Link
         to="/"
-        className="text-lg font-semibold transition-opacity hover:opacity-80"
+        className="flex items-center gap-2 text-lg font-semibold transition-opacity hover:opacity-80"
       >
+        <img src="/favicon.png" alt="Logo" className="h-8 w-8 rounded-sm" />
         {t('siteTitle')}
       </Link>
       <nav className="flex items-center gap-4 text-sm">

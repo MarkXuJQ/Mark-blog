@@ -5,6 +5,7 @@ import { Card } from '../components/ui/Card'
 import { getPostBySlug } from '../utils/posts'
 import { estimateReadingTime, countWords } from '../utils/readingTime'
 import { cn } from '../utils/cn'
+import { rewriteHtmlImageSrc } from '../utils/image'
 
 import { Comments } from '../components/comments/Comments'
 
@@ -35,6 +36,8 @@ export function BlogPost() {
 
   const minutes = estimateReadingTime(post.content)
   const words = countWords(post.content)
+
+  const contentHtml = rewriteHtmlImageSrc(post.content)
 
   return (
     <div className="mx-auto w-full space-y-8">
@@ -92,7 +95,7 @@ export function BlogPost() {
 
         <div
           className="markdown-body"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: contentHtml }}
         />
       </article>
     </Card>
