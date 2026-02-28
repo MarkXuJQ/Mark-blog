@@ -1,5 +1,26 @@
 [
   {
+    "date": "2026-02-28",
+    "title": "Infrastructure Upgrade",
+    "description": "Major update: Introduced image hosting, upgraded comment system, and optimized architecture.",
+    "categories": [
+      {
+        "title": "Service Integration",
+        "items": [
+          { "id": "si1", "content": "Integrated img.markxu.icu Image Hosting", "date": "2026-02-28" },
+          { "id": "si2", "content": "Upgraded Twikoo to 1.7.0 (Image Upload Support)", "date": "2026-02-28" }
+        ]
+      },
+      {
+        "title": "Architecture",
+        "items": [
+          { "id": "ao1", "content": "Standalone Vercel Backend Deployment", "date": "2026-02-28" },
+          { "id": "ao2", "content": "Optimized Markdown Image Loading & Layout", "date": "2026-02-28" }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-02-27",
     "title": "First Release",
     "description": "Mark's House is officially online, including basic features and blog module.",
