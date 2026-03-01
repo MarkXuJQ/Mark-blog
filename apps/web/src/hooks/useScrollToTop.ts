@@ -4,6 +4,8 @@ export function useScrollToTop() {
   const [showTopBtn, setShowTopBtn] = useState<boolean>(false)
 
   const scrollToTop = () => {
+    if (typeof window === 'undefined') return
+
     // Try to scroll main if it's scrollable
     const rootMain = document.querySelector('main')
     const isMainScrollable = rootMain && window.getComputedStyle(rootMain).overflowY === 'auto'
@@ -16,6 +18,8 @@ export function useScrollToTop() {
   }
 
   useEffect(() => {
+    if (typeof window === 'undefined') return
+
     const rootMain = document.querySelector('main')
     
     const onScroll = () => {

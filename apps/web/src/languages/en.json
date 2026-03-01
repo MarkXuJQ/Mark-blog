@@ -19,6 +19,7 @@
     "github": "My GitHub"
   },
   "blog": {
+    "title": "Mark Xu's Blog",
     "readMore": "Read More",
     "publishedOn": "Published on",
     "back": "Back to Blog",
@@ -46,6 +47,12 @@
     "filter": {
       "allTags": "All Tags",
       "allCategories": "All Categories"
+    },
+    "categories": {
+      "essay": "Life Notes",
+      "experience": "Experience",
+      "tech": "Tech Sharing",
+      "project": "Projects"
     },
     "sort": {
       "created": "Date Created",

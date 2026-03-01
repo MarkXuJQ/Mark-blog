@@ -19,6 +19,7 @@
     "github": "我的 GitHub"
   },
   "blog": {
+    "title": "Mark Xu 的博客",
     "readMore": "阅读全文",
     "publishedOn": "发布于",
     "back": "返回文章列表",
@@ -46,6 +47,12 @@
     "filter": {
       "allTags": "全部标签",
       "allCategories": "全部分类"
+    },
+    "categories": {
+      "essay": "生活杂谈",
+      "experience": "经验分享",
+      "tech": "技术分享",
+      "project": "项目介绍"
     },
     "sort": {
       "created": "创建日期",

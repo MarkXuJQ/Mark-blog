@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/generate-sitemap.js",
+    "build": "tsc -b && vite build && node scripts/generate-sitemap.js && node scripts/prerender.js",
     "lint": "eslint .",
     "format": "prettier --write .",
     "preview": "vite preview"
@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@sparticuz/chromium": "^143.0.4",
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.18",
@@ -47,6 +48,7 @@
     "gray-matter": "^4.0.3",
     "postcss": "^8.5.6",
     "prettier": "^3.8.1",
+    "puppeteer": "24.37.5",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",

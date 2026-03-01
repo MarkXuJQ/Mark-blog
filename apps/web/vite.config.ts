@@ -17,4 +17,8 @@ export default defineConfig({
     host: '127.0.0.1',
     port: 6370,
   },
+  build: {
+    target: 'es2015',
+    chunkSizeWarningLimit: 1000,
+  },
 })

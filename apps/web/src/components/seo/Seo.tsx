@@ -11,7 +11,7 @@ interface SeoProps {
 export function Seo({
   title = 'Mark Xu的小屋',
   description = '这里是 Mark Xu 的个人博客，记录技术与生活。',
-  keywords = 'Mark Xu, Blog, Technology, Life, Coding',
+  keywords = 'Mark Xu, 徐健乔, Xu Jianqiao, Blog, Technology, Life, Coding',
   image = '/logo.png', // 默认分享图片
   url = typeof window !== 'undefined' ? window.location.href : '',
 }: SeoProps) {

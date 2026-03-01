@@ -35,7 +35,11 @@ function FilterTrigger({
       )}
     >
       <ListFilter size={16} />
-      <span>{selectedCategory || t('blog.filter.allCategories')}</span>
+      <span>
+        {selectedCategory
+          ? t(`blog.categories.${selectedCategory}`, selectedCategory)
+          : t('blog.filter.allCategories')}
+      </span>
       <ChevronDown
         size={14}
         className={cn(
@@ -88,7 +92,7 @@ export function BlogFilter({
               )}
               onClick={() => onSelectCategory(category)}
             >
-              <span>{category}</span>
+              <span>{t(`blog.categories.${category}`, category)}</span>
               {selectedCategory === category && <Check size={14} />}
             </DropdownItem>
           ))}
