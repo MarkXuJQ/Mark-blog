@@ -78,6 +78,13 @@
     "title": "ZEN MODE",
     "description": "This page uses a different layout structure (MinimalLayout). No navigation bar, no footer, just content. Perfect for reading, focused tasks, or special presentations."
   },
+  "about": {
+    "title": "About Me",
+    "name": "Mark Xu (Xu Jianqiao)",
+    "role": "Full Stack Developer / Tech Enthusiast",
+    "intro": "Hi! I'm Mark Xu (Xu Jianqiao). I'm a passionate developer who loves building useful tools and exploring new technologies.",
+    "description": "This blog is my digital garden where I share my learning journey, technical insights, and life experiences. I love tinkering with new tech and sharing my findings."
+  },
   "footer": {
     "copyright": "© {{year}} Mark Xu. All rights reserved.",
     "builtWith": "Built with React, Tailwind CSS & Vite",

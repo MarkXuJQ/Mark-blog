@@ -78,6 +78,13 @@
     "title": "专注模式",
     "description": "此页面使用了不同的布局结构 (MinimalLayout)。没有导航栏，没有页脚，只有内容。非常适合阅读、专注任务或特殊展示。"
   },
+  "about": {
+    "title": "关于我",
+    "name": "徐健乔（Mark Xu）",
+    "role": "全栈开发者 / 技术爱好者",
+    "intro": "你好！我是徐健乔，英文名Mark Xu。我是一名热衷于构建实用工具和探索新技术的开发者。",
+    "description": "这个博客是我的数字花园，用于分享我的学习历程、技术见解和生活感悟。我喜欢折腾各种新技术，也乐于分享我的经验。"
+  },
   "footer": {
     "copyright": "© {{year}} Mark Xu. 保留所有权利。",
     "builtWith": "本站由 React, Tailwind CSS & Vite 构建",
