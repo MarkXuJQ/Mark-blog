@@ -19,6 +19,7 @@
     "github": "我的 GitHub"
   },
   "blog": {
+    "title": "Mark Xu 的博客",
     "readMore": "阅读全文",
     "publishedOn": "发布于",
     "back": "返回文章列表",

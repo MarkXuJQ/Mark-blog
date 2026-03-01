@@ -23,7 +23,7 @@ export function Blog() {
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-            {t('nav.blog')}
+            {t('blog.title')}
           </h1>
           <SearchStatus
             query={searchQuery}
