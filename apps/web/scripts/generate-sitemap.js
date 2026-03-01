@@ -1,46 +1,49 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import process from 'node:process';
-import matter from 'gray-matter';
-import { fileURLToPath } from 'node:url';
+import fs from 'node:fs'
+import path from 'node:path'
+import process from 'node:process'
+import matter from 'gray-matter'
+import { fileURLToPath } from 'node:url'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const DOMAIN = 'https://markxu.icu';
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const DOMAIN = 'https://markxu.icu'
 
 // 调整路径，脚本在 apps/web/scripts/
 // content 在 apps/web/../../content/posts
-const POSTS_DIR = path.resolve(__dirname, '../../../content/posts');
-const PUBLIC_DIR = path.resolve(__dirname, '../public');
+const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
+const PUBLIC_DIR = path.resolve(__dirname, '../public')
+const DIST_DIR = path.resolve(__dirname, '../dist')
 
-console.log(`Scanning posts in: ${POSTS_DIR}`);
+console.log(`Scanning posts in: ${POSTS_DIR}`)
 
 if (!fs.existsSync(POSTS_DIR)) {
-  console.error(`Posts directory not found: ${POSTS_DIR}`);
-  process.exit(1);
+  console.error(`Posts directory not found: ${POSTS_DIR}`)
+  process.exit(1)
 }
 
-const files = fs.readdirSync(POSTS_DIR).filter(file => file.endsWith('.md'));
+const files = fs.readdirSync(POSTS_DIR).filter((file) => file.endsWith('.md'))
 
-const posts = files.map(file => {
-  const content = fs.readFileSync(path.join(POSTS_DIR, file), 'utf-8');
-  const { data } = matter(content);
+const posts = files.map((file) => {
+  const content = fs.readFileSync(path.join(POSTS_DIR, file), 'utf-8')
+  const { data } = matter(content)
   // slug 是文件名去掉 .md
-  const slug = file.replace(/\.md$/, '');
-  
+  const slug = file.replace(/\.md$/, '')
+
   return {
     slug,
     // 优先使用 frontmatter 中的 date，如果没有则使用当前时间
-    date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
+    date: data.date
+      ? new Date(data.date).toISOString()
+      : new Date().toISOString(),
     updated: data.updated ? new Date(data.updated).toISOString() : null,
-    title: data.title || slug
-  };
-});
+    title: data.title || slug,
+  }
+})
 
 // 按照日期倒序排序
-posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
-console.log(`Found ${posts.length} posts.`);
+console.log(`Found ${posts.length} posts.`)
 
 // 生成 Sitemap XML
 const sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
@@ -65,24 +68,40 @@ const sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-${posts.map(post => `  <url>
+${posts
+  .map(
+    (post) => `  <url>
     <loc>${DOMAIN}/blog/${post.slug}</loc>
     <lastmod>${(post.updated || post.date).split('T')[0]}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-  </url>`).join('\n')}
-</urlset>`;
+  </url>`
+  )
+  .join('\n')}
+</urlset>`
 
-const sitemapPath = path.join(PUBLIC_DIR, 'sitemap.xml');
-fs.writeFileSync(sitemapPath, sitemapContent);
-console.log(`Sitemap generated at ${sitemapPath}`);
+const sitemapPath = path.join(PUBLIC_DIR, 'sitemap.xml')
+fs.writeFileSync(sitemapPath, sitemapContent)
+console.log(`Sitemap generated at ${sitemapPath}`)
+
+if (fs.existsSync(DIST_DIR)) {
+  const distSitemapPath = path.join(DIST_DIR, 'sitemap.xml')
+  fs.writeFileSync(distSitemapPath, sitemapContent)
+  console.log(`Sitemap copied to ${distSitemapPath}`)
+}
 
 // 生成 robots.txt
 const robotsContent = `User-agent: *
 Allow: /
 Sitemap: ${DOMAIN}/sitemap.xml
-`;
+`
 
-const robotsPath = path.join(PUBLIC_DIR, 'robots.txt');
-fs.writeFileSync(robotsPath, robotsContent);
-console.log(`Robots.txt generated at ${robotsPath}`);
+const robotsPath = path.join(PUBLIC_DIR, 'robots.txt')
+fs.writeFileSync(robotsPath, robotsContent)
+console.log(`Robots.txt generated at ${robotsPath}`)
+
+if (fs.existsSync(DIST_DIR)) {
+  const distRobotsPath = path.join(DIST_DIR, 'robots.txt')
+  fs.writeFileSync(distRobotsPath, robotsContent)
+  console.log(`Robots.txt copied to ${distRobotsPath}`)
+}

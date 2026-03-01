@@ -4,6 +4,7 @@ import { useBlogPosts } from '../hooks/useBlogPosts'
 import { BlogFilter } from '../components/blog/BlogFilter'
 import { BlogPostCard } from '../components/blog/BlogPostCard'
 import { SearchStatus } from '../components/search/SearchStatus'
+import { Seo } from '../components/seo/Seo'
 
 export function Blog() {
   const { t } = useTranslation()
@@ -20,6 +21,7 @@ export function Blog() {
 
   return (
     <>
+      <Seo title={t('blog.title')} />
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
