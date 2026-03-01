@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="/rss.xsl"?>
-<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
-    <channel>
-        <title>Mark Xu的小屋</title>
-        <link>https://markxu.icu</link>
-        <description>这里是 Mark Xu 的个人博客，记录技术与生活。</description>
-        <lastBuildDate>Wed, 27 Sep 2023 00:00:00 GMT</lastBuildDate>
-        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
-        <generator>Mark Xu Blog Generator</generator>
-        <language>zh-CN</language>
-        <image>
-            <title>Mark Xu的小屋</title>
-            <url>https://markxu.icu/logo.png</url>
-            <link>https://markxu.icu</link>
-        </image>
-        <copyright>All rights reserved 2026, Mark Xu</copyright>
-        <atom:link href="https://markxu.icu/rss.xml" rel="self" type="application/rss+xml"/>
-        <item>
-            <title><![CDATA[潮汕游记]]></title>
-            <link>https://markxu.icu/blog/潮汕游记</link>
-            <guid isPermaLink="false">https://markxu.icu/blog/潮汕游记</guid>
-            <pubDate>Wed, 27 Sep 2023 00:00:00 GMT</pubDate>
-            <description><![CDATA[这是我在潮汕的游记。]]></description>
-            <content:encoded><![CDATA[
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://markxu.icu</id>
+    <title>Mark Xu的小屋</title>
+    <updated>2023-09-27T00:00:00.000Z</updated>
+    <generator>Mark Xu Blog Generator</generator>
+    <author>
+        <name>Mark Xu</name>
+        <email>xujianqiao86@gmail.com</email>
+        <uri>https://markxu.icu</uri>
+    </author>
+    <link rel="alternate" href="https://markxu.icu"/>
+    <link rel="self" href="https://markxu.icu/atom.xml"/>
+    <subtitle>这里是 Mark Xu 的个人博客，记录技术与生活。</subtitle>
+    <logo>https://markxu.icu/logo.png</logo>
+    <icon>https://markxu.icu/favicon.png</icon>
+    <rights>All rights reserved 2026, Mark Xu</rights>
+    <entry>
+        <title type="html"><![CDATA[潮汕游记]]></title>
+        <id>https://markxu.icu/blog/潮汕游记</id>
+        <link href="https://markxu.icu/blog/潮汕游记"/>
+        <updated>2023-09-27T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[这是我在潮汕的游记。]]></summary>
+        <content type="html"><![CDATA[
 流水账：
 
 9.24 ： 车站——潮汕站——（K2线）——中心医院—— （步行）——许驸马府（路过）——木棉公馆，入住（视频电话（直播））
@@ -94,8 +93,11 @@
 
 因此我的速度快了不少，想去哪里去哪里，逛腻了就换地方，没逛够就呆着发会儿呆。而且身边没人和我一起吐槽，让我的思维也更专注，不再是一群人嘻嘻哈哈的打闹，错过了某些只有一个人才会注意到的事情。有更多的时间去观察周边的事物，并试着去理解。好像有种更成熟的感觉。
 
-]]></content:encoded>
-            <author>xujianqiao86@gmail.com (Mark Xu)</author>
-        </item>
-    </channel>
-</rss>
+]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+</feed>
