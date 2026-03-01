@@ -64,8 +64,16 @@ const posts = files.map((file) => {
     updated: data.updated ? new Date(data.updated) : null,
     title: data.title || slug,
     description: data.summary || '',
-    content: md.render(markdownContent),
-    image: coverImage,
+    content: md
+      .render(markdownContent)
+      .replace(/src="\/([^"]+)"/g, `src="${DOMAIN}/$1"`)
+      .replace(/href="\/([^"]+)"/g, `href="${DOMAIN}/$1"`),
+    image: coverImage
+      ? {
+          url: coverImage,
+          type: coverImage.endsWith('.png') ? 'image/png' : 'image/jpeg',
+        }
+      : undefined,
   }
 })
 
