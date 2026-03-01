@@ -15,7 +15,8 @@ export function Seo({
   image = '/logo.png', // 默认分享图片
   url = typeof window !== 'undefined' ? window.location.href : '',
 }: SeoProps) {
-  const siteTitle = title === 'Mark Xu的小屋' ? title : `${title} | Mark Xu的小屋`
+  const siteTitle =
+    title === 'Mark Xu的小屋' ? title : `${title} | Mark Xu的小屋`
 
   return (
     <Helmet>
@@ -40,11 +41,6 @@ export function Seo({
 
       {/* Canonical URL */}
       <link rel="canonical" href={url} />
-      
-      {/* RSS Feed */}
-      <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml" />
-      <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="/atom.xml" />
-      <link rel="alternate" type="application/json" title="JSON Feed" href="/feed.json" />
     </Helmet>
   )
 }
