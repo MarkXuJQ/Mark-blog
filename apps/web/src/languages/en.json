@@ -47,6 +47,12 @@
       "allTags": "All Tags",
       "allCategories": "All Categories"
     },
+    "categories": {
+      "essay": "Life Notes",
+      "experience": "Experience",
+      "tech": "Tech Sharing",
+      "project": "Projects"
+    },
     "sort": {
       "created": "Date Created",
       "updated": "Date Updated"

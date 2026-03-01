@@ -51,7 +51,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
               </div>
               {post.category && (
                 <span className="rounded-md bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                  {post.category}
+                  {t(`blog.categories.${post.category}`, post.category)}
                 </span>
               )}
               {post.updated && post.updated !== post.date && (

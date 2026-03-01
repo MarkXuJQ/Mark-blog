@@ -47,6 +47,12 @@
       "allTags": "全部标签",
       "allCategories": "全部分类"
     },
+    "categories": {
+      "essay": "生活杂谈",
+      "experience": "经验分享",
+      "tech": "技术分享",
+      "project": "项目介绍"
+    },
     "sort": {
       "created": "创建日期",
       "updated": "更新日期"
