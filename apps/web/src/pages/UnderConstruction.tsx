@@ -31,7 +31,7 @@ export function UnderConstruction() {
 }
 
 const styles = {
-  card: "w-full max-w-3xl flex flex-col items-center justify-center text-center p-12 shadow-2xl border-slate-200/50 dark:border-slate-700/50",
+  card: "w-full max-w-3xl flex flex-col items-center justify-center text-center p-6 sm:p-12 shadow-2xl border-slate-200/50 dark:border-slate-700/50",
   iconContainer: "mb-8 rounded-full bg-slate-100 p-8 dark:bg-slate-800",
   icon: "text-slate-400 dark:text-slate-500",
   title: "mb-6 text-4xl font-bold text-slate-800 dark:text-slate-200 tracking-tight",

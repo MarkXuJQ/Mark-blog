@@ -3,22 +3,28 @@ import { NavBar } from '../components/layout/NavBar'
 import { Footer } from '../components/layout/Footer'
 import { ThemeToggle } from '../components/ui/ThemeToggle'
 import { useTheme } from '../hooks/useTheme'
+import { useScrollVisibility } from '../hooks/useScrollVisibility'
 
 export function RootLayout() {
   const { mode, setMode } = useTheme()
   const location = useLocation()
   const isBlogPage = location.pathname.startsWith('/blog')
+  const isNavBarVisible = useScrollVisibility()
 
   return (
     <div 
       className="flex min-h-screen w-full flex-col bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50"
     >
       {/* Sticky NavBar Container - Floating Effect */}
-      <div className="sticky top-6 z-50 w-full pointer-events-none mb-8">
+      <div 
+        className={`sticky top-6 z-50 w-full pointer-events-none mb-8 transition-transform duration-300 ${
+          isNavBarVisible ? 'translate-y-0' : '-translate-y-32'
+        }`}
+      >
         <div 
           className="mx-auto w-full pointer-events-auto max-w-[640px] md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px] px-4 transition-all duration-300"
         >
-          <NavBar />
+          <NavBar mode={mode} onModeChange={setMode} />
         </div>
       </div>
 

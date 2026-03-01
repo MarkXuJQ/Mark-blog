@@ -73,7 +73,8 @@ export function BlogFilter({
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.15, ease: 'easeOut' }}
               className={cn(
-                'absolute right-0 top-full z-10 mt-2 w-48 origin-top-right rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 focus:outline-none',
+                'absolute top-full z-10 mt-2 w-48 rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 focus:outline-none',
+                'left-0 sm:left-auto sm:right-0 origin-top-left sm:origin-top-right',
                 'dark:border-slate-800 dark:bg-slate-900 dark:ring-white/10'
               )}
             >

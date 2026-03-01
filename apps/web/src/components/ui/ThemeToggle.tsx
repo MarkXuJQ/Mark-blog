@@ -11,7 +11,7 @@ export function ThemeToggle({ mode, onModeChange }: ThemeToggleProps) {
   const currentIndex = themes.indexOf(mode)
 
   return (
-    <div className="fixed bottom-6 left-6 z-50">
+    <div className="hidden md:block fixed bottom-6 left-6 z-50">
       <div
         role="radiogroup"
         aria-label="Theme preference"
