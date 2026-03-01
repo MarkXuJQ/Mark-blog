@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/generate-sitemap.js && node scripts/prerender.js",
+    "build": "tsc -b && vite build && node scripts/generate-sitemap.js && node scripts/prerender.js && node scripts/generate-rss.js",
     "lint": "eslint .",
     "format": "prettier --write .",
     "preview": "vite preview"

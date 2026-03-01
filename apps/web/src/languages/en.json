@@ -74,9 +74,18 @@
     "description": "Sorry, the page you are looking for does not exist.",
     "backHome": "Back to Homepage"
   },
-  "zenMode": {
-    "title": "ZEN MODE",
-    "description": "This page uses a different layout structure (MinimalLayout). No navigation bar, no footer, just content. Perfect for reading, focused tasks, or special presentations."
+  "about": {
+    "title": "About Me",
+    "description": "This is the About page of Mark Xu's personal blog, recording the author's website building journey and self-introduction.",
+    "intro": "I am a student of the class of 2022 at Huaqiao University. I have wide-ranging interests, including movies, games, traveling, programming, and much more! I am curious about most things. If you have any recommendations, feel free to leave a comment below!",
+    "originTitle": "About This Website",
+    "originContent": "During my preparation for the 2026 postgraduate entrance exam (in 2025), I stumbled upon some personal blogs, such as <0>Zhilu's Blog</0>. It was beautiful, efficient, and well-written, which I really loved ☺️. Through the friend links, I saw many people recording their lives on their own websites. It reminded me of my own university days and the many things I wanted to share but didn't know where. That's when the idea of creating my own website was planted.",
+    "techTitle": "Building Process",
+    "techContent": "During the winter break after the exam, I started researching how to build it. I knew about many existing frameworks, but to apply some of the frontend knowledge I had learned before and to learn more through this project, I quickly deployed a prototype. Later, with the help of AI, I quickly built this semi-finished website. If any experts find any bugs or areas for improvement, please point them out!",
+    "futureContent": "I will start recording my life and continuously share my experiences and daily routines."
+  },
+  "comments": {
+    "title": "Comments"
   },
   "footer": {
     "copyright": "© {{year}} Mark Xu. All rights reserved.",

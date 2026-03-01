@@ -1,9 +1,17 @@
 [
   {
     "date": "2026-03-01",
-    "title": "Mobile UX & Architecture Update",
-    "description": "Optimized mobile interactions and refactored UI components.",
+    "title": "Feature Updates & UX Improvements",
+    "description": "Improved About page, integrated Lightbox, and optimized SEO & mobile experience.",
     "categories": [
+      {
+        "title": "Features",
+        "items": [
+          { "id": "p3", "content": "Improved About Page (Intro & History)", "date": "2026-03-01" },
+          { "id": "f3", "content": "Integrated Lightbox for Images", "date": "2026-03-01" },
+          { "id": "s1", "content": "Enhanced SEO (Meta Tags, Sitemap, Prerender)", "date": "2026-03-01" }
+        ]
+      },
       {
         "title": "Mobile Experience",
         "items": [
