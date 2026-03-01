@@ -14,7 +14,18 @@ const md = new MarkdownIt({
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const DOMAIN = 'https://markxu.icu'
+
+// 动态确定域名：
+// 1. 如果是 Vercel 预览环境，使用 VERCEL_URL
+// 2. 否则（生产环境或本地未设置环境变量），使用默认域名
+const DOMAIN =
+  process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'https://markxu.icu'
+
+console.log(
+  `Generating RSS for domain: ${DOMAIN} (Env: ${process.env.VERCEL_ENV || 'local'})`
+)
 
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
 const PUBLIC_DIR = path.resolve(__dirname, '../public')
