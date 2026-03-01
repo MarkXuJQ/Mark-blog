@@ -4,6 +4,13 @@ import process from 'node:process'
 import matter from 'gray-matter'
 import { fileURLToPath } from 'node:url'
 import { Feed } from 'feed'
+import MarkdownIt from 'markdown-it'
+
+const md = new MarkdownIt({
+  html: true,
+  linkify: true,
+  typographer: true,
+})
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -11,6 +18,7 @@ const DOMAIN = 'https://markxu.icu'
 
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
 const PUBLIC_DIR = path.resolve(__dirname, '../public')
+const DIST_DIR = path.resolve(__dirname, '../dist')
 
 console.log(`Scanning posts in: ${POSTS_DIR}`)
 
@@ -27,6 +35,17 @@ const posts = files.map((file) => {
   // slug 是文件名去掉 .md
   const slug = file.replace(/\.md$/, '')
 
+  // 尝试从内容中提取第一张图片作为封面
+  let coverImage = data.image ? `${DOMAIN}${data.image}` : undefined
+  if (!coverImage) {
+    const imageMatch = markdownContent.match(/!\[.*?\]\(([^)\s]+)/)
+    if (imageMatch && imageMatch[1]) {
+      coverImage = imageMatch[1].startsWith('http')
+        ? imageMatch[1]
+        : `${DOMAIN}${imageMatch[1]}`
+    }
+  }
+
   return {
     slug,
     // 优先使用 frontmatter 中的 date，如果没有则使用当前时间
@@ -34,8 +53,8 @@ const posts = files.map((file) => {
     updated: data.updated ? new Date(data.updated) : null,
     title: data.title || slug,
     description: data.summary || '',
-    content: markdownContent,
-    image: data.image ? `${DOMAIN}${data.image}` : undefined,
+    content: md.render(markdownContent),
+    image: coverImage,
   }
 })
 
@@ -51,7 +70,7 @@ const feed = new Feed({
   id: DOMAIN,
   link: DOMAIN,
   language: 'zh-CN', // optional, used only in RSS 2.0, possible values: http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
-  image: `${DOMAIN}/logo.png`,
+  image: `${DOMAIN}/images/IMG_1766.JPG`,
   favicon: `${DOMAIN}/favicon.png`,
   copyright: `All rights reserved ${new Date().getFullYear()}, Mark Xu`,
   updated: posts.length > 0 ? posts[0].date : new Date(), // optional, default = today
@@ -100,12 +119,32 @@ rssContent = rssContent.replace(
 fs.writeFileSync(rssPath, rssContent)
 console.log(`RSS generated at ${rssPath}`)
 
+if (fs.existsSync(DIST_DIR)) {
+  const distRssPath = path.join(DIST_DIR, 'rss.xml')
+  fs.writeFileSync(distRssPath, rssContent)
+  console.log(`RSS copied to ${distRssPath}`)
+}
+
 // 输出 Atom 1.0 (可选)
 const atomPath = path.join(PUBLIC_DIR, 'atom.xml')
-fs.writeFileSync(atomPath, feed.atom1())
+const atomContent = feed.atom1()
+fs.writeFileSync(atomPath, atomContent)
 console.log(`Atom generated at ${atomPath}`)
+
+if (fs.existsSync(DIST_DIR)) {
+  const distAtomPath = path.join(DIST_DIR, 'atom.xml')
+  fs.writeFileSync(distAtomPath, atomContent)
+  console.log(`Atom copied to ${distAtomPath}`)
+}
 
 // 输出 JSON Feed 1.0 (可选)
 const jsonPath = path.join(PUBLIC_DIR, 'feed.json')
-fs.writeFileSync(jsonPath, feed.json1())
+const jsonContent = feed.json1()
+fs.writeFileSync(jsonPath, jsonContent)
 console.log(`JSON Feed generated at ${jsonPath}`)
+
+if (fs.existsSync(DIST_DIR)) {
+  const distJsonPath = path.join(DIST_DIR, 'feed.json')
+  fs.writeFileSync(distJsonPath, jsonContent)
+  console.log(`JSON Feed copied to ${distJsonPath}`)
+}
