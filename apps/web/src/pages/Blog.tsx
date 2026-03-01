@@ -9,9 +9,9 @@ export function Blog() {
   const { t } = useTranslation()
   const {
     posts,
-    allTags,
-    selectedTag,
-    setSelectedTag,
+    allCategories,
+    selectedCategory,
+    setSelectedCategory,
     sortBy,
     toggleSort,
     searchQuery,
@@ -33,9 +33,9 @@ export function Blog() {
         </div>
 
         <BlogFilter
-          allTags={allTags}
-          selectedTag={selectedTag}
-          onSelectTag={setSelectedTag}
+          allCategories={allCategories}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
           sortBy={sortBy}
           onToggleSort={toggleSort}
         />

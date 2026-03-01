@@ -62,7 +62,7 @@ const styles = {
     "transition-transform duration-300 hover:-translate-y-1 hover:scale-110 hover:rotate-3"
   ),
   contentContainer: cn(
-    "mx-auto max-w-2xl space-y-6 text-lg font-medium leading-relaxed",
+    "mx-auto max-w-2xl space-y-6 text-lg font-medium leading-relaxed px-10",
     "text-slate-800 drop-shadow-md dark:text-slate-100"
   ),
   decorativeContainer: "mt-12 flex justify-center gap-2 opacity-50",

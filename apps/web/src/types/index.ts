@@ -7,6 +7,7 @@ export interface BlogPost {
   summary: string
   content: string
   tags?: string[]
+  category?: string
 }
 
 export interface MarkdownPost {
@@ -16,6 +17,7 @@ export interface MarkdownPost {
     updated?: string
     summary: string
     tags?: string[]
+    category?: string
     [key: string]: unknown
   }
   html: string

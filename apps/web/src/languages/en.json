@@ -44,7 +44,8 @@
       }
     },
     "filter": {
-      "allTags": "All Tags"
+      "allTags": "All Tags",
+      "allCategories": "All Categories"
     },
     "sort": {
       "created": "Date Created",
