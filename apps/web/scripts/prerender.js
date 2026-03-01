@@ -58,10 +58,27 @@ async function prerender() {
   let browser
   try {
     // 2. Launch Puppeteer
-    browser = await puppeteer.launch({
+    let launchOptions = {
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    })
+    }
+
+    if (process.env.VERCEL) {
+      console.log('🚀 Running on Vercel, using @sparticuz/chromium')
+      try {
+        const chromium = (await import('@sparticuz/chromium')).default
+        launchOptions = {
+          args: chromium.args,
+          defaultViewport: chromium.defaultViewport,
+          executablePath: await chromium.executablePath(),
+          headless: chromium.headless,
+        }
+      } catch (e) {
+        console.error('Failed to load @sparticuz/chromium:', e)
+      }
+    }
+
+    browser = await puppeteer.launch(launchOptions)
 
     const page = await browser.newPage()
     const routes = getRoutes()
