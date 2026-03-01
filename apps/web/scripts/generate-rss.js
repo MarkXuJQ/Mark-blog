@@ -111,6 +111,17 @@ posts.forEach((post) => {
 // 输出 RSS 2.0
 const rssPath = path.join(PUBLIC_DIR, 'rss.xml')
 let rssContent = feed.rss2()
+
+// Fix: Add atom:link to channel for RSS 2.0 validation and discovery
+// The 'feed' library might not add it automatically in the way some readers expect for RSS 2.0
+if (!rssContent.includes('<atom:link')) {
+  // 使用正则替换，确保插入在 <channel> 之后，且不破坏 XML 结构
+  rssContent = rssContent.replace(
+    /<channel>/,
+    `<channel>\n    <atom:link href="${DOMAIN}/rss.xml" rel="self" type="application/rss+xml" />`
+  )
+}
+
 // Inject stylesheet
 rssContent = rssContent.replace(
   '<?xml version="1.0" encoding="utf-8"?>',
