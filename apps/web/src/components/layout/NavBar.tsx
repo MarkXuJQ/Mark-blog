@@ -1,14 +1,44 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, Menu, X, Sun, Moon, Monitor } from 'lucide-react'
 import type { ThemeMode } from '../../hooks/useTheme'
 import { cn } from '../../utils/cn'
+import {
+  Dropdown,
+  DropdownContent,
+  DropdownItem,
+  DropdownTrigger,
+  useDropdown,
+} from '../ui/Dropdown'
 
 interface NavBarProps {
   mode: ThemeMode
   onModeChange: (mode: ThemeMode) => void
+}
+
+function NavDropdownTrigger({
+  title,
+  isActive,
+}: {
+  title: string
+  isActive: boolean
+}) {
+  const { isOpen } = useDropdown()
+
+  return (
+    <DropdownTrigger className={styles.dropdown.button(isActive, isOpen)}>
+      {title}
+      <ChevronDown
+        size={14}
+        className={cn(
+          'transition-transform duration-200',
+          isOpen ? 'rotate-180' : ''
+        )}
+      />
+    </DropdownTrigger>
+  )
 }
 
 function NavDropdown({
@@ -18,66 +48,28 @@ function NavDropdown({
   title: string
   items: { to: string; label: string }[]
 }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
-
-  // Close on click outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
 
   // Check if any child is active to highlight the parent
   const isActive = items.some((item) => location.pathname.startsWith(item.to))
 
   return (
-    <div className={styles.dropdown.container} ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={styles.dropdown.button(isActive, isOpen)}
-      >
-        {title}
-        <ChevronDown
-          size={14}
-          className={cn(
-            'transition-transform duration-200',
-            isOpen ? 'rotate-180' : ''
-          )}
-        />
-      </button>
+    <Dropdown className={styles.dropdown.container}>
+      <NavDropdownTrigger title={title} isActive={isActive} />
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 8, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.95 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
-            className={styles.dropdown.menu}
-          >
-            {items.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) => styles.dropdown.item(isActive)}
-                onClick={() => setIsOpen(false)}
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+      <DropdownContent className={styles.dropdown.menu}>
+        {items.map((item) => (
+          <DropdownItem key={item.to} className="p-0" asChild>
+            <NavLink
+              to={item.to}
+              className={({ isActive }) => styles.dropdown.item(isActive)}
+            >
+              {item.label}
+            </NavLink>
+          </DropdownItem>
+        ))}
+      </DropdownContent>
+    </Dropdown>
   )
 }
 

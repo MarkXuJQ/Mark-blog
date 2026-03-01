@@ -9,7 +9,7 @@ export function useBlogPosts() {
   const allPosts = useMemo(() => getAllPosts(), [])
 
   // State
-  const [selectedTag, setSelectedTag] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<SortBy>('date')
 
   // Search Logic
@@ -20,6 +20,7 @@ export function useBlogPosts() {
       post.summary?.toLowerCase().includes(lowerQuery) ||
       post.content.toLowerCase().includes(lowerQuery) ||
       post.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery)) ||
+      post.category?.toLowerCase().includes(lowerQuery) ||
       false
     )
   }, [])
@@ -34,18 +35,20 @@ export function useBlogPosts() {
   })
 
   // Derived state
-  const allTags = useMemo(() => {
-    const tags = new Set<string>()
-    allPosts.forEach((post) => post.tags?.forEach((tag) => tags.add(tag)))
-    return Array.from(tags).sort()
+  const allCategories = useMemo(() => {
+    const categories = new Set<string>()
+    allPosts.forEach((post) => {
+      if (post.category) categories.add(post.category)
+    })
+    return Array.from(categories).sort()
   }, [allPosts])
 
   const filteredAndSortedPosts = useMemo(() => {
     let result = [...searchedPosts]
 
-    // Filter by Tag
-    if (selectedTag) {
-      result = result.filter((post) => post.tags?.includes(selectedTag))
+    // Filter by Category
+    if (selectedCategory) {
+      result = result.filter((post) => post.category === selectedCategory)
     }
 
     // Sort
@@ -59,7 +62,7 @@ export function useBlogPosts() {
       return dateB - dateA
     })
     return result
-  }, [searchedPosts, selectedTag, sortBy])
+  }, [searchedPosts, selectedCategory, sortBy])
 
   // Actions
   const toggleSort = () => {
@@ -68,9 +71,9 @@ export function useBlogPosts() {
 
   return {
     posts: filteredAndSortedPosts,
-    allTags,
-    selectedTag,
-    setSelectedTag,
+    allCategories,
+    selectedCategory,
+    setSelectedCategory,
     sortBy,
     toggleSort,
     searchQuery,

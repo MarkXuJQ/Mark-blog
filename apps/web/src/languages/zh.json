@@ -44,7 +44,8 @@
       }
     },
     "filter": {
-      "allTags": "全部标签"
+      "allTags": "全部标签",
+      "allCategories": "全部分类"
     },
     "sort": {
       "created": "创建日期",

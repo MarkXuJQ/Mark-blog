@@ -21,6 +21,7 @@ export const getAllPosts = (): BlogPost[] => {
         summary: attributes.summary,
         content: html,
         tags: attributes.tags,
+        category: attributes.category,
       }
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())

@@ -66,15 +66,32 @@ export function Archive() {
                       </time>
                     </div>
 
-                    <h3 className={styles.postTitle}>
-                      <Link
-                        to={`/blog/${post.slug}`}
-                        className={styles.postLink}
-                      >
-                        <span className="absolute inset-0" aria-hidden="true" />
-                        {post.title}
-                      </Link>
-                    </h3>
+                    <div className={styles.postHeader}>
+                      <h3 className={styles.postTitle}>
+                        <Link
+                          to={`/blog/${post.slug}`}
+                          className={styles.postLink}
+                        >
+                          <span
+                            className="absolute inset-0"
+                            aria-hidden="true"
+                          />
+                          {post.title}
+                        </Link>
+                      </h3>
+                      {post.tags && post.tags.length > 0 && (
+                        <div className="z-10 flex gap-2">
+                          {post.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                            >
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </article>
                 </div>
               ))}
@@ -113,6 +130,7 @@ const styles = {
   postContent: 'group relative flex flex-col gap-1',
   postMeta:
     'flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400',
+  postHeader: 'flex flex-col justify-between gap-2 sm:flex-row sm:items-center',
   postTitle:
     'text-lg font-bold text-slate-800 transition-colors group-hover:text-blue-500 dark:text-slate-200 dark:group-hover:text-blue-400',
   postLink: 'focus:outline-none',

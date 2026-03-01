@@ -1,5 +1,33 @@
 [
   {
+    "date": "2026-03-01",
+    "title": "Mobile UX & Architecture Update",
+    "description": "Optimized mobile interactions and refactored UI components.",
+    "categories": [
+      {
+        "title": "Mobile Experience",
+        "items": [
+          { "id": "m1", "content": "Auto-hide NavBar & Hamburger Menu Refactor", "date": "2026-03-01" },
+          { "id": "m2", "content": "Optimized Mobile Padding & Layout", "date": "2026-03-01" }
+        ]
+      },
+      {
+        "title": "Blog System",
+        "items": [
+          { "id": "b4", "content": "Introduced Category Filtering System", "date": "2026-03-01" },
+          { "id": "b5", "content": "Added Tags Display in Archive Page", "date": "2026-03-01" }
+        ]
+      },
+      {
+        "title": "Refactoring",
+        "items": [
+          { "id": "r1", "content": "Introduced Headless UI Components (Dropdown)", "date": "2026-03-01" },
+          { "id": "r2", "content": "Extracted & Organized Component Styles", "date": "2026-03-01" }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-02-28",
     "title": "Infrastructure Upgrade",
     "description": "Major update: Introduced image hosting, upgraded comment system, and optimized architecture.",

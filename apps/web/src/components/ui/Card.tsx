@@ -1,18 +1,23 @@
-import type { ReactNode, JSX } from 'react'
-import { createElement } from 'react'
+import { forwardRef } from 'react'
+import { cn } from '../../utils/cn'
 
-type CardProps = {
-  children: ReactNode
-  className?: string
-  as?: keyof JSX.IntrinsicElements
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  as?: React.ElementType
 }
 
-export function Card({ children, className, as = 'div' }: CardProps) {
-  const baseClassName =
-    'rounded-2xl border border-slate-200/70 bg-white/80 p-4 sm:p-6 shadow-sm backdrop-blur transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900/80'
-  const mergedClassName = className
-    ? `${baseClassName} ${className}`
-    : baseClassName
+export const Card = forwardRef<HTMLDivElement, CardProps>(
+  ({ className, as: Component = 'div', ...props }, ref) => {
+    return (
+      <Component
+        ref={ref}
+        className={cn(
+          'rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur transition-colors duration-300 sm:p-6 dark:border-slate-800 dark:bg-slate-900/80',
+          className
+        )}
+        {...props}
+      />
+    )
+  }
+)
 
-  return createElement(as, { className: mergedClassName }, children)
-}
+Card.displayName = 'Card'
