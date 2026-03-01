@@ -7,6 +7,9 @@
         <title><xsl:value-of select="/rss/channel/title"/> RSS Feed</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+        <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml" />
+        <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="/atom.xml" />
+        <link rel="alternate" type="application/json" title="JSON Feed" href="/feed.json" />
         <style type="text/css">
           body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; color: #333; line-height: 1.6; margin: 0; padding: 0; min-height: 100vh; }
           

@@ -16,7 +16,10 @@
             "url": "https://markxu.icu/blog/潮汕游记",
             "title": "潮汕游记",
             "summary": "这是我在潮汕的游记。",
-            "image": "https://img.markxu.icu/imgIMG_20230922_173547.jpg",
+            "image": {
+                "url": "https://img.markxu.icu/imgIMG_20230922_173547.jpg",
+                "type": "image/jpeg"
+            },
             "date_modified": "2023-09-27T00:00:00.000Z",
             "author": {
                 "name": "Mark Xu",
