@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { NavLink, Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -156,7 +157,24 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
         {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Backdrop */}
+      {createPortal(
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm md:hidden"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+
+      {/* Mobile Menu Content */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
