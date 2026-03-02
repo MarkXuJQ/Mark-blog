@@ -6,7 +6,7 @@ import { getImageUrl } from '../../utils/image'
 import { Link } from 'react-router-dom'
 import { Calendar, Clock, FileText, Activity, Hash, Layers } from 'lucide-react'
 import { LuGithub } from 'react-icons/lu'
-import { RiBilibiliLine } from 'react-icons/ri'
+import { RiBilibiliLine, RiTwitterXFill, RiInstagramLine } from 'react-icons/ri'
 import type { BlogPost } from '../../types'
 import { countWords } from '../../utils/readingTime'
 
@@ -104,6 +104,26 @@ function SocialLinks() {
       >
         <RiBilibiliLine size={20} />
         <span className="sr-only">Bilibili</span>
+      </a>
+      <a
+        href="https://x.com/MXu269/articles"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={styles.socialBtn}
+        aria-label="X (Twitter)"
+      >
+        <RiTwitterXFill size={20} />
+        <span className="sr-only">X (Twitter)</span>
+      </a>
+      <a
+        href="https://www.instagram.com/mark_xu269/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={styles.socialBtn}
+        aria-label="Instagram"
+      >
+        <RiInstagramLine size={20} />
+        <span className="sr-only">Instagram</span>
       </a>
     </div>
   )
