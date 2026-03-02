@@ -1,6 +1,6 @@
 import { Trans, useTranslation } from 'react-i18next'
-import { LuGithub } from "react-icons/lu";
-import { RiBilibiliLine } from "react-icons/ri";
+import { LuGithub } from 'react-icons/lu'
+import { RiBilibiliLine, RiTwitterXFill, RiInstagramLine } from 'react-icons/ri'
 import { RiRssLine } from 'react-icons/ri'
 
 export function Footer() {
@@ -28,6 +28,24 @@ export function Footer() {
             aria-label="Bilibili"
           >
             <RiBilibiliLine size={20} />
+          </a>
+          <a
+            href="https://x.com/MXu269/articles"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-slate-900 dark:hover:text-slate-200"
+            aria-label="X (Twitter)"
+          >
+            <RiTwitterXFill size={20} />
+          </a>
+          <a
+            href="https://www.instagram.com/mark_xu269/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-slate-900 dark:hover:text-slate-200"
+            aria-label="Instagram"
+          >
+            <RiInstagramLine size={20} />
           </a>
           <a
             href="/feeds/atom.xml"
