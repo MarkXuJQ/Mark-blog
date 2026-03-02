@@ -5,15 +5,23 @@ import { getImageUrl } from '../utils/image'
 export function HomeLayout() {
   return (
     <>
-      {/* Home Specific Background */}
-      <div 
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url("${getImageUrl('/images/image1.jpg')}")` }} 
+      {/* Home Specific Background - Day Mode */}
+      <div
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-100 transition-opacity duration-700 dark:opacity-0"
+        style={{ backgroundImage: `url("${getImageUrl('/images/day.png')}")` }}
       />
-      <div className="fixed inset-0 z-0 bg-white/60 backdrop-blur-md transition-colors duration-500 dark:bg-black/50" />
+
+      {/* Home Specific Background - Night Mode */}
+      <div
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-0 transition-opacity duration-700 dark:opacity-100"
+        style={{
+          backgroundImage: `url("${getImageUrl('/images/night.png')}")`,
+        }}
+      />
+      <div className="fixed inset-0 z-0 bg-white/40 backdrop-blur-md transition-colors duration-500 dark:bg-black/50" />
 
       {/* Content Container - Vertically Centered */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center pt-20 pb-20 min-h-[calc(100vh-140px)]">
+      <div className="relative z-10 flex min-h-[calc(100vh-140px)] flex-col items-center justify-center pt-20 pb-20 text-center">
         <Outlet />
       </div>
     </>
