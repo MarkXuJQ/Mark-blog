@@ -30,11 +30,11 @@ export function Footer() {
             <RiBilibiliLine size={20} />
           </a>
           <a
-            href="/rss.xml"
+            href="/feeds/atom.xml"
             target="_blank"
             rel="noopener noreferrer"
             className="transition-colors hover:text-slate-900 dark:hover:text-slate-200"
-            aria-label="RSS"
+            aria-label="Atom"
           >
             <RiRssLine size={20} />
           </a>

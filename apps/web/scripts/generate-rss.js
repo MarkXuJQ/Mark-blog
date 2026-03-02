@@ -4,32 +4,23 @@ import process from 'node:process'
 import matter from 'gray-matter'
 import { fileURLToPath } from 'node:url'
 import { Feed } from 'feed'
-import MarkdownIt from 'markdown-it'
-
-const md = new MarkdownIt({
-  html: true,
-  linkify: true,
-  typographer: true,
-})
-
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// 动态确定域名：
-// 1. 如果是 Vercel 预览环境，使用 VERCEL_URL
-// 2. 否则（生产环境或本地未设置环境变量），使用默认域名
 const DOMAIN =
   process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
     : 'https://markxu.icu'
 
 console.log(
-  `Generating RSS for domain: ${DOMAIN} (Env: ${process.env.VERCEL_ENV || 'local'})`
+  `Generating Atom feed for domain: ${DOMAIN} (Env: ${process.env.VERCEL_ENV || 'local'})`
 )
 
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
 const PUBLIC_DIR = path.resolve(__dirname, '../public')
 const DIST_DIR = path.resolve(__dirname, '../dist')
+const FEEDS_DIR = path.join(PUBLIC_DIR, 'feeds')
+const DIST_FEEDS_DIR = path.join(DIST_DIR, 'feeds')
 
 console.log(`Scanning posts in: ${POSTS_DIR}`)
 
@@ -43,10 +34,8 @@ const files = fs.readdirSync(POSTS_DIR).filter((file) => file.endsWith('.md'))
 const posts = files.map((file) => {
   const content = fs.readFileSync(path.join(POSTS_DIR, file), 'utf-8')
   const { data, content: markdownContent } = matter(content)
-  // slug 是文件名去掉 .md
   const slug = file.replace(/\.md$/, '')
 
-  // 尝试从内容中提取第一张图片作为封面
   let coverImage = data.image ? `${DOMAIN}${data.image}` : undefined
   if (!coverImage) {
     const imageMatch = markdownContent.match(/!\[.*?\]\(([^)\s]+)/)
@@ -57,17 +46,22 @@ const posts = files.map((file) => {
     }
   }
 
+  const postUrl = `${DOMAIN}/blog/${slug}`
+
+  const contentHtml = [
+    coverImage ? `<img src="${coverImage}" alt="${data.title || slug}" />` : '',
+    data.summary ? `<p>${data.summary}</p>` : '',
+    `<a class="view-full" href="${postUrl}" target="_blank">点击查看全文</a>`,
+  ].join(' ')
+
   return {
     slug,
-    // 优先使用 frontmatter 中的 date，如果没有则使用当前时间
     date: data.date ? new Date(data.date) : new Date(),
     updated: data.updated ? new Date(data.updated) : null,
     title: data.title || slug,
     description: data.summary || '',
-    content: md
-      .render(markdownContent)
-      .replace(/src="\/([^"]+)"/g, `src="${DOMAIN}/$1"`)
-      .replace(/href="\/([^"]+)"/g, `href="${DOMAIN}/$1"`),
+    content: contentHtml,
+    category: data.category,
     image: coverImage
       ? {
           url: coverImage,
@@ -77,27 +71,23 @@ const posts = files.map((file) => {
   }
 })
 
-// 按照日期倒序排序
 posts.sort((a, b) => b.date.getTime() - a.date.getTime())
 
 console.log(`Found ${posts.length} posts.`)
 
-// 初始化 Feed
 const feed = new Feed({
   title: 'Mark Xu的小屋',
   description: '这里是 Mark Xu 的个人博客，记录技术与生活。',
   id: DOMAIN,
   link: DOMAIN,
-  language: 'zh-CN', // optional, used only in RSS 2.0, possible values: http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
+  language: 'zh-CN',
   image: `${DOMAIN}/images/IMG_1766.JPG`,
   favicon: `${DOMAIN}/favicon.png`,
   copyright: `All rights reserved ${new Date().getFullYear()}, Mark Xu`,
-  updated: posts.length > 0 ? posts[0].date : new Date(), // optional, default = today
-  generator: 'Mark Xu Blog Generator', // optional, default = 'Feed for Node.js'
+  updated: posts.length > 0 ? posts[0].date : new Date(),
+  generator: 'Mark Xu Blog Generator',
   feedLinks: {
-    rss: `${DOMAIN}/rss.xml`,
-    json: `${DOMAIN}/feed.json`,
-    atom: `${DOMAIN}/atom.xml`,
+    atom: `${DOMAIN}/feeds/atom.xml`,
   },
   author: {
     name: 'Mark Xu',
@@ -106,7 +96,6 @@ const feed = new Feed({
   },
 })
 
-// 添加文章到 Feed
 posts.forEach((post) => {
   const url = `${DOMAIN}/blog/${post.slug}`
   feed.addItem({
@@ -114,7 +103,7 @@ posts.forEach((post) => {
     id: url,
     link: url,
     description: post.description,
-    content: post.content, // 可选：如果包含完整内容
+    content: post.content,
     author: [
       {
         name: 'Mark Xu',
@@ -127,54 +116,24 @@ posts.forEach((post) => {
   })
 })
 
-// 输出 RSS 2.0
-const rssPath = path.join(PUBLIC_DIR, 'rss.xml')
-let rssContent = feed.rss2()
-
-// Fix: Add atom:link to channel for RSS 2.0 validation and discovery
-// The 'feed' library might not add it automatically in the way some readers expect for RSS 2.0
-if (!rssContent.includes('<atom:link')) {
-  // 使用正则替换，确保插入在 <channel> 之后，且不破坏 XML 结构
-  rssContent = rssContent.replace(
-    /<channel>/,
-    `<channel>\n    <atom:link href="${DOMAIN}/rss.xml" rel="self" type="application/rss+xml" />`
-  )
+if (!fs.existsSync(FEEDS_DIR)) {
+  fs.mkdirSync(FEEDS_DIR, { recursive: true })
 }
 
-// Inject stylesheet
-rssContent = rssContent.replace(
+const atomPath = path.join(FEEDS_DIR, 'atom.xml')
+let atomContent = feed.atom1()
+atomContent = atomContent.replace(
   '<?xml version="1.0" encoding="utf-8"?>',
-  '<?xml version="1.0" encoding="utf-8"?>\n<?xml-stylesheet type="text/xsl" href="/rss.xsl"?>'
+  '<?xml version="1.0" encoding="utf-8"?>\n<?xml-stylesheet type="text/xsl" href="/feeds/atom.xsl"?>'
 )
-fs.writeFileSync(rssPath, rssContent)
-console.log(`RSS generated at ${rssPath}`)
-
-if (fs.existsSync(DIST_DIR)) {
-  const distRssPath = path.join(DIST_DIR, 'rss.xml')
-  fs.writeFileSync(distRssPath, rssContent)
-  console.log(`RSS copied to ${distRssPath}`)
-}
-
-// 输出 Atom 1.0 (可选)
-const atomPath = path.join(PUBLIC_DIR, 'atom.xml')
-const atomContent = feed.atom1()
 fs.writeFileSync(atomPath, atomContent)
 console.log(`Atom generated at ${atomPath}`)
 
 if (fs.existsSync(DIST_DIR)) {
-  const distAtomPath = path.join(DIST_DIR, 'atom.xml')
+  if (!fs.existsSync(DIST_FEEDS_DIR)) {
+    fs.mkdirSync(DIST_FEEDS_DIR, { recursive: true })
+  }
+  const distAtomPath = path.join(DIST_FEEDS_DIR, 'atom.xml')
   fs.writeFileSync(distAtomPath, atomContent)
   console.log(`Atom copied to ${distAtomPath}`)
-}
-
-// 输出 JSON Feed 1.0 (可选)
-const jsonPath = path.join(PUBLIC_DIR, 'feed.json')
-const jsonContent = feed.json1()
-fs.writeFileSync(jsonPath, jsonContent)
-console.log(`JSON Feed generated at ${jsonPath}`)
-
-if (fs.existsSync(DIST_DIR)) {
-  const distJsonPath = path.join(DIST_DIR, 'feed.json')
-  fs.writeFileSync(distJsonPath, jsonContent)
-  console.log(`JSON Feed copied to ${distJsonPath}`)
 }
