@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="/feeds/atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://markxu.icu</id>
+    <title>Mark Xu的小屋</title>
+    <updated>2023-09-27T00:00:00.000Z</updated>
+    <generator>Mark Xu Blog Generator</generator>
+    <author>
+        <name>Mark Xu</name>
+        <email>xujianqiao86@gmail.com</email>
+        <uri>https://markxu.icu</uri>
+    </author>
+    <link rel="alternate" href="https://markxu.icu"/>
+    <link rel="self" href="https://markxu.icu/feeds/atom.xml"/>
+    <subtitle>这里是 Mark Xu 的个人博客，记录技术与生活。</subtitle>
+    <logo>https://markxu.icu/images/IMG_1766.JPG</logo>
+    <icon>https://markxu.icu/favicon.png</icon>
+    <rights>All rights reserved 2026, Mark Xu</rights>
+    <entry>
+        <title type="html"><![CDATA[潮汕游记]]></title>
+        <id>https://markxu.icu/blog/潮汕游记</id>
+        <link href="https://markxu.icu/blog/潮汕游记"/>
+        <link rel="enclosure" href="https://img.markxu.icu/imgIMG_20230922_173547.jpg" type="image/jpg"/>
+        <updated>2023-09-27T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[这是我在潮汕的游记。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgIMG_20230922_173547.jpg" alt="潮汕游记" /> <p>这是我在潮汕的游记。</p> <a class="view-full" href="https://markxu.icu/blog/潮汕游记" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+</feed>
