@@ -1,5 +1,52 @@
 [
   {
+    "date": "2026-03-03",
+    "title": "Website Performance & SEO Optimization",
+    "description": "Comprehensive optimization of website loading speed, search engine friendliness, and deployment configuration.",
+    "categories": [
+      {
+        "title": "Performance",
+        "items": [
+          {
+            "id": "perf1",
+            "content": "Lazy load comments (Deferred Comments) to improve initial load speed",
+            "date": "2026-03-03"
+          },
+          {
+            "id": "perf2",
+            "content": "Implement responsive background images for better device adaptation",
+            "date": "2026-03-03"
+          }
+        ]
+      },
+      {
+        "title": "SEO Enhancement",
+        "items": [
+          {
+            "id": "seo1",
+            "content": "Add structured data (JSON-LD) for better search results",
+            "date": "2026-03-03"
+          },
+          {
+            "id": "seo2",
+            "content": "Optimize page meta descriptions and language codes",
+            "date": "2026-03-03"
+          }
+        ]
+      },
+      {
+        "title": "Deployment",
+        "items": [
+          {
+            "id": "deploy1",
+            "content": "Update Vercel routing configuration (Rewrites)",
+            "date": "2026-03-03"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-03-01",
     "title": "Feature Updates & UX Improvements",
     "description": "Improved About page, integrated Lightbox, and optimized SEO & mobile experience.",
