@@ -86,7 +86,8 @@
     "futureContent": "I will start recording my life and continuously share my experiences and daily routines."
   },
   "comments": {
-    "title": "Comments"
+    "title": "Comments",
+    "loading": "Loading comments..."
   },
   "footer": {
     "copyright": "© {{year}} Mark Xu. All rights reserved.",

@@ -86,7 +86,8 @@
     "futureContent": "后续我会开始记录我的生活，并不断分享自己的经验和日常。"
   },
   "comments": {
-    "title": "欢迎评论呀！"
+    "title": "欢迎评论呀！",
+    "loading": "评论加载中..."
   },
   "footer": {
     "copyright": "© {{year}} Mark Xu. 保留所有权利。",

@@ -8,6 +8,7 @@ import { cn } from '../utils/cn'
 import { rewriteHtmlImageSrc } from '../utils/image'
 import { Seo } from '../components/seo/Seo'
 import { useImageLightbox } from '../hooks/useImageLightbox'
+import { DeferredComments } from '../components/comments/DeferredComments'
 import {
   DEFAULT_IMAGE,
   DEFAULT_TITLE,
@@ -18,8 +19,6 @@ import {
   toIsoDateTime,
   type JsonLd,
 } from '../components/seo/shared'
-
-import { Comments } from '../components/comments/Comments'
 
 export function BlogPost() {
   const { slug } = useParams()
@@ -176,7 +175,7 @@ export function BlogPost() {
 
     {/* <Card className="p-6"> */}
     <Card className="p-6">
-      <Comments />
+      <DeferredComments />
     </Card>
     {/* </Card> */}
     </div>

@@ -82,9 +82,7 @@ function App() {
             <Route
               element={
                 <LazyRoute>
-                  <LightboxProvider>
-                    <BlogLayout />
-                  </LightboxProvider>
+                  <BlogLayout />
                 </LazyRoute>
               }
             >
@@ -100,7 +98,9 @@ function App() {
                 path="blog/:slug"
                 element={
                   <LazyRoute>
-                    <BlogPost />
+                    <LightboxProvider>
+                      <BlogPost />
+                    </LightboxProvider>
                   </LazyRoute>
                 }
               />
