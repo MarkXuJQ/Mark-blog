@@ -1,11 +1,10 @@
 import { Trans, useTranslation } from 'react-i18next'
 
 interface CopyrightProps {
-  title: string
   url: string
 }
 
-export function Copyright({ title, url }: CopyrightProps) {
+export function Copyright({ url }: CopyrightProps) {
   const { t } = useTranslation()
 
   return (

@@ -174,7 +174,7 @@ export function BlogPost() {
           dangerouslySetInnerHTML={{ __html: contentHtml }}
         />
 
-        <Copyright title={post.title} url={postUrl} />
+        <Copyright url={postUrl} />
         <PostNavigation prev={adjacentPosts.prev} next={adjacentPosts.next} />
       </article>
     </Card>

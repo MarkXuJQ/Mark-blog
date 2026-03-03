@@ -82,7 +82,7 @@ export function useImageLightbox(deps: unknown[] = []) {
     })
 
     return () => {
-      handlers.forEach(({ element, listener, caption }) => {
+      handlers.forEach(({ element, listener }) => {
         element.removeEventListener('click', listener)
         element.style.cursor = ''
         
