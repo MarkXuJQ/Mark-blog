@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { getImageUrl } from '../utils/image'
+import { cn } from '../utils/cn'
 
 interface ResponsiveBackgroundSources {
   avif: string
@@ -62,33 +63,50 @@ export function HomeLayout() {
     return () => observer.disconnect()
   }, [])
 
-  const activeBackground = isDarkMode ? NIGHT_SOURCES : DAY_SOURCES
-
   return (
     <>
-      {/* Home Background (theme-aware, responsive AVIF/WebP + PNG fallback) */}
-      <div className="fixed inset-0 z-0 overflow-hidden">
+      {/* Home Background (Day) - Cross-fade transition */}
+      <div
+        className={cn(
+          'fixed inset-0 z-0 overflow-hidden transition-opacity duration-1000 ease-in-out',
+          isDarkMode ? 'opacity-0' : 'opacity-100'
+        )}
+      >
         <picture>
-          <source
-            type="image/avif"
-            srcSet={activeBackground.avif}
-            sizes="100vw"
-          />
-          <source
-            type="image/webp"
-            srcSet={activeBackground.webp}
-            sizes="100vw"
-          />
+          <source type="image/avif" srcSet={DAY_SOURCES.avif} sizes="100vw" />
+          <source type="image/webp" srcSet={DAY_SOURCES.webp} sizes="100vw" />
           <img
-            src={getImageUrl(activeBackground.fallback)}
+            src={getImageUrl(DAY_SOURCES.fallback)}
             alt=""
             aria-hidden="true"
             className="h-full w-full object-cover"
             decoding="async"
-            fetchPriority="high"
+            fetchPriority={isDarkMode ? 'auto' : 'high'}
           />
         </picture>
       </div>
+
+      {/* Home Background (Night) - Cross-fade transition */}
+      <div
+        className={cn(
+          'fixed inset-0 z-0 overflow-hidden transition-opacity duration-1000 ease-in-out',
+          isDarkMode ? 'opacity-100' : 'opacity-0'
+        )}
+      >
+        <picture>
+          <source type="image/avif" srcSet={NIGHT_SOURCES.avif} sizes="100vw" />
+          <source type="image/webp" srcSet={NIGHT_SOURCES.webp} sizes="100vw" />
+          <img
+            src={getImageUrl(NIGHT_SOURCES.fallback)}
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full object-cover"
+            decoding="async"
+            fetchPriority={isDarkMode ? 'high' : 'auto'}
+          />
+        </picture>
+      </div>
+
       <div className="fixed inset-0 z-0 bg-white/40 backdrop-blur-md transition-colors duration-500 dark:bg-black/50" />
 
       {/* Content Container - Vertically Centered */}

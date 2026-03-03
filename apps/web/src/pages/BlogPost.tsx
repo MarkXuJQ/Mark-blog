@@ -36,7 +36,7 @@ export function BlogPost() {
   if (!post) {
     return (
       <div className="mx-auto max-w-4xl">
-        <Seo title="Post Not Found" />
+        <Seo title="Post Not Found" noindex />
         <Card>
           <div className={styles.notFoundContainer}>
             <h1 className={styles.notFoundTitle}>

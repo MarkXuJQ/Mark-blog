@@ -39,11 +39,12 @@ export function Seo({
   const location = useLocation()
   const { i18n } = useTranslation()
   const siteUrl = getSiteUrl()
-  const path = `${location.pathname}${location.search}`
-  const canonicalUrl = toAbsoluteUrl(url || path, siteUrl)
+  const canonicalPath = url || location.pathname
+  const canonicalUrl = toAbsoluteUrl(canonicalPath, siteUrl)
   const imageUrl = toAbsoluteUrl(image, siteUrl)
-  const lang = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en'
+  const lang = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const locale = i18n.language?.startsWith('zh') ? 'zh_CN' : 'en_US'
+  const alternateLocale = locale === 'zh_CN' ? 'en_US' : 'zh_CN'
   const structuredData = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []
   const siteTitle =
     title === DEFAULT_TITLE ? title : `${title} | ${DEFAULT_TITLE}`
@@ -54,12 +55,14 @@ export function Seo({
       <title>{siteTitle}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
+      <meta name="author" content="Mark Xu" />
       <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
       <meta property="og:site_name" content={DEFAULT_TITLE} />
       <meta property="og:locale" content={locale} />
+      <meta property="og:locale:alternate" content={alternateLocale} />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:title" content={siteTitle} />
       <meta property="og:description" content={description} />
