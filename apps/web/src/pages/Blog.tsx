@@ -5,9 +5,35 @@ import { BlogFilter } from '../components/blog/BlogFilter'
 import { BlogPostCard } from '../components/blog/BlogPostCard'
 import { SearchStatus } from '../components/search/SearchStatus'
 import { Seo } from '../components/seo/Seo'
+import {
+  DEFAULT_TITLE,
+  buildBreadcrumbSchema,
+  getSiteUrl,
+  toAbsoluteUrl,
+  type JsonLd,
+} from '../components/seo/shared'
 
 export function Blog() {
   const { t } = useTranslation()
+  const siteUrl = getSiteUrl()
+  const blogUrl = toAbsoluteUrl('/blog', siteUrl)
+  const pageTitle = t('blog.title')
+  const collectionPageSchema: JsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `${pageTitle} | ${DEFAULT_TITLE}`,
+    url: blogUrl,
+    description: t('home.description'),
+    isPartOf: {
+      '@type': 'WebSite',
+      name: DEFAULT_TITLE,
+      url: siteUrl,
+    },
+  }
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: t('nav.homepage'), url: siteUrl },
+    { name: pageTitle, url: blogUrl },
+  ])
   const {
     posts,
     allCategories,
@@ -21,11 +47,11 @@ export function Blog() {
 
   return (
     <>
-      <Seo title={t('blog.title')} />
+      <Seo title={pageTitle} jsonLd={[collectionPageSchema, breadcrumbSchema]} />
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-            {t('blog.title')}
+            {pageTitle}
           </h1>
           <SearchStatus
             query={searchQuery}

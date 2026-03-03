@@ -8,6 +8,16 @@ import { cn } from '../utils/cn'
 import { rewriteHtmlImageSrc } from '../utils/image'
 import { Seo } from '../components/seo/Seo'
 import { useImageLightbox } from '../hooks/useImageLightbox'
+import {
+  DEFAULT_IMAGE,
+  DEFAULT_TITLE,
+  buildBreadcrumbSchema,
+  extractFirstImageFromHtml,
+  getSiteUrl,
+  toAbsoluteUrl,
+  toIsoDateTime,
+  type JsonLd,
+} from '../components/seo/shared'
 
 import { Comments } from '../components/comments/Comments'
 
@@ -46,6 +56,51 @@ export function BlogPost() {
 
   const minutes = estimateReadingTime(post.content)
   const words = countWords(post.content)
+  const siteUrl = getSiteUrl()
+  const blogUrl = toAbsoluteUrl('/blog', siteUrl)
+  const encodedSlug = encodeURIComponent(post.slug)
+  const postPath = `/blog/${encodedSlug}`
+  const postUrl = toAbsoluteUrl(postPath, siteUrl)
+  const imageSource = extractFirstImageFromHtml(post.content) || DEFAULT_IMAGE
+  const postImageUrl = toAbsoluteUrl(imageSource, siteUrl)
+  const publishedAt = toIsoDateTime(post.date)
+  const modifiedAt = toIsoDateTime(post.updated || post.date)
+  const blogPostingSchema: JsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.summary,
+    inLanguage: post.title.match(/[\u4e00-\u9fff]/) ? 'zh-CN' : 'en',
+    url: postUrl,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': postUrl,
+    },
+    image: [postImageUrl],
+    datePublished: publishedAt,
+    dateModified: modifiedAt,
+    articleSection: post.category,
+    keywords: post.tags,
+    author: {
+      '@type': 'Person',
+      name: 'Mark Xu',
+      url: siteUrl,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: DEFAULT_TITLE,
+      url: siteUrl,
+      logo: {
+        '@type': 'ImageObject',
+        url: toAbsoluteUrl('/images/logo.png', siteUrl),
+      },
+    },
+  }
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: t('nav.homepage'), url: siteUrl },
+    { name: t('nav.blog'), url: blogUrl },
+    { name: post.title, url: postUrl },
+  ])
 
   return (
     <div className="mx-auto w-full space-y-8">
@@ -53,10 +108,11 @@ export function BlogPost() {
         title={post.title}
         description={post.summary}
         keywords={post.tags?.join(', ')}
-        url={`/blog/${post.slug}`}
+        url={postPath}
         type="article"
-        publishedTime={post.date}
-        modifiedTime={post.updated || post.date}
+        publishedTime={publishedAt}
+        modifiedTime={modifiedAt}
+        jsonLd={[blogPostingSchema, breadcrumbSchema]}
       />
       <Card className={styles.postCard}>
         <Link
