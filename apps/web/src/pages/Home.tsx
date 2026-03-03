@@ -13,7 +13,7 @@ import {
 export function Home() {
   const { t, i18n } = useTranslation()
   const siteUrl = getSiteUrl()
-  const language = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en'
+  const language = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const webSiteSchema: JsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',

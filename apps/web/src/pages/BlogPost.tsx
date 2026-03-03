@@ -70,7 +70,7 @@ export function BlogPost() {
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.summary,
-    inLanguage: post.title.match(/[\u4e00-\u9fff]/) ? 'zh-CN' : 'en',
+    inLanguage: post.title.match(/[\u4e00-\u9fff]/) ? 'zh-CN' : 'en-US',
     url: postUrl,
     mainEntityOfPage: {
       '@type': 'WebPage',

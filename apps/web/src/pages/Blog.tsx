@@ -23,7 +23,7 @@ export function Blog() {
     '@type': 'CollectionPage',
     name: `${pageTitle} | ${DEFAULT_TITLE}`,
     url: blogUrl,
-    description: t('home.description'),
+    description: t('blog.description'),
     isPartOf: {
       '@type': 'WebSite',
       name: DEFAULT_TITLE,

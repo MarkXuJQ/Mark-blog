@@ -20,6 +20,7 @@
   },
   "blog": {
     "title": "Mark Xu 的博客",
+    "description": "这里收录了 Mark Xu 关于技术、生活与项目的文章。",
     "readMore": "阅读全文",
     "publishedOn": "发布于",
     "back": "返回文章列表",
