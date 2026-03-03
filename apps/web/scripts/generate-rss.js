@@ -46,7 +46,7 @@ const posts = files.map((file) => {
     }
   }
 
-  const postUrl = `${DOMAIN}/blog/${slug}`
+  const postUrl = `${DOMAIN}/blog/${encodeURIComponent(slug)}`
 
   const contentHtml = [
     coverImage ? `<img src="${coverImage}" alt="${data.title || slug}" />` : '',
@@ -97,7 +97,7 @@ const feed = new Feed({
 })
 
 posts.forEach((post) => {
-  const url = `${DOMAIN}/blog/${post.slug}`
+  const url = `${DOMAIN}/blog/${encodeURIComponent(post.slug)}`
   feed.addItem({
     title: post.title,
     id: url,

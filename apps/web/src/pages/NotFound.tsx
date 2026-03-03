@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom'
 import { Card } from '../components/ui/Card'
 import { FileQuestion } from 'lucide-react'
 import { cn } from '../utils/cn'
+import { Seo } from '../components/seo/Seo'
 
 export function NotFound() {
   const { t } = useTranslation()
 
   return (
     <div className="flex h-full w-full items-center justify-center p-4">
+      <Seo title={t('notFound.title')} noindex />
       <Card className={styles.card}>
         <div className={styles.iconContainer}>
           <FileQuestion size={64} className={styles.icon} />

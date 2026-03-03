@@ -68,10 +68,15 @@ const sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>${DOMAIN}/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
 ${posts
   .map(
     (post) => `  <url>
-    <loc>${DOMAIN}/blog/${post.slug}</loc>
+    <loc>${DOMAIN}/blog/${encodeURIComponent(post.slug)}</loc>
     <lastmod>${(post.updated || post.date).split('T')[0]}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>

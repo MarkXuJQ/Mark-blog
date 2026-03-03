@@ -53,7 +53,10 @@ export function BlogPost() {
         title={post.title}
         description={post.summary}
         keywords={post.tags?.join(', ')}
-        url={window.location.href}
+        url={`/blog/${post.slug}`}
+        type="article"
+        publishedTime={post.date}
+        modifiedTime={post.updated || post.date}
       />
       <Card className={styles.postCard}>
         <Link

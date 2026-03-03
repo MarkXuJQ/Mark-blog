@@ -24,7 +24,7 @@ if (!fs.existsSync(DIST_DIR)) {
 
 // Get all routes
 function getRoutes() {
-  const routes = ['/', '/blog', '/timeline', '/archive']
+  const routes = ['/', '/blog', '/timeline', '/archive', '/about']
 
   // Add blog post routes
   if (fs.existsSync(POSTS_DIR)) {
@@ -80,6 +80,23 @@ async function prerender() {
     browser = await puppeteer.launch(launchOptions)
 
     const page = await browser.newPage()
+    await page.evaluateOnNewDocument(() => {
+      window.__PRERENDER__ = true
+    })
+
+    await page.setRequestInterception(true)
+    page.on('request', (request) => {
+      const requestUrl = request.url()
+      const isLocalRequest = requestUrl.startsWith(BASE_URL)
+      const isDataRequest =
+        requestUrl.startsWith('data:') || requestUrl.startsWith('blob:')
+      if (isLocalRequest || isDataRequest) {
+        request.continue()
+      } else {
+        request.abort()
+      }
+    })
+
     const routes = getRoutes()
 
     console.log(`🔍 Found ${routes.length} routes to prerender.`)
@@ -90,11 +107,23 @@ async function prerender() {
 
       try {
         // Navigate to page
-        await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 })
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 })
 
         // Wait for a key element to ensure React has mounted
-        // Looking for main content or at least the root div being populated
-        await page.waitForSelector('#root', { timeout: 5000 })
+        await page.waitForFunction(
+          () => {
+            const root = document.getElementById('root')
+            return (
+              !!root &&
+              root.childElementCount > 0 &&
+              !document.querySelector('[data-prerender-fallback="true"]')
+            )
+          },
+          { timeout: 10000 }
+        )
+
+        // Let Helmet finish flushing meta tags into <head>
+        await new Promise((resolve) => setTimeout(resolve, 120))
 
         // Get HTML
         const html = await page.content()

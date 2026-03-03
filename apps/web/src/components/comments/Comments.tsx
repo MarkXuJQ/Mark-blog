@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LinkGuard } from './LinkGuard'
 
@@ -9,13 +9,15 @@ interface TwikooStatic {
 // Declare Twikoo on window
 declare global {
   interface Window {
-    twikoo: TwikooStatic
+    twikoo?: TwikooStatic
+    __PRERENDER__?: boolean
   }
 }
 
 export function Comments() {
   const { t } = useTranslation()
   const commentRef = useRef<HTMLElement>(null)
+  const [shouldLoadTwikoo, setShouldLoadTwikoo] = useState(false)
   
   // Twikoo Environment ID
   // 1. 如果你有腾讯云开发环境 ID，请直接填入，例如：'your-env-id'
@@ -26,10 +28,35 @@ export function Comments() {
   // 确保指向云函数路径（/api），避免请求根路径（/）导致的 405
   const TWIKOO_ENV_ID = import.meta.env.VITE_TWIKOO_ENV_ID || 'https://comments.markxu.icu/api/twikoo' 
 
+  // Delay loading comments until the section is close to viewport.
+  useEffect(() => {
+    if (window.__PRERENDER__) return
+    const target = commentRef.current
+    if (!target) return
+
+    if (!('IntersectionObserver' in window)) {
+      setShouldLoadTwikoo(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setShouldLoadTwikoo(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '300px 0px' }
+    )
+
+    observer.observe(target)
+    return () => observer.disconnect()
+  }, [])
+
   // Initialize Twikoo
   useEffect(() => {
     // 如果没有配置 ID，显示提示
-    if (!TWIKOO_ENV_ID) return
+    if (!TWIKOO_ENV_ID || !shouldLoadTwikoo || window.__PRERENDER__) return
 
     // 定义加载完成后的回调
     const loadSecondScript = () => {
@@ -87,7 +114,7 @@ export function Comments() {
         cdnScript.removeEventListener('load', loadSecondScript)
       }
     }
-  }, [TWIKOO_ENV_ID])
+  }, [TWIKOO_ENV_ID, shouldLoadTwikoo])
 
   return (
     <section ref={commentRef} className="mt-12 mb-8">
@@ -110,6 +137,10 @@ export function Comments() {
               请在 <code className="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-xs">.env</code> 文件中配置 <code className="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-xs">VITE_TWIKOO_ENV_ID</code>，
               或者在 <code className="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-xs">src/components/Comments.tsx</code> 中直接填入您的 Twikoo 环境 ID。
             </p>
+          </div>
+        ) : !shouldLoadTwikoo ? (
+          <div className="flex justify-center py-8 text-slate-400 text-sm">
+            向下滚动到评论区后自动加载...
           </div>
         ) : (
           <div className="flex justify-center py-8 text-slate-400 text-sm">
