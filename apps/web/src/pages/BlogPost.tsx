@@ -2,11 +2,13 @@ import { useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Clock, FileText } from 'lucide-react'
 import { Card } from '../components/ui/Card'
-import { getPostBySlug } from '../utils/posts'
+import { getPostBySlug, getAdjacentPosts } from '../utils/posts'
 import { estimateReadingTime, countWords } from '../utils/readingTime'
 import { cn } from '../utils/cn'
 import { rewriteHtmlImageSrc } from '../utils/image'
 import { Seo } from '../components/seo/Seo'
+import { Copyright } from '../components/blog/Copyright'
+import { PostNavigation } from '../components/blog/PostNavigation'
 import { useImageLightbox } from '../hooks/useImageLightbox'
 import { DeferredComments } from '../components/comments/DeferredComments'
 import {
@@ -24,6 +26,7 @@ export function BlogPost() {
   const { slug } = useParams()
   const { t } = useTranslation()
   const post = slug ? getPostBySlug(slug) : undefined
+  const adjacentPosts = slug ? getAdjacentPosts(slug) : { prev: undefined, next: undefined }
   
   // We use a callback ref to handle the DOM node changes robustly
   // We don't need useRef anymore for the content container
@@ -170,6 +173,9 @@ export function BlogPost() {
           className="markdown-body"
           dangerouslySetInnerHTML={{ __html: contentHtml }}
         />
+
+        <Copyright url={postUrl} />
+        <PostNavigation prev={adjacentPosts.prev} next={adjacentPosts.next} />
       </article>
     </Card>
 

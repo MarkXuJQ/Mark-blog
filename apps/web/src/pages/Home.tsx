@@ -18,7 +18,7 @@ export function Home() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: DEFAULT_TITLE,
-    alternateName: "Mark's House",
+    alternateName: "Mark's Backyard",
     url: siteUrl,
     description: DEFAULT_DESCRIPTION,
     inLanguage: language,

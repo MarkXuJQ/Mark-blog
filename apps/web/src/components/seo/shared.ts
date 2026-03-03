@@ -1,5 +1,5 @@
 export const DEFAULT_SITE_URL = 'https://markxu.icu'
-export const DEFAULT_TITLE = 'Mark Xu的小屋'
+export const DEFAULT_TITLE = 'Mark的自留地'
 export const DEFAULT_DESCRIPTION = '这里是 Mark Xu 的个人博客，记录技术与生活。'
 export const DEFAULT_KEYWORDS =
   'Mark Xu, 徐健乔, Xu Jianqiao, Blog, Technology, Life, Coding'
