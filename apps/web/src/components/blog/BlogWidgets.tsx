@@ -56,6 +56,10 @@ function ProfileContent() {
           <img
             src={getImageUrl('/images/IMG_1766.JPG')}
             alt="Profile Avatar"
+            width={96}
+            height={96}
+            loading="lazy"
+            decoding="async"
             className={styles.avatar}
           />
         </div>

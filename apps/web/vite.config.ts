@@ -20,5 +20,22 @@ export default defineConfig({
   build: {
     target: 'es2015',
     chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': [
+            'react',
+            'react-dom',
+            'react-router-dom',
+            'react-helmet-async',
+          ],
+          'vendor-i18n': [
+            'i18next',
+            'react-i18next',
+            'i18next-browser-languagedetector',
+          ],
+        },
+      },
+    },
   },
 })

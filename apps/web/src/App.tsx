@@ -1,9 +1,8 @@
 import { lazy, Suspense, type ReactNode } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/react'
 import { RootLayout } from './layouts/RootLayout'
 import { HomeLayout } from './layouts/HomeLayout'
+import { DeferredVercelInsights } from './components/analytics/DeferredVercelInsights'
 
 const LightboxProvider = lazy(() =>
   import('./components/ui/Lightbox').then((module) => ({
@@ -60,9 +59,8 @@ function LazyRoute({ children }: { children: ReactNode }) {
 function App() {
   return (
     <>
-      <Analytics />
-      <SpeedInsights />
       <BrowserRouter>
+        <DeferredVercelInsights />
         <Routes>
           {/* Main Layout Routes - Handles Home, Blog, and all other pages */}
           <Route element={<RootLayout />}>

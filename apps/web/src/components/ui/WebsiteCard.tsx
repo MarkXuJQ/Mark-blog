@@ -37,8 +37,11 @@ export function WebsiteCard({
             <img
               src={`https://s0.wp.com/mshots/v1/${encodeURIComponent(url)}?w=200`}
               alt={`Screenshot of ${title || hostname}`}
+              width={48}
+              height={48}
               className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
               loading="lazy"
+              decoding="async"
             />
           </div>
         )}
@@ -73,8 +76,11 @@ export function WebsiteCard({
             <img
               src={`https://s0.wp.com/mshots/v1/${encodeURIComponent(url)}?w=400`}
               alt={`Screenshot of ${title || hostname}`}
+              width={192}
+              height={128}
               className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
+              decoding="async"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
           </div>
@@ -116,8 +122,11 @@ export function WebsiteCard({
           <img
             src={`https://s0.wp.com/mshots/v1/${encodeURIComponent(url)}?w=800`}
             alt={`Screenshot of ${title || hostname}`}
+            width={800}
+            height={500}
             className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
         </div>

@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useBlogPosts } from '../hooks/useBlogPosts'
 import { BlogFilter } from '../components/blog/BlogFilter'
 import { BlogPostCard } from '../components/blog/BlogPostCard'
@@ -73,22 +72,15 @@ export function Blog() {
         />
       </div>
 
-      <motion.div layout className="space-y-6">
-        <AnimatePresence mode="popLayout">
-          {posts.length > 0 ? (
-            posts.map((post) => <BlogPostCard key={post.id} post={post} />)
-          ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="py-12 text-center text-slate-500 dark:text-slate-400"
-            >
-              {t('blog.search.noResults')}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+      <div className="space-y-6">
+        {posts.length > 0 ? (
+          posts.map((post) => <BlogPostCard key={post.id} post={post} />)
+        ) : (
+          <div className="py-12 text-center text-slate-500 dark:text-slate-400">
+            {t('blog.search.noResults')}
+          </div>
+        )}
+      </div>
     </>
   )
 }

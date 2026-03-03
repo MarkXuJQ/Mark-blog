@@ -25,11 +25,14 @@ export function rewriteHtmlImageSrc(html: string): string {
   const parser = new DOMParser()
   const doc = parser.parseFromString(html, 'text/html')
   const imgs = doc.querySelectorAll('img')
-  imgs.forEach((img) => {
+  imgs.forEach((img, index) => {
     const src = img.getAttribute('src') || ''
     const resolved = getImageUrl(src)
+    const isFirstContentImage = index === 0
+
     img.setAttribute('src', resolved)
-    img.setAttribute('loading', 'lazy')
+    img.setAttribute('loading', isFirstContentImage ? 'eager' : 'lazy')
+    img.setAttribute('fetchpriority', isFirstContentImage ? 'high' : 'auto')
     img.setAttribute('decoding', 'async')
     img.setAttribute('referrerpolicy', 'no-referrer')
   })

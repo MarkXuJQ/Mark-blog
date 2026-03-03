@@ -41,6 +41,10 @@ export function Home() {
         <img
           src={getImageUrl('/images/IMG_1766.JPG')}
           alt="Mark's Blog Logo"
+          width={160}
+          height={160}
+          decoding="async"
+          fetchPriority="high"
           className={styles.avatar}
         />
       </div>
