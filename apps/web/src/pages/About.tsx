@@ -59,6 +59,16 @@ export function About() {
                 {t('about.techTitle')}
               </h2>
               <p className="leading-relaxed">{t('about.techContent')}</p>
+
+
+              <WebsiteCard
+                url="https://github.com/MarkXuJQ/Mark-blog"
+                title="我的网站源码"
+                description="这里是我的网站的源码仓库，欢迎同学们前来发现问题、一起学习！"
+                variant="horizontal"
+                className="not-prose mx-auto my-6 max-w-lg"
+              />
+              
             </section>
 
             {/* Future */}

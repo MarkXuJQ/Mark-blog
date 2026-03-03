@@ -1,8 +1,10 @@
+import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useBlogPosts } from '../hooks/useBlogPosts'
 import { BlogFilter } from '../components/blog/BlogFilter'
 import { BlogPostCard } from '../components/blog/BlogPostCard'
 import { SearchStatus } from '../components/search/SearchStatus'
+import { Pagination } from '../components/ui/Pagination'
 import { Seo } from '../components/seo/Seo'
 import {
   DEFAULT_TITLE,
@@ -11,6 +13,8 @@ import {
   toAbsoluteUrl,
   type JsonLd,
 } from '../components/seo/shared'
+
+const ITEMS_PER_PAGE = 10
 
 export function Blog() {
   const { t } = useTranslation()
@@ -44,6 +48,26 @@ export function Blog() {
     clearSearch,
   } = useBlogPosts()
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1)
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [selectedCategory, searchQuery, sortBy])
+
+  // Calculate pagination
+  const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE)
+  const currentPosts = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE
+    return posts.slice(start, start + ITEMS_PER_PAGE)
+  }, [posts, currentPage])
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
     <>
       <Seo
@@ -73,8 +97,18 @@ export function Blog() {
       </div>
 
       <div className="space-y-6">
-        {posts.length > 0 ? (
-          posts.map((post) => <BlogPostCard key={post.id} post={post} />)
+        {currentPosts.length > 0 ? (
+          <>
+            {currentPosts.map((post) => (
+              <BlogPostCard key={post.id} post={post} />
+            ))}
+            
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </>
         ) : (
           <div className="py-12 text-center text-slate-500 dark:text-slate-400">
             {t('blog.search.noResults')}

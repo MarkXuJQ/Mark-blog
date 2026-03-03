@@ -7,9 +7,10 @@
 .img-grid-2 {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
-  gap: 1rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  gap: 1.5rem; /* Increased gap for better spacing */
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  align-items: start; /* Align items to the top so captions align naturally */
 }
 
 @media (min-width: 640px) {
@@ -18,11 +19,24 @@
   }
 }
 
+.img-grid-2 figure,
+.img-grid-2 .post-image-figure {
+  margin: 0 !important; /* Reset figure margin */
+  display: flex;
+  flex-direction: column;
+}
+
 .img-grid-2 img {
   width: 100%;
   height: auto;
   border-radius: 0.5rem; /* rounded-lg */
   margin: 0 !important; /* Override prose margin if needed */
+  display: block;
+}
+
+.img-grid-2 .img-caption {
+  margin-bottom: 0 !important; /* Remove bottom margin inside grid to avoid huge gaps */
+  margin-top: 0.5rem !important;
 }
 
 :root {

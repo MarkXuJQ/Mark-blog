@@ -76,8 +76,8 @@ posts.sort((a, b) => b.date.getTime() - a.date.getTime())
 console.log(`Found ${posts.length} posts.`)
 
 const feed = new Feed({
-  title: 'Mark Xu的小屋',
-  description: '这里是 Mark Xu 的个人博客，记录技术与生活。',
+  title: 'Mark的自留地',
+  description: '这里是 Mark Xu 的个人网站，记录技术与生活。',
   id: DOMAIN,
   link: DOMAIN,
   language: 'zh-CN',

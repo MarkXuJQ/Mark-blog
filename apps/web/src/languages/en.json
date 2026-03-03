@@ -1,5 +1,5 @@
 {
-  "siteTitle": "Mark's House",
+  "siteTitle": "Mark's Backyard",
   "nav": {
     "homepage": "Homepage",
     "blog": "Blog",
@@ -12,7 +12,7 @@
     "links": "Links"
   },
   "home": {
-    "title": "Welcome to <0>Mark</0>'s House",
+    "title": "Welcome to <0>Mark</0>'s Backyard",
     "intro": "This is my personal space for technical thoughts, daily notes, and side projects.",
     "description": "In the future you'll find: blog posts, life snippets, photos, and lists of movies & games I've enjoyed.",
     "readingTime": "Reading time: {{minutes}} min",
@@ -24,6 +24,8 @@
     "readMore": "Read More",
     "publishedOn": "Published on",
     "back": "Back to Blog",
+    "prevPost": "Previous Post",
+    "nextPost": "Next Post",
     "readingTime": "Reading time: {{minutes}} min",
     "wordCount": "{{count}} words",
     "sidebar": {
@@ -63,6 +65,12 @@
       "resultsFor": "Results for:",
       "clear": "Clear Search",
       "noResults": "No articles found"
+    },
+    "copyright": {
+      "author": "Author",
+      "link": "Link",
+      "license": "Copyright",
+      "statement": "All articles in this blog are licensed under <0>{{license}}</0> unless stating otherwise."
     }
   },
   "underConstruction": {

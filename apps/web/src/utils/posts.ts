@@ -30,3 +30,22 @@ export const getAllPosts = (): BlogPost[] => {
 export const getPostBySlug = (slug: string): BlogPost | undefined => {
   return getAllPosts().find((post) => post.slug === slug)
 }
+
+export const getAdjacentPosts = (
+  slug: string
+): { prev?: BlogPost; next?: BlogPost } => {
+  const posts = getAllPosts()
+  const index = posts.findIndex((post) => post.slug === slug)
+
+  if (index === -1) {
+    return {}
+  }
+
+  // posts are sorted by date desc
+  // next (newer) is at index - 1
+  // prev (older) is at index + 1
+  const next = index > 0 ? posts[index - 1] : undefined
+  const prev = index < posts.length - 1 ? posts[index + 1] : undefined
+
+  return { prev, next }
+}
