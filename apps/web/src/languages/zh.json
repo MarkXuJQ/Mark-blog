@@ -20,6 +20,7 @@
   },
   "blog": {
     "title": "Mark Xu 的博客",
+    "description": "这里收录了 Mark Xu 关于技术、生活与项目的文章。",
     "readMore": "阅读全文",
     "publishedOn": "发布于",
     "back": "返回文章列表",
@@ -85,7 +86,8 @@
     "futureContent": "后续我会开始记录我的生活，并不断分享自己的经验和日常。"
   },
   "comments": {
-    "title": "欢迎评论呀！"
+    "title": "欢迎评论呀！",
+    "loading": "评论加载中..."
   },
   "footer": {
     "copyright": "© {{year}} Mark Xu. 保留所有权利。",

@@ -1,6 +1,6 @@
 import { useTranslation, Trans } from 'react-i18next'
 import { Seo } from '../components/seo/Seo'
-import { Comments } from '../components/comments/Comments'
+import { DeferredComments } from '../components/comments/DeferredComments'
 import { WebsiteCard } from '../components/ui/WebsiteCard'
 
 export function About() {
@@ -70,7 +70,7 @@ export function About() {
 
         {/* Comments Section */}
         <div className="mt-16 border-t border-slate-200 pt-8 dark:border-slate-800">
-          <Comments />
+          <DeferredComments />
         </div>
       </div>
     </>

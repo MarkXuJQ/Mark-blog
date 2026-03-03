@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { NavLink, Link, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, Menu, X, Sun, Moon, Monitor } from 'lucide-react'
 import type { ThemeMode } from '../../hooks/useTheme'
 import { cn } from '../../utils/cn'
@@ -100,7 +99,14 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
   return (
     <header className={styles.header}>
       <Link to="/" className={styles.logo.link}>
-        <img src="/favicon.png" alt="Logo" className={styles.logo.img} />
+        <img
+          src="/favicon.png"
+          alt="Logo"
+          width={32}
+          height={32}
+          decoding="async"
+          className={styles.logo.img}
+        />
         {t('siteTitle')}
       </Link>
 
@@ -159,103 +165,91 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
 
       {/* Mobile Menu Backdrop */}
       {createPortal(
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm md:hidden"
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
-          )}
-        </AnimatePresence>,
+        isMobileMenuOpen ? (
+          <button
+            type="button"
+            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm md:hidden"
+            aria-label="Close menu"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        ) : null,
         document.body
       )}
 
       {/* Mobile Menu Content */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className={styles.mobile.menu}
+      {isMobileMenuOpen && (
+        <div className={styles.mobile.menu}>
+          <NavLink
+            to="/"
+            className={({ isActive }) => styles.mobile.link(isActive)}
           >
-            <NavLink
-              to="/"
-              className={({ isActive }) => styles.mobile.link(isActive)}
-            >
-              {t('nav.homepage')}
-            </NavLink>
-            <NavLink
-              to="/blog"
-              className={({ isActive }) => styles.mobile.link(isActive)}
-            >
-              {t('nav.blog')}
-            </NavLink>
-            <NavLink
-              to="/about"
-              className={({ isActive }) => styles.mobile.link(isActive)}
-            >
-              {t('nav.about')}
-            </NavLink>
+            {t('nav.homepage')}
+          </NavLink>
+          <NavLink
+            to="/blog"
+            className={({ isActive }) => styles.mobile.link(isActive)}
+          >
+            {t('nav.blog')}
+          </NavLink>
+          <NavLink
+            to="/about"
+            className={({ isActive }) => styles.mobile.link(isActive)}
+          >
+            {t('nav.about')}
+          </NavLink>
 
-            <div className={styles.mobile.section}>
-              <div className={styles.mobile.sectionTitle}>
-                {t('nav.others')}
-              </div>
-              <div className={styles.mobile.grid}>
-                {otherItems.map((item) => (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                    className={({ isActive }) => styles.mobile.link(isActive)}
-                  >
-                    {item.label}
-                  </NavLink>
-                ))}
-              </div>
+          <div className={styles.mobile.section}>
+            <div className={styles.mobile.sectionTitle}>
+              {t('nav.others')}
             </div>
-
-            <div className={styles.mobile.controls}>
-              <button
-                type="button"
-                className={styles.mobile.langButton(currentLang === 'zh')}
-                onClick={() => changeLanguage('zh')}
-              >
-                中文
-              </button>
-              <button
-                type="button"
-                className={styles.mobile.langButton(currentLang === 'en')}
-                onClick={() => changeLanguage('en')}
-              >
-                English
-              </button>
-            </div>
-
-            {/* Mobile Theme Toggle */}
-            <div className={styles.mobile.themeContainer}>
-              {(['light', 'system', 'dark'] as const).map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  className={styles.mobile.themeButton(mode === m)}
-                  onClick={() => onModeChange(m)}
-                  aria-label={`Switch to ${m} mode`}
+            <div className={styles.mobile.grid}>
+              {otherItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) => styles.mobile.link(isActive)}
                 >
-                  {m === 'light' && <Sun size={20} />}
-                  {m === 'system' && <Monitor size={20} />}
-                  {m === 'dark' && <Moon size={20} />}
-                </button>
+                  {item.label}
+                </NavLink>
               ))}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+
+          <div className={styles.mobile.controls}>
+            <button
+              type="button"
+              className={styles.mobile.langButton(currentLang === 'zh')}
+              onClick={() => changeLanguage('zh')}
+            >
+              中文
+            </button>
+            <button
+              type="button"
+              className={styles.mobile.langButton(currentLang === 'en')}
+              onClick={() => changeLanguage('en')}
+            >
+              English
+            </button>
+          </div>
+
+          {/* Mobile Theme Toggle */}
+          <div className={styles.mobile.themeContainer}>
+            {(['light', 'system', 'dark'] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                className={styles.mobile.themeButton(mode === m)}
+                onClick={() => onModeChange(m)}
+                aria-label={`Switch to ${m} mode`}
+              >
+                {m === 'light' && <Sun size={20} />}
+                {m === 'system' && <Monitor size={20} />}
+                {m === 'dark' && <Moon size={20} />}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </header>
   )
 }

@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { Calendar, Clock, FileText } from 'lucide-react'
-import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Card } from '../ui/Card'
 import { estimateReadingTime, countWords } from '../../utils/readingTime'
@@ -28,19 +27,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
   const words = countWords(post.content)
 
   return (
-    <motion.div
-      layout
-      key={post.id}
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{
-        type: 'spring',
-        stiffness: 500,
-        damping: 30,
-        opacity: { duration: 0.2 },
-      }}
-    >
+    <div key={post.id} className="animate-in fade-in duration-200">
       <Card className="group block w-full transition-transform hover:-translate-y-1 hover:shadow-md">
         <article>
           <div className="mb-2 flex flex-col gap-2 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between dark:text-slate-400">
@@ -111,6 +98,6 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
           </div>
         </article>
       </Card>
-    </motion.div>
+    </div>
   )
 }

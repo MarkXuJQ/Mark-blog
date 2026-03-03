@@ -1,6 +1,6 @@
 import { Trans, useTranslation } from 'react-i18next'
-import { LuGithub } from 'react-icons/lu'
-import { RiBilibiliLine, RiTwitterXFill, RiInstagramLine } from 'react-icons/ri'
+import { LuGithub } from "react-icons/lu";
+import { RiBilibiliLine, RiTwitterXFill, RiInstagramLine } from "react-icons/ri";
 import { RiRssLine } from 'react-icons/ri'
 
 export function Footer() {

@@ -20,6 +20,7 @@
   },
   "blog": {
     "title": "Mark Xu's Blog",
+    "description": "A collection of notes on technology, life, and projects from Mark Xu.",
     "readMore": "Read More",
     "publishedOn": "Published on",
     "back": "Back to Blog",
@@ -85,7 +86,8 @@
     "futureContent": "I will start recording my life and continuously share my experiences and daily routines."
   },
   "comments": {
-    "title": "Comments"
+    "title": "Leave a Comment!",
+    "loading": "Loading comments..."
   },
   "footer": {
     "copyright": "© {{year}} Mark Xu. All rights reserved.",

@@ -2,17 +2,49 @@ import { useTranslation, Trans } from 'react-i18next'
 import { cn } from '../utils/cn'
 import { getImageUrl } from '../utils/image'
 import { Seo } from '../components/seo/Seo'
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_TITLE,
+  getSiteUrl,
+  toAbsoluteUrl,
+  type JsonLd,
+} from '../components/seo/shared'
 
 export function Home() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const siteUrl = getSiteUrl()
+  const language = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
+  const webSiteSchema: JsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: DEFAULT_TITLE,
+    alternateName: "Mark's House",
+    url: siteUrl,
+    description: DEFAULT_DESCRIPTION,
+    inLanguage: language,
+    publisher: {
+      '@type': 'Person',
+      name: 'Mark Xu',
+      url: siteUrl,
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: toAbsoluteUrl('/blog?q={search_term_string}', siteUrl),
+      'query-input': 'required name=search_term_string',
+    },
+  }
 
   return (
     <div className={styles.container}>
-      <Seo />
+      <Seo jsonLd={webSiteSchema} />
       <div className={styles.avatarContainer}>
         <img
           src={getImageUrl('/images/IMG_1766.JPG')}
           alt="Mark's Blog Logo"
+          width={160}
+          height={160}
+          decoding="async"
+          fetchPriority="high"
           className={styles.avatar}
         />
       </div>
