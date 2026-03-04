@@ -45,7 +45,8 @@ async function prerender() {
 
   // 1. Start Vite Preview Server
   // Use npx to avoid shell: true if possible, or use shell: true but handle kill better
-  const server = spawn('npx', ['vite', 'preview', '--port', PORT.toString()], {
+  const npxCommand = process.platform === 'win32' ? 'npx.cmd' : 'npx'
+  const server = spawn(npxCommand, ['vite', 'preview', '--port', PORT.toString()], {
     cwd: path.resolve(__dirname, '..'),
     stdio: 'inherit',
     // shell: true // Removed shell: true to avoid process group killing issues
