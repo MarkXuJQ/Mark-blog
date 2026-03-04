@@ -54,7 +54,7 @@
         },
         {
           "key": "Content-Type",
-          "value": "application/atom+xml; charset=utf-8"
+          "value": "application/xml; charset=utf-8"
         }
       ]
     },
