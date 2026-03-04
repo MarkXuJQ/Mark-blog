@@ -48,7 +48,7 @@ export function Footer() {
             <RiInstagramLine size={20} />
           </a>
           <a
-            href="/feeds/atom.xml"
+            href="/feeds/"
             target="_blank"
             rel="noopener noreferrer"
             className="transition-colors hover:text-slate-900 dark:hover:text-slate-200"

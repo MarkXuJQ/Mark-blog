@@ -74,6 +74,14 @@
   ],
   "rewrites": [
     {
+      "source": "/feeds",
+      "destination": "/feeds/index.html"
+    },
+    {
+      "source": "/feeds/",
+      "destination": "/feeds/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

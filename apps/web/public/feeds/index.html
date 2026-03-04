@@ -1,49 +1,114 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mark's Atom Feed</title>
+    <title>Mark的自留地 - RSS Feed</title>
     <style>
-      :root { color-scheme: light dark; }
-      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f8fafc; color: #0f172a; }
-      .container { max-width: 860px; margin: 0 auto; padding: 32px 16px 48px; }
-      .header { background: #fff; border-radius: 16px; box-shadow: 0 10px 25px rgba(2, 6, 23, 0.08); padding: 24px; margin-bottom: 20px; }
-      .header h1 { margin: 0 0 8px; font-size: 28px; }
-      .header p { margin: 0; color: #475569; line-height: 1.6; }
-      .actions { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
-      .btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; border-radius: 999px; padding: 8px 14px; font-weight: 600; font-size: 14px; }
-      .btn-primary { background: #0f172a; color: #fff; }
-      .btn-secondary { background: #e2e8f0; color: #0f172a; }
-      .list { display: grid; gap: 14px; }
-      .card { background: #fff; border-radius: 16px; box-shadow: 0 6px 18px rgba(2, 6, 23, 0.08); overflow: hidden; }
-      .cover { width: 100%; height: 220px; object-fit: cover; display: block; background: #e2e8f0; }
-      .body { padding: 16px; }
-      .body h2 { margin: 0 0 8px; font-size: 20px; }
-      .body p { margin: 0 0 12px; color: #334155; line-height: 1.7; }
-      .meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: #64748b; font-size: 13px; }
-      .meta a { color: #0f172a; text-decoration: none; font-weight: 600; }
-      @media (prefers-color-scheme: dark) {
-        body { background: #020617; color: #e2e8f0; }
-        .header, .card { background: #0f172a; box-shadow: none; border: 1px solid #1e293b; }
-        .header p, .body p { color: #cbd5e1; }
-        .btn-primary { background: #e2e8f0; color: #0f172a; }
-        .btn-secondary { background: #1e293b; color: #e2e8f0; }
-        .meta, .meta a { color: #cbd5e1; }
+      :root {
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --text-main: #1e293b;
+        --text-sub: #64748b;
+        --accent: #3b82f6;
+        --border: #e2e8f0;
       }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg-color: #0f172a;
+          --card-bg: #1e293b;
+          --text-main: #f1f5f9;
+          --text-sub: #94a3b8;
+          --accent: #60a5fa;
+          --border: #334155;
+        }
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        margin: 0;
+        padding: 2rem 1rem;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      h1 { margin: 0 0 0.5rem 0; font-size: 2rem; }
+      .desc { color: var(--text-sub); margin-bottom: 1.5rem; }
+      .subscribe-box {
+        background: var(--bg-color);
+        padding: 1rem;
+        border-radius: 8px;
+        display: inline-flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        border: 1px solid var(--border);
+      }
+      .copy-area {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        background: var(--card-bg);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        font-family: monospace;
+        user-select: all;
+      }
+      .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border);
+        transition: transform 0.2s;
+      }
+      .card:hover { transform: translateY(-2px); }
+      @media (min-width: 640px) {
+        .card { flex-direction: row; height: 220px; }
+        .cover { width: 280px; height: 100%; object-fit: cover; }
+        .body { flex: 1; padding: 1.5rem; display: flex; flex-direction: column; }
+      }
+      @media (max-width: 639px) {
+        .cover { width: 100%; height: 200px; object-fit: cover; }
+        .body { padding: 1.5rem; }
+      }
+      h2 { margin: 0 0 0.5rem 0; font-size: 1.35rem; }
+      p { color: var(--text-sub); font-size: 0.95rem; margin: 0 0 1rem 0; flex: 1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+      .meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; margin-top: auto; }
+      time { color: var(--text-sub); }
+      a { color: var(--accent); text-decoration: none; font-weight: 500; }
+      a:hover { text-decoration: underline; }
     </style>
   </head>
   <body>
-    <main class="container">
-      <section class="header">
-        <h1>Mark's Atom Feed</h1>
-        <p>This page is a stable browser view for the feed. Feed readers should subscribe to the XML endpoint.</p>
-        <div class="actions">
-          <a class="btn btn-primary" href="/feeds/atom.xml" target="_blank" rel="noopener noreferrer">Open Atom XML</a>
-          <a class="btn btn-secondary" href="/">Back Home</a>
+    <div class="container">
+      <header>
+        <h1>Mark的自留地</h1>
+        <div class="desc">这里是 Mark Xu 的个人网站，记录技术与生活。</div>
+        <div class="subscribe-box">
+          <span>👇 复制下面的链接到您的 RSS 阅读器中订阅：</span>
+          <div class="copy-area">
+            https://markxu.icu/feeds/atom.xml
+          </div>
         </div>
-      </section>
-      <section class="list">
+      </header>
+      <main>
+        
         <article class="card">
           <img class="cover" src="https://img.markxu.icu/imgRedNoteGuide.jpg" alt="广州游记" loading="lazy" />
           <div class="body">
@@ -68,7 +133,8 @@
             </div>
           </div>
         </article>
-      </section>
-    </main>
+      
+      </main>
+    </div>
   </body>
 </html>

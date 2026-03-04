@@ -75,6 +75,155 @@ posts.sort((a, b) => b.date.getTime() - a.date.getTime())
 
 console.log(`Found ${posts.length} posts.`)
 
+function renderFeedViewPage(feedPosts) {
+  const escapeHtml = (value) =>
+    value
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;')
+
+  const cards = feedPosts
+    .map((post) => {
+      const title = escapeHtml(post.title)
+      const summary = escapeHtml(post.description || '暂无摘要')
+      const date = post.date.toISOString().slice(0, 10)
+      const href = `${DOMAIN}/blog/${encodeURIComponent(post.slug)}`
+      const cover = post.image?.url
+      return `
+        <article class="card">
+          ${cover ? `<img class="cover" src="${cover}" alt="${title}" loading="lazy" />` : ''}
+          <div class="body">
+            <h2>${title}</h2>
+            <p>${summary}</p>
+            <div class="meta">
+              <time datetime="${post.date.toISOString()}">${date}</time>
+              <a href="${href}" target="_blank" rel="noopener noreferrer">Read full article</a>
+            </div>
+          </div>
+        </article>
+      `
+    })
+    .join('\n')
+
+  return `<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mark的自留地 - RSS Feed</title>
+    <style>
+      :root {
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --text-main: #1e293b;
+        --text-sub: #64748b;
+        --accent: #3b82f6;
+        --border: #e2e8f0;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg-color: #0f172a;
+          --card-bg: #1e293b;
+          --text-main: #f1f5f9;
+          --text-sub: #94a3b8;
+          --accent: #60a5fa;
+          --border: #334155;
+        }
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        margin: 0;
+        padding: 2rem 1rem;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      h1 { margin: 0 0 0.5rem 0; font-size: 2rem; }
+      .desc { color: var(--text-sub); margin-bottom: 1.5rem; }
+      .subscribe-box {
+        background: var(--bg-color);
+        padding: 1rem;
+        border-radius: 8px;
+        display: inline-flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        border: 1px solid var(--border);
+      }
+      .copy-area {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        background: var(--card-bg);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        font-family: monospace;
+        user-select: all;
+      }
+      .card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border);
+        transition: transform 0.2s;
+      }
+      .card:hover { transform: translateY(-2px); }
+      @media (min-width: 640px) {
+        .card { flex-direction: row; height: 220px; }
+        .cover { width: 280px; height: 100%; object-fit: cover; }
+        .body { flex: 1; padding: 1.5rem; display: flex; flex-direction: column; }
+      }
+      @media (max-width: 639px) {
+        .cover { width: 100%; height: 200px; object-fit: cover; }
+        .body { padding: 1.5rem; }
+      }
+      h2 { margin: 0 0 0.5rem 0; font-size: 1.35rem; }
+      p { color: var(--text-sub); font-size: 0.95rem; margin: 0 0 1rem 0; flex: 1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+      .meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; margin-top: auto; }
+      time { color: var(--text-sub); }
+      a { color: var(--accent); text-decoration: none; font-weight: 500; }
+      a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Mark的自留地</h1>
+        <div class="desc">这里是 Mark Xu 的个人网站，记录技术与生活。</div>
+        <div class="subscribe-box">
+          <span>👇 复制下面的链接到您的 RSS 阅读器中订阅：</span>
+          <div class="copy-area">
+            ${DOMAIN}/feeds/atom.xml
+          </div>
+        </div>
+      </header>
+      <main>
+        ${cards}
+      </main>
+    </div>
+  </body>
+</html>`
+}
+
 const feed = new Feed({
   title: 'Mark的自留地',
   description: '这里是 Mark Xu 的个人网站，记录技术与生活。',
@@ -129,6 +278,11 @@ atomContent = atomContent.replace(
 fs.writeFileSync(atomPath, atomContent)
 console.log(`Atom generated at ${atomPath}`)
 
+const feedViewPath = path.join(FEEDS_DIR, 'index.html')
+const feedViewContent = renderFeedViewPage(posts)
+fs.writeFileSync(feedViewPath, feedViewContent)
+console.log(`Feed view generated at ${feedViewPath}`)
+
 if (fs.existsSync(DIST_DIR)) {
   if (!fs.existsSync(DIST_FEEDS_DIR)) {
     fs.mkdirSync(DIST_FEEDS_DIR, { recursive: true })
@@ -136,6 +290,10 @@ if (fs.existsSync(DIST_DIR)) {
   const distAtomPath = path.join(DIST_FEEDS_DIR, 'atom.xml')
   fs.writeFileSync(distAtomPath, atomContent)
   console.log(`Atom copied to ${distAtomPath}`)
+
+  const distFeedViewPath = path.join(DIST_FEEDS_DIR, 'index.html')
+  fs.writeFileSync(distFeedViewPath, feedViewContent)
+  console.log(`Feed view copied to ${distFeedViewPath}`)
 
   const atomXslPath = path.join(FEEDS_DIR, 'atom.xsl')
   if (fs.existsSync(atomXslPath)) {
