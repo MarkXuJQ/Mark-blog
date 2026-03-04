@@ -136,4 +136,11 @@ if (fs.existsSync(DIST_DIR)) {
   const distAtomPath = path.join(DIST_FEEDS_DIR, 'atom.xml')
   fs.writeFileSync(distAtomPath, atomContent)
   console.log(`Atom copied to ${distAtomPath}`)
+
+  const atomXslPath = path.join(FEEDS_DIR, 'atom.xsl')
+  if (fs.existsSync(atomXslPath)) {
+    const distAtomXslPath = path.join(DIST_FEEDS_DIR, 'atom.xsl')
+    fs.copyFileSync(atomXslPath, distAtomXslPath)
+    console.log(`Atom XSL copied to ${distAtomXslPath}`)
+  }
 }
