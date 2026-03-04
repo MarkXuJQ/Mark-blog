@@ -41,6 +41,7 @@ export function Copyright({ url }: CopyrightProps) {
                   href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="CC BY-NC-SA 4.0"
                   className="text-blue-600 hover:underline dark:text-blue-400"
                 />
               ]}

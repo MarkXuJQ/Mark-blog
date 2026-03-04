@@ -5,4 +5,11 @@ export default [
   {
     ignores: ['dist/**'],
   },
+  {
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
+  },
 ]
