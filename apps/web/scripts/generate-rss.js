@@ -124,7 +124,7 @@ const atomPath = path.join(FEEDS_DIR, 'atom.xml')
 let atomContent = feed.atom1()
 atomContent = atomContent.replace(
   '<?xml version="1.0" encoding="utf-8"?>',
-  '<?xml version="1.0" encoding="utf-8"?>\n<?xml-stylesheet type="text/xsl" href="/feeds/atom.xsl"?>'
+  '<?xml version="1.0" encoding="utf-8"?>\n<?xml-stylesheet type="application/xml" href="/feeds/atom.xsl"?>'
 )
 fs.writeFileSync(atomPath, atomContent)
 console.log(`Atom generated at ${atomPath}`)
