@@ -7,11 +7,11 @@
 
 **Desktop**
 
-![Desktop PageSpeed](https://pagespeed-insights.herokuapp.com?url=https://markxu.icu&theme=dark&strategy=desktop&categories=performance,accessibility,best-practices,seo)
+![Desktop PageSpeed](./badges/pagespeed-desktop.svg)
 
 **Mobile**
 
-![Mobile PageSpeed](https://pagespeed-insights.herokuapp.com?url=https://markxu.icu&theme=dark&strategy=mobile&categories=performance,accessibility,best-practices,seo)
+![Mobile PageSpeed](./badges/pagespeed-mobile.svg)
 
 ## Roadmap
 
