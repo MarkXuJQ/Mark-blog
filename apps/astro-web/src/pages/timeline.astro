@@ -1,0 +1,26 @@
+---
+import { getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import { useTranslations } from '../utils/i18n';
+import { TimelineList } from '../components/timeline/TimelineList';
+
+const t = useTranslations('zh');
+
+// Fetch the timeline entry for Chinese
+const zhTimeline = await getEntry('timeline', 'zh');
+const events = zhTimeline?.data || [];
+---
+
+<Layout title={`${t('nav.timeline')} - Mark's Backyard`}>
+	<div class="mx-auto flex w-full max-w-[1400px] justify-center px-4 py-12 md:py-20">
+		<div class="w-full max-w-3xl space-y-8">
+			<div class="flex items-center justify-between">
+				<h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">
+					{t('nav.timeline')}
+				</h1>
+			</div>
+
+			<TimelineList client:load events={events} />
+		</div>
+	</div>
+</Layout>

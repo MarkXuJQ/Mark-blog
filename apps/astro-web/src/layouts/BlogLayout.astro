@@ -1,0 +1,126 @@
+---
+import Layout from './Layout.astro';
+import { LeftSidebarWidget, StatsWidget } from '../components/blog/BlogWidgets';
+import { TocList } from '../components/blog/TocList';
+import { Card } from '../components/ui/Card';
+import { DraggableBackToTop } from '../components/ui/DraggableBackToTop';
+import { Footer } from '../components/layout/Footer';
+import { ArrowUpCircle, MessageSquareText } from 'lucide-react';
+import { cn } from '../utils/cn';
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+	type?: 'website' | 'article';
+	posts?: any[]; // For StatsWidget
+	toc?: Array<{ id: string; text: string; level: number }>;
+}
+
+const { title, description, image, type, posts, toc } = Astro.props;
+
+const isBlogList = Astro.url.pathname === '/blog' || Astro.url.pathname === '/blog/';
+const isArchive = Astro.url.pathname === '/archive' || Astro.url.pathname === '/archive/';
+const isBlogPost = Astro.url.pathname.startsWith('/blog/') && !isBlogList && !isArchive;
+
+const topClass = 'top-[86px]';
+
+const styles = {
+	container: 'mx-auto w-full max-w-[1400px] px-4 flex flex-col flex-1',
+	layoutGrid: cn(
+		'grid grid-cols-1 gap-8 lg:grid-cols-[260px_1fr]',
+		!isArchive && 'lg:grid-cols-[260px_1fr_260px]'
+	),
+	leftSidebar: 'hidden lg:block',
+	rightSidebar: 'hidden lg:block',
+	mainContent: 'flex min-w-0 flex-1 flex-col',
+	stickyWrapper: 'sticky self-start transition-all duration-300',
+	tocCard: 'p-6 transition-all hover:shadow-md',
+	tocHeader: 'mb-4 flex items-center justify-between text-lg font-bold text-slate-800 dark:text-slate-100',
+	tocActions: 'flex items-center gap-2',
+	tocActionLink: 'text-slate-400 transition-colors hover:text-blue-500 dark:text-slate-500 dark:hover:text-blue-400',
+	tocBody: 'max-h-[calc(100vh-250px)] overflow-y-auto pr-2 custom-scrollbar',
+	tocList: 'space-y-1',
+	tocItem: 'text-sm text-slate-500 italic',
+};
+---
+
+<Layout title={title} description={description} image={image} type={type} showFooter={false}>
+	<div class={styles.container}>
+		<span id="page-top"></span>
+		<div class={styles.layoutGrid}>
+			{/* Left Sidebar */}
+			<aside class={styles.leftSidebar}>
+				<div class={cn(styles.stickyWrapper, topClass)}>
+					<LeftSidebarWidget client:load />
+				</div>
+			</aside>
+
+			{/* Main Content */}
+			<main id="main-content" class={styles.mainContent}>
+				<slot />
+				<div class="relative z-20 mt-auto w-full px-4 pt-8 pb-8">
+					<Footer client:load />
+				</div>
+			</main>
+
+			{/* Right Sidebar */}
+			{!isArchive && (
+				<aside class={styles.rightSidebar}>
+					<div class={cn(styles.stickyWrapper, topClass)}>
+						{isBlogList && posts && <StatsWidget client:load posts={posts} />}
+						{isBlogPost && (
+							<Card className={styles.tocCard}>
+								<div class={styles.tocHeader}>
+									<span>目录</span>
+									<div class={styles.tocActions}>
+										<a
+											href="#page-top"
+											aria-label="返回开头"
+											class={styles.tocActionLink}
+										>
+											<ArrowUpCircle size={18} />
+										</a>
+										<a
+											href="#twikoo"
+											aria-label="评论区"
+											class={styles.tocActionLink}
+										>
+											<MessageSquareText size={18} />
+										</a>
+									</div>
+								</div>
+								<div class={styles.tocBody}>
+									<div class={styles.tocList}>
+										{!toc || toc.length === 0 ? (
+											<div class={styles.tocItem}>暂无标题</div>
+										) : (
+											<TocList client:load toc={toc} activeId="" />
+										)}
+									</div>
+								</div>
+							</Card>
+						)}
+					</div>
+				</aside>
+			)}
+		</div>
+		<DraggableBackToTop client:load />
+	</div>
+</Layout>
+
+<style is:global>
+	.custom-scrollbar::-webkit-scrollbar {
+		width: 4px;
+	}
+	.custom-scrollbar::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.custom-scrollbar::-webkit-scrollbar-thumb {
+		background: rgb(226, 232, 240);
+		border-radius: 10px;
+	}
+	.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+		background: rgb(30, 41, 59);
+	}
+</style>

@@ -1,0 +1,144 @@
+---
+import '../styles/global.css';
+import { NavBar } from '../components/layout/NavBar';
+import { Footer } from '../components/layout/Footer';
+import { ThemeToggle } from '../components/ui/ThemeToggle';
+import Seo from '../components/seo/Seo.astro';
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+	type?: 'website' | 'article';
+	noindex?: boolean;
+	publishedTime?: string;
+	modifiedTime?: string;
+	jsonLd?: any;
+	showFooter?: boolean;
+}
+
+const { 
+	title, 
+	description, 
+	image, 
+	type, 
+	noindex, 
+	publishedTime, 
+	modifiedTime, 
+	jsonLd,
+	showFooter = true
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<link
+			rel="alternate"
+			type="application/rss+xml"
+			title="RSS Feed"
+			href="/rss.xml"
+		/>
+		<link rel="preconnect" href="https://img.markxu.icu" crossorigin />
+		<link rel="dns-prefetch" href="//img.markxu.icu" />
+		<link rel="dns-prefetch" href="//s0.wp.com" />
+		<meta name="generator" content={Astro.generator} />
+		<Seo 
+			title={title} 
+			description={description} 
+			image={image} 
+			type={type} 
+			noindex={noindex} 
+			publishedTime={publishedTime} 
+			modifiedTime={modifiedTime} 
+			jsonLd={jsonLd} 
+		/>
+		<script is:inline>
+			const setTheme = () => {
+				try {
+					const mode = localStorage.getItem('theme-mode') || 'system';
+					const root = document.documentElement;
+					root.classList.remove('light', 'dark');
+					
+					if (mode === 'system') {
+						const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+							? 'dark'
+							: 'light';
+						root.classList.add(systemTheme);
+					} else {
+						root.classList.add(mode);
+					}
+				} catch (e) {
+					console.error('Failed to set theme:', e);
+				}
+			};
+
+			setTheme();
+
+			// Listen for storage changes (e.g. from other tabs)
+			window.addEventListener('storage', (e) => {
+				if (e.key === 'theme-mode') setTheme();
+			});
+
+			// Listen for system theme changes
+			window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+				try {
+					if (localStorage.getItem('theme-mode') === 'system' || !localStorage.getItem('theme-mode')) {
+						setTheme();
+					}
+				} catch (e) {}
+			});
+		</script>
+	</head>
+	<body class="bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
+		<div class="flex min-h-screen w-full flex-col">
+			{/* Sticky NavBar Container */}
+			<div id="navbar-container" class="sticky top-6 z-50 w-full pointer-events-none mb-8 transition-transform duration-300">
+				<div class="mx-auto w-full pointer-events-auto max-w-[640px] md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px] px-4">
+					<NavBar client:load />
+				</div>
+			</div>
+
+			<script is:inline>
+				let lastScrollY = window.scrollY;
+				const navbarContainer = document.getElementById('navbar-container');
+				const threshold = 10;
+
+				window.addEventListener('scroll', () => {
+					const currentScrollY = window.scrollY;
+					if (currentScrollY < threshold) {
+						navbarContainer.style.transform = 'translateY(0)';
+					} else if (currentScrollY > lastScrollY) {
+						// Scrolling down
+						navbarContainer.style.transform = 'translateY(-128px)';
+					} else {
+						// Scrolling up
+						navbarContainer.style.transform = 'translateY(0)';
+					}
+					lastScrollY = currentScrollY;
+				});
+			</script>
+
+			<main class="relative z-10 flex flex-1 flex-col">
+				<slot />
+				
+				{showFooter && (
+					<div class="mx-auto mt-auto w-full max-w-3xl px-4 pb-8 pt-8">
+						<Footer client:load />
+					</div>
+				)}
+			</main>
+
+			<ThemeToggle client:load />
+		</div>
+	</body>
+</html>
+
+<style is:global>
+	html {
+		font-family: system-ui, sans-serif;
+	}
+</style>

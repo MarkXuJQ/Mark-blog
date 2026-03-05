@@ -1,0 +1,114 @@
+export default {
+  "siteTitle": "Mark's Backyard",
+  "nav": {
+    "homepage": "Homepage",
+    "blog": "Blog",
+    "timeline": "Timeline",
+    "life": "Life",
+    "movies": "Movies",
+    "games": "Games",
+    "about": "About",
+    "others": "Others",
+    "links": "Links"
+  },
+  "home": {
+    "title": "Welcome to <0>Mark</0>'s Backyard",
+    "intro": "This is my personal space for technical thoughts, daily notes, and side projects.",
+    "description": "In the future you'll find: blog posts, life snippets, photos, and lists of movies & games I've enjoyed.",
+    "readingTime": "Reading time: {{minutes}} min",
+    "github": "My GitHub"
+  },
+  "blog": {
+    "title": "Mark Xu's Blog",
+    "description": "A collection of notes on technology, life, and projects from Mark Xu.",
+    "readMore": "Read More",
+    "publishedOn": "Published on",
+    "back": "Back to Blog",
+    "prevPost": "Previous Post",
+    "nextPost": "Next Post",
+    "readingTime": "Reading time: {{minutes}} min",
+    "wordCount": "{{count}} words",
+    "sidebar": {
+      "profile": {
+        "signature": "Gym? Just checked in! Resume? God mode editing!"
+      },
+      "search": {
+        "placeholder": "Search articles..."
+      },
+      "archive": {
+        "title": "Archives"
+      },
+      "stats": {
+        "title": "Site Stats",
+        "runningTime": "Running Time",
+        "articleCount": "Articles",
+        "lastUpdate": "Last Update",
+        "wordCount": "Total Words",
+        "days": "Days"
+      }
+    },
+    "filter": {
+      "allTags": "All Tags",
+      "allCategories": "All Categories"
+    },
+    "categories": {
+      "essay": "Life Notes",
+      "experience": "Experience",
+      "tech": "Tech Sharing",
+      "project": "Projects"
+    },
+    "sort": {
+      "created": "Date Created",
+      "updated": "Date Updated"
+    },
+    "search": {
+      "resultsFor": "Results for:",
+      "clear": "Clear Search",
+      "noResults": "No articles found"
+    },
+    "copyright": {
+      "author": "Author",
+      "link": "Link",
+      "license": "Copyright",
+      "statement": "All articles in this blog are licensed under <0>{{license}}</0> unless stating otherwise."
+    }
+  },
+  "underConstruction": {
+    "title": "Construction in Progress",
+    "description": "This section is still being built. Check back later!",
+    "backHome": "Back to Homepage"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you are looking for does not exist.",
+    "backHome": "Back to Homepage"
+  },
+  "movies": {
+    "description": "Tracking watchlist and short reviews."
+  },
+  "games": {
+    "description": "Recording gameplay logs and thoughts."
+  },
+  "life": {
+    "description": "Daily notes and photo albums."
+  },
+  "about": {
+    "title": "About Me",
+    "description": "This is the About page of Mark Xu's personal blog, recording the author's website building journey and self-introduction.",
+    "intro": "I am a student of the class of 2022 at Huaqiao University. I have wide-ranging interests, including movies, games, traveling, programming, and much more! I am curious about most things. If you have any recommendations, feel free to leave a comment below!",
+    "originTitle": "About This Website",
+    "originContent": "During my preparation for the 2026 postgraduate entrance exam (in 2025), I stumbled upon some personal blogs, such as <0>Zhilu's Blog</0>. They were exquisite, efficient, and written with such maturity that I was truly impressed ☺️. Through their blogroll, I discovered so many people recording their lives on their own websites. Thinking back on my own university days, I realized I also had much to share but nowhere to do so, which planted the seed for creating my own website.",
+    "techTitle": "Building Process",
+    "techContent": "During the winter break after the exam, I started researching how to build it. I learned about many existing frameworks for quick deployment. However, to apply the frontend knowledge I had learned and to learn more through this project, I quickly built a first version and sketched out the website (excuse my 'straight male aesthetic'). Later, by studying Zhilu's and other classmates' websites, and utilizing AI (AI is absolute amazing! What can I say?) along with my own knowledge, I quickly built this semi-finished small website. If any experts find any bugs or areas for improvement, please point them out!",
+    "futureContent": "In the future, I will start recording my life and continuously share my experiences and daily routine. I hope you like it!"
+  },
+  "comments": {
+    "title": "Leave a Comment!",
+    "loading": "Loading comments..."
+  },
+  "footer": {
+    "copyright": "© {{year}} Mark Xu. All rights reserved.",
+    "builtWith": "Built with React, Tailwind CSS & Vite",
+    "license": "All articles in this blog are licensed under <0>CC BY-NC-SA 4.0</0> unless stating otherwise."
+  }
+}

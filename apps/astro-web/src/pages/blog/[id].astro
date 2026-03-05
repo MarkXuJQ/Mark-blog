@@ -1,0 +1,59 @@
+---
+import { getCollection, render } from 'astro:content';
+import BlogLayout from '../../layouts/BlogLayout.astro';
+import { DeferredComments } from '../../components/comments/DeferredComments';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('posts');
+	return posts.map((post) => ({
+		params: { id: post.id },
+		props: { post },
+	}));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+const toc = headings.map(h => ({
+	id: h.slug,
+	text: h.text,
+	level: h.depth
+}));
+---
+
+<BlogLayout 
+	title={post.data.title} 
+	description={post.data.summary} 
+	type="article"
+	toc={toc}
+>
+	<div class="w-full px-4 py-8">
+		<article class="prose prose-slate dark:prose-invert max-w-none">
+			<header class="mb-10">
+				<h1 class="mb-4 text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+					{post.data.title}
+				</h1>
+				<div class="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+					<time datetime={post.data.date}>
+						{new Date(post.data.date).toLocaleDateString('zh-CN', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric',
+						})}
+					</time>
+					{post.data.category && (
+						<span class="rounded-full bg-slate-100 px-2 py-0.5 dark:bg-slate-800">
+							{post.data.category}
+						</span>
+					)}
+				</div>
+			</header>
+			
+			<Content />
+		</article>
+
+		<div class="mt-16 border-t border-slate-200 pt-8 dark:border-slate-800">
+			<DeferredComments client:visible />
+		</div>
+	</div>
+</BlogLayout>

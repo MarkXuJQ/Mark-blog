@@ -1,0 +1,152 @@
+---
+import { getCollection } from 'astro:content';
+import BlogLayout from '../layouts/BlogLayout.astro';
+import { useTranslations } from '../utils/i18n';
+import { Layers, Calendar } from 'lucide-react';
+import { cn } from '../utils/cn';
+import type { BlogPost } from '../types';
+
+const t = useTranslations('zh');
+const posts = (await getCollection('posts')).sort(
+	(a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
+);
+
+// Map Astro content to our BlogPost type for StatsWidget
+const allPosts: BlogPost[] = posts.map(post => ({
+	id: post.id,
+	slug: post.id,
+	title: post.data.title,
+	date: post.data.date,
+	updated: post.data.updated,
+	summary: post.data.summary || '',
+	content: post.body || '',
+	tags: post.data.tags,
+	category: post.data.category,
+}));
+
+// Group posts by year
+const postsByYear = posts.reduce(
+	(acc, post) => {
+		const year = new Date(post.data.date).getFullYear();
+		if (!acc[year]) {
+			acc[year] = [];
+		}
+		acc[year].push(post);
+		return acc;
+	},
+	{} as Record<number, any[]>
+);
+
+// Sort years descending
+const years = Object.keys(postsByYear)
+	.map(Number)
+	.sort((a, b) => b - a);
+
+const styles = {
+	container: 'mx-auto max-w-5xl px-4 py-12 md:py-20 w-full flex flex-col',
+	header: 'mb-16 flex flex-col items-start gap-3 border-b border-slate-200 pb-4 dark:border-slate-800 w-full',
+	headerIcon: 'h-8 w-8 text-blue-500',
+	title: 'text-3xl font-bold text-slate-900 dark:text-slate-100',
+	timelineWrapper: 'relative space-y-20 before:absolute before:left-4 before:top-4 before:h-[calc(100%-16px)] before:w-0.5 before:bg-slate-100 dark:before:bg-slate-800 md:before:left-1/2 md:before:-translate-x-1/2',
+	yearSection: 'relative',
+	yearHeader: 'relative z-10 mb-12 flex items-center md:justify-center',
+	yearTitle: 'flex items-baseline gap-4 text-4xl font-black text-slate-200 dark:text-slate-700 md:text-6xl bg-slate-50 dark:bg-slate-950 px-6 py-2 transition-colors',
+	postCount: 'text-sm font-normal text-slate-500',
+	postsList: 'space-y-12 md:space-y-0',
+	postItem: (index: number) => cn(
+		'relative flex w-full items-center mb-12 last:mb-0',
+		index % 2 === 0 ? 'md:justify-start' : 'md:justify-end'
+	),
+	timelineDot: 'absolute left-4 top-1.5 z-20 h-4 w-4 -translate-x-1/2 rounded-full border-2 border-white bg-blue-500 shadow-[0_0_0_4px_rgba(59,130,246,0.1)] dark:border-slate-950 dark:bg-blue-600 md:left-1/2 md:top-1/2 md:-translate-y-1/2',
+	postContent: (index: number) => cn(
+		'flex w-full flex-col gap-1 pl-12 text-left group relative md:w-[45%] md:pl-0',
+		index % 2 === 0 ? 'md:text-right md:pr-12' : 'md:text-left md:pl-12'
+	),
+	postMeta: (index: number) => cn(
+		'flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400',
+		index % 2 === 0 ? 'md:justify-end' : 'md:justify-start'
+	),
+	postHeader: (index: number) => cn(
+		'flex flex-col gap-1',
+		index % 2 === 0 ? 'md:items-end' : 'md:items-start'
+	),
+	postTitle: 'text-lg font-bold text-slate-800 transition-colors group-hover:text-blue-500 dark:text-slate-200 dark:group-hover:text-blue-400',
+	postLink: 'relative z-10 focus:outline-none',
+	tagList: (index: number) => cn(
+		'z-10 flex flex-wrap gap-2 mt-2',
+		index % 2 === 0 ? 'md:justify-end' : 'md:justify-start'
+	)
+};
+---
+
+<BlogLayout title={`${t('blog.sidebar.archive.title')} - Mark's Backyard`} posts={allPosts}>
+	<div class={styles.container}>
+		<div class={styles.header}>
+			<Layers className={styles.headerIcon} />
+			<h1 class={styles.title}>{t('blog.sidebar.archive.title')}</h1>
+		</div>
+
+		<div class={styles.timelineWrapper}>
+			{years.map((year) => (
+				<section class={styles.yearSection}>
+					<div class={styles.yearHeader}>
+						<h2 class={styles.yearTitle}>
+							{year}
+							<span class={styles.postCount}>
+								{postsByYear[year].length}{' '}
+								{t('blog.sidebar.stats.articleCount')}
+							</span>
+						</h2>
+					</div>
+
+					<div class={styles.postsList}>
+						{postsByYear[year].map((post, index) => (
+							<div class={styles.postItem(index)}>
+								{/* Timeline Dot */}
+								<div class={styles.timelineDot} />
+
+								<article class={styles.postContent(index)}>
+									<div class={styles.postMeta(index)}>
+										<Calendar size={14} />
+										<time datetime={post.data.date}>
+											{new Date(post.data.date).toLocaleDateString('zh-CN', {
+												month: 'short',
+												day: 'numeric',
+											})}
+										</time>
+									</div>
+
+									<div class={styles.postHeader(index)}>
+										<h3 class={styles.postTitle}>
+											<a
+												href={`/blog/${post.id}`}
+												class={styles.postLink}
+											>
+												<span
+													class="absolute inset-0"
+													aria-hidden="true"
+												/>
+												{post.data.title}
+											</a>
+										</h3>
+										{post.data.tags && post.data.tags.length > 0 && (
+											<div class={styles.tagList(index)}>
+												{post.data.tags.map((tag: string) => (
+													<span
+														class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+													>
+														#{tag}
+													</span>
+												))}
+											</div>
+										)}
+									</div>
+								</article>
+							</div>
+						))}
+					</div>
+				</section>
+			))}
+		</div>
+	</div>
+</BlogLayout>

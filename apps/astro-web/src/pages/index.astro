@@ -1,0 +1,55 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { useTranslations } from '../utils/i18n';
+import { HomeBackground } from '../components/home/HomeBackground';
+
+const t = useTranslations('zh');
+
+// Extraction of styles to constants as in Home.tsx
+const styles = {
+  container: 'animate-in fade-in zoom-in-95 duration-1000',
+  avatarContainer: 'mb-8 flex justify-center',
+  avatar: 'h-40 w-40 rounded-full border-4 border-white/50 shadow-2xl transition-transform duration-500 hover:scale-105 hover:rotate-3 dark:border-slate-800/50',
+  title: 'mb-6 text-center text-4xl font-extrabold tracking-tight text-slate-900 drop-shadow-sm dark:text-white sm:text-6xl',
+  highlightText: 'inline-block cursor-pointer bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent transition-transform duration-300 hover:-translate-y-1 hover:scale-110 hover:rotate-3',
+  contentContainer: 'mx-auto max-w-2xl space-y-6 text-lg font-medium leading-relaxed px-4 sm:px-10 text-slate-800 drop-shadow-md dark:text-slate-100 text-center',
+  decorativeContainer: 'mt-12 flex justify-center gap-2 opacity-50',
+  dot: 'h-2 w-2 rounded-full bg-slate-400 dark:bg-slate-500',
+};
+
+const homeTitle = t('home.title');
+// Replace <0>...</0> with highlight span
+const titleParts = homeTitle.split(/<0>|<\/0>/);
+---
+
+<Layout title="Mark's Backyard">
+	<HomeBackground client:load />
+	<div class={styles.container}>
+		<div class={styles.avatarContainer}>
+			<img
+				src="/images/IMG_1766.JPG"
+				alt="Mark's Blog Logo"
+				width="160"
+				height="160"
+				class={styles.avatar}
+				loading="eager"
+				decoding="async"
+			/>
+		</div>
+
+		<h1 class={styles.title}>
+			{titleParts[0]}<span class={styles.highlightText}>{titleParts[1]}</span>{titleParts[2]}
+		</h1>
+
+		<div class={styles.contentContainer}>
+			<p>{t('home.intro')}</p>
+			<p>{t('home.description')}</p>
+		</div>
+
+		<div class={styles.decorativeContainer}>
+			<div class={styles.dot}></div>
+			<div class={styles.dot}></div>
+			<div class={styles.dot}></div>
+		</div>
+	</div>
+</Layout>
