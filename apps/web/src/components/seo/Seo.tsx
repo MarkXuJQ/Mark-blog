@@ -48,6 +48,46 @@ export function Seo({
   const structuredData = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []
   const siteTitle =
     title === DEFAULT_TITLE ? title : `${title} | ${DEFAULT_TITLE}`
+  const zhHref = (() => {
+    try {
+      const u = new URL(canonicalUrl)
+      u.searchParams.set('lng', 'zh')
+      return u.toString()
+    } catch {
+      return canonicalUrl
+    }
+  })()
+  const enHref = (() => {
+    try {
+      const u = new URL(canonicalUrl)
+      u.searchParams.set('lng', 'en')
+      return u.toString()
+    } catch {
+      return canonicalUrl
+    }
+  })()
+  const defaultSchemas = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: DEFAULT_TITLE,
+      url: siteUrl,
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'Mark Xu',
+      url: siteUrl,
+      logo: toAbsoluteUrl('/images/logo.png', siteUrl),
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ImageObject',
+      name: `${DEFAULT_TITLE} Logo`,
+      contentUrl: toAbsoluteUrl('/images/logo.png', siteUrl),
+    },
+  ]
+  const allSchemas = [...defaultSchemas, ...structuredData]
 
   return (
     <Helmet htmlAttributes={{ lang }}>
@@ -83,9 +123,12 @@ export function Seo({
 
       {/* Canonical URL */}
       <link rel="canonical" href={canonicalUrl} />
+      <link rel="alternate" hrefLang="zh-CN" href={zhHref} />
+      <link rel="alternate" hrefLang="en-US" href={enHref} />
+      <link rel="alternate" hrefLang="x-default" href={canonicalUrl} />
 
       {/* Structured Data */}
-      {structuredData.map((schema, index) => (
+      {allSchemas.map((schema, index) => (
         <script key={`ld-json-${index}`} type="application/ld+json">
           {JSON.stringify(schema)}
         </script>

@@ -83,6 +83,15 @@
     "description": "Sorry, the page you are looking for does not exist.",
     "backHome": "Back to Homepage"
   },
+  "movies": {
+    "description": "Tracking watchlist and short reviews."
+  },
+  "games": {
+    "description": "Recording gameplay logs and thoughts."
+  },
+  "life": {
+    "description": "Daily notes and photo albums."
+  },
   "about": {
     "title": "About Me",
     "description": "This is the About page of Mark Xu's personal blog, recording the author's website building journey and self-introduction.",
