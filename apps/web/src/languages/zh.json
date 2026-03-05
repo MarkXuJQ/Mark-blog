@@ -83,6 +83,15 @@
     "description": "抱歉，您访问的页面不存在。",
     "backHome": "返回主页"
   },
+  "movies": {
+    "description": "记录观影清单与简评。"
+  },
+  "games": {
+    "description": "记录游玩记录与感想。"
+  },
+  "life": {
+    "description": "记录日常与照片集。"
+  },
   "about": {
     "title": "关于我",
     "description": "这是Mark Xu的个人博客关于页面，记录了博主的建站历程和个人介绍。",
