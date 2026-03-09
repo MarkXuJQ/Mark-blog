@@ -51,6 +51,12 @@
         "days": "天"
       }
     },
+    "toc": {
+      "title": "目录",
+      "backToTop": "返回顶部",
+      "comments": "评论区",
+      "empty": "暂无标题"
+    },
     "filter": {
       "allTags": "全部标签",
       "allCategories": "全部分类"

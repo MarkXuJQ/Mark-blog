@@ -51,6 +51,12 @@
         "days": "Days"
       }
     },
+    "toc": {
+      "title": "Table of Contents",
+      "backToTop": "Back to Top",
+      "comments": "Comments",
+      "empty": "No Headings"
+    },
     "filter": {
       "allTags": "All Tags",
       "allCategories": "All Categories"
