@@ -4,7 +4,6 @@ import { getImageUrl } from '../utils/image'
 import { Seo } from '../components/seo/Seo'
 import {
   DEFAULT_DESCRIPTION,
-  DEFAULT_TITLE,
   getSiteUrl,
   toAbsoluteUrl,
   type JsonLd,
@@ -17,7 +16,7 @@ export function Home() {
   const webSiteSchema: JsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: DEFAULT_TITLE,
+    name: t('siteTitle'),
     alternateName: "Mark's Backyard",
     url: siteUrl,
     description: DEFAULT_DESCRIPTION,

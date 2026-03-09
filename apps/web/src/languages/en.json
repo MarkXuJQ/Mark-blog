@@ -11,6 +11,9 @@
     "others": "Others",
     "links": "Links"
   },
+  "timeline": {
+    "items": "items"
+  },
   "home": {
     "title": "Welcome to <0>Mark</0>'s Backyard",
     "intro": "This is my personal space for technical thoughts, daily notes, and side projects.",
@@ -23,6 +26,7 @@
     "description": "A collection of notes on technology, life, and projects from Mark Xu.",
     "readMore": "Read More",
     "publishedOn": "Published on",
+    "updatedOn": "Updated",
     "back": "Back to Blog",
     "prevPost": "Previous Post",
     "nextPost": "Next Post",
@@ -46,6 +50,12 @@
         "wordCount": "Total Words",
         "days": "Days"
       }
+    },
+    "toc": {
+      "title": "Table of Contents",
+      "backToTop": "Back to Top",
+      "comments": "Comments",
+      "empty": "No Headings"
     },
     "filter": {
       "allTags": "All Tags",

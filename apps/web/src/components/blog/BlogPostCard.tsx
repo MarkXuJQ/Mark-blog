@@ -43,7 +43,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
               )}
               {post.updated && post.updated !== post.date && (
                 <div className="flex items-center gap-1 text-slate-400">
-                  <span>(Updated: {post.updated})</span>
+                  <span>({t('blog.updatedOn')}: {post.updated})</span>
                 </div>
               )}
             </div>

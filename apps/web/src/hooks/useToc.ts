@@ -1,9 +1,16 @@
 import { useState, useEffect } from 'react'
 import { setupTocTree } from '../utils/toc'
 
-export function useToc(mainRef: React.RefObject<HTMLElement>, pathname: string) {
+export function useToc(
+  mainRef: React.RefObject<HTMLElement>,
+  pathname: string,
+  options: { trackActive?: boolean } = {}
+) {
+  const { trackActive = true } = options
   const isBlogPost = pathname.startsWith('/blog/')
-  const [toc, setToc] = useState<Array<{ id: string; text: string; level: number }>>([])
+  const [toc, setToc] = useState<
+    Array<{ id: string; text: string; level: number }>
+  >([])
   const [activeId, setActiveId] = useState<string>('')
 
   useEffect(() => {
@@ -17,7 +24,7 @@ export function useToc(mainRef: React.RefObject<HTMLElement>, pathname: string) 
         const { flat, destroy } = setupTocTree(
           mainRef.current,
           (id) => setActiveId(id),
-          { topOffset: 120 } // Adjusted offset for better experience
+          { topOffset: 120, trackActive } // Adjusted offset for better experience
         )
         setToc(flat)
         cleanup = destroy
@@ -26,12 +33,12 @@ export function useToc(mainRef: React.RefObject<HTMLElement>, pathname: string) 
       setToc([])
       setActiveId('')
     }
-    
+
     return () => {
       clearTimeout(timer)
       if (cleanup) cleanup()
     }
-  }, [pathname, mainRef, isBlogPost]) // Use pathname instead of isBlogPost to refresh on route change
+  }, [pathname, mainRef, isBlogPost, trackActive]) // Use pathname instead of isBlogPost to refresh on route change
 
   return { toc, activeId }
 }

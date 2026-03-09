@@ -75,7 +75,7 @@ export function Timeline() {
                           (acc, cat) => acc + cat.items.length,
                           0
                         )}{' '}
-                        items
+                        {t('timeline.items')}
                       </span>
                     )}
                     <div className={styles.expandIcon}>
@@ -157,7 +157,8 @@ const styles = {
   wrapper: 'w-full max-w-3xl space-y-8',
   header: 'flex items-center justify-between',
   title: 'text-3xl font-bold text-slate-900 dark:text-slate-100',
-  timeline: 'relative border-l-2 border-slate-200 pl-8 dark:border-slate-800 ml-4 sm:ml-0',
+  timeline:
+    'relative border-l-2 border-slate-200 pl-8 dark:border-slate-800 ml-4 sm:ml-0',
   eventWrapper: 'relative mb-8 last:mb-0',
 
   // Markers

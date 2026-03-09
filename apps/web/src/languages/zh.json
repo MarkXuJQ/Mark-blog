@@ -11,6 +11,9 @@
     "others": "其他入口",
     "links": "链接"
   },
+  "timeline": {
+    "items": "项"
+  },
   "home": {
     "title": "欢迎来到 <0>Mark</0> 的自留地",
     "intro": "这里是我的个人网站，用来记录技术思考、生活随笔和一些有趣的作品。",
@@ -23,6 +26,7 @@
     "description": "这里收录了 Mark Xu 关于技术、生活与项目的文章。",
     "readMore": "阅读全文",
     "publishedOn": "发布于",
+    "updatedOn": "更新于",
     "back": "返回文章列表",
     "prevPost": "上一篇",
     "nextPost": "下一篇",
@@ -46,6 +50,12 @@
         "wordCount": "全站字数",
         "days": "天"
       }
+    },
+    "toc": {
+      "title": "目录",
+      "backToTop": "返回顶部",
+      "comments": "评论区",
+      "empty": "暂无标题"
     },
     "filter": {
       "allTags": "全部标签",

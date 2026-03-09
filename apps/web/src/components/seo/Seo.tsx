@@ -5,7 +5,6 @@ import {
   DEFAULT_DESCRIPTION,
   DEFAULT_IMAGE,
   DEFAULT_KEYWORDS,
-  DEFAULT_TITLE,
   getSiteUrl,
   toAbsoluteUrl,
   type JsonLd,
@@ -25,7 +24,7 @@ interface SeoProps {
 }
 
 export function Seo({
-  title = DEFAULT_TITLE,
+  title,
   description = DEFAULT_DESCRIPTION,
   keywords = DEFAULT_KEYWORDS,
   image = DEFAULT_IMAGE,
@@ -37,8 +36,9 @@ export function Seo({
   jsonLd,
 }: SeoProps) {
   const location = useLocation()
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const siteUrl = getSiteUrl()
+  const siteName = t('siteTitle')
   const canonicalPath = url || location.pathname
   const canonicalUrl = toAbsoluteUrl(canonicalPath, siteUrl)
   const imageUrl = toAbsoluteUrl(image, siteUrl)
@@ -46,8 +46,13 @@ export function Seo({
   const locale = i18n.language?.startsWith('zh') ? 'zh_CN' : 'en_US'
   const alternateLocale = locale === 'zh_CN' ? 'en_US' : 'zh_CN'
   const structuredData = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []
-  const siteTitle =
-    title === DEFAULT_TITLE ? title : `${title} | ${DEFAULT_TITLE}`
+
+  // Logic:
+  // 1. If title is provided and not empty, combine it with siteName.
+  // 2. If title is missing, just use siteName.
+  // Note: We removed the DEFAULT_TITLE check because siteName is now dynamic (i18n).
+  const siteTitle = title ? `${title} | ${siteName}` : siteName
+
   const zhHref = (() => {
     try {
       const u = new URL(canonicalUrl)
@@ -70,7 +75,7 @@ export function Seo({
     {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      name: DEFAULT_TITLE,
+      name: siteName,
       url: siteUrl,
     },
     {
@@ -83,24 +88,27 @@ export function Seo({
     {
       '@context': 'https://schema.org',
       '@type': 'ImageObject',
-      name: `${DEFAULT_TITLE} Logo`,
+      name: `${siteName} Logo`,
       contentUrl: toAbsoluteUrl('/images/logo.png', siteUrl),
     },
   ]
   const allSchemas = [...defaultSchemas, ...structuredData]
 
   return (
-    <Helmet htmlAttributes={{ lang }}>
+    <Helmet htmlAttributes={{ lang }} key={i18n.language}>
       {/* Basic Meta Tags */}
       <title>{siteTitle}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
       <meta name="author" content="Mark Xu" />
-      <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+      <meta
+        name="robots"
+        content={noindex ? 'noindex, nofollow' : 'index, follow'}
+      />
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
-      <meta property="og:site_name" content={DEFAULT_TITLE} />
+      <meta property="og:site_name" content={siteName} />
       <meta property="og:locale" content={locale} />
       <meta property="og:locale:alternate" content={alternateLocale} />
       <meta property="og:url" content={canonicalUrl} />

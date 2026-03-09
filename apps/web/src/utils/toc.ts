@@ -5,6 +5,7 @@ type SetupTocOptions = {
   headingSelector?: string
   minLevel?: 1 | 2 | 3
   maxLevel?: 1 | 2 | 3
+  trackActive?: boolean
 }
 
 export function setupToc(
@@ -35,12 +36,15 @@ export function setupToc(
       if (!text) return null
       let id = h.id
       if (!id) {
-        const base = text
+        let base = text
           .toLowerCase()
           .replace(/\s+/g, '-')
-          .replace(/[^a-z0-9-]/g, '')
+          .replace(/[^\w\u4e00-\u9fa5-]/g, '')
           .replace(/-+/g, '-')
           .replace(/^-|-$/g, '')
+
+        if (!base) base = 'heading'
+
         const count = (usedIds[base] ?? -1) + 1
         usedIds[base] = count
         id = count === 0 ? base : `${base}-${count}`
@@ -87,16 +91,29 @@ export function setupToc(
   return { toc, destroy }
 }
 
-export type TocNode = { id: string; text: string; level: number; children: TocNode[] }
+export type TocNode = {
+  id: string
+  text: string
+  level: number
+  children: TocNode[]
+}
 
 export function setupTocTree(
   root: HTMLElement,
   onActiveChange: (id: string) => void,
   options: SetupTocOptions = {}
 ): { tree: TocNode[]; flat: TocItem[]; destroy: () => void } {
-  const { topOffset = 96, headingSelector = 'article h1, article h2, article h3', minLevel = 1, maxLevel = 3 } = options
+  const {
+    topOffset = 96,
+    headingSelector = 'article h1, article h2, article h3',
+    minLevel = 1,
+    maxLevel = 3,
+    trackActive = true,
+  } = options
 
-  const rawHeadings = Array.from(root.querySelectorAll<HTMLElement>(headingSelector))
+  const rawHeadings = Array.from(
+    root.querySelectorAll<HTMLElement>(headingSelector)
+  )
   const headings = rawHeadings.filter((h) => {
     const level = h.tagName === 'H1' ? 1 : h.tagName === 'H2' ? 2 : 3
     return level >= minLevel && level <= maxLevel
@@ -109,12 +126,15 @@ export function setupTocTree(
       if (!text) return null
       let id = h.id
       if (!id) {
-        const base = text
+        let base = text
           .toLowerCase()
           .replace(/\s+/g, '-')
-          .replace(/[^a-z0-9-]/g, '')
+          .replace(/[^\w\u4e00-\u9fa5-]/g, '')
           .replace(/-+/g, '-')
           .replace(/^-|-$/g, '')
+
+        if (!base) base = 'heading'
+
         const count = (usedIds[base] ?? -1) + 1
         usedIds[base] = count
         id = count === 0 ? base : `${base}-${count}`
@@ -140,36 +160,40 @@ export function setupTocTree(
     stack.push(node)
   }
 
-  let raf = 0
-  function detectActive() {
-    let activeId = flat[0]?.id || ''
-    for (let i = 0; i < headings.length; i++) {
-      const r = headings[i].getBoundingClientRect()
-      if (r.top - topOffset <= 0) {
-        activeId = headings[i].id
-      } else {
-        break
+  let destroy = () => {}
+
+  if (trackActive) {
+    let raf = 0
+    const detectActive = () => {
+      let activeId = flat[0]?.id || ''
+      for (let i = 0; i < headings.length; i++) {
+        const r = headings[i].getBoundingClientRect()
+        if (r.top - topOffset <= 0) {
+          activeId = headings[i].id
+        } else {
+          break
+        }
       }
+      onActiveChange(activeId)
     }
-    onActiveChange(activeId)
-  }
 
-  const onScroll = () => {
-    if (raf) return
-    raf = window.requestAnimationFrame(() => {
-      detectActive()
-      raf = 0
-    })
-  }
+    const onScroll = () => {
+      if (raf) return
+      raf = window.requestAnimationFrame(() => {
+        detectActive()
+        raf = 0
+      })
+    }
 
-  detectActive()
-  window.addEventListener('scroll', onScroll, { passive: true })
+    detectActive()
+    window.addEventListener('scroll', onScroll, { passive: true })
 
-  const destroy = () => {
-    window.removeEventListener('scroll', onScroll)
-    if (raf) {
-      window.cancelAnimationFrame(raf)
-      raf = 0
+    destroy = () => {
+      window.removeEventListener('scroll', onScroll)
+      if (raf) {
+        window.cancelAnimationFrame(raf)
+        raf = 0
+      }
     }
   }
 
