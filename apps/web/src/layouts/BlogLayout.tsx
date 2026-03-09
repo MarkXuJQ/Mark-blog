@@ -3,7 +3,6 @@ import { useRef } from 'react'
 import { Card } from '../components/ui/Card'
 import { LeftSidebarWidget, StatsWidget } from '../components/blog/BlogWidgets'
 import { TocList } from '../components/blog/TocList'
-import { Footer } from '../components/layout/Footer'
 import { getAllPosts } from '../utils/posts'
 import { cn } from '../utils/cn'
 import { useToc } from '../hooks/useToc'
@@ -44,9 +43,6 @@ export function BlogLayout() {
 
         <main id="main-content" ref={mainRef} className={styles.mainContent}>
           <Outlet />
-          <div className="relative z-20 mt-auto w-full px-4 pt-8 pb-8">
-            <Footer />
-          </div>
         </main>
 
         <aside className={styles.rightSidebar}>
