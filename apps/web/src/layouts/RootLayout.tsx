@@ -17,7 +17,7 @@ export function RootLayout() {
           isNavBarVisible ? 'translate-y-0' : '-translate-y-32'
         }`}
       >
-        <div className="pointer-events-auto mx-auto w-full max-w-[640px] px-4 transition-all duration-300 md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px]">
+        <div className="pointer-events-auto mx-auto w-full max-w-[640px] px-4 md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px]">
           <NavBar mode={mode} onModeChange={setMode} />
         </div>
       </div>

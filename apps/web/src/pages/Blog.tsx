@@ -7,7 +7,6 @@ import { SearchStatus } from '../components/search/SearchStatus'
 import { Pagination } from '../components/ui/Pagination'
 import { Seo } from '../components/seo/Seo'
 import {
-  DEFAULT_TITLE,
   buildBreadcrumbSchema,
   getSiteUrl,
   toAbsoluteUrl,
@@ -24,12 +23,12 @@ export function Blog() {
   const collectionPageSchema: JsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: `${pageTitle} | ${DEFAULT_TITLE}`,
+    name: `${pageTitle} | ${t('siteTitle')}`,
     url: blogUrl,
     description: t('blog.description'),
     isPartOf: {
       '@type': 'WebSite',
-      name: DEFAULT_TITLE,
+      name: t('siteTitle'),
       url: siteUrl,
     },
   }
@@ -102,7 +101,7 @@ export function Blog() {
             {currentPosts.map((post) => (
               <BlogPostCard key={post.id} post={post} />
             ))}
-            
+
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

@@ -25,7 +25,7 @@ interface SeoProps {
 }
 
 export function Seo({
-  title = DEFAULT_TITLE,
+  title,
   description = DEFAULT_DESCRIPTION,
   keywords = DEFAULT_KEYWORDS,
   image = DEFAULT_IMAGE,
@@ -37,8 +37,9 @@ export function Seo({
   jsonLd,
 }: SeoProps) {
   const location = useLocation()
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const siteUrl = getSiteUrl()
+  const siteName = t('siteTitle')
   const canonicalPath = url || location.pathname
   const canonicalUrl = toAbsoluteUrl(canonicalPath, siteUrl)
   const imageUrl = toAbsoluteUrl(image, siteUrl)
@@ -46,8 +47,13 @@ export function Seo({
   const locale = i18n.language?.startsWith('zh') ? 'zh_CN' : 'en_US'
   const alternateLocale = locale === 'zh_CN' ? 'en_US' : 'zh_CN'
   const structuredData = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []
+
+  // Logic:
+  // 1. If title is provided and NOT the hardcoded default (legacy check), combine it with siteName.
+  // 2. If title is missing or equals hardcoded default, just use siteName.
   const siteTitle =
-    title === DEFAULT_TITLE ? title : `${title} | ${DEFAULT_TITLE}`
+    title && title !== DEFAULT_TITLE ? `${title} | ${siteName}` : siteName
+
   const zhHref = (() => {
     try {
       const u = new URL(canonicalUrl)
@@ -70,7 +76,7 @@ export function Seo({
     {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      name: DEFAULT_TITLE,
+      name: siteName,
       url: siteUrl,
     },
     {
@@ -83,7 +89,7 @@ export function Seo({
     {
       '@context': 'https://schema.org',
       '@type': 'ImageObject',
-      name: `${DEFAULT_TITLE} Logo`,
+      name: `${siteName} Logo`,
       contentUrl: toAbsoluteUrl('/images/logo.png', siteUrl),
     },
   ]
@@ -96,11 +102,14 @@ export function Seo({
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
       <meta name="author" content="Mark Xu" />
-      <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+      <meta
+        name="robots"
+        content={noindex ? 'noindex, nofollow' : 'index, follow'}
+      />
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
-      <meta property="og:site_name" content={DEFAULT_TITLE} />
+      <meta property="og:site_name" content={siteName} />
       <meta property="og:locale" content={locale} />
       <meta property="og:locale:alternate" content={alternateLocale} />
       <meta property="og:url" content={canonicalUrl} />

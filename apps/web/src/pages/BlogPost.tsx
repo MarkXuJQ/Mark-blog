@@ -13,7 +13,6 @@ import { useImageLightbox } from '../hooks/useImageLightbox'
 import { DeferredComments } from '../components/comments/DeferredComments'
 import {
   DEFAULT_IMAGE,
-  DEFAULT_TITLE,
   buildBreadcrumbSchema,
   extractFirstImageFromHtml,
   getSiteUrl,
@@ -87,7 +86,7 @@ export function BlogPost() {
     },
     publisher: {
       '@type': 'Organization',
-      name: DEFAULT_TITLE,
+      name: t('siteTitle'),
       url: siteUrl,
       logo: {
         '@type': 'ImageObject',
@@ -175,7 +174,7 @@ export function BlogPost() {
 
       {/* <Card className="p-6"> */}
       <Card className="p-6">
-        <DeferredComments />
+        <DeferredComments key={slug} />
       </Card>
       {/* </Card> */}
     </div>
