@@ -5,7 +5,6 @@ import {
   DEFAULT_DESCRIPTION,
   DEFAULT_IMAGE,
   DEFAULT_KEYWORDS,
-  DEFAULT_TITLE,
   getSiteUrl,
   toAbsoluteUrl,
   type JsonLd,
@@ -49,10 +48,10 @@ export function Seo({
   const structuredData = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []
 
   // Logic:
-  // 1. If title is provided and NOT the hardcoded default (legacy check), combine it with siteName.
-  // 2. If title is missing or equals hardcoded default, just use siteName.
-  const siteTitle =
-    title && title !== DEFAULT_TITLE ? `${title} | ${siteName}` : siteName
+  // 1. If title is provided and not empty, combine it with siteName.
+  // 2. If title is missing, just use siteName.
+  // Note: We removed the DEFAULT_TITLE check because siteName is now dynamic (i18n).
+  const siteTitle = title ? `${title} | ${siteName}` : siteName
 
   const zhHref = (() => {
     try {
@@ -96,7 +95,7 @@ export function Seo({
   const allSchemas = [...defaultSchemas, ...structuredData]
 
   return (
-    <Helmet htmlAttributes={{ lang }}>
+    <Helmet htmlAttributes={{ lang }} key={i18n.language}>
       {/* Basic Meta Tags */}
       <title>{siteTitle}</title>
       <meta name="description" content={description} />
