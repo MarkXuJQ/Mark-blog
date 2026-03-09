@@ -146,9 +146,9 @@ export function BlogPost() {
                 ))}
               </div>
             )}
+          </div>
 
-            <span className={styles.separator}>·</span>
-
+          <div className={styles.statsContainer}>
             <div className={styles.iconText}>
               <Clock className="h-4 w-4" />
               <span>{t('blog.readingTime', { minutes })}</span>
@@ -201,6 +201,8 @@ const styles = {
   title:
     'mb-4 text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl dark:text-slate-100',
   metaContainer:
+    'mb-4 flex flex-wrap items-center gap-4 text-sm text-slate-500 dark:text-slate-400',
+  statsContainer:
     'mb-8 flex flex-wrap items-center gap-4 text-sm text-slate-500 dark:text-slate-400',
   iconText: 'flex items-center gap-1',
   updatedText: 'flex items-center gap-1 text-slate-400',
