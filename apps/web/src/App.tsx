@@ -37,6 +37,9 @@ const Archive = lazy(() =>
 const About = lazy(() =>
   import('./pages/About').then((module) => ({ default: module.About }))
 )
+const Life = lazy(() =>
+  import('./pages/Life').then((module) => ({ default: module.Life }))
+)
 const NotFound = lazy(() =>
   import('./pages/NotFound').then((module) => ({ default: module.NotFound }))
 )
@@ -131,7 +134,9 @@ function App() {
               path="life"
               element={
                 <LazyRoute>
-                  <UnderConstruction />
+                  <LightboxProvider>
+                    <Life />
+                  </LightboxProvider>
                 </LazyRoute>
               }
             />

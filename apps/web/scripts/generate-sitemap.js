@@ -73,6 +73,11 @@ const sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>${DOMAIN}/life</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
 ${posts
   .map(
     (post) => `  <url>

@@ -34,6 +34,12 @@ export default defineConfig({
             'react-i18next',
             'i18next-browser-languagedetector',
           ],
+          'vendor-motion': ['framer-motion'],
+          'vendor-lightbox': [
+            'yet-another-react-lightbox',
+            'yet-another-react-lightbox/plugins/zoom',
+            'yet-another-react-lightbox/plugins/captions',
+          ],
         },
       },
     },

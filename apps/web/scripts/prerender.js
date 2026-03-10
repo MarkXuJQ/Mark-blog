@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import process from 'node:process'
+import { createRequire } from 'node:module'
 import puppeteer from 'puppeteer'
 import { spawn } from 'node:child_process'
 
@@ -24,7 +25,7 @@ if (!fs.existsSync(DIST_DIR)) {
 
 // Get all routes
 function getRoutes() {
-  const routes = ['/', '/blog', '/timeline', '/archive', '/about']
+  const routes = ['/', '/blog', '/timeline', '/archive', '/about', '/life']
 
   // Add blog post routes
   if (fs.existsSync(POSTS_DIR)) {
@@ -44,13 +45,18 @@ async function prerender() {
   console.log('📦 Starting prerendering...')
 
   // 1. Start Vite Preview Server
-  // Use npx to avoid shell: true if possible, or use shell: true but handle kill better
-  const npxCommand = process.platform === 'win32' ? 'npx.cmd' : 'npx'
-  const server = spawn(npxCommand, ['vite', 'preview', '--port', PORT.toString()], {
-    cwd: path.resolve(__dirname, '..'),
-    stdio: 'inherit',
-    // shell: true // Removed shell: true to avoid process group killing issues
-  })
+  const require = createRequire(import.meta.url)
+  const vitePackageJsonPath = require.resolve('vite/package.json')
+  const viteCliPath = path.resolve(path.dirname(vitePackageJsonPath), 'bin', 'vite.js')
+
+  const server = spawn(
+    process.execPath,
+    [viteCliPath, 'preview', '--port', PORT.toString()],
+    {
+      cwd: path.resolve(__dirname, '..'),
+      stdio: 'inherit',
+    }
+  )
 
   // Wait for server to be ready
   await new Promise((resolve) => setTimeout(resolve, 3000))

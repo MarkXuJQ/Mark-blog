@@ -6,8 +6,12 @@ const markdownFiles = import.meta.glob<MarkdownPost>(
   { eager: true },
 )
 
+let __cachedPosts: BlogPost[] | null = null
+
 export const getAllPosts = (): BlogPost[] => {
-  return Object.entries(markdownFiles)
+  if (__cachedPosts) return __cachedPosts
+
+  __cachedPosts = Object.entries(markdownFiles)
     .map(([path, module]) => {
       const slug = path.split('/').pop()?.replace('.md', '') || ''
       const { attributes, html } = module
@@ -24,7 +28,11 @@ export const getAllPosts = (): BlogPost[] => {
         category: attributes.category,
       }
     })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    )
+
+  return __cachedPosts
 }
 
 export const getPostBySlug = (slug: string): BlogPost | undefined => {
