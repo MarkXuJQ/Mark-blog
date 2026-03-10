@@ -1,5 +1,57 @@
 [
   {
+    "date": "2026-03-11",
+    "title": "Life Page Completed",
+    "description": "Launched the Life waterfall feed with multi-image modal, comments, and filtering/sorting.",
+    "categories": [
+      {
+        "title": "Page Features",
+        "items": [
+          {
+            "id": "life-page-1",
+            "content": "Added Life waterfall cards with date sorting",
+            "date": "2026-03-09"
+          },
+          {
+            "id": "life-page-2",
+            "content": "Added multi-select city filter dropdown",
+            "date": "2026-03-09"
+          }
+        ]
+      },
+      {
+        "title": "Image Experience",
+        "items": [
+          {
+            "id": "life-img-1",
+            "content": "Multi-image modal with thumbnails and neighbor preloading",
+            "date": "2026-03-10"
+          },
+          {
+            "id": "life-img-2",
+            "content": "Support external image hosting and image load fallback/retry",
+            "date": "2026-03-11"
+          }
+        ]
+      },
+      {
+        "title": "Comments & UX",
+        "items": [
+          {
+            "id": "life-cmt-1",
+            "content": "Integrated Twikoo and displayed comment counts (auto refresh after posting)",
+            "date": "2026-03-10"
+          },
+          {
+            "id": "life-ui-1",
+            "content": "Locked scroll/touch gestures inside the modal to prevent background scrolling",
+            "date": "2026-03-10"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-03-03",
     "title": "Website Performance & SEO Optimization",
     "description": "Comprehensive optimization of website loading speed, search engine friendliness, and deployment configuration.",

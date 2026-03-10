@@ -7,15 +7,29 @@ const Comments = lazy(() =>
 
 interface DeferredCommentsProps {
   rootMargin?: string
+  containerId?: string
+  path?: string
+  eager?: boolean
+  layout?: 'auto' | 'stacked'
+  onCommentLoaded?: () => void
 }
 
 export function DeferredComments({
   rootMargin = '600px 0px',
+  containerId,
+  path,
+  eager,
+  layout,
+  onCommentLoaded,
 }: DeferredCommentsProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [shouldLoad, setShouldLoad] = useState(false)
 
   useEffect(() => {
+    if (eager) {
+      setShouldLoad(true)
+      return
+    }
     const target = containerRef.current
     if (!target) return
 
@@ -36,13 +50,19 @@ export function DeferredComments({
 
     observer.observe(target)
     return () => observer.disconnect()
-  }, [rootMargin])
+  }, [rootMargin, eager])
 
   return (
     <div ref={containerRef}>
       {shouldLoad ? (
         <Suspense fallback={<CommentsPlaceholder />}>
-          <Comments />
+          <Comments
+            containerId={containerId}
+            path={path}
+            eager={eager}
+            layout={layout}
+            onCommentLoaded={onCommentLoaded}
+          />
         </Suspense>
       ) : (
         <CommentsPlaceholder />
