@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { SearchInput } from '../search/SearchInput'
+import { SearchTriggerInput } from '../search/SearchTriggerInput'
 import { Card } from '../ui/Card'
 import { cn } from '../../utils/cn'
 import { getImageUrl } from '../../utils/image'
@@ -9,8 +9,6 @@ import { LuGithub } from 'react-icons/lu'
 import { RiBilibiliLine, RiTwitterXFill, RiInstagramLine } from 'react-icons/ri'
 import type { BlogPost } from '../../types'
 import { countWords } from '../../utils/readingTime'
-
-import { openGlobalSearch } from '../search/openGlobalSearch'
 
 // --- Profile Content (Internal) ---
 function ProfileContent() {
@@ -41,13 +39,6 @@ function ProfileContent() {
     }
   }
 
-  const handleSearch = (value: string) => {
-    const trimmed = value.trim()
-    if (trimmed) {
-      openGlobalSearch(trimmed)
-    }
-  }
-
   return (
     <>
       <div className={styles.profileContainer}>
@@ -74,10 +65,7 @@ function ProfileContent() {
         </p>
       </div>
 
-      <SearchInput
-        placeholder={t('blog.sidebar.search.placeholder')}
-        onSearch={handleSearch}
-      />
+      <SearchTriggerInput placeholder={t('blog.sidebar.search.placeholder')} />
 
       <SocialLinks />
     </>
