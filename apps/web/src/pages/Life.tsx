@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, MessageCircle, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, MessageCircle, X, ListFilter, ChevronDown, ArrowDown } from 'lucide-react'
 import { Seo } from '../components/seo/Seo'
 import { DeferredComments } from '../components/comments/DeferredComments'
 import { Dropdown, DropdownContent, DropdownTrigger } from '../components/ui/Dropdown'
@@ -308,93 +308,105 @@ export function Life() {
       <Seo title={title} description={description} />
 
       <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 md:py-10">
-        <div className="mb-3 flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-            {title}
-          </h1>
-          <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-            {description}
-          </p>
-        </div>
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+              {title}
+            </h1>
+            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+              {description}
+            </p>
+          </div>
 
-        <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
-            className={cn(
-              'inline-flex items-center rounded-full px-3 py-1.5 text-sm',
-              'border border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50',
-              'dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'
-            )}
-          >
-            {sortOrder === 'desc' ? '最新优先' : '最早优先'}
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
+              className={cn(
+                'flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors select-none active:scale-95',
+                'hover:bg-slate-50 hover:text-slate-900',
+                'dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100'
+              )}
+            >
+              <ArrowDown
+                size={16}
+                className={cn(sortOrder === 'desc' ? 'rotate-0 text-blue-500' : 'rotate-180 text-green-500', 'transition-transform')}
+              />
+              <span className="min-w-[4.5rem] text-left">
+                {sortOrder === 'desc' ? '最新优先' : '最早优先'}
+              </span>
+            </button>
 
-          {availableCities.length > 0 && (
-            <Dropdown>
-              <DropdownTrigger
-                className={cn(
-                  'inline-flex items-center rounded-full px-3 py-1.5 text-sm',
-                  'border border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50',
-                  'dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'
-                )}
-              >
-                {selectedCityList.length === 0
-                  ? '城市：全部'
-                  : `城市：${selectedCityList.slice(0, 2).join('、')}${
-                      selectedCityList.length > 2 ? ` +${selectedCityList.length - 2}` : ''
-                    }`}
-              </DropdownTrigger>
-
-              <DropdownContent align="start" className="w-64 p-2">
-                <div className="px-2 py-1 text-xs text-slate-500 dark:text-slate-400">
-                  多选城市
-                </div>
-                <div className="max-h-72 overflow-y-auto px-1">
-                  {availableCities.map((city) => {
-                    const checked = Boolean(selectedCities[city])
-                    return (
-                      <label
-                        key={city}
-                        className={cn(
-                          'flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm',
-                          'hover:bg-slate-100 dark:hover:bg-slate-800'
-                        )}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => {
-                            setSelectedCities((prev) => {
-                              const next = { ...prev }
-                              if (next[city]) delete next[city]
-                              else next[city] = true
-                              return next
-                            })
-                          }}
-                        />
-                        <span className="flex-1">{city}</span>
-                      </label>
-                    )
-                  })}
-                </div>
-                <div className="mt-2 flex items-center justify-between border-t border-slate-200 pt-2 dark:border-slate-800">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedCities({})}
-                    className="rounded-md px-2 py-1 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-                  >
-                    清空
-                  </button>
-                  <div className="px-2 py-1 text-xs text-slate-500 dark:text-slate-400">
+            {availableCities.length > 0 && (
+              <Dropdown>
+                <DropdownTrigger
+                  className={cn(
+                    'flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors',
+                    'hover:bg-slate-50 hover:text-slate-900',
+                    'dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100'
+                  )}
+                >
+                  <ListFilter size={16} />
+                  <span className="whitespace-nowrap">
                     {selectedCityList.length === 0
-                      ? `共 ${availableCities.length} 个`
-                      : `已选 ${selectedCityList.length} 个`}
+                      ? '城市：全部'
+                      : `城市：${selectedCityList.slice(0, 2).join('、')}${
+                          selectedCityList.length > 2 ? ` +${selectedCityList.length - 2}` : ''
+                        }`}
+                  </span>
+                  <ChevronDown size={14} />
+                </DropdownTrigger>
+
+                <DropdownContent align="start" className="w-64 p-2">
+                  <div className="px-2 py-1 text-xs text-slate-500 dark:text-slate-400">
+                    多选城市
                   </div>
-                </div>
-              </DropdownContent>
-            </Dropdown>
-          )}
+                  <div className="max-h-72 overflow-y-auto px-1">
+                    {availableCities.map((city) => {
+                      const checked = Boolean(selectedCities[city])
+                      return (
+                        <label
+                          key={city}
+                          className={cn(
+                            'flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                            'hover:bg-slate-100 dark:hover:bg-slate-800'
+                          )}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => {
+                              setSelectedCities((prev) => {
+                                const next = { ...prev }
+                                if (next[city]) delete next[city]
+                                else next[city] = true
+                                return next
+                              })
+                            }}
+                          />
+                          <span className="flex-1">{city}</span>
+                        </label>
+                      )
+                    })}
+                  </div>
+                  <div className="mt-2 flex items-center justify-between border-t border-slate-200 pt-2 dark:border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCities({})}
+                      className="rounded-md px-2 py-1 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                    >
+                      清空
+                    </button>
+                    <div className="px-2 py-1 text-xs text-slate-500 dark:text-slate-400">
+                      {selectedCityList.length === 0
+                        ? `共 ${availableCities.length} 个`
+                        : `已选 ${selectedCityList.length} 个`}
+                    </div>
+                  </div>
+                </DropdownContent>
+              </Dropdown>
+            )}
+          </div>
         </div>
 
         <div className="columns-2 gap-4 md:columns-3 lg:columns-4">
