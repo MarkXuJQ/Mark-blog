@@ -1,7 +1,9 @@
 import { useTranslation, Trans } from 'react-i18next'
+import { useRef } from 'react'
 import { cn } from '../utils/cn'
 import { getImageUrl } from '../utils/image'
 import { Seo } from '../components/seo/Seo'
+import { requestPageTransition } from '../components/transitions/PageTransitionOverlay'
 import {
   DEFAULT_DESCRIPTION,
   getSiteUrl,
@@ -11,6 +13,8 @@ import {
 
 export function Home() {
   const { t, i18n } = useTranslation()
+  const nameClickCountRef = useRef<number>(0)
+  const lastNameClickMsRef = useRef<number>(0)
   const siteUrl = getSiteUrl()
   const language = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const webSiteSchema: JsonLd = {
@@ -33,6 +37,29 @@ export function Home() {
     },
   }
 
+  const handleNameClick = () => {
+    const now = Date.now()
+    const isWithinWindow = now - lastNameClickMsRef.current <= 600
+    if (!isWithinWindow) {
+      nameClickCountRef.current = 0
+    }
+    lastNameClickMsRef.current = now
+    nameClickCountRef.current += 1
+
+    if (nameClickCountRef.current >= 7) {
+      nameClickCountRef.current = 0
+      lastNameClickMsRef.current = 0
+      requestPageTransition('/about')
+    }
+  }
+
+  const handleNameKeyDown = (event: React.KeyboardEvent<HTMLSpanElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      requestPageTransition('/about')
+    }
+  }
+
   return (
     <div className={styles.container}>
       <Seo jsonLd={webSiteSchema} />
@@ -51,7 +78,16 @@ export function Home() {
       <h1 className={cn(styles.title, 'no-heading-letter-spacing')}>
         <Trans
           i18nKey="home.title"
-          components={[<span key="0" className={styles.highlightText} />]}
+          components={[
+            <span
+              key="0"
+              className={styles.highlightText}
+              role="link"
+              tabIndex={0}
+              onClick={handleNameClick}
+              onKeyDown={handleNameKeyDown}
+            />,
+          ]}
         />
       </h1>
 

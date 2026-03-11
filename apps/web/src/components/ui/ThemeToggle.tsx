@@ -1,4 +1,3 @@
-import { useId } from 'react'
 import { Monitor, Sun } from 'lucide-react'
 import { type ThemeMode } from '../../hooks/useTheme'
 
@@ -8,7 +7,6 @@ export type ThemeToggleProps = {
 }
 
 export function ThemeToggle({ mode, onModeChange }: ThemeToggleProps) {
-  const moonMaskId = `theme-toggle-moon-mask-${useId().replace(/:/g, '')}`
   const themes = ['light', 'system', 'dark'] as const
   const currentIndex = themes.indexOf(mode)
   const knobClassNameByMode: Record<ThemeMode, string> = {

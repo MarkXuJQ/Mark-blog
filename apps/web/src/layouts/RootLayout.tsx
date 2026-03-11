@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import { NavBar } from '../components/layout/NavBar'
 import { Footer } from '../components/layout/Footer'
 import { ThemeToggle } from '../components/ui/ThemeToggle'
+import { PageTransitionOverlay } from '../components/transitions/PageTransitionOverlay'
 import { useTheme } from '../hooks/useTheme'
 import { useScrollVisibility } from '../hooks/useScrollVisibility'
 
@@ -10,6 +11,7 @@ export function RootLayout() {
   const { mode, setMode } = useTheme()
   const isNavBarVisible = useScrollVisibility()
   const [isOverlayOpen, setIsOverlayOpen] = useState(false)
+  const [isTransitionActive, setIsTransitionActive] = useState(false)
 
   useEffect(() => {
     const onOverlayChange = (event: Event) => {
@@ -27,7 +29,9 @@ export function RootLayout() {
       {/* Sticky NavBar Container - Floating Effect */}
       <div
         className={`pointer-events-none sticky top-6 z-50 mb-8 w-full transition-transform duration-300 ${
-          isNavBarVisible && !isOverlayOpen ? 'translate-y-0' : '-translate-y-32'
+          isNavBarVisible && !isOverlayOpen && !isTransitionActive
+            ? 'translate-y-0'
+            : '-translate-y-32'
         }`}
       >
         <div className="pointer-events-auto mx-auto w-full max-w-[640px] px-4 md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px]">
@@ -43,7 +47,7 @@ export function RootLayout() {
         </div>
 
         {/* Footer Container - Pushed to bottom naturally */}
-        {!isOverlayOpen && (
+        {!isOverlayOpen && !isTransitionActive && (
           <div className="relative z-20 mx-auto mt-auto w-full max-w-3xl px-4 pt-8 pb-8">
             <Footer />
           </div>
@@ -51,6 +55,7 @@ export function RootLayout() {
       </main>
 
       <ThemeToggle mode={mode} onModeChange={setMode} />
+      <PageTransitionOverlay onActiveChange={setIsTransitionActive} />
     </div>
   )
 }

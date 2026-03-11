@@ -4,3 +4,5 @@ packages:
 
 onlyBuiltDependencies:
   - puppeteer
+  - esbuild
+  - sharp
