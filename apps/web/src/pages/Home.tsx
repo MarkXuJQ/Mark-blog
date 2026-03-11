@@ -48,7 +48,7 @@ export function Home() {
         />
       </div>
 
-      <h1 className={styles.title}>
+      <h1 className={cn(styles.title, 'no-heading-letter-spacing')}>
         <Trans
           i18nKey="home.title"
           components={[<span key="0" className={styles.highlightText} />]}

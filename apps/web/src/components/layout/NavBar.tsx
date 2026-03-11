@@ -256,7 +256,7 @@ const styles = {
   header:
     'relative mb-6 flex h-14 items-center justify-between rounded-full border border-slate-200/70 bg-white/80 px-4 py-3 backdrop-blur transition-colors duration-300 sm:px-6 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-100',
   logo: {
-    link: 'flex items-center gap-2 text-lg font-semibold transition-opacity hover:opacity-80',
+    link: 'heading-brand flex items-center gap-2 text-lg font-semibold transition-opacity hover:opacity-80',
     img: 'h-8 w-8 rounded-sm',
   },
   desktop: {

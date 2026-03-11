@@ -323,9 +323,7 @@ export function Life() {
               type="button"
               onClick={() => setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
               className={cn(
-                'flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors select-none active:scale-95',
-                'hover:bg-slate-50 hover:text-slate-900',
-                'dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100'
+                'btn-secondary flex cursor-pointer items-center justify-center gap-2 select-none active:scale-95'
               )}
             >
               <ArrowDown
@@ -341,9 +339,7 @@ export function Life() {
               <Dropdown>
                 <DropdownTrigger
                   className={cn(
-                    'flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors',
-                    'hover:bg-slate-50 hover:text-slate-900',
-                    'dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100'
+                    'btn-secondary flex cursor-pointer items-center gap-2'
                   )}
                 >
                   <ListFilter size={16} />
