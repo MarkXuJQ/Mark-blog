@@ -5,6 +5,8 @@ import { NavLink, Link, useLocation } from 'react-router-dom'
 import { ChevronDown, Menu, X, Sun, Moon, Monitor } from 'lucide-react'
 import type { ThemeMode } from '../../hooks/useTheme'
 import { cn } from '../../utils/cn'
+import { SearchInput } from '../search/SearchInput'
+import { openGlobalSearch } from '../search/openGlobalSearch'
 import {
   Dropdown,
   DropdownContent,
@@ -100,6 +102,13 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
     { to: '/games', label: t('nav.games') },
   ]
 
+  const handleGlobalSearch = (value: string) => {
+    const trimmed = value.trim()
+    if (!trimmed) return
+    openGlobalSearch(trimmed)
+    setIsMobileMenuOpen(false)
+  }
+
   return (
     <header className={styles.header}>
       <Link to="/" className={styles.logo.link}>
@@ -191,6 +200,11 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
       {/* Mobile Menu Content */}
       {isMobileMenuOpen && (
         <div className={styles.mobile.menu}>
+          <SearchInput
+            placeholder={t('search.placeholder')}
+            onSearch={handleGlobalSearch}
+            containerClassName="mb-2"
+          />
           <NavLink
             to="/"
             className={({ isActive }) => styles.mobile.link(isActive)}

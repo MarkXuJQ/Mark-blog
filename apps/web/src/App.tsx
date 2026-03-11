@@ -40,6 +40,9 @@ const About = lazy(() =>
 const Life = lazy(() =>
   import('./pages/Life').then((module) => ({ default: module.Life }))
 )
+const Search = lazy(() =>
+  import('./pages/Search').then((module) => ({ default: module.Search }))
+)
 const NotFound = lazy(() =>
   import('./pages/NotFound').then((module) => ({ default: module.NotFound }))
 )
@@ -119,6 +122,14 @@ function App() {
               element={
                 <LazyRoute>
                   <Timeline />
+                </LazyRoute>
+              }
+            />
+            <Route
+              path="search"
+              element={
+                <LazyRoute>
+                  <Search />
                 </LazyRoute>
               }
             />

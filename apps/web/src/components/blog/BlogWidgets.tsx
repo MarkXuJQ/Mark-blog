@@ -10,12 +10,11 @@ import { RiBilibiliLine, RiTwitterXFill, RiInstagramLine } from 'react-icons/ri'
 import type { BlogPost } from '../../types'
 import { countWords } from '../../utils/readingTime'
 
-import { useNavigate } from 'react-router-dom'
+import { openGlobalSearch } from '../search/openGlobalSearch'
 
 // --- Profile Content (Internal) ---
 function ProfileContent() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const signature = t('blog.sidebar.profile.signature')
   let line1 = signature
   let line2 = ''
@@ -45,7 +44,7 @@ function ProfileContent() {
   const handleSearch = (value: string) => {
     const trimmed = value.trim()
     if (trimmed) {
-      navigate(`/blog?q=${encodeURIComponent(trimmed)}`)
+      openGlobalSearch(trimmed)
     }
   }
 

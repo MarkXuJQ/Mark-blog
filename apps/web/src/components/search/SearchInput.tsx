@@ -1,4 +1,5 @@
 import { Search } from 'lucide-react'
+import { forwardRef } from 'react'
 import { cn } from '../../utils/cn'
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -6,13 +7,10 @@ interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   containerClassName?: string
 }
 
-export function SearchInput({
-  className,
-  containerClassName,
-  onSearch,
-  onKeyDown,
-  ...props
-}: SearchInputProps) {
+export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(function SearchInput(
+  { className, containerClassName, onSearch, onKeyDown, ...props },
+  ref
+) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && onSearch) {
       onSearch(e.currentTarget.value)
@@ -24,6 +22,7 @@ export function SearchInput({
     <div className={cn('relative flex items-center', containerClassName)}>
       <Search className="absolute left-3 text-slate-400" size={18} />
       <input
+        ref={ref}
         type="text"
         className={cn(
           'w-full rounded-full border border-slate-200 bg-slate-50 px-4 py-2 pl-10 text-sm outline-none transition-all',
@@ -36,4 +35,4 @@ export function SearchInput({
       />
     </div>
   )
-}
+})

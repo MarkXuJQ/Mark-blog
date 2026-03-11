@@ -14,6 +14,17 @@
   "timeline": {
     "items": "项"
   },
+  "search": {
+    "title": "搜索",
+    "placeholder": "全站搜索…",
+    "hint": "输入关键词，回车开始搜索。",
+    "noResults": "没有找到相关内容。",
+    "resultsCount": "共 {{count}} 条结果",
+    "sections": {
+      "posts": "文章",
+      "timeline": "时间线"
+    }
+  },
   "home": {
     "title": "欢迎来到 <0>Mark</0> 的自留地",
     "intro": "这里是我的个人小站，用来放技术笔记、生活碎碎念和一些小作品。",

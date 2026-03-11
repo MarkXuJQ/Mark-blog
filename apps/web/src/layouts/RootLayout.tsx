@@ -4,6 +4,7 @@ import { NavBar } from '../components/layout/NavBar'
 import { Footer } from '../components/layout/Footer'
 import { ThemeToggle } from '../components/ui/ThemeToggle'
 import { PageTransitionOverlay } from '../components/transitions/PageTransitionOverlay'
+import { GlobalSearchModal } from '../components/search/GlobalSearchModal'
 import { useTheme } from '../hooks/useTheme'
 import { useScrollVisibility } from '../hooks/useScrollVisibility'
 
@@ -12,6 +13,7 @@ export function RootLayout() {
   const isNavBarVisible = useScrollVisibility()
   const [isOverlayOpen, setIsOverlayOpen] = useState(false)
   const [isTransitionActive, setIsTransitionActive] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
 
   useEffect(() => {
     const onOverlayChange = (event: Event) => {
@@ -29,7 +31,7 @@ export function RootLayout() {
       {/* Sticky NavBar Container - Floating Effect */}
       <div
         className={`pointer-events-none sticky top-6 z-50 mb-8 w-full transition-transform duration-300 ${
-          isNavBarVisible && !isOverlayOpen && !isTransitionActive
+          isNavBarVisible && !isOverlayOpen && !isTransitionActive && !isSearchOpen
             ? 'translate-y-0'
             : '-translate-y-32'
         }`}
@@ -47,7 +49,7 @@ export function RootLayout() {
         </div>
 
         {/* Footer Container - Pushed to bottom naturally */}
-        {!isOverlayOpen && !isTransitionActive && (
+        {!isOverlayOpen && !isTransitionActive && !isSearchOpen && (
           <div className="relative z-20 mx-auto mt-auto w-full max-w-3xl px-4 pt-8 pb-8">
             <Footer />
           </div>
@@ -56,6 +58,7 @@ export function RootLayout() {
 
       <ThemeToggle mode={mode} onModeChange={setMode} />
       <PageTransitionOverlay onActiveChange={setIsTransitionActive} />
+      <GlobalSearchModal onOpenChange={setIsSearchOpen} />
     </div>
   )
 }

@@ -14,6 +14,17 @@
   "timeline": {
     "items": "items"
   },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search the whole site...",
+    "hint": "Type a keyword and press Enter.",
+    "noResults": "No results found.",
+    "resultsCount": "{{count}} results",
+    "sections": {
+      "posts": "Posts",
+      "timeline": "Timeline"
+    }
+  },
   "home": {
     "title": "Welcome to <0>Mark</0>'s Backyard",
     "intro": "This is my personal corner for tech notes, life bits, and small projects.",
