@@ -29,7 +29,7 @@ function NavDropdownTrigger({
 
   return (
     <DropdownTrigger className={styles.dropdown.button(isActive, isOpen)}>
-      {title}
+      <span className={styles.dropdown.label}>{title}</span>
       <ChevronDown
         size={14}
         className={cn(
@@ -52,10 +52,12 @@ function NavDropdown({
 
   // Check if any child is active to highlight the parent
   const isActive = items.some((item) => location.pathname.startsWith(item.to))
+  const activeItem = items.find((item) => location.pathname.startsWith(item.to))
+  const displayTitle = activeItem?.label ?? title
 
   return (
     <Dropdown className={styles.dropdown.container}>
-      <NavDropdownTrigger title={title} isActive={isActive} />
+      <NavDropdownTrigger title={displayTitle} isActive={isActive} />
 
       <DropdownContent className={styles.dropdown.menu}>
         {items.map((item) => (
@@ -88,6 +90,8 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
   }
 
   const currentLang = i18n.language
+  const isZh = currentLang?.startsWith('zh')
+  const langIndex = isZh ? 0 : 1
 
   const otherItems = [
     { to: '/timeline', label: t('nav.timeline') },
@@ -133,24 +137,32 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
 
         <NavDropdown title={t('nav.others')} items={otherItems} />
 
-        <div className="ml-6 flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className={styles.desktop.langButton(currentLang === 'zh')}
-              onClick={() => changeLanguage('zh')}
-            >
-              中
-            </button>
-            <span className="opacity-30">/</span>
-            <button
-              type="button"
-              className={styles.desktop.langButton(currentLang === 'en')}
-              onClick={() => changeLanguage('en')}
-            >
-              EN
-            </button>
-          </div>
+        <div className={styles.desktop.langToggle.container} role="radiogroup" aria-label="Language">
+          <div
+            aria-hidden="true"
+            className={styles.desktop.langToggle.knob}
+            style={{ transform: `translateX(${langIndex * 100}%)` }}
+          />
+          <button
+            type="button"
+            role="radio"
+            aria-checked={isZh}
+            className={styles.desktop.langToggle.button(isZh)}
+            onClick={() => changeLanguage('zh')}
+            aria-label="切换到中文"
+          >
+            中
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={!isZh}
+            className={styles.desktop.langToggle.button(!isZh)}
+            onClick={() => changeLanguage('en')}
+            aria-label="Switch to English"
+          >
+            EN
+          </button>
         </div>
       </nav>
 
@@ -214,20 +226,29 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
           </div>
 
           <div className={styles.mobile.controls}>
-            <button
-              type="button"
-              className={styles.mobile.langButton(currentLang === 'zh')}
-              onClick={() => changeLanguage('zh')}
-            >
-              中文
-            </button>
-            <button
-              type="button"
-              className={styles.mobile.langButton(currentLang === 'en')}
-              onClick={() => changeLanguage('en')}
-            >
-              English
-            </button>
+            <div className={styles.mobile.langToggle.container}>
+              <div
+                aria-hidden="true"
+                className={styles.mobile.langToggle.knob}
+                style={{ transform: `translateX(${langIndex * 100}%)` }}
+              />
+              <button
+                type="button"
+                className={styles.mobile.langToggle.button(isZh)}
+                onClick={() => changeLanguage('zh')}
+                aria-label="切换到中文"
+              >
+                中文
+              </button>
+              <button
+                type="button"
+                className={styles.mobile.langToggle.button(!isZh)}
+                onClick={() => changeLanguage('en')}
+                aria-label="Switch to English"
+              >
+                English
+              </button>
+            </div>
           </div>
 
           {/* Mobile Theme Toggle */}
@@ -268,12 +289,19 @@ const styles = {
           ? 'font-bold text-slate-900 dark:text-slate-100'
           : 'font-normal text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
       ),
-    langButton: (isActive: boolean) =>
-      cn(
-        isActive
-          ? 'font-bold text-slate-900 dark:text-slate-100'
-          : 'opacity-60 transition-opacity hover:opacity-100'
-      ),
+    langToggle: {
+      container:
+        'relative isolate ml-2 inline-flex items-center rounded-full border border-slate-200/70 bg-white/70 p-0.5 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/70',
+      knob:
+        'pointer-events-none absolute left-0.5 top-0.5 h-7 w-9 rounded-full bg-slate-900 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] dark:bg-white',
+      button: (isActive: boolean) =>
+        cn(
+          'relative z-10 inline-flex h-7 w-9 items-center justify-center rounded-full text-xs font-semibold transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400',
+          isActive
+            ? 'text-white dark:text-slate-900'
+            : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
+        ),
+    },
   },
   mobile: {
     toggle:
@@ -291,14 +319,20 @@ const styles = {
       'px-4 py-2 text-xs font-semibold text-slate-500 uppercase dark:text-slate-500',
     grid: 'grid grid-cols-2 gap-2',
     controls:
-      'mt-2 flex items-center justify-center gap-6 border-t border-slate-100 pt-4 dark:border-slate-800',
-    langButton: (isActive: boolean) =>
-      cn(
-        'rounded-md px-4 py-2 transition-colors',
-        isActive
-          ? 'bg-slate-100 font-bold text-slate-900 dark:bg-slate-800 dark:text-slate-100'
-          : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800'
-      ),
+      'mt-2 flex items-center justify-center border-t border-slate-100 pt-4 dark:border-slate-800',
+    langToggle: {
+      container:
+        'relative isolate inline-flex items-center rounded-full border border-slate-200/70 bg-white/70 p-0.5 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/70',
+      knob:
+        'pointer-events-none absolute left-0.5 top-0.5 h-9 w-20 rounded-full bg-slate-900 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] dark:bg-white',
+      button: (isActive: boolean) =>
+        cn(
+          'relative z-10 inline-flex h-9 w-20 items-center justify-center rounded-full text-sm font-semibold transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400',
+          isActive
+            ? 'text-white dark:text-slate-900'
+            : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
+        ),
+    },
     themeContainer:
       'mt-2 flex items-center justify-center gap-4 border-t border-slate-100 pt-4 pb-2 dark:border-slate-800',
     themeButton: (isActive: boolean) =>
@@ -318,6 +352,7 @@ const styles = {
           ? 'font-bold text-slate-900 dark:text-slate-100'
           : 'font-normal text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
       ),
+    label: 'inline-flex w-[3.75rem] justify-center truncate text-center',
     menu: 'absolute top-full right-0 mt-2 w-32 origin-top-right rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 dark:border-slate-800 dark:bg-slate-900 dark:ring-white/10',
     item: (isActive: boolean) =>
       cn(
