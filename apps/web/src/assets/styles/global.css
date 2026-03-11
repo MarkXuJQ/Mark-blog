@@ -40,9 +40,21 @@
 }
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "MiSans", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  --brand-500: #2e7ea3;
+  --brand-600: #246c8d;
+  --brand-400: #4e98ba;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --surface-0: #ffffff;
+  --surface-card: #ffffff;
+  --border-color: rgba(15, 23, 42, 0.08);
+  --radius-md: 0.75rem;
+  --shadow-card: 0 1px 2px rgba(2, 6, 23, 0.05), 0 8px 24px rgba(2, 6, 23, 0.06);
+  --font-heading: "Noto Serif SC", "MiSans", serif;
+  --letter-spacing-heading: 0.06em;
 }
 
 html {
@@ -53,4 +65,119 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+}
+
+.dark {
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --surface-0: #0b1220;
+  --surface-card: #0e172a;
+  --border-color: rgba(148, 163, 184, 0.18);
+  --shadow-card: 0 1px 2px rgba(2, 6, 23, 0.3), 0 8px 24px rgba(2, 6, 23, 0.4);
+}
+
+.heading-brand {
+  font-family: var(--font-heading);
+  letter-spacing: normal !important;
+}
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  letter-spacing: var(--letter-spacing-heading) !important;
+}
+.no-heading-letter-spacing {
+  letter-spacing: normal !important;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--surface-0);
+  color: var(--text-primary);
+  transition: background-color 160ms ease, color 160ms ease, transform 80ms ease;
+}
+.btn-secondary:hover {
+  background: color-mix(in srgb, var(--surface-0) 90%, var(--text-primary));
+}
+.dark .btn-secondary:hover {
+  background: color-mix(in srgb, var(--surface-0) 92%, var(--text-primary));
+}
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
+.card-paper {
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-card);
+  position: relative;
+}
+.card-paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(2, 6, 23, 0.015) 1px, transparent 1px);
+  background-size: 6px 6px;
+  border-radius: inherit;
+  pointer-events: none;
+  mix-blend-mode: normal;
+}
+
+@font-face {
+  font-family: "Noto Serif SC";
+  src: url("../Noto_Serif_SC/NotoSerifSC-VariableFont_wght.ttf") format("truetype");
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "MiSans";
+  src: url("../MiSans/MiSans/woff2/MiSans-ExtraLight.woff2") format("woff2");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "MiSans";
+  src: url("../MiSans/MiSans/woff2/MiSans-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "MiSans";
+  src: url("../MiSans/MiSans/woff2/MiSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "MiSans";
+  src: url("../MiSans/MiSans/woff2/MiSans-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "MiSans";
+  src: url("../MiSans/MiSans/woff2/MiSans-Semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "MiSans";
+  src: url("../MiSans/MiSans/woff2/MiSans-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }

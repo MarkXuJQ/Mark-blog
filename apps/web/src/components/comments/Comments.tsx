@@ -195,6 +195,17 @@ export function Comments({
         .dark .twikoo-wrap .tk-submit-action-icon {
             color: #94a3b8;
         }
+        .twikoo-wrap .tk-action-icon svg,
+        .twikoo-wrap .tk-submit-action-icon svg {
+            width: 1em;
+            height: 1em;
+            display: inline-block;
+            vertical-align: -0.125em;
+        }
+        .twikoo-wrap .tk-action-icon svg path,
+        .twikoo-wrap .tk-submit-action-icon svg path {
+            fill: currentColor;
+        }
 
         .twikoo-wrap[data-layout="stacked"] .tk-meta-input {
           display: flex !important;

@@ -1,4 +1,5 @@
-import { useParams, Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Clock, FileText } from 'lucide-react'
 import { Card } from '../components/ui/Card'
@@ -11,6 +12,7 @@ import { Copyright } from '../components/blog/Copyright'
 import { PostNavigation } from '../components/blog/PostNavigation'
 import { useImageLightbox } from '../hooks/useImageLightbox'
 import { DeferredComments } from '../components/comments/DeferredComments'
+import { applySearchHighlights, clearSearchHighlights } from '../components/search/domHighlight'
 import {
   DEFAULT_IMAGE,
   buildBreadcrumbSchema,
@@ -24,6 +26,7 @@ import {
 export function BlogPost() {
   const { slug } = useParams()
   const { t } = useTranslation()
+  const [searchParams] = useSearchParams()
   const post = slug ? getPostBySlug(slug) : undefined
   const adjacentPosts = slug
     ? getAdjacentPosts(slug)
@@ -35,6 +38,31 @@ export function BlogPost() {
 
   const contentHtml = post ? rewriteHtmlImageSrc(post.content) : ''
   const contentRef = useImageLightbox([contentHtml])
+  const highlightQuery = searchParams.get('q') || ''
+  const highlightIndexRaw = searchParams.get('i') || '0'
+
+  useEffect(() => {
+    const container = contentRef.current
+    if (!container) return
+
+    const q = highlightQuery.trim()
+    if (!q) {
+      clearSearchHighlights(container)
+      return
+    }
+
+    const highlights = applySearchHighlights(container, q)
+    if (highlights.length === 0) return
+
+    const parsed = Number.parseInt(highlightIndexRaw, 10)
+    const idx = Number.isFinite(parsed) ? parsed : 0
+    const target = highlights[Math.min(Math.max(0, idx), highlights.length - 1)]
+    if (!target) return
+
+    requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    })
+  }, [contentHtml, contentRef, highlightIndexRaw, highlightQuery])
 
   if (!post) {
     return (

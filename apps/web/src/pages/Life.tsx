@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, MessageCircle, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, MessageCircle, X, ListFilter, ChevronDown, ArrowDown } from 'lucide-react'
 import { Seo } from '../components/seo/Seo'
 import { DeferredComments } from '../components/comments/DeferredComments'
 import { Dropdown, DropdownContent, DropdownTrigger } from '../components/ui/Dropdown'
@@ -308,93 +308,101 @@ export function Life() {
       <Seo title={title} description={description} />
 
       <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 md:py-10">
-        <div className="mb-3 flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-            {title}
-          </h1>
-          <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-            {description}
-          </p>
-        </div>
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+              {title}
+            </h1>
+            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+              {description}
+            </p>
+          </div>
 
-        <div className="mb-4 flex flex-wrap items-center justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
-            className={cn(
-              'inline-flex items-center rounded-full px-3 py-1.5 text-sm',
-              'border border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50',
-              'dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'
-            )}
-          >
-            {sortOrder === 'desc' ? '最新优先' : '最早优先'}
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
+              className={cn(
+                'btn-secondary flex cursor-pointer items-center justify-center gap-2 select-none active:scale-95'
+              )}
+            >
+              <ArrowDown
+                size={16}
+                className={cn(sortOrder === 'desc' ? 'rotate-0 text-blue-500' : 'rotate-180 text-green-500', 'transition-transform')}
+              />
+              <span className="min-w-[4.5rem] text-left">
+                {sortOrder === 'desc' ? '最新优先' : '最早优先'}
+              </span>
+            </button>
 
-          {availableCities.length > 0 && (
-            <Dropdown>
-              <DropdownTrigger
-                className={cn(
-                  'inline-flex items-center rounded-full px-3 py-1.5 text-sm',
-                  'border border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-50',
-                  'dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800'
-                )}
-              >
-                {selectedCityList.length === 0
-                  ? '城市：全部'
-                  : `城市：${selectedCityList.slice(0, 2).join('、')}${
-                      selectedCityList.length > 2 ? ` +${selectedCityList.length - 2}` : ''
-                    }`}
-              </DropdownTrigger>
-
-              <DropdownContent align="start" className="w-64 p-2">
-                <div className="px-2 py-1 text-xs text-slate-500 dark:text-slate-400">
-                  多选城市
-                </div>
-                <div className="max-h-72 overflow-y-auto px-1">
-                  {availableCities.map((city) => {
-                    const checked = Boolean(selectedCities[city])
-                    return (
-                      <label
-                        key={city}
-                        className={cn(
-                          'flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm',
-                          'hover:bg-slate-100 dark:hover:bg-slate-800'
-                        )}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => {
-                            setSelectedCities((prev) => {
-                              const next = { ...prev }
-                              if (next[city]) delete next[city]
-                              else next[city] = true
-                              return next
-                            })
-                          }}
-                        />
-                        <span className="flex-1">{city}</span>
-                      </label>
-                    )
-                  })}
-                </div>
-                <div className="mt-2 flex items-center justify-between border-t border-slate-200 pt-2 dark:border-slate-800">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedCities({})}
-                    className="rounded-md px-2 py-1 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-                  >
-                    清空
-                  </button>
-                  <div className="px-2 py-1 text-xs text-slate-500 dark:text-slate-400">
+            {availableCities.length > 0 && (
+              <Dropdown>
+                <DropdownTrigger
+                  className={cn(
+                    'btn-secondary flex cursor-pointer items-center gap-2'
+                  )}
+                >
+                  <ListFilter size={16} />
+                  <span className="whitespace-nowrap">
                     {selectedCityList.length === 0
-                      ? `共 ${availableCities.length} 个`
-                      : `已选 ${selectedCityList.length} 个`}
+                      ? '城市：全部'
+                      : `城市：${selectedCityList.slice(0, 2).join('、')}${
+                          selectedCityList.length > 2 ? ` +${selectedCityList.length - 2}` : ''
+                        }`}
+                  </span>
+                  <ChevronDown size={14} />
+                </DropdownTrigger>
+
+                <DropdownContent align="start" className="w-64 p-2">
+                  <div className="px-2 py-1 text-xs text-slate-500 dark:text-slate-400">
+                    多选城市
                   </div>
-                </div>
-              </DropdownContent>
-            </Dropdown>
-          )}
+                  <div className="max-h-72 overflow-y-auto px-1">
+                    {availableCities.map((city) => {
+                      const checked = Boolean(selectedCities[city])
+                      return (
+                        <label
+                          key={city}
+                          className={cn(
+                            'flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm',
+                            'hover:bg-slate-100 dark:hover:bg-slate-800'
+                          )}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => {
+                              setSelectedCities((prev) => {
+                                const next = { ...prev }
+                                if (next[city]) delete next[city]
+                                else next[city] = true
+                                return next
+                              })
+                            }}
+                          />
+                          <span className="flex-1">{city}</span>
+                        </label>
+                      )
+                    })}
+                  </div>
+                  <div className="mt-2 flex items-center justify-between border-t border-slate-200 pt-2 dark:border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCities({})}
+                      className="rounded-md px-2 py-1 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                    >
+                      清空
+                    </button>
+                    <div className="px-2 py-1 text-xs text-slate-500 dark:text-slate-400">
+                      {selectedCityList.length === 0
+                        ? `共 ${availableCities.length} 个`
+                        : `已选 ${selectedCityList.length} 个`}
+                    </div>
+                  </div>
+                </DropdownContent>
+              </Dropdown>
+            )}
+          </div>
         </div>
 
         <div className="columns-2 gap-4 md:columns-3 lg:columns-4">
@@ -501,57 +509,100 @@ export function Life() {
                 <div className="relative shrink-0 bg-black md:w-[66%]">
                   <motion.div
                     layoutId={`life-image-${activePost.id}`}
-                    className="relative group"
+                    className="relative group isolate overflow-hidden"
                   >
-                    {failedImagesRef.current.has(
+                    {!failedImagesRef.current.has(
                       activeImages[activeImageIndex] ?? activeImages[0]
-                    ) ? (
-                      <div className="flex h-[42vh] w-full flex-col items-center justify-center gap-3 text-slate-200 md:h-[85vh]">
-                        <div className="text-sm">图片加载失败</div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const src = activeImages[activeImageIndex] ?? activeImages[0]
-                            if (src) failedImagesRef.current.delete(src)
-                            forceRerender((x) => x + 1)
-                          }}
-                          className="rounded-full bg-white/10 px-4 py-2 text-sm text-white backdrop-blur hover:bg-white/15"
-                        >
-                          重新加载
-                        </button>
-                      </div>
-                    ) : (
+                    ) && (
                       <img
                         src={activeImages[activeImageIndex] ?? activeImages[0]}
-                        alt={activePost.title}
-                        className="h-[42vh] w-full select-none object-contain md:h-[85vh]"
+                        alt=""
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-0 h-full w-full scale-[1.2] object-cover opacity-30 blur-2xl brightness-90"
                         loading="eager"
                         decoding="async"
                         draggable={false}
-                        onError={() => {
-                          const src = activeImages[activeImageIndex] ?? activeImages[0]
-                          if (!src) return
-                          failedImagesRef.current.add(src)
-                          forceRerender((x) => x + 1)
-                        }}
                       />
                     )}
-
-                    {activeImages.length > 1 && (
-                      <>
-                        <div className="pointer-events-none absolute inset-y-0 left-0 w-[10%] bg-gradient-to-r from-black/25 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                        <div className="pointer-events-none absolute inset-y-0 right-0 w-[10%] bg-gradient-to-l from-black/25 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                      </>
-                    )}
-
-                    {activeImages.length > 1 && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={goPrevImage}
-                          className="absolute inset-y-0 left-0 w-[10%] cursor-w-resize focus:outline-none"
-                          aria-label="上一张"
+                    <div className="relative z-10">
+                      {failedImagesRef.current.has(
+                        activeImages[activeImageIndex] ?? activeImages[0]
+                      ) ? (
+                        <div className="flex h-[42vh] w-full flex-col items-center justify-center gap-3 text-slate-200 md:h-[85vh]">
+                          <div className="text-sm">图片加载失败</div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const src = activeImages[activeImageIndex] ?? activeImages[0]
+                              if (src) failedImagesRef.current.delete(src)
+                              forceRerender((x) => x + 1)
+                            }}
+                            className="rounded-full bg-white/10 px-4 py-2 text-sm text-white backdrop-blur hover:bg-white/15"
+                          >
+                            重新加载
+                          </button>
+                        </div>
+                      ) : (
+                        <img
+                          src={activeImages[activeImageIndex] ?? activeImages[0]}
+                          alt={activePost.title}
+                          className="h-[42vh] w-full select-none object-contain md:h-[85vh]"
+                          loading="eager"
+                          decoding="async"
+                          draggable={false}
+                          onError={() => {
+                            const src = activeImages[activeImageIndex] ?? activeImages[0]
+                            if (!src) return
+                            failedImagesRef.current.add(src)
+                            forceRerender((x) => x + 1)
+                          }}
                         />
+                      )}
+
+                      {activeImages.length > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={goPrevImage}
+                            className="absolute inset-y-0 left-0 w-[10%] cursor-w-resize focus:outline-none"
+                            aria-label="上一张"
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              openLightbox(
+                                activeImages.map((img) => ({
+                                  src: img,
+                                  alt: activePost.title,
+                                  description: activePost.meta,
+                                })),
+                                activeImageIndex
+                              )
+                            }
+                            className="absolute inset-y-0 left-[10%] w-[80%] cursor-zoom-in focus:outline-none"
+                            aria-label="打开灯箱"
+                          />
+                          <button
+                            type="button"
+                            onClick={goNextImage}
+                            className="absolute inset-y-0 right-0 w-[10%] cursor-e-resize focus:outline-none"
+                            aria-label="下一张"
+                          />
+
+                          <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/80">
+                            <ChevronLeft size={18} />
+                          </div>
+                          <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/80">
+                            <ChevronRight size={18} />
+                          </div>
+
+                          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/45 px-2 py-1 text-xs text-white/90 backdrop-blur">
+                            {activeImageIndex + 1}/{activeImages.length}
+                          </div>
+                        </>
+                      )}
+
+                      {activeImages.length <= 1 && (
                         <button
                           type="button"
                           onClick={() =>
@@ -564,50 +615,15 @@ export function Life() {
                               activeImageIndex
                             )
                           }
-                          className="absolute inset-y-0 left-[10%] w-[80%] cursor-zoom-in focus:outline-none"
+                          className="absolute inset-0 cursor-zoom-in focus:outline-none"
                           aria-label="打开灯箱"
                         />
-                        <button
-                          type="button"
-                          onClick={goNextImage}
-                          className="absolute inset-y-0 right-0 w-[10%] cursor-e-resize focus:outline-none"
-                          aria-label="下一张"
-                        />
-
-                        <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/80">
-                          <ChevronLeft size={18} />
-                        </div>
-                        <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/80">
-                          <ChevronRight size={18} />
-                        </div>
-
-                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/45 px-2 py-1 text-xs text-white/90 backdrop-blur">
-                          {activeImageIndex + 1}/{activeImages.length}
-                        </div>
-                      </>
-                    )}
-
-                    {activeImages.length <= 1 && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          openLightbox(
-                            activeImages.map((img) => ({
-                              src: img,
-                              alt: activePost.title,
-                              description: activePost.meta,
-                            })),
-                            activeImageIndex
-                          )
-                        }
-                        className="absolute inset-0 cursor-zoom-in focus:outline-none"
-                        aria-label="打开灯箱"
-                      />
-                    )}
+                      )}
+                    </div>
                   </motion.div>
 
                   {activeImages.length > 1 && (
-                    <div className="absolute bottom-3 left-3 right-3 flex gap-2 overflow-x-auto rounded-xl bg-black/25 p-2 backdrop-blur">
+                    <div className="absolute bottom-3 left-3 right-3 z-[20] flex gap-2 overflow-x-auto rounded-xl bg-black/25 p-2 backdrop-blur">
                       {activeImages.map((src, idx) => (
                         <button
                           key={`${src}-${idx}`}
@@ -637,7 +653,7 @@ export function Life() {
                     type="button"
                     onClick={() => setActiveId(null)}
                     className={cn(
-                      'absolute top-3 right-3 inline-flex h-10 w-10 items-center justify-center rounded-full',
+                      'absolute top-3 right-3 z-[20] inline-flex h-10 w-10 items-center justify-center rounded-full',
                       'bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/55',
                       'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60'
                     )}
