@@ -1,23 +1,922 @@
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import {
+  CalendarDays,
+  Clapperboard,
+  ExternalLink,
+  Filter,
+  Search,
+  Star,
+} from 'lucide-react'
 import { Seo } from '../components/seo/Seo'
+import { cn } from '../utils/cn'
+import { Pagination } from '../components/ui/Pagination'
+import movieCsvRaw from '@content/movies/movie.csv?raw'
+import movieOverridesRaw from '@content/movies/movie-overrides.json'
+
+type SortOrder = 'desc' | 'asc'
+type ViewMode = 'csv' | 'tmdb'
+type TmdbStatus = 'idle' | 'loading' | 'ready' | 'error'
+
+interface MovieOverride {
+  platform?: string
+  note?: string
+  tmdbId?: number | string
+  tmdbQuery?: string
+}
+
+interface CsvMovieItem {
+  id: string
+  subjectId: string
+  title: string
+  originalTitle: string
+  link: string
+  watchDate: string
+  rating: number | null
+  platform: string
+  note: string
+  tmdbId: number | null
+  tmdbQuery: string
+}
+
+interface TmdbSearchMovie {
+  id: number
+  title?: string
+  original_title?: string
+  poster_path?: string | null
+  release_date?: string
+}
+
+interface TmdbEnrichedMovie {
+  tmdbId: number
+  tmdbTitle: string
+  tmdbOriginalTitle: string
+  posterUrl: string
+  releaseDate: string
+}
+
+const ITEMS_PER_PAGE = 24
+const DEFAULT_PLATFORM = 'Douban'
+const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w342'
+
+function normalizeCsvHeader(header: string) {
+  return header.replace(/^\uFEFF/, '').trim()
+}
+
+function parseCsvRows(raw: string): string[][] {
+  const rows: string[][] = []
+  let row: string[] = []
+  let field = ''
+  let inQuotes = false
+
+  for (let index = 0; index < raw.length; index += 1) {
+    const char = raw[index]
+    const next = raw[index + 1]
+
+    if (char === '"') {
+      if (inQuotes && next === '"') {
+        field += '"'
+        index += 1
+      } else {
+        inQuotes = !inQuotes
+      }
+      continue
+    }
+
+    if (char === ',' && !inQuotes) {
+      row.push(field)
+      field = ''
+      continue
+    }
+
+    if ((char === '\n' || char === '\r') && !inQuotes) {
+      if (char === '\r' && next === '\n') {
+        index += 1
+      }
+
+      row.push(field)
+      field = ''
+
+      if (row.some((value) => value.trim() !== '')) {
+        rows.push(row)
+      }
+      row = []
+      continue
+    }
+
+    field += char
+  }
+
+  row.push(field)
+  if (row.some((value) => value.trim() !== '')) {
+    rows.push(row)
+  }
+
+  return rows
+}
+
+function splitMovieTitle(rawTitle: string) {
+  const normalized = rawTitle.replace(/\s+/g, ' ').trim()
+  if (!normalized) return { title: '', originalTitle: '' }
+
+  const parts = normalized
+    .split(' / ')
+    .map((part) => part.trim())
+    .filter(Boolean)
+
+  if (parts.length <= 1) {
+    return { title: normalized, originalTitle: '' }
+  }
+
+  return {
+    title: parts[0],
+    originalTitle: parts.slice(1).join(' / '),
+  }
+}
+
+function parseSubjectId(link: string) {
+  const match = link.match(/\/subject\/(\d+)\//)
+  return match ? match[1] : ''
+}
+
+function toValidRating(input: string) {
+  const parsed = Number.parseInt(input, 10)
+  if (!Number.isFinite(parsed)) return null
+  if (parsed < 1 || parsed > 5) return null
+  return parsed
+}
+
+function parseTmdbId(input: number | string | undefined) {
+  if (typeof input === 'number' && Number.isFinite(input) && input > 0) {
+    return Math.round(input)
+  }
+
+  if (typeof input === 'string') {
+    const parsed = Number.parseInt(input, 10)
+    if (Number.isFinite(parsed) && parsed > 0) {
+      return parsed
+    }
+  }
+
+  return null
+}
+
+function toTimestamp(input: string) {
+  if (!input) return 0
+  const parsed = new Date(input)
+  return Number.isNaN(parsed.getTime()) ? 0 : parsed.getTime()
+}
+
+function formatDate(input: string, locale: string) {
+  if (!input) return ''
+  const parsed = new Date(input)
+  if (Number.isNaN(parsed.getTime())) return ''
+  return new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(parsed)
+}
+
+function normalizePosterUrl(path: string | undefined | null) {
+  if (!path) return ''
+  if (/^https?:\/\//i.test(path)) return path
+  return `${TMDB_IMAGE_BASE_URL}${path}`
+}
+
+function normalizeTmdbToken(token: string) {
+  return token.replace(/^Bearer\s+/i, '').trim()
+}
+
+function getTmdbAuthHeaders(token: string) {
+  return {
+    Authorization: `Bearer ${token}`,
+    accept: 'application/json',
+  }
+}
+
+async function fetchTmdbWithFallback<T>(options: {
+  endpoint: string
+  params: Record<string, string>
+  token: string
+  apiKey: string
+}) {
+  const { endpoint, params, token, apiKey } = options
+  const cleanedToken = normalizeTmdbToken(token)
+
+  const attempts: Array<{
+    url: string
+    headers?: Record<string, string>
+  }> = []
+
+  if (cleanedToken) {
+    const search = new URLSearchParams(params)
+    attempts.push({
+      url: `https://api.themoviedb.org/3/${endpoint}?${search.toString()}`,
+      headers: getTmdbAuthHeaders(cleanedToken),
+    })
+  }
+
+  if (apiKey) {
+    const search = new URLSearchParams(params)
+    search.set('api_key', apiKey)
+    attempts.push({
+      url: `https://api.themoviedb.org/3/${endpoint}?${search.toString()}`,
+    })
+  }
+
+  if (attempts.length === 0) {
+    throw new Error('TMDB missing credentials')
+  }
+
+  let lastError: Error | null = null
+
+  for (const attempt of attempts) {
+    try {
+      const response = await fetch(attempt.url, {
+        headers: attempt.headers,
+      })
+
+      if (response.ok) {
+        return (await response.json()) as T
+      }
+
+      const isAuthError = response.status === 401 || response.status === 403
+      const isNotFound = response.status === 404
+
+      if (!isAuthError || isNotFound) {
+        throw new Error(`TMDB HTTP ${response.status}`)
+      }
+
+      lastError = new Error(`TMDB HTTP ${response.status}`)
+    } catch (error) {
+      if (error instanceof Error) {
+        lastError = error
+      } else {
+        lastError = new Error(String(error))
+      }
+    }
+  }
+
+  throw lastError ?? new Error('TMDB request failed')
+}
+
+async function fetchTmdbMovieById(options: {
+  movieId: number
+  language: string
+  token: string
+  apiKey: string
+}) {
+  const { movieId, language, token, apiKey } = options
+  return fetchTmdbWithFallback<TmdbSearchMovie>({
+    endpoint: `movie/${movieId}`,
+    params: { language },
+    token,
+    apiKey,
+  })
+}
+
+async function searchTmdbMovie(options: {
+  query: string
+  language: string
+  token: string
+  apiKey: string
+}) {
+  const { query, language, token, apiKey } = options
+  const payload = await fetchTmdbWithFallback<{ results?: TmdbSearchMovie[] }>({
+    endpoint: 'search/movie',
+    params: {
+      query,
+      include_adult: 'false',
+      language,
+      page: '1',
+    },
+    token,
+    apiKey,
+  })
+  const results = Array.isArray(payload.results) ? payload.results : []
+  return results[0] ?? null
+}
+
+function buildCsvMovies(
+  rawCsv: string,
+  overrides: Record<string, MovieOverride>
+): CsvMovieItem[] {
+  const rows = parseCsvRows(rawCsv.replace(/^\uFEFF/, ''))
+  if (rows.length === 0) return []
+
+  const headers = rows[0].map(normalizeCsvHeader)
+  const titleIndex = headers.indexOf('片名')
+  const ratingIndex = headers.indexOf('个人评分')
+  const dateIndex = headers.indexOf('打分日期')
+  const linkIndex = headers.indexOf('影片链接')
+
+  const safeTitleIndex = titleIndex >= 0 ? titleIndex : 0
+  const safeRatingIndex = ratingIndex >= 0 ? ratingIndex : 1
+  const safeDateIndex = dateIndex >= 0 ? dateIndex : 2
+  const safeLinkIndex = linkIndex >= 0 ? linkIndex : 3
+
+  const movies: CsvMovieItem[] = []
+
+  for (let index = 1; index < rows.length; index += 1) {
+    const row = rows[index]
+    const rawTitle = (row[safeTitleIndex] ?? '').trim()
+    if (!rawTitle) continue
+    if (rawTitle.startsWith('删除')) continue
+
+    const rawRating = (row[safeRatingIndex] ?? '').trim()
+    const rawDate = (row[safeDateIndex] ?? '').trim()
+    const rawLink = (row[safeLinkIndex] ?? '').trim().replace(/,$/, '')
+
+    const subjectId = parseSubjectId(rawLink)
+    const override =
+      overrides[subjectId] ||
+      overrides[rawLink] ||
+      overrides[rawTitle] ||
+      overrides[`row-${index}`] ||
+      {}
+
+    const { title, originalTitle } = splitMovieTitle(rawTitle)
+    const rating = toValidRating(rawRating)
+    const platform = (override.platform || DEFAULT_PLATFORM).trim()
+    const note = (override.note || '').trim()
+    const rowId = subjectId ? `${subjectId}-${index}` : `row-${index}`
+
+    movies.push({
+      id: rowId,
+      subjectId,
+      title,
+      originalTitle,
+      link: rawLink,
+      watchDate: rawDate,
+      rating,
+      platform,
+      note,
+      tmdbId: parseTmdbId(override.tmdbId),
+      tmdbQuery: (override.tmdbQuery || '').trim(),
+    })
+  }
+
+  movies.sort((a, b) => {
+    const timeA = toTimestamp(a.watchDate)
+    const timeB = toTimestamp(b.watchDate)
+    if (timeA === timeB) return a.id.localeCompare(b.id)
+    return timeB - timeA
+  })
+
+  return movies
+}
+
+async function fetchTmdbEnrichment(options: {
+  movie: CsvMovieItem
+  language: string
+  token: string
+  apiKey: string
+}) {
+  const { movie, language, token, apiKey } = options
+
+  let result: TmdbSearchMovie | null = null
+
+  if (movie.tmdbId) {
+    try {
+      result = await fetchTmdbMovieById({
+        movieId: movie.tmdbId,
+        language,
+        token,
+        apiKey,
+      })
+    } catch {
+      result = null
+    }
+  }
+
+  if (!result) {
+    const queryCandidates = [movie.tmdbQuery, movie.originalTitle, movie.title]
+      .map((query) => query.trim())
+      .filter(Boolean)
+
+    const dedupedQueries: string[] = []
+    for (const query of queryCandidates) {
+      const lowered = query.toLowerCase()
+      if (!dedupedQueries.some((existing) => existing.toLowerCase() === lowered)) {
+        dedupedQueries.push(query)
+      }
+    }
+
+    for (const query of dedupedQueries) {
+      result = await searchTmdbMovie({
+        query,
+        language,
+        token,
+        apiKey,
+      })
+
+      if (result) break
+    }
+  }
+
+  if (!result || !result.id) {
+    return null
+  }
+
+  return {
+    tmdbId: result.id,
+    tmdbTitle: result.title?.trim() || '',
+    tmdbOriginalTitle: result.original_title?.trim() || '',
+    posterUrl: normalizePosterUrl(result.poster_path),
+    releaseDate: result.release_date?.trim() || '',
+  } satisfies TmdbEnrichedMovie
+}
 
 export function Movies() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const [keyword, setKeyword] = useState('')
+  const [platformFilter, setPlatformFilter] = useState('all')
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
+  const [viewMode, setViewMode] = useState<ViewMode>('csv')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [tmdbMap, setTmdbMap] = useState<Record<string, TmdbEnrichedMovie | null>>({})
+  const [tmdbStatus, setTmdbStatus] = useState<TmdbStatus>('idle')
+  const [tmdbErrorMessage, setTmdbErrorMessage] = useState('')
+
+  const tmdbToken = (import.meta.env.VITE_TMDB_API_TOKEN as string | undefined)?.trim() ?? ''
+  const tmdbApiKey = (import.meta.env.VITE_TMDB_API_KEY as string | undefined)?.trim() ?? ''
+
+  const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
+  const tmdbLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
+
   const title = t('nav.movies')
-  const description = t('movies.description', '记录观影清单与简评。')
+  const description = t(
+    'movies.description',
+    '默认展示豆瓣 CSV 导出数据；可切换 TMDB 增强版加载海报。'
+  )
+
+  const movieOverrides = movieOverridesRaw as Record<string, MovieOverride>
+
+  const movieItems = useMemo(
+    () => buildCsvMovies(movieCsvRaw, movieOverrides),
+    [movieOverrides]
+  )
+
+  const platformOptions = useMemo(() => {
+    const unique = new Set<string>()
+    for (const movie of movieItems) {
+      if (movie.platform) unique.add(movie.platform)
+    }
+    return Array.from(unique).sort((a, b) => a.localeCompare(b, locale))
+  }, [movieItems, locale])
+
+  const filteredMovies = useMemo(() => {
+    const normalizedKeyword = keyword.trim().toLowerCase()
+
+    const filtered = movieItems.filter((movie) => {
+      const matchPlatform =
+        platformFilter === 'all' || movie.platform === platformFilter
+      if (!matchPlatform) return false
+
+      if (!normalizedKeyword) return true
+
+      const haystack = [
+        movie.title,
+        movie.originalTitle,
+        movie.platform,
+        movie.note,
+        movie.link,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+
+      return haystack.includes(normalizedKeyword)
+    })
+
+    filtered.sort((a, b) => {
+      const timeA = toTimestamp(a.watchDate)
+      const timeB = toTimestamp(b.watchDate)
+      if (timeA === timeB) return a.id.localeCompare(b.id)
+      return sortOrder === 'desc' ? timeB - timeA : timeA - timeB
+    })
+
+    return filtered
+  }, [movieItems, keyword, platformFilter, sortOrder])
+
+  const totalPages = Math.max(1, Math.ceil(filteredMovies.length / ITEMS_PER_PAGE))
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [keyword, platformFilter, sortOrder])
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages)
+    }
+  }, [currentPage, totalPages])
+
+  const pageMovies = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE
+    return filteredMovies.slice(start, start + ITEMS_PER_PAGE)
+  }, [filteredMovies, currentPage])
+
+  useEffect(() => {
+    if (viewMode !== 'tmdb') {
+      setTmdbStatus('idle')
+      setTmdbErrorMessage('')
+      return
+    }
+
+    if (!tmdbToken && !tmdbApiKey) {
+      setTmdbStatus('error')
+      setTmdbErrorMessage(t('movies.tmdb.errors.missingConfig'))
+      return
+    }
+
+    const targets = pageMovies.filter((movie) => !(movie.id in tmdbMap)).slice(0, 12)
+
+    if (targets.length === 0) {
+      setTmdbStatus((prev) => (prev === 'idle' ? 'ready' : prev))
+      return
+    }
+
+    let cancelled = false
+    setTmdbStatus('loading')
+    setTmdbErrorMessage('')
+
+    const run = async () => {
+      const settled = await Promise.allSettled(
+        targets.map(async (movie) => {
+          const enriched = await fetchTmdbEnrichment({
+            movie,
+            language: tmdbLanguage,
+            token: tmdbToken,
+            apiKey: tmdbApiKey,
+          })
+          return { movieId: movie.id, enriched }
+        })
+      )
+
+      if (cancelled) return
+
+      const nextEntries: Record<string, TmdbEnrichedMovie | null> = {}
+      let hasSuccess = false
+      let firstError: string | null = null
+
+      for (const result of settled) {
+        if (result.status === 'fulfilled') {
+          hasSuccess = true
+          nextEntries[result.value.movieId] = result.value.enriched
+        } else if (!firstError) {
+          const message =
+            result.reason instanceof Error
+              ? result.reason.message
+              : String(result.reason)
+          firstError = message
+        }
+      }
+
+      if (Object.keys(nextEntries).length > 0) {
+        setTmdbMap((prev) => ({ ...prev, ...nextEntries }))
+      }
+
+      if (hasSuccess) {
+        setTmdbStatus('ready')
+      } else if (firstError) {
+        setTmdbStatus('error')
+        if (/HTTP 401|HTTP 403/.test(firstError)) {
+          setTmdbErrorMessage(t('movies.tmdb.errors.authFailed'))
+        } else {
+          setTmdbErrorMessage(t('movies.tmdb.errors.network'))
+        }
+      }
+    }
+
+    run().catch(() => {
+      if (cancelled) return
+      setTmdbStatus('error')
+      setTmdbErrorMessage(t('movies.tmdb.errors.network'))
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [
+    pageMovies,
+    tmdbApiKey,
+    tmdbLanguage,
+    tmdbMap,
+    tmdbToken,
+    t,
+    viewMode,
+  ])
+
+  const ratedCount = movieItems.filter((movie) => movie.rating !== null).length
+  const latestWatchDate = movieItems.find((movie) => movie.watchDate)?.watchDate || ''
 
   return (
     <>
       <Seo title={title} description={description} />
+
       <div className="mx-auto w-full max-w-3xl px-4 py-8">
-        <h1 className="mb-4 text-3xl font-bold text-slate-900 dark:text-slate-100">
-          {title}
-        </h1>
-        <p className="leading-relaxed text-slate-600 dark:text-slate-400">
-          {description}
-        </p>
+        <div className="mb-6 space-y-3">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+            {title}
+          </h1>
+          <p className="max-w-3xl leading-relaxed text-slate-600 dark:text-slate-400">
+            {description}
+          </p>
+        </div>
+
+        <section className="mb-6 grid gap-3 rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 sm:grid-cols-3">
+          <div>
+            <div className="text-xs text-slate-500 dark:text-slate-400">
+              {t('movies.stats.watchedCount')}
+            </div>
+            <div className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">
+              {movieItems.length}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs text-slate-500 dark:text-slate-400">
+              {t('movies.stats.ratedCount')}
+            </div>
+            <div className="mt-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">
+              {ratedCount}
+            </div>
+          </div>
+          <div>
+            <div className="text-xs text-slate-500 dark:text-slate-400">
+              {t('movies.stats.latestWatch')}
+            </div>
+            <div className="mt-1 text-sm font-medium text-slate-700 dark:text-slate-300">
+              {formatDate(latestWatchDate, locale) || '--'}
+            </div>
+          </div>
+        </section>
+
+        <section className="mb-6 rounded-2xl border border-slate-200 bg-white/80 p-3 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              {t('movies.mode.label')}
+            </span>
+            <div className="inline-flex rounded-xl border border-slate-200 p-1 dark:border-slate-700">
+              <button
+                type="button"
+                onClick={() => setViewMode('csv')}
+                className={cn(
+                  'rounded-lg px-3 py-1.5 text-xs font-medium transition',
+                  viewMode === 'csv'
+                    ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
+                    : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                )}
+              >
+                {t('movies.mode.csv')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('tmdb')}
+                className={cn(
+                  'rounded-lg px-3 py-1.5 text-xs font-medium transition',
+                  viewMode === 'tmdb'
+                    ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
+                    : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                )}
+              >
+                {t('movies.mode.tmdb')}
+              </button>
+            </div>
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              {t('movies.mode.hint')}
+            </span>
+          </div>
+
+          {viewMode === 'tmdb' ? (
+            <div className="rounded-xl border border-blue-100 bg-blue-50/70 px-3 py-2 text-xs text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300">
+              {t('movies.tmdb.notice')}
+              {tmdbStatus === 'loading' ? (
+                <span className="ml-2">{t('movies.tmdb.loading')}</span>
+              ) : null}
+              {tmdbStatus === 'error' && tmdbErrorMessage ? (
+                <span className="ml-2 text-rose-600 dark:text-rose-300">
+                  {tmdbErrorMessage}
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+        </section>
+
+        <section className="mb-6 grid gap-3 rounded-2xl border border-slate-200 bg-white/80 p-3 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 md:grid-cols-[minmax(0,1fr)_220px_180px]">
+          <label className="relative block">
+            <Search
+              size={16}
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            />
+            <input
+              type="search"
+              value={keyword}
+              onChange={(event) => setKeyword(event.target.value)}
+              placeholder={t('movies.searchPlaceholder')}
+              className="w-full rounded-xl border border-slate-200 bg-white/90 py-2.5 pl-10 pr-3 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-blue-500 dark:focus:ring-blue-900/40"
+            />
+          </label>
+
+          <label className="flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 dark:border-slate-700">
+            <Filter size={16} className="text-slate-400" />
+            <select
+              value={platformFilter}
+              onChange={(event) => setPlatformFilter(event.target.value)}
+              className="w-full bg-transparent text-sm text-slate-700 outline-none dark:text-slate-200"
+            >
+              <option value="all">{t('movies.filters.allPlatforms')}</option>
+              {platformOptions.map((platform) => (
+                <option key={platform} value={platform}>
+                  {platform}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 dark:border-slate-700">
+            <CalendarDays size={16} className="text-slate-400" />
+            <select
+              value={sortOrder}
+              onChange={(event) => setSortOrder(event.target.value as SortOrder)}
+              className="w-full bg-transparent text-sm text-slate-700 outline-none dark:text-slate-200"
+            >
+              <option value="desc">{t('movies.filters.newestFirst')}</option>
+              <option value="asc">{t('movies.filters.oldestFirst')}</option>
+            </select>
+          </label>
+        </section>
+
+        {movieItems.length === 0 ? (
+          <section className="rounded-2xl border border-dashed border-slate-300 bg-white/70 p-8 text-center dark:border-slate-700 dark:bg-slate-900/70">
+            <Clapperboard
+              size={34}
+              className="mx-auto mb-3 text-slate-400 dark:text-slate-500"
+            />
+            <h2 className="mb-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
+              {t('movies.empty.title')}
+            </h2>
+            <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+              {t('movies.empty.description')}
+            </p>
+          </section>
+        ) : filteredMovies.length === 0 ? (
+          <section className="rounded-2xl border border-dashed border-slate-300 bg-white/70 p-8 text-center text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-400">
+            {t('movies.noResults')}
+          </section>
+        ) : (
+          <>
+            <div className="space-y-4">
+              {pageMovies.map((movie) => {
+                const watchedAt = formatDate(movie.watchDate, locale)
+                const tmdb = tmdbMap[movie.id] ?? null
+                const showPoster = viewMode === 'tmdb' && Boolean(tmdb?.posterUrl)
+                const tmdbLink = tmdb?.tmdbId
+                  ? `https://www.themoviedb.org/movie/${tmdb.tmdbId}`
+                  : ''
+
+                return (
+                  <article
+                    key={movie.id}
+                    className={cn(
+                      'group rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900/80',
+                      viewMode === 'tmdb'
+                        ? 'grid gap-4 sm:grid-cols-[110px_minmax(0,1fr)]'
+                        : 'block'
+                    )}
+                  >
+                    {viewMode === 'tmdb' ? (
+                      <div className="aspect-[2/3] overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800">
+                        {showPoster ? (
+                          <img
+                            src={tmdb?.posterUrl}
+                            alt={movie.title}
+                            loading="lazy"
+                            decoding="async"
+                            referrerPolicy="no-referrer"
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-slate-500 dark:text-slate-400">
+                            <Clapperboard size={20} />
+                            <span className="px-2 text-center text-xs">
+                              {t('movies.tmdb.noPoster')}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ) : null}
+
+                    <div className="flex min-w-0 flex-col">
+                      <div className="mb-2 flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <h2 className="truncate text-lg font-semibold text-slate-900 dark:text-slate-100">
+                            {movie.title}
+                          </h2>
+                          {movie.originalTitle ? (
+                            <p className="truncate text-sm text-slate-500 dark:text-slate-400">
+                              {movie.originalTitle}
+                            </p>
+                          ) : null}
+                          {viewMode === 'tmdb' && tmdb?.tmdbTitle ? (
+                            <p className="truncate text-xs text-slate-400 dark:text-slate-500">
+                              TMDB: {tmdb.tmdbTitle}
+                              {tmdb.tmdbOriginalTitle &&
+                              tmdb.tmdbOriginalTitle !== tmdb.tmdbTitle
+                                ? ` / ${tmdb.tmdbOriginalTitle}`
+                                : ''}
+                            </p>
+                          ) : null}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          {tmdbLink ? (
+                            <a
+                              href={tmdbLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300"
+                            >
+                              <ExternalLink size={13} />
+                              TMDB
+                            </a>
+                          ) : null}
+                          {movie.link ? (
+                            <a
+                              href={movie.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300"
+                            >
+                              <ExternalLink size={13} />
+                              {t('movies.actions.openDouban')}
+                            </a>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      <div className="mb-2 flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                          {movie.platform || DEFAULT_PLATFORM}
+                        </span>
+                        {viewMode === 'tmdb' && tmdb?.releaseDate ? (
+                          <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 dark:border-blue-900/60 dark:bg-blue-900/20 dark:text-blue-300">
+                            {t('movies.tmdb.releaseDate')}: {formatDate(tmdb.releaseDate, locale)}
+                          </span>
+                        ) : null}
+                      </div>
+
+                      <div className="mb-2 flex items-center gap-1.5">
+                        {Array.from({ length: 5 }).map((_, index) => {
+                          const active = movie.rating !== null && index < movie.rating
+                          return (
+                            <Star
+                              key={index}
+                              size={14}
+                              className={cn(
+                                active
+                                  ? 'fill-amber-400 text-amber-400'
+                                  : 'text-slate-300 dark:text-slate-700'
+                              )}
+                            />
+                          )
+                        })}
+                        <span className="ml-1 text-xs text-slate-500 dark:text-slate-400">
+                          {movie.rating
+                            ? t('movies.rating.value', { rating: movie.rating })
+                            : t('movies.rating.unrated')}
+                        </span>
+                      </div>
+
+                      <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+                        <span className="inline-flex items-center gap-1">
+                          <CalendarDays size={13} />
+                          {t('movies.watchDate')}: {watchedAt || '--'}
+                        </span>
+                        {movie.subjectId ? (
+                          <span>#{movie.subjectId}</span>
+                        ) : null}
+                      </div>
+
+                      {movie.note ? (
+                        <p className="mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">
+                          {movie.note}
+                        </p>
+                      ) : null}
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </>
+        )}
       </div>
     </>
   )
 }
-

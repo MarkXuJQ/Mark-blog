@@ -105,7 +105,48 @@
     "backHome": "返回主页"
   },
   "movies": {
-    "description": "记录观影清单与简评。"
+    "description": "默认读取豆瓣导出的 CSV 观影记录，可切换 TMDB 增强模式补充海报与上映信息。",
+    "stats": {
+      "watchedCount": "观影总数",
+      "ratedCount": "已评分",
+      "latestWatch": "最近观看"
+    },
+    "mode": {
+      "label": "数据模式",
+      "csv": "CSV 默认",
+      "tmdb": "TMDB 增强",
+      "hint": "默认模式不依赖外网。"
+    },
+    "tmdb": {
+      "notice": "TMDB 在中国大陆网络可能无法访问。",
+      "loading": "正在加载当前页 TMDB 数据…",
+      "noPoster": "暂无海报",
+      "releaseDate": "上映日期",
+      "errors": {
+        "missingConfig": "未配置 TMDB Token/Key，请在 apps/web/.env.local 添加 VITE_TMDB_API_TOKEN 或 VITE_TMDB_API_KEY。",
+        "authFailed": "TMDB 鉴权失败，请检查 Token/Key 是否正确。",
+        "network": "TMDB 请求失败（可能是网络不可达）。"
+      }
+    },
+    "searchPlaceholder": "搜索片名、原名、平台或备注…",
+    "filters": {
+      "allPlatforms": "全部平台",
+      "newestFirst": "最新观看优先",
+      "oldestFirst": "最早观看优先"
+    },
+    "empty": {
+      "title": "没有可展示的观影数据",
+      "description": "请确认 content/movies/movie.csv 存在且包含导出的豆瓣观影记录。可在 content/movies/movie-overrides.json 手动补充 platform、note、tmdbId、tmdbQuery。"
+    },
+    "noResults": "没有符合当前筛选条件的电影。",
+    "rating": {
+      "value": "{{rating}} 星",
+      "unrated": "未评分"
+    },
+    "watchDate": "观看日期",
+    "actions": {
+      "openDouban": "豆瓣条目"
+    }
   },
   "games": {
     "description": "记录游玩记录与感想。"

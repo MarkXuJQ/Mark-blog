@@ -25,7 +25,7 @@ if (!fs.existsSync(DIST_DIR)) {
 
 // Get all routes
 function getRoutes() {
-  const routes = ['/', '/blog', '/timeline', '/archive', '/about', '/life']
+  const routes = ['/', '/blog', '/timeline', '/archive', '/about', '/life', '/movies']
 
   // Add blog post routes
   if (fs.existsSync(POSTS_DIR)) {
