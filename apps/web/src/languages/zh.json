@@ -117,6 +117,16 @@
       "tmdb": "TMDB 增强",
       "hint": "默认模式不依赖外网。"
     },
+    "layout": {
+      "label": "布局",
+      "list": "列表",
+      "grid": "网格"
+    },
+    "profile": {
+      "label": "主页",
+      "douban": "豆瓣",
+      "tmdb": "TMDB"
+    },
     "tmdb": {
       "notice": "TMDB 在中国大陆网络可能无法访问。",
       "loading": "正在加载当前页 TMDB 数据…",

@@ -117,6 +117,16 @@
       "tmdb": "TMDB Enhanced",
       "hint": "Default mode works without external access."
     },
+    "layout": {
+      "label": "Layout",
+      "list": "List",
+      "grid": "Grid"
+    },
+    "profile": {
+      "label": "Profiles",
+      "douban": "Douban",
+      "tmdb": "TMDB"
+    },
     "tmdb": {
       "notice": "TMDB may be inaccessible from mainland China.",
       "loading": "Loading TMDB data for this page...",
