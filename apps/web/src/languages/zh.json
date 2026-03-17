@@ -127,6 +127,18 @@
       "douban": "豆瓣",
       "tmdb": "TMDB"
     },
+    "calendar": {
+      "title": "观影活跃日历",
+      "summary": "近一年共 {{count}} 个观影日",
+      "tooltip": "{{date}}：{{count}} 部",
+      "less": "少",
+      "more": "多",
+      "week": {
+        "mon": "一",
+        "wed": "三",
+        "fri": "五"
+      }
+    },
     "tmdb": {
       "notice": "TMDB 在中国大陆网络可能无法访问。",
       "loading": "正在加载当前页 TMDB 数据…",

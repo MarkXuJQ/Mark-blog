@@ -127,6 +127,18 @@
       "douban": "Douban",
       "tmdb": "TMDB"
     },
+    "calendar": {
+      "title": "Watch Activity Calendar",
+      "summary": "{{count}} active watch days in the last year",
+      "tooltip": "{{date}}: {{count}} movies",
+      "less": "Less",
+      "more": "More",
+      "week": {
+        "mon": "Mon",
+        "wed": "Wed",
+        "fri": "Fri"
+      }
+    },
     "tmdb": {
       "notice": "TMDB may be inaccessible from mainland China.",
       "loading": "Loading TMDB data for this page...",

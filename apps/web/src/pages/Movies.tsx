@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  CalendarDays,
   Clapperboard,
   ExternalLink,
   LayoutGrid,
@@ -10,12 +9,12 @@ import {
   Star,
 } from 'lucide-react'
 import { Seo } from '../components/seo/Seo'
+import { WatchActivityCalendar } from '../components/movies/WatchActivityCalendar'
 import { cn } from '../utils/cn'
 import { Pagination } from '../components/ui/Pagination'
 import movieCsvRaw from '@content/movies/movie.csv?raw'
 import movieOverridesRaw from '@content/movies/movie-overrides.json'
 
-type SortOrder = 'desc' | 'asc'
 type ViewMode = 'csv' | 'tmdb'
 type CardLayout = 'list' | 'grid'
 type TmdbStatus = 'idle' | 'loading' | 'ready' | 'error'
@@ -57,6 +56,7 @@ interface TmdbEnrichedMovie {
   releaseDate: string
 }
 
+
 const ITEMS_PER_PAGE = 24
 const DEFAULT_PLATFORM = 'Douban'
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w342'
@@ -67,6 +67,7 @@ const TMDB_PROFILE_URL = 'https://www.themoviedb.org/u/MarkXu269'
 function normalizeCsvHeader(header: string) {
   return header.replace(/^\uFEFF/, '').trim()
 }
+
 
 function parseCsvRows(raw: string): string[][] {
   const rows: string[][] = []
@@ -182,6 +183,7 @@ function formatDate(input: string, locale: string) {
     day: 'numeric',
   }).format(parsed)
 }
+
 
 function normalizePosterUrl(path: string | undefined | null) {
   if (!path) return ''
@@ -436,7 +438,6 @@ async function fetchTmdbEnrichment(options: {
 export function Movies() {
   const { t, i18n } = useTranslation()
   const [keyword, setKeyword] = useState('')
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
   const [viewMode, setViewMode] = useState<ViewMode>('csv')
   const [cardLayout, setCardLayout] = useState<CardLayout>('list')
   const [currentPage, setCurrentPage] = useState(1)
@@ -466,7 +467,7 @@ export function Movies() {
   const filteredMovies = useMemo(() => {
     const normalizedKeyword = keyword.trim().toLowerCase()
 
-    const filtered = movieItems.filter((movie) => {
+    return movieItems.filter((movie) => {
       if (!normalizedKeyword) return true
 
       const haystack = [
@@ -482,22 +483,13 @@ export function Movies() {
 
       return haystack.includes(normalizedKeyword)
     })
-
-    filtered.sort((a, b) => {
-      const timeA = toTimestamp(a.watchDate)
-      const timeB = toTimestamp(b.watchDate)
-      if (timeA === timeB) return a.id.localeCompare(b.id)
-      return sortOrder === 'desc' ? timeB - timeA : timeA - timeB
-    })
-
-    return filtered
-  }, [movieItems, keyword, sortOrder])
+  }, [movieItems, keyword])
 
   const totalPages = Math.max(1, Math.ceil(filteredMovies.length / ITEMS_PER_PAGE))
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [keyword, sortOrder])
+  }, [keyword, viewMode, cardLayout])
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -602,7 +594,7 @@ export function Movies() {
   ])
 
   const ratedCount = movieItems.filter((movie) => movie.rating !== null).length
-  const latestWatchDate = movieItems.find((movie) => movie.watchDate)?.watchDate || ''
+
 
   return (
     <>
@@ -618,7 +610,7 @@ export function Movies() {
           </p>
         </div>
 
-        <section className="mb-6 grid gap-3 rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 sm:grid-cols-3">
+        <section className="mb-6 grid gap-3 rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 sm:grid-cols-2">
           <div>
             <div className="text-xs text-slate-500 dark:text-slate-400">
               {t('movies.stats.watchedCount')}
@@ -635,15 +627,7 @@ export function Movies() {
               {ratedCount}
             </div>
           </div>
-          <div>
-            <div className="text-xs text-slate-500 dark:text-slate-400">
-              {t('movies.stats.latestWatch')}
-            </div>
-            <div className="mt-1 text-sm font-medium text-slate-700 dark:text-slate-300">
-              {formatDate(latestWatchDate, locale) || '--'}
-            </div>
-          </div>
-          <div className="sm:col-span-3 flex flex-wrap items-center gap-2 border-t border-slate-200 pt-3 dark:border-slate-700">
+          <div className="sm:col-span-2 flex flex-wrap items-center gap-2 border-t border-slate-200 pt-3 dark:border-slate-700">
             <span className="text-xs text-slate-500 dark:text-slate-400">
               {t('movies.profile.label')}
             </span>
@@ -668,17 +652,36 @@ export function Movies() {
           </div>
         </section>
 
+        <WatchActivityCalendar
+          watchDates={movieItems.map((movie) => movie.watchDate)}
+          locale={locale}
+        />
+
         <section className="mb-6 rounded-2xl border border-slate-200 bg-white/80 p-3 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            <span className="text-xs text-slate-500 dark:text-slate-400">
-              {t('movies.mode.label')}
-            </span>
-            <div className="inline-flex rounded-xl border border-slate-200 p-1 dark:border-slate-700">
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="relative min-w-[220px] flex-1">
+              <Search
+                size={16}
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="search"
+                value={keyword}
+                onChange={(event) => setKeyword(event.target.value)}
+                placeholder={t('movies.searchPlaceholder')}
+                className="w-full rounded-xl border border-slate-200 bg-white/90 py-2.5 pl-10 pr-3 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-blue-500 dark:focus:ring-blue-900/40"
+              />
+            </label>
+
+            <div className="inline-flex items-center rounded-xl border border-slate-200 p-1 dark:border-slate-700">
+              <span className="px-2 text-xs text-slate-500 dark:text-slate-400">
+                {t('movies.mode.label')}
+              </span>
               <button
                 type="button"
                 onClick={() => setViewMode('csv')}
                 className={cn(
-                  'rounded-lg px-3 py-1.5 text-xs font-medium transition',
+                  'rounded-lg px-2.5 py-1.5 text-xs font-medium transition',
                   viewMode === 'csv'
                     ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
                     : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
@@ -690,7 +693,7 @@ export function Movies() {
                 type="button"
                 onClick={() => setViewMode('tmdb')}
                 className={cn(
-                  'rounded-lg px-3 py-1.5 text-xs font-medium transition',
+                  'rounded-lg px-2.5 py-1.5 text-xs font-medium transition',
                   viewMode === 'tmdb'
                     ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
                     : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
@@ -699,13 +702,44 @@ export function Movies() {
                 {t('movies.mode.tmdb')}
               </button>
             </div>
-            <span className="text-xs text-slate-500 dark:text-slate-400">
-              {t('movies.mode.hint')}
-            </span>
+
+            <div className="inline-flex items-center rounded-xl border border-slate-200 p-1 dark:border-slate-700">
+              <span className="px-2 text-xs text-slate-500 dark:text-slate-400">
+                {t('movies.layout.label')}
+              </span>
+              <button
+                type="button"
+                onClick={() => setCardLayout('list')}
+                className={cn(
+                  'inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium transition',
+                  cardLayout === 'list'
+                    ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
+                    : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                )}
+                aria-label={t('movies.layout.list')}
+              >
+                <List size={14} />
+                {t('movies.layout.list')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setCardLayout('grid')}
+                className={cn(
+                  'inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium transition',
+                  cardLayout === 'grid'
+                    ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
+                    : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                )}
+                aria-label={t('movies.layout.grid')}
+              >
+                <LayoutGrid size={14} />
+                {t('movies.layout.grid')}
+              </button>
+            </div>
           </div>
 
           {viewMode === 'tmdb' ? (
-            <div className="rounded-xl border border-blue-100 bg-blue-50/70 px-3 py-2 text-xs text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300">
+            <div className="mt-3 rounded-xl border border-blue-100 bg-blue-50/70 px-3 py-2 text-xs text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300">
               {t('movies.tmdb.notice')}
               {tmdbStatus === 'loading' ? (
                 <span className="ml-2">{t('movies.tmdb.loading')}</span>
@@ -717,68 +751,6 @@ export function Movies() {
               ) : null}
             </div>
           ) : null}
-        </section>
-
-        <section className="mb-6 grid gap-3 rounded-2xl border border-slate-200 bg-white/80 p-3 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 md:grid-cols-[minmax(0,1fr)_180px_auto]">
-          <label className="relative block">
-            <Search
-              size={16}
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-            />
-            <input
-              type="search"
-              value={keyword}
-              onChange={(event) => setKeyword(event.target.value)}
-              placeholder={t('movies.searchPlaceholder')}
-              className="w-full rounded-xl border border-slate-200 bg-white/90 py-2.5 pl-10 pr-3 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-blue-500 dark:focus:ring-blue-900/40"
-            />
-          </label>
-
-          <label className="flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 dark:border-slate-700">
-            <CalendarDays size={16} className="text-slate-400" />
-            <select
-              value={sortOrder}
-              onChange={(event) => setSortOrder(event.target.value as SortOrder)}
-              className="w-full bg-transparent text-sm text-slate-700 outline-none dark:text-slate-200"
-            >
-              <option value="desc">{t('movies.filters.newestFirst')}</option>
-              <option value="asc">{t('movies.filters.oldestFirst')}</option>
-            </select>
-          </label>
-
-          <div className="inline-flex items-center justify-end rounded-xl border border-slate-200 p-1 dark:border-slate-700">
-            <span className="px-2 text-xs text-slate-500 dark:text-slate-400">
-              {t('movies.layout.label')}
-            </span>
-            <button
-              type="button"
-              onClick={() => setCardLayout('list')}
-              className={cn(
-                'inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium transition',
-                cardLayout === 'list'
-                  ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                  : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
-              )}
-              aria-label={t('movies.layout.list')}
-            >
-              <List size={14} />
-              {t('movies.layout.list')}
-            </button>
-            <button
-              type="button"
-              onClick={() => setCardLayout('grid')}
-              className={cn(
-                'inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium transition',
-                cardLayout === 'grid'
-                  ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                  : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
-              )}
-              aria-label={t('movies.layout.grid')}
-            >
-              <LayoutGrid size={14} />
-              {t('movies.layout.grid')}
-            </button>
-          </div>
         </section>
 
         {movieItems.length === 0 ? (
@@ -936,8 +908,7 @@ export function Movies() {
                       </div>
 
                       <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
-                        <span className="inline-flex items-center gap-1">
-                          <CalendarDays size={13} />
+                        <span>
                           {t('movies.watchDate')}: {watchedAt || '--'}
                         </span>
                         {movie.subjectId ? (
