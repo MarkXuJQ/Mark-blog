@@ -193,115 +193,58 @@ function normalizePosterUrl(path: string | undefined | null) {
   return `${TMDB_IMAGE_BASE_URL}${path}`
 }
 
-function normalizeTmdbToken(token: string) {
-  return token.replace(/^Bearer\s+/i, '').trim()
-}
+class TmdbRequestError extends Error {
+  status: number
+  code: string
 
-function getTmdbAuthHeaders(token: string) {
-  return {
-    Authorization: `Bearer ${token}`,
-    accept: 'application/json',
+  constructor(options: { status: number; code: string; message: string }) {
+    super(options.message)
+    this.name = 'TmdbRequestError'
+    this.status = options.status
+    this.code = options.code
   }
 }
 
-async function fetchTmdbWithFallback<T>(options: {
-  endpoint: string
-  params: Record<string, string>
-  token: string
-  apiKey: string
-}) {
-  const { endpoint, params, token, apiKey } = options
-  const cleanedToken = normalizeTmdbToken(token)
+async function fetchTmdbApi<T>(params: Record<string, string>) {
+  const search = new URLSearchParams(params)
+  const response = await fetch(`/api/tmdb?${search.toString()}`)
+  const payload = await response.json().catch(() => null)
 
-  const attempts: Array<{
-    url: string
-    headers?: Record<string, string>
-  }> = []
-
-  if (cleanedToken) {
-    const search = new URLSearchParams(params)
-    attempts.push({
-      url: `https://api.themoviedb.org/3/${endpoint}?${search.toString()}`,
-      headers: getTmdbAuthHeaders(cleanedToken),
+  if (!response.ok) {
+    const message =
+      typeof payload?.error === 'string' ? payload.error : `TMDB HTTP ${response.status}`
+    const code = typeof payload?.code === 'string' ? payload.code : 'TMDB_REQUEST_FAILED'
+    throw new TmdbRequestError({
+      status: response.status,
+      code,
+      message,
     })
   }
 
-  if (apiKey) {
-    const search = new URLSearchParams(params)
-    search.set('api_key', apiKey)
-    attempts.push({
-      url: `https://api.themoviedb.org/3/${endpoint}?${search.toString()}`,
-    })
-  }
-
-  if (attempts.length === 0) {
-    throw new Error('TMDB missing credentials')
-  }
-
-  let lastError: Error | null = null
-
-  for (const attempt of attempts) {
-    try {
-      const response = await fetch(attempt.url, {
-        headers: attempt.headers,
-      })
-
-      if (response.ok) {
-        return (await response.json()) as T
-      }
-
-      const isAuthError = response.status === 401 || response.status === 403
-      const isNotFound = response.status === 404
-
-      if (!isAuthError || isNotFound) {
-        throw new Error(`TMDB HTTP ${response.status}`)
-      }
-
-      lastError = new Error(`TMDB HTTP ${response.status}`)
-    } catch (error) {
-      if (error instanceof Error) {
-        lastError = error
-      } else {
-        lastError = new Error(String(error))
-      }
-    }
-  }
-
-  throw lastError ?? new Error('TMDB request failed')
+  return payload as T
 }
 
 async function fetchTmdbMovieById(options: {
   movieId: number
   language: string
-  token: string
-  apiKey: string
 }) {
-  const { movieId, language, token, apiKey } = options
-  return fetchTmdbWithFallback<TmdbSearchMovie>({
-    endpoint: `movie/${movieId}`,
-    params: { language },
-    token,
-    apiKey,
+  const { movieId, language } = options
+  return fetchTmdbApi<TmdbSearchMovie>({
+    action: 'movieById',
+    movieId: String(movieId),
+    language,
   })
 }
 
 async function searchTmdbMovie(options: {
   query: string
   language: string
-  token: string
-  apiKey: string
 }) {
-  const { query, language, token, apiKey } = options
-  const payload = await fetchTmdbWithFallback<{ results?: TmdbSearchMovie[] }>({
-    endpoint: 'search/movie',
-    params: {
-      query,
-      include_adult: 'false',
-      language,
-      page: '1',
-    },
-    token,
-    apiKey,
+  const { query, language } = options
+  const payload = await fetchTmdbApi<{ results?: TmdbSearchMovie[] }>({
+    action: 'searchMovie',
+    query,
+    language,
   })
   const results = Array.isArray(payload.results) ? payload.results : []
   return results[0] ?? null
@@ -379,10 +322,8 @@ function buildCsvMovies(
 async function fetchTmdbEnrichment(options: {
   movie: CsvMovieItem
   language: string
-  token: string
-  apiKey: string
 }) {
-  const { movie, language, token, apiKey } = options
+  const { movie, language } = options
 
   let result: TmdbSearchMovie | null = null
 
@@ -391,8 +332,6 @@ async function fetchTmdbEnrichment(options: {
       result = await fetchTmdbMovieById({
         movieId: movie.tmdbId,
         language,
-        token,
-        apiKey,
       })
     } catch {
       result = null
@@ -416,8 +355,6 @@ async function fetchTmdbEnrichment(options: {
       result = await searchTmdbMovie({
         query,
         language,
-        token,
-        apiKey,
       })
 
       if (result) break
@@ -446,9 +383,6 @@ export function Movies() {
   const [tmdbMap, setTmdbMap] = useState<Record<string, TmdbEnrichedMovie | null>>({})
   const [tmdbStatus, setTmdbStatus] = useState<TmdbStatus>('idle')
   const [tmdbErrorMessage, setTmdbErrorMessage] = useState('')
-
-  const tmdbToken = (import.meta.env.VITE_TMDB_API_TOKEN as string | undefined)?.trim() ?? ''
-  const tmdbApiKey = (import.meta.env.VITE_TMDB_API_KEY as string | undefined)?.trim() ?? ''
 
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const tmdbLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
@@ -511,12 +445,6 @@ export function Movies() {
       return
     }
 
-    if (!tmdbToken && !tmdbApiKey) {
-      setTmdbStatus('error')
-      setTmdbErrorMessage(t('movies.tmdb.errors.missingConfig'))
-      return
-    }
-
     const targets = pageMovies.filter((movie) => !(movie.id in tmdbMap)).slice(0, 12)
 
     if (targets.length === 0) {
@@ -534,8 +462,6 @@ export function Movies() {
           const enriched = await fetchTmdbEnrichment({
             movie,
             language: tmdbLanguage,
-            token: tmdbToken,
-            apiKey: tmdbApiKey,
           })
           return { movieId: movie.id, enriched }
         })
@@ -545,18 +471,14 @@ export function Movies() {
 
       const nextEntries: Record<string, TmdbEnrichedMovie | null> = {}
       let hasSuccess = false
-      let firstError: string | null = null
+      let firstError: unknown = null
 
       for (const result of settled) {
         if (result.status === 'fulfilled') {
           hasSuccess = true
           nextEntries[result.value.movieId] = result.value.enriched
         } else if (!firstError) {
-          const message =
-            result.reason instanceof Error
-              ? result.reason.message
-              : String(result.reason)
-          firstError = message
+          firstError = result.reason
         }
       }
 
@@ -568,7 +490,15 @@ export function Movies() {
         setTmdbStatus('ready')
       } else if (firstError) {
         setTmdbStatus('error')
-        if (/HTTP 401|HTTP 403/.test(firstError)) {
+        if (
+          firstError instanceof TmdbRequestError &&
+          firstError.code === 'TMDB_MISSING_CONFIG'
+        ) {
+          setTmdbErrorMessage(t('movies.tmdb.errors.missingConfig'))
+        } else if (
+          firstError instanceof TmdbRequestError &&
+          (firstError.status === 401 || firstError.status === 403)
+        ) {
           setTmdbErrorMessage(t('movies.tmdb.errors.authFailed'))
         } else {
           setTmdbErrorMessage(t('movies.tmdb.errors.network'))
@@ -576,10 +506,19 @@ export function Movies() {
       }
     }
 
-    run().catch(() => {
+    run().catch((error) => {
       if (cancelled) return
       setTmdbStatus('error')
-      setTmdbErrorMessage(t('movies.tmdb.errors.network'))
+      if (error instanceof TmdbRequestError && error.code === 'TMDB_MISSING_CONFIG') {
+        setTmdbErrorMessage(t('movies.tmdb.errors.missingConfig'))
+      } else if (
+        error instanceof TmdbRequestError &&
+        (error.status === 401 || error.status === 403)
+      ) {
+        setTmdbErrorMessage(t('movies.tmdb.errors.authFailed'))
+      } else {
+        setTmdbErrorMessage(t('movies.tmdb.errors.network'))
+      }
     })
 
     return () => {
@@ -587,10 +526,8 @@ export function Movies() {
     }
   }, [
     pageMovies,
-    tmdbApiKey,
     tmdbLanguage,
     tmdbMap,
-    tmdbToken,
     t,
     viewMode,
   ])

@@ -149,7 +149,7 @@
       "noPoster": "暂无海报",
       "releaseDate": "上映日期",
       "errors": {
-        "missingConfig": "未配置 TMDB Token/Key，请在 apps/web/.env.local 添加 VITE_TMDB_API_TOKEN 或 VITE_TMDB_API_KEY。",
+        "missingConfig": "未配置 TMDB 服务端密钥，请在 apps/web/.env.local 或 Vercel 环境变量添加 TMDB_API_TOKEN 或 TMDB_API_KEY。",
         "authFailed": "TMDB 鉴权失败，请检查 Token/Key 是否正确。",
         "network": "TMDB 请求失败（可能是网络不可达）。"
       }

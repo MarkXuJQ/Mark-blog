@@ -149,7 +149,7 @@
       "noPoster": "No poster",
       "releaseDate": "Release",
       "errors": {
-        "missingConfig": "TMDB token/key is missing. Add VITE_TMDB_API_TOKEN or VITE_TMDB_API_KEY in apps/web/.env.local.",
+        "missingConfig": "TMDB server credentials are missing. Add TMDB_API_TOKEN or TMDB_API_KEY in apps/web/.env.local or Vercel environment variables.",
         "authFailed": "TMDB authentication failed. Please verify your token/key.",
         "network": "TMDB request failed (network may be blocked)."
       }
