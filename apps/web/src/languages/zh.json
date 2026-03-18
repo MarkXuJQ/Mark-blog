@@ -175,7 +175,75 @@
     }
   },
   "games": {
-    "description": "记录游玩记录与感想。"
+    "description": "把公开的 Steam 游戏库、总时长和成就完成度整理成一个可以浏览与统计的页面。",
+    "loading": "正在同步 Steam 游戏库数据…",
+    "hero": {
+      "eyebrow": "Steam Library",
+      "title": "{{name}} 的游戏库",
+      "subtitle": "把公开库存、游玩时长和商店口碑整理到一个页面里，像电影清单一样更直观地回看自己玩过什么。",
+      "topGameLabel": "时长最高",
+      "topGameValue": "累计 {{hours}} 小时",
+      "topGameEmpty": "还没有可展示的游玩记录。",
+      "updatedAt": "数据刷新时间：{{date}}"
+    },
+    "profile": {
+      "openProfile": "Steam 主页",
+      "openReviews": "我的评测页"
+    },
+    "stats": {
+      "totalGames": "游戏总数",
+      "totalGamesHint": "当前账号可读取的全部拥有游戏。",
+      "totalHours": "累计时长",
+      "totalHoursHint": "按所有已拥有游戏的总游玩时长汇总。",
+      "recentHours": "近两周活跃",
+      "recentHoursHint": "用于快速看最近有没有重新开坑。",
+      "totalAchievements": "已获得成就",
+      "playedGames": "已启动游戏",
+      "playedGamesHint": "还有 {{remaining}} 款还没真正开玩。"
+    },
+    "featured": {
+      "eyebrow": "Featured",
+      "title": "常玩游戏",
+      "description": "按照总游玩时长挑出最常玩的几款，并补充 Steam 商店的整体评测摘要。",
+      "reviewPositive": "{{percent}}% 好评",
+      "reviewCount": "{{count}} 条评测",
+      "noReview": "暂无商店评测摘要",
+      "lifetimeHours": "累计时长",
+      "achievements": "成就数",
+      "noAchievements": "暂无成就",
+      "recentHours": "近两周",
+      "releaseDate": "发行：{{date}}",
+      "noData": "当前没有足够的游玩记录来生成精选卡片。"
+    },
+    "library": {
+      "title": "全部游戏",
+      "showing": "当前展示 {{shown}} / {{total}} 款",
+      "searchPlaceholder": "搜索游戏名…",
+      "sortLabel": "排序",
+      "playtime": "累计 {{hours}} 小时",
+      "achievementMissing": "无 Steam 成就",
+      "recentPlaytime": "近两周 {{hours}} 小时",
+      "neverPlayed": "尚未启动",
+      "noResults": "没有符合当前条件的游戏。"
+    },
+    "sort": {
+      "playtime": "总时长优先",
+      "recent": "近期活跃优先",
+      "alphabetical": "按名称排序",
+      "leastPlayed": "最少时长优先"
+    },
+    "actions": {
+      "openStore": "打开 Steam 商店页"
+    },
+    "empty": {
+      "title": "Steam 数据暂时不可展示"
+    },
+    "errors": {
+      "missingConfig": "未配置 STEAM_API_KEY。请在 apps/web/.env.local 或 Vercel 环境变量中添加该值后再访问此页面。",
+      "authFailed": "Steam Web API 鉴权失败，请检查 STEAM_API_KEY 是否正确可用。",
+      "network": "Steam 请求失败，可能是部署环境当前无法访问 Steam 接口。",
+      "generic": "Steam 数据加载失败，请稍后重试。"
+    }
   },
   "life": {
     "description": "记录日常与照片集。"

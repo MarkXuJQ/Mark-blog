@@ -65,21 +65,19 @@ export function DropdownTrigger({
   children,
   className,
   onClick,
-}: {
-  children: React.ReactNode
-  className?: string
-  onClick?: () => void
-}) {
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const { toggle } = useDropdown()
 
   return (
     <button
-      onClick={() => {
+      onClick={(event) => {
         toggle()
-        onClick?.()
+        onClick?.(event)
       }}
       className={className}
       type="button"
+      {...props}
     >
       {children}
     </button>

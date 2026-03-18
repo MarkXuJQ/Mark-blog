@@ -9,9 +9,9 @@ export type ThemeToggleProps = {
 export function ThemeToggle({ mode, onModeChange }: ThemeToggleProps) {
   const themes = ['light', 'system', 'dark'] as const
   const knobTransformByMode: Record<ThemeMode, string> = {
-    light: 'translateX(0%) translateY(-1px) rotate(-8deg) scale(1.02)',
-    system: 'translateX(100%) translateY(0px) rotate(0deg) scale(1)',
-    dark: 'translateX(200%) translateY(1px) rotate(8deg) scale(0.98)',
+    light: 'translateX(0%)',
+    system: 'translateX(100%)',
+    dark: 'translateX(200%)',
   }
   const knobClassNameByMode: Record<ThemeMode, string> = {
     light:

@@ -175,7 +175,75 @@
     }
   },
   "games": {
-    "description": "Recording gameplay logs and thoughts."
+    "description": "A Steam-powered page for browsing the public library, total playtime, and achievement completion.",
+    "loading": "Syncing Steam library data…",
+    "hero": {
+      "eyebrow": "Steam Library",
+      "title": "{{name}}'s Library",
+      "subtitle": "A movie-style view of the public Steam collection, with library stats, playtime, and a quick snapshot of what has been played the most.",
+      "topGameLabel": "Most Played",
+      "topGameValue": "{{hours}} hrs total",
+      "topGameEmpty": "No playable history is available yet.",
+      "updatedAt": "Refreshed: {{date}}"
+    },
+    "profile": {
+      "openProfile": "Steam Profile",
+      "openReviews": "My Reviews"
+    },
+    "stats": {
+      "totalGames": "Library Size",
+      "totalGamesHint": "All owned games that Steam currently exposes.",
+      "totalHours": "Lifetime Hours",
+      "totalHoursHint": "Combined playtime across the full library.",
+      "recentHours": "Last 2 Weeks",
+      "recentHoursHint": "A quick read on current activity and reopened games.",
+      "totalAchievements": "Achievements Earned",
+      "playedGames": "Played Games",
+      "playedGamesHint": "{{remaining}} games are still untouched."
+    },
+    "featured": {
+      "eyebrow": "Featured",
+      "title": "Most Played",
+      "description": "The library's heaviest hitters, enriched with Steam store review snapshots.",
+      "reviewPositive": "{{percent}}% positive",
+      "reviewCount": "{{count}} reviews",
+      "noReview": "No review summary available",
+      "lifetimeHours": "Lifetime",
+      "achievements": "Achievements",
+      "noAchievements": "No achievements",
+      "recentHours": "Last 2 Weeks",
+      "releaseDate": "Released: {{date}}",
+      "noData": "There is not enough play history yet to build the featured shelf."
+    },
+    "library": {
+      "title": "All Games",
+      "showing": "Showing {{shown}} / {{total}} games",
+      "searchPlaceholder": "Search by game title…",
+      "sortLabel": "Sort",
+      "playtime": "{{hours}} hrs total",
+      "achievementMissing": "No Steam achievements",
+      "recentPlaytime": "{{hours}} hrs in the last 2 weeks",
+      "neverPlayed": "Never launched",
+      "noResults": "No games match the current filters."
+    },
+    "sort": {
+      "playtime": "Most played",
+      "recent": "Recently active",
+      "alphabetical": "Alphabetical",
+      "leastPlayed": "Least played"
+    },
+    "actions": {
+      "openStore": "Open Steam store page"
+    },
+    "empty": {
+      "title": "Steam data is unavailable right now"
+    },
+    "errors": {
+      "missingConfig": "STEAM_API_KEY is missing. Add it in apps/web/.env.local or in your Vercel environment variables before opening this page.",
+      "authFailed": "Steam Web API authentication failed. Please verify the STEAM_API_KEY value.",
+      "network": "Steam requests failed. The deployment environment may not be able to reach Steam right now.",
+      "generic": "Steam data failed to load. Please try again later."
+    }
   },
   "life": {
     "description": "Daily notes and photo albums."

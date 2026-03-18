@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { CalendarYearWheel } from './CalendarYearWheel'
 import { cn } from '../../utils/cn'
 
 interface CalendarDayCell {
@@ -189,22 +190,13 @@ export function WatchActivityCalendar({
         </div>
 
         {years.length > 0 ? (
-          <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white/90 px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-900">
-            <span className="text-slate-500 dark:text-slate-400">
-              {t('movies.calendar.year')}
-            </span>
-            <select
-              value={selectedYear}
-              onChange={(event) => setSelectedYear(Number(event.target.value))}
-              className="rounded-md bg-transparent font-medium text-slate-700 outline-none dark:text-slate-200"
-            >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </label>
+          <CalendarYearWheel
+            years={years}
+            value={selectedYear}
+            onValueChange={setSelectedYear}
+            label={t('movies.calendar.year')}
+            ariaLabel={t('movies.calendar.year')}
+          />
         ) : null}
       </div>
 
