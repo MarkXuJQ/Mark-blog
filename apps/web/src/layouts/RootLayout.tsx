@@ -32,9 +32,9 @@ export function RootLayout() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-bl from-amber-200/52 via-orange-100/12 to-sky-100/14 dark:from-sky-500/12 dark:via-transparent dark:to-amber-500/8" />
-        <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-amber-300/34 blur-[120px] dark:bg-sky-500/12" />
-        <div className="absolute -left-24 -bottom-24 h-[28rem] w-[28rem] rounded-full bg-sky-200/16 blur-[132px] dark:bg-slate-500/8" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_92%_0%,rgba(252,211,77,0.10),rgba(251,191,36,0.04)_24%,rgba(255,255,255,0)_50%)] dark:bg-gradient-to-bl dark:from-sky-500/12 dark:via-transparent dark:to-amber-500/8" />
+        <div className="absolute -right-50 -top-50 h-40 w-40 rounded-full bg-amber-300/8 blur-[110px] dark:bg-sky-500/12" />
+        <div className="absolute -left-28 -bottom-28 h-[30rem] w-[30rem] rounded-full bg-sky-200/12 blur-[138px] dark:bg-slate-500/8" />
       </div>
       {/* Sticky NavBar Container - Floating Effect */}
       <div
