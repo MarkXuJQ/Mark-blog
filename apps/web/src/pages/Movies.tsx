@@ -454,10 +454,10 @@ export function Movies() {
   const tmdbLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
 
   const title = t('nav.movies')
-  const description = t(
-    'movies.description',
-    '默认展示豆瓣 CSV 导出数据；可切换 TMDB 增强版加载海报。'
-  )
+  const description =
+    locale === 'zh-CN'
+      ? '记录我看过的电影，记录来自豆瓣'
+      : 'A personal movie log sourced from Douban.'
 
   const movieOverrides = movieOverridesRaw as Record<string, MovieOverride>
 
@@ -486,14 +486,6 @@ export function Movies() {
       return haystack.includes(normalizedKeyword)
     })
   }, [movieItems, keyword])
-
-  const ratedCount = useMemo(
-    () => movieItems.filter((movie) => movie.rating !== null).length,
-    [movieItems]
-  )
-
-  const ratedLabel = locale === 'zh-CN' ? '已评分' : 'Rated'
-  const resultsLabel = locale === 'zh-CN' ? '当前结果' : 'Results'
 
   const totalPages = Math.max(1, Math.ceil(filteredMovies.length / ITEMS_PER_PAGE))
 
@@ -608,44 +600,17 @@ export function Movies() {
       <Seo title={title} description={description} />
 
       <div className="mx-auto w-full max-w-6xl px-4 py-8 xl:max-w-[70vw]">
-        <section className="mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900/80">
-          <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-            <div className="space-y-3">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,3.8fr)_minmax(280px,1.2fr)] lg:items-start xl:grid-cols-[minmax(0,4fr)_minmax(296px,1.15fr)]">
+          <div className="min-w-0">
+            <section className="mb-6">
               <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
                 {title}
               </h1>
-              <p className="max-w-3xl leading-relaxed text-slate-600 dark:text-slate-400">
+              <p className="mt-3 max-w-3xl leading-relaxed text-slate-600 dark:text-slate-400">
                 {description}
               </p>
-            </div>
+            </section>
 
-            <div className="flex flex-wrap gap-2 md:justify-end">
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-xs shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                <span className="text-slate-500 dark:text-slate-400">
-                  {t('movies.stats.watchedCount')}
-                </span>
-                <span className="font-semibold text-slate-900 dark:text-slate-100">
-                  {movieItems.length}
-                </span>
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-xs shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                <span className="text-slate-500 dark:text-slate-400">{ratedLabel}</span>
-                <span className="font-semibold text-slate-900 dark:text-slate-100">
-                  {ratedCount}
-                </span>
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-xs shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                <span className="text-slate-500 dark:text-slate-400">{resultsLabel}</span>
-                <span className="font-semibold text-slate-900 dark:text-slate-100">
-                  {filteredMovies.length}
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,3.8fr)_minmax(280px,1.2fr)] lg:items-start xl:grid-cols-[minmax(0,4fr)_minmax(296px,1.15fr)]">
-          <div className="min-w-0">
             <section className="mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-3 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
               <div className="flex flex-wrap items-center gap-3">
                 <label className="relative min-w-[220px] flex-1">
