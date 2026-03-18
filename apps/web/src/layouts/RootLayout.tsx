@@ -27,7 +27,15 @@ export function RootLayout() {
   }, [])
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
+    <div className="relative flex min-h-screen w-full flex-col bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-bl from-sky-100/35 via-transparent to-amber-100/18 dark:from-sky-500/12 dark:via-transparent dark:to-amber-500/8" />
+        <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-sky-200/24 blur-[120px] dark:bg-sky-500/12" />
+        <div className="absolute -left-24 -bottom-24 h-[28rem] w-[28rem] rounded-full bg-slate-300/12 blur-[132px] dark:bg-slate-500/8" />
+      </div>
       {/* Sticky NavBar Container - Floating Effect */}
       <div
         className={`pointer-events-none sticky top-6 z-50 mb-8 w-full transition-transform duration-300 ${

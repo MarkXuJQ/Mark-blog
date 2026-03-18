@@ -8,10 +8,12 @@ import {
   Search,
   Star,
 } from 'lucide-react'
+import { MovieStatsPanel } from '../components/movies/MovieStatsPanel'
 import { Seo } from '../components/seo/Seo'
 import { WatchActivityCalendar } from '../components/movies/WatchActivityCalendar'
 import { cn } from '../utils/cn'
 import { Pagination } from '../components/ui/Pagination'
+import { SegmentedToggle } from '../components/ui/SegmentedToggle'
 import movieCsvRaw from '@content/movies/movie.csv?raw'
 import movieOverridesRaw from '@content/movies/movie-overrides.json'
 
@@ -485,6 +487,14 @@ export function Movies() {
     })
   }, [movieItems, keyword])
 
+  const ratedCount = useMemo(
+    () => movieItems.filter((movie) => movie.rating !== null).length,
+    [movieItems]
+  )
+
+  const ratedLabel = locale === 'zh-CN' ? '已评分' : 'Rated'
+  const resultsLabel = locale === 'zh-CN' ? '当前结果' : 'Results'
+
   const totalPages = Math.max(1, Math.ceil(filteredMovies.length / ITEMS_PER_PAGE))
 
   useEffect(() => {
@@ -593,37 +603,50 @@ export function Movies() {
     viewMode,
   ])
 
-  const ratedCount = movieItems.filter((movie) => movie.rating !== null).length
-  const overallScore = useMemo(() => {
-    const ratedMovies = movieItems.filter(
-      (movie): movie is CsvMovieItem & { rating: number } => movie.rating !== null
-    )
-    if (ratedMovies.length === 0) return null
-
-    const averageStars =
-      ratedMovies.reduce((sum, movie) => sum + movie.rating, 0) / ratedMovies.length
-
-    return Math.round((averageStars / 5) * 100)
-  }, [movieItems])
-
-
   return (
     <>
       <Seo title={title} description={description} />
 
       <div className="mx-auto w-full max-w-6xl px-4 py-8 xl:max-w-[70vw]">
-        <div className="mb-6 space-y-3">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-            {title}
-          </h1>
-          <p className="max-w-3xl leading-relaxed text-slate-600 dark:text-slate-400">
-            {description}
-          </p>
-        </div>
+        <section className="mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-5 shadow-sm backdrop-blur transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900/80">
+          <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+            <div className="space-y-3">
+              <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+                {title}
+              </h1>
+              <p className="max-w-3xl leading-relaxed text-slate-600 dark:text-slate-400">
+                {description}
+              </p>
+            </div>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,3.7fr)_minmax(280px,1.3fr)] lg:items-start">
+            <div className="flex flex-wrap gap-2 md:justify-end">
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-xs shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                <span className="text-slate-500 dark:text-slate-400">
+                  {t('movies.stats.watchedCount')}
+                </span>
+                <span className="font-semibold text-slate-900 dark:text-slate-100">
+                  {movieItems.length}
+                </span>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-xs shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                <span className="text-slate-500 dark:text-slate-400">{ratedLabel}</span>
+                <span className="font-semibold text-slate-900 dark:text-slate-100">
+                  {ratedCount}
+                </span>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-xs shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                <span className="text-slate-500 dark:text-slate-400">{resultsLabel}</span>
+                <span className="font-semibold text-slate-900 dark:text-slate-100">
+                  {filteredMovies.length}
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,3.8fr)_minmax(280px,1.2fr)] lg:items-start xl:grid-cols-[minmax(0,4fr)_minmax(296px,1.15fr)]">
           <div className="min-w-0">
-            <section className="mb-6 rounded-2xl border border-slate-200 bg-white/80 p-3 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
+            <section className="mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-3 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
               <div className="flex flex-wrap items-center gap-3">
                 <label className="relative min-w-[220px] flex-1">
                   <Search
@@ -639,67 +662,62 @@ export function Movies() {
                   />
                 </label>
 
-                <div className="inline-flex items-center rounded-xl border border-slate-200 p-1 dark:border-slate-700">
-                  <button
-                    type="button"
-                    onClick={() => setViewMode('csv')}
-                    className={cn(
-                      'rounded-lg px-2.5 py-1.5 text-xs font-medium transition',
-                      viewMode === 'csv'
-                        ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
-                    )}
-                  >
-                    {t('movies.mode.csv')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setViewMode('tmdb')}
-                    className={cn(
-                      'rounded-lg px-2.5 py-1.5 text-xs font-medium transition',
-                      viewMode === 'tmdb'
-                        ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
-                    )}
-                  >
-                    {t('movies.mode.tmdb')}
-                  </button>
-                </div>
+                <SegmentedToggle
+                  value={viewMode}
+                  onValueChange={setViewMode}
+                  ariaLabel="Movie data mode"
+                  size="sm"
+                  items={[
+                    {
+                      value: 'csv',
+                      ariaLabel: t('movies.mode.csv'),
+                      content: t('movies.mode.csv'),
+                      activeTextClassName: 'text-slate-900 dark:text-slate-100',
+                    },
+                    {
+                      value: 'tmdb',
+                      ariaLabel: t('movies.mode.tmdb'),
+                      content: t('movies.mode.tmdb'),
+                      activeTextClassName: 'text-slate-900 dark:text-slate-100',
+                    },
+                  ]}
+                />
 
-                <div className="inline-flex items-center rounded-xl border border-slate-200 p-1 dark:border-slate-700">
-                  <button
-                    type="button"
-                    onClick={() => setCardLayout('list')}
-                    className={cn(
-                      'inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium transition',
-                      cardLayout === 'list'
-                        ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
-                    )}
-                    aria-label={t('movies.layout.list')}
-                  >
-                    <List size={14} />
-                    {t('movies.layout.list')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCardLayout('grid')}
-                    className={cn(
-                      'inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium transition',
-                      cardLayout === 'grid'
-                        ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
-                    )}
-                    aria-label={t('movies.layout.grid')}
-                  >
-                    <LayoutGrid size={14} />
-                    {t('movies.layout.grid')}
-                  </button>
-                </div>
+                <SegmentedToggle
+                  value={cardLayout}
+                  onValueChange={setCardLayout}
+                  ariaLabel="Movie card layout"
+                  size="sm"
+                  buttonClassName="gap-1"
+                  items={[
+                    {
+                      value: 'list',
+                      ariaLabel: t('movies.layout.list'),
+                      content: (
+                        <>
+                          <List size={14} />
+                          {t('movies.layout.list')}
+                        </>
+                      ),
+                      activeTextClassName: 'text-slate-900 dark:text-slate-100',
+                    },
+                    {
+                      value: 'grid',
+                      ariaLabel: t('movies.layout.grid'),
+                      content: (
+                        <>
+                          <LayoutGrid size={14} />
+                          {t('movies.layout.grid')}
+                        </>
+                      ),
+                      activeTextClassName: 'text-slate-900 dark:text-slate-100',
+                    },
+                  ]}
+                />
               </div>
 
               {viewMode === 'tmdb' ? (
-                <div className="mt-3 rounded-xl border border-blue-100 bg-blue-50/70 px-3 py-2 text-xs text-blue-700 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-300">
+                <div className="mt-3 rounded-xl border border-sky-200/70 bg-sky-50/70 px-3 py-2 text-xs text-sky-700 dark:border-sky-500/40 dark:bg-sky-900/25 dark:text-sky-200">
                   {t('movies.tmdb.notice')}
                   {tmdbStatus === 'loading' ? (
                     <span className="ml-2">{t('movies.tmdb.loading')}</span>
@@ -740,7 +758,7 @@ export function Movies() {
                 <div
                   className={cn(
                     cardLayout === 'grid'
-                      ? 'grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4'
+                      ? 'grid grid-cols-2 gap-3 md:grid-cols-[repeat(auto-fit,minmax(190px,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(210px,1fr))] lg:gap-4'
                       : 'space-y-4'
                   )}
                 >
@@ -756,7 +774,7 @@ export function Movies() {
                       <article
                         key={movie.id}
                         className={cn(
-                          'group rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900/80',
+                          'group rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur transition-transform duration-300 hover:-translate-y-1 hover:shadow-md dark:border-slate-800 dark:bg-slate-900/80',
                           cardLayout === 'grid'
                             ? 'flex h-full flex-col'
                             : viewMode === 'tmdb'
@@ -791,18 +809,35 @@ export function Movies() {
                           </div>
                         ) : null}
 
-                        <div className={cn('flex min-w-0 flex-col', cardLayout === 'grid' ? 'flex-1' : '')}>
-                          <div className="mb-2 flex items-start justify-between gap-3">
+                        <div
+                          className={cn(
+                            'flex min-w-0 flex-col',
+                            cardLayout === 'grid' ? 'flex-1' : ''
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              'mb-2 flex items-start justify-between gap-3',
+                              cardLayout === 'grid' ? 'mb-3 block space-y-2' : ''
+                            )}
+                          >
                             <div className="min-w-0">
-                              <h2 className="truncate text-lg font-semibold text-slate-900 dark:text-slate-100">
+                              <h2
+                                className={cn(
+                                  'text-lg font-semibold text-slate-900 dark:text-slate-100',
+                                  cardLayout === 'grid'
+                                    ? 'line-clamp-2 leading-snug'
+                                    : 'truncate'
+                                )}
+                              >
                                 {movie.title}
                               </h2>
-                              {movie.originalTitle ? (
+                              {movie.originalTitle && cardLayout !== 'grid' ? (
                                 <p className="truncate text-sm text-slate-500 dark:text-slate-400">
                                   {movie.originalTitle}
                                 </p>
                               ) : null}
-                              {viewMode === 'tmdb' && tmdb?.tmdbTitle ? (
+                              {viewMode === 'tmdb' && tmdb?.tmdbTitle && cardLayout !== 'grid' ? (
                                 <p className="truncate text-xs text-slate-400 dark:text-slate-500">
                                   TMDB: {tmdb.tmdbTitle}
                                   {tmdb.tmdbOriginalTitle &&
@@ -813,13 +848,21 @@ export function Movies() {
                               ) : null}
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div
+                              className={cn(
+                                'flex items-center gap-2',
+                                cardLayout === 'grid' ? 'flex-wrap' : ''
+                              )}
+                            >
                               {tmdbLink ? (
                                 <a
                                   href={tmdbLink}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300"
+                                  className={cn(
+                                    'inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700/80 dark:bg-slate-900/55 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300',
+                                    cardLayout === 'grid' ? 'px-2 py-1' : ''
+                                  )}
                                 >
                                   <ExternalLink size={13} />
                                   TMDB
@@ -830,7 +873,10 @@ export function Movies() {
                                   href={movie.link}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300"
+                                  className={cn(
+                                    'inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700/80 dark:bg-slate-900/55 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300',
+                                    cardLayout === 'grid' ? 'px-2 py-1' : ''
+                                  )}
                                 >
                                   <ExternalLink size={13} />
                                   {t('movies.actions.openDouban')}
@@ -840,11 +886,8 @@ export function Movies() {
                           </div>
 
                           <div className="mb-2 flex flex-wrap items-center gap-2">
-                            <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                              {movie.platform || DEFAULT_PLATFORM}
-                            </span>
                             {viewMode === 'tmdb' && tmdb?.releaseDate ? (
-                              <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 dark:border-blue-900/60 dark:bg-blue-900/20 dark:text-blue-300">
+                              <span className="inline-flex items-center rounded-full border border-sky-200/80 bg-sky-50/80 px-2.5 py-1 text-xs font-medium text-sky-700 dark:border-sky-500/40 dark:bg-sky-900/25 dark:text-sky-300">
                                 {t('movies.tmdb.releaseDate')}: {formatDate(tmdb.releaseDate, locale)}
                               </span>
                             ) : null}
@@ -876,12 +919,9 @@ export function Movies() {
                             <span>
                               {t('movies.watchDate')}: {watchedAt || '--'}
                             </span>
-                            {movie.subjectId ? (
-                              <span>#{movie.subjectId}</span>
-                            ) : null}
                           </div>
 
-                          {movie.note ? (
+                          {movie.note && cardLayout !== 'grid' ? (
                             <p className="mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">
                               {movie.note}
                             </p>
@@ -902,65 +942,12 @@ export function Movies() {
           </div>
 
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <section className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
-              <div className="space-y-4">
-                <div className="rounded-2xl bg-slate-50/80 p-4 dark:bg-slate-800/70">
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
-                    {t('movies.stats.watchedCount')}
-                  </div>
-                  <div className="mt-2 text-3xl font-semibold text-slate-900 dark:text-slate-100">
-                    {movieItems.length}
-                  </div>
-                </div>
-
-                <div className="rounded-2xl bg-slate-50/80 p-4 dark:bg-slate-800/70">
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
-                    {t('movies.stats.ratedCount')}
-                  </div>
-                  <div className="mt-2 text-3xl font-semibold text-slate-900 dark:text-slate-100">
-                    {ratedCount}
-                  </div>
-                </div>
-
-                <div className="rounded-2xl bg-slate-50/80 p-4 dark:bg-slate-800/70">
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
-                    {t('movies.stats.overallScore')}
-                  </div>
-                  <div className="mt-2 text-3xl font-semibold text-slate-900 dark:text-slate-100">
-                    {overallScore === null ? '--' : overallScore}
-                  </div>
-                  <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    {t('movies.stats.overallScoreHint')}
-                  </div>
-                </div>
-
-                <div className="border-t border-slate-200 pt-4 dark:border-slate-700">
-                  <div className="mb-2 text-xs text-slate-500 dark:text-slate-400">
-                    {t('movies.profile.label')}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <a
-                      href={DOUBAN_PROFILE_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300"
-                    >
-                      <ExternalLink size={13} />
-                      {t('movies.profile.douban')}
-                    </a>
-                    <a
-                      href={TMDB_PROFILE_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300"
-                    >
-                      <ExternalLink size={13} />
-                      {t('movies.profile.tmdb')}
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </section>
+            <MovieStatsPanel
+              watchCount={movieItems.length}
+              ratings={movieItems.map((movie) => movie.rating)}
+              doubanProfileUrl={DOUBAN_PROFILE_URL}
+              tmdbProfileUrl={TMDB_PROFILE_URL}
+            />
           </aside>
         </div>
       </div>

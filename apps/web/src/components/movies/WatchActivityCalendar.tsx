@@ -41,6 +41,27 @@ function getHeatmapLevelClass(count: number) {
   return 'bg-emerald-700 dark:bg-emerald-300'
 }
 
+function formatMonthLabel(date: Date, locale: string) {
+  if (locale === 'zh-CN') {
+    return [
+      '一月',
+      '二月',
+      '三月',
+      '四月',
+      '五月',
+      '六月',
+      '七月',
+      '八月',
+      '九月',
+      '十月',
+      '十一月',
+      '十二月',
+    ][date.getMonth()]
+  }
+
+  return new Intl.DateTimeFormat(locale, { month: 'short' }).format(date)
+}
+
 export function WatchActivityCalendar({
   watchDates,
   locale,
@@ -116,15 +137,18 @@ export function WatchActivityCalendar({
 
   const calendarMonthLabels = useMemo(() => {
     let lastMonth = -1
-    return calendarWeeks.map((week) => {
+    return calendarWeeks.flatMap((week, weekIndex) => {
       const labelDay = week.find((day) => day.isCurrentYear)
-      if (!labelDay) return ''
+      if (!labelDay) return []
       const month = labelDay.date.getMonth()
-      if (month === lastMonth) return ''
+      if (month === lastMonth) return []
       lastMonth = month
-      return new Intl.DateTimeFormat(locale, { month: 'short' }).format(
-        labelDay.date
-      )
+      return [
+        {
+          label: formatMonthLabel(labelDay.date, locale),
+          weekIndex,
+        },
+      ]
     })
   }, [calendarWeeks, locale])
 
@@ -149,7 +173,7 @@ export function WatchActivityCalendar({
   )
 
   return (
-    <section className="mb-6 rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
+    <section className="mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
@@ -166,11 +190,13 @@ export function WatchActivityCalendar({
 
         {years.length > 0 ? (
           <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white/90 px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-900">
-            <span className="text-slate-500 dark:text-slate-400">Year</span>
+            <span className="text-slate-500 dark:text-slate-400">
+              {t('movies.calendar.year')}
+            </span>
             <select
               value={selectedYear}
               onChange={(event) => setSelectedYear(Number(event.target.value))}
-              className="bg-transparent font-medium text-slate-700 outline-none dark:text-slate-200"
+              className="rounded-md bg-transparent font-medium text-slate-700 outline-none dark:text-slate-200"
             >
               {years.map((year) => (
                 <option key={year} value={year}>
@@ -184,27 +210,32 @@ export function WatchActivityCalendar({
 
       <div className="overflow-x-auto">
         <div className="min-w-max">
-          <div className="mb-2 flex gap-2">
-            <div className="grid grid-rows-7 gap-1">
-              {Array.from({ length: 7 }).map((_, index) => (
-                <span key={index} className="h-3 w-5" />
-              ))}
-            </div>
+          <div className="flex items-end gap-2">
+            <div className="w-6 shrink-0" />
 
-            <div className="mb-0 flex gap-1">
-            {calendarMonthLabels.map((label, index) => (
-              <span
-                key={`month-${index}`}
-                className="w-3 text-[10px] text-slate-400 dark:text-slate-500"
-              >
-                {label}
-              </span>
-            ))}
+            <div className="relative h-4">
+              <div className="flex gap-1 opacity-0">
+                {calendarWeeks.map((_, index) => (
+                  <span key={`month-slot-${index}`} className="block h-4 w-3 shrink-0" />
+                ))}
+              </div>
+
+              {calendarMonthLabels.map((item) => (
+                <span
+                  key={`${item.label}-${item.weekIndex}`}
+                  className="absolute top-0 block whitespace-nowrap text-[11px] font-medium leading-none text-slate-500 dark:text-slate-400"
+                  style={{
+                    left: `calc(${item.weekIndex} * 1rem)`,
+                  }}
+                >
+                  {item.label}
+                </span>
+              ))}
             </div>
           </div>
 
           <div className="flex gap-2">
-            <div className="grid grid-rows-7 gap-1 py-[1px] text-[10px] text-slate-400 dark:text-slate-500">
+            <div className="grid w-6 grid-rows-7 gap-1 py-[1px] text-[10px] text-slate-400 dark:text-slate-500">
               <span className="flex h-3 items-center">{t('movies.calendar.week.mon')}</span>
               <span className="h-3" />
               <span className="flex h-3 items-center">{t('movies.calendar.week.wed')}</span>
@@ -221,7 +252,7 @@ export function WatchActivityCalendar({
                     <div
                       key={day.dateKey}
                       className={cn(
-                        'h-3 w-3 rounded-[3px] ring-1 ring-black/5 dark:ring-white/5',
+                        'h-3 w-3 rounded-[3px] ring-1 ring-black/5 transition-transform duration-200 hover:scale-[1.12] dark:ring-white/5',
                         day.isCurrentYear
                           ? getHeatmapLevelClass(day.count)
                           : 'bg-transparent ring-transparent'

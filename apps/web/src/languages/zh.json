@@ -105,12 +105,13 @@
     "backHome": "返回主页"
   },
   "movies": {
-    "description": "默认读取豆瓣导出的 CSV 观影记录，可切换 TMDB 增强模式补充海报与上映信息。",
+    "description": "下面是我曾经看过的电影，并简单做了个数据分析和统计，欢迎参观！",
     "stats": {
       "watchedCount": "观影总数",
       "ratedCount": "已评分",
-      "overallScore": "综合评分",
-      "overallScoreHint": "按已评分影片的平均星级换算为 100 分制",
+      "overallScore": "百分制的总体评分",
+      "overallScoreHint": "基于已评分影片计算",
+      "ratingBreakdown": "打分分布",
       "latestWatch": "最近观看"
     },
     "mode": {
@@ -132,6 +133,7 @@
     "calendar": {
       "title": "观影活跃日历",
       "summary": "{{year}} 年共有 {{count}} 个观影日，累计看了 {{total}} 部",
+      "year": "年份",
       "tooltip": "{{date}}：{{count}} 部",
       "less": "少",
       "more": "多",

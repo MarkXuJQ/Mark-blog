@@ -105,12 +105,13 @@
     "backHome": "Back to Homepage"
   },
   "movies": {
-    "description": "Loads your Douban-exported CSV by default, with an optional TMDB enhanced mode for posters and release info.",
+    "description": "A small archive of movies I have watched, with a few simple stats and notes along the way.",
     "stats": {
       "watchedCount": "Watched Movies",
       "ratedCount": "Rated",
-      "overallScore": "Overall Score",
-      "overallScoreHint": "100-point score converted from your average rated stars",
+      "overallScore": "Overall Score out of 100",
+      "overallScoreHint": "Calculated from rated movies",
+      "ratingBreakdown": "Rating Distribution",
       "latestWatch": "Latest Watch"
     },
     "mode": {
@@ -132,6 +133,7 @@
     "calendar": {
       "title": "Watch Activity Calendar",
       "summary": "{{count}} active watch days and {{total}} movies in {{year}}",
+      "year": "Year",
       "tooltip": "{{date}}: {{count}} movies",
       "less": "Less",
       "more": "More",
