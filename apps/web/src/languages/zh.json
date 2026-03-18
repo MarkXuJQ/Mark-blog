@@ -109,12 +109,14 @@
     "stats": {
       "watchedCount": "观影总数",
       "ratedCount": "已评分",
+      "overallScore": "综合评分",
+      "overallScoreHint": "按已评分影片的平均星级换算为 100 分制",
       "latestWatch": "最近观看"
     },
     "mode": {
       "label": "数据模式",
-      "csv": "CSV 默认",
-      "tmdb": "TMDB 增强",
+      "csv": "默认",
+      "tmdb": "增强",
       "hint": "默认模式不依赖外网。"
     },
     "layout": {
@@ -129,7 +131,7 @@
     },
     "calendar": {
       "title": "观影活跃日历",
-      "summary": "近一年共 {{count}} 个观影日",
+      "summary": "{{year}} 年共有 {{count}} 个观影日，累计看了 {{total}} 部",
       "tooltip": "{{date}}：{{count}} 部",
       "less": "少",
       "more": "多",

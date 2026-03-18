@@ -109,12 +109,14 @@
     "stats": {
       "watchedCount": "Watched Movies",
       "ratedCount": "Rated",
+      "overallScore": "Overall Score",
+      "overallScoreHint": "100-point score converted from your average rated stars",
       "latestWatch": "Latest Watch"
     },
     "mode": {
       "label": "Data Mode",
-      "csv": "CSV Default",
-      "tmdb": "TMDB Enhanced",
+      "csv": "Default",
+      "tmdb": "Enhanced",
       "hint": "Default mode works without external access."
     },
     "layout": {
@@ -129,7 +131,7 @@
     },
     "calendar": {
       "title": "Watch Activity Calendar",
-      "summary": "{{count}} active watch days in the last year",
+      "summary": "{{count}} active watch days and {{total}} movies in {{year}}",
       "tooltip": "{{date}}: {{count}} movies",
       "less": "Less",
       "more": "More",

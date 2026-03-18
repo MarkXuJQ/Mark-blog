@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '../../utils/cn'
 
@@ -6,11 +6,16 @@ interface CalendarDayCell {
   date: Date
   dateKey: string
   count: number
+  isCurrentYear: boolean
 }
 
 interface WatchActivityCalendarProps {
   watchDates: string[]
   locale: string
+}
+
+function getMondayDayIndex(date: Date) {
+  return (date.getDay() + 6) % 7
 }
 
 function toDateKey(date: Date) {
@@ -41,43 +46,65 @@ export function WatchActivityCalendar({
   locale,
 }: WatchActivityCalendarProps) {
   const { t } = useTranslation()
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())
+
+  const parsedWatchDates = useMemo(
+    () =>
+      watchDates
+        .map((watchDate) => {
+          const parsed = new Date(watchDate)
+          return Number.isNaN(parsed.getTime()) ? null : parsed
+        })
+        .filter((date): date is Date => date !== null),
+    [watchDates]
+  )
+
+  const years = useMemo(() => {
+    const uniqueYears = new Set(parsedWatchDates.map((date) => date.getFullYear()))
+    return Array.from(uniqueYears).sort((left, right) => right - left)
+  }, [parsedWatchDates])
+
+  useEffect(() => {
+    if (years.length === 0) return
+    if (!years.includes(selectedYear)) {
+      setSelectedYear(years[0])
+    }
+  }, [selectedYear, years])
 
   const watchCountMap = useMemo(() => {
     const map: Record<string, number> = {}
-    for (const watchDate of watchDates) {
-      if (!watchDate) continue
-      const parsed = new Date(watchDate)
-      if (Number.isNaN(parsed.getTime())) continue
-      const key = toDateKey(parsed)
+    for (const parsedDate of parsedWatchDates) {
+      const key = toDateKey(parsedDate)
       map[key] = (map[key] ?? 0) + 1
     }
     return map
-  }, [watchDates])
+  }, [parsedWatchDates])
 
   const calendarDays = useMemo<CalendarDayCell[]>(() => {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    const start = new Date(selectedYear, 0, 1)
+    const end = new Date(selectedYear, 11, 31)
+    const startOffset = getMondayDayIndex(start)
+    const endOffset = 6 - getMondayDayIndex(end)
 
-    const start = new Date(today)
-    start.setDate(start.getDate() - 364)
-    const startOffset = start.getDay()
     start.setDate(start.getDate() - startOffset)
+    end.setDate(end.getDate() + endOffset)
 
     const days: CalendarDayCell[] = []
     const cursor = new Date(start)
 
-    while (cursor <= today) {
+    while (cursor <= end) {
       const dateKey = toDateKey(cursor)
       days.push({
         date: new Date(cursor),
         dateKey,
         count: watchCountMap[dateKey] ?? 0,
+        isCurrentYear: cursor.getFullYear() === selectedYear,
       })
       cursor.setDate(cursor.getDate() + 1)
     }
 
     return days
-  }, [watchCountMap])
+  }, [selectedYear, watchCountMap])
 
   const calendarWeeks = useMemo(() => {
     const weeks: CalendarDayCell[][] = []
@@ -90,36 +117,81 @@ export function WatchActivityCalendar({
   const calendarMonthLabels = useMemo(() => {
     let lastMonth = -1
     return calendarWeeks.map((week) => {
-      const firstDay = week[0]
-      if (!firstDay) return ''
-      const month = firstDay.date.getMonth()
+      const labelDay = week.find((day) => day.isCurrentYear)
+      if (!labelDay) return ''
+      const month = labelDay.date.getMonth()
       if (month === lastMonth) return ''
       lastMonth = month
       return new Intl.DateTimeFormat(locale, { month: 'short' }).format(
-        firstDay.date
+        labelDay.date
       )
     })
   }, [calendarWeeks, locale])
 
   const activeWatchDays = useMemo(
-    () => Object.values(watchCountMap).filter((count) => count > 0).length,
-    [watchCountMap]
+    () =>
+      parsedWatchDates.filter((date) => date.getFullYear() === selectedYear).reduce(
+        (days, date, _index, source) => {
+          const key = toDateKey(date)
+          return source.findIndex((item) => toDateKey(item) === key) === _index
+            ? days + 1
+            : days
+        },
+        0
+      ),
+    [parsedWatchDates, selectedYear]
+  )
+
+  const watchedCount = useMemo(
+    () =>
+      parsedWatchDates.filter((date) => date.getFullYear() === selectedYear).length,
+    [parsedWatchDates, selectedYear]
   )
 
   return (
     <section className="mb-6 rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-          {t('movies.calendar.title')}
-        </h2>
-        <span className="text-xs text-slate-500 dark:text-slate-400">
-          {t('movies.calendar.summary', { count: activeWatchDays })}
-        </span>
+        <div>
+          <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+            {t('movies.calendar.title')}
+          </h2>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            {t('movies.calendar.summary', {
+              count: activeWatchDays,
+              total: watchedCount,
+              year: selectedYear,
+            })}
+          </p>
+        </div>
+
+        {years.length > 0 ? (
+          <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white/90 px-3 py-2 text-xs dark:border-slate-700 dark:bg-slate-900">
+            <span className="text-slate-500 dark:text-slate-400">Year</span>
+            <select
+              value={selectedYear}
+              onChange={(event) => setSelectedYear(Number(event.target.value))}
+              className="bg-transparent font-medium text-slate-700 outline-none dark:text-slate-200"
+            >
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
       </div>
 
       <div className="overflow-x-auto">
         <div className="min-w-max">
-          <div className="mb-2 flex gap-1 pl-8">
+          <div className="mb-2 flex gap-2">
+            <div className="grid grid-rows-7 gap-1">
+              {Array.from({ length: 7 }).map((_, index) => (
+                <span key={index} className="h-3 w-5" />
+              ))}
+            </div>
+
+            <div className="mb-0 flex gap-1">
             {calendarMonthLabels.map((label, index) => (
               <span
                 key={`month-${index}`}
@@ -128,13 +200,18 @@ export function WatchActivityCalendar({
                 {label}
               </span>
             ))}
+            </div>
           </div>
 
           <div className="flex gap-2">
-            <div className="flex flex-col justify-between py-[2px] text-[10px] text-slate-400 dark:text-slate-500">
-              <span>{t('movies.calendar.week.mon')}</span>
-              <span>{t('movies.calendar.week.wed')}</span>
-              <span>{t('movies.calendar.week.fri')}</span>
+            <div className="grid grid-rows-7 gap-1 py-[1px] text-[10px] text-slate-400 dark:text-slate-500">
+              <span className="flex h-3 items-center">{t('movies.calendar.week.mon')}</span>
+              <span className="h-3" />
+              <span className="flex h-3 items-center">{t('movies.calendar.week.wed')}</span>
+              <span className="h-3" />
+              <span className="flex h-3 items-center">{t('movies.calendar.week.fri')}</span>
+              <span className="h-3" />
+              <span className="h-3" />
             </div>
 
             <div className="flex gap-1">
@@ -145,12 +222,18 @@ export function WatchActivityCalendar({
                       key={day.dateKey}
                       className={cn(
                         'h-3 w-3 rounded-[3px] ring-1 ring-black/5 dark:ring-white/5',
-                        getHeatmapLevelClass(day.count)
+                        day.isCurrentYear
+                          ? getHeatmapLevelClass(day.count)
+                          : 'bg-transparent ring-transparent'
                       )}
-                      title={t('movies.calendar.tooltip', {
-                        date: formatDateFromObject(day.date, locale),
-                        count: day.count,
-                      })}
+                      title={
+                        day.isCurrentYear
+                          ? t('movies.calendar.tooltip', {
+                              date: formatDateFromObject(day.date, locale),
+                              count: day.count,
+                            })
+                          : ''
+                      }
                     />
                   ))}
                 </div>
