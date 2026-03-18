@@ -1,0 +1,2985 @@
+{
+  "generatedAt": "2026-03-18T18:51:46.043Z",
+  "source": "webapi",
+  "profile": {
+    "steamId": "76561199085291248",
+    "personaName": "MarkXu",
+    "avatarUrl": "https://avatars.steamstatic.com/7589ba859c4f70ec7963afe1eb0fe63f49394b3c_full.jpg",
+    "profileUrl": "https://steamcommunity.com/id/markxu269/",
+    "reviewsUrl": "https://steamcommunity.com/id/markxu269/recommended/"
+  },
+  "summary": {
+    "gameCount": 223,
+    "playedCount": 147,
+    "unplayedCount": 76,
+    "totalMinutes": 163787,
+    "totalRecentMinutes": 565,
+    "totalUnlockedAchievements": 1845,
+    "totalAvailableAchievements": 7151,
+    "featuredAppId": 2246340
+  },
+  "featured": [
+    {
+      "appid": 2246340,
+      "name": "Monster Hunter Wilds",
+      "playtimeMinutes": 16276,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2246340/23474d61e4506351f9b26f230fd417d017cf2806.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2246340",
+      "communityUrl": "https://steamcommunity.com/app/2246340",
+      "achievementStats": {
+        "unlockedCount": 50,
+        "totalCount": 50
+      },
+      "reviewSummary": {
+        "totalPositive": 150389,
+        "totalNegative": 163562,
+        "totalReviews": 313951,
+        "positivePercent": 48
+      },
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1771382452",
+      "shortDescription": "The unbridled force of nature runs wild and relentless, with environments transforming drastically from one moment to the next. This is a story of monsters and humans and their struggles to live in harmony in a world of duality.",
+      "releaseDate": "27 Feb, 2025",
+      "developers": [
+        "CAPCOM Co., Ltd."
+      ],
+      "genres": [
+        "Action",
+        "Adventure",
+        "RPG"
+      ]
+    },
+    {
+      "appid": 582010,
+      "name": "Monster Hunter: World",
+      "playtimeMinutes": 11147,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/582010/6ec147f2d423f435e15eb79b3d82f771913de634.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/582010",
+      "communityUrl": "https://steamcommunity.com/app/582010",
+      "achievementStats": {
+        "unlockedCount": 64,
+        "totalCount": 100
+      },
+      "reviewSummary": {
+        "totalPositive": 447082,
+        "totalNegative": 56790,
+        "totalReviews": 503872,
+        "positivePercent": 89
+      },
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
+      "shortDescription": "Welcome to a new world! In Monster Hunter: World, the latest installment in the series, you can enjoy the ultimate hunting experience, using everything at your disposal to hunt monsters in a new world teeming with surprises and excitement.",
+      "releaseDate": "8 Aug, 2018",
+      "developers": [
+        "CAPCOM Co., Ltd."
+      ],
+      "genres": [
+        "Action"
+      ]
+    },
+    {
+      "appid": 1086940,
+      "name": "Baldur's Gate 3",
+      "playtimeMinutes": 10868,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1086940/d866cae7ea1e471fdbc206287111f1b642373bd9.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1086940",
+      "communityUrl": "https://steamcommunity.com/app/1086940",
+      "achievementStats": {
+        "unlockedCount": 38,
+        "totalCount": 54
+      },
+      "reviewSummary": {
+        "totalPositive": 803280,
+        "totalNegative": 26481,
+        "totalReviews": 829761,
+        "positivePercent": 97
+      },
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1773079016",
+      "shortDescription": "Baldur’s Gate 3 is a story-rich, party-based RPG set in the universe of Dungeons &amp; Dragons, where your choices shape a tale of fellowship and betrayal, survival and sacrifice, and the lure of absolute power.",
+      "releaseDate": "3 Aug, 2023",
+      "developers": [
+        "Larian Studios"
+      ],
+      "genres": [
+        "Adventure",
+        "RPG",
+        "Strategy"
+      ]
+    },
+    {
+      "appid": 292030,
+      "name": "The Witcher 3: Wild Hunt",
+      "playtimeMinutes": 9512,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/292030/78d0ff98b67851f24539cdf2402cf147679134f4.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/292030",
+      "communityUrl": "https://steamcommunity.com/app/292030",
+      "achievementStats": {
+        "unlockedCount": 48,
+        "totalCount": 78
+      },
+      "reviewSummary": {
+        "totalPositive": 834826,
+        "totalNegative": 27729,
+        "totalReviews": 862555,
+        "positivePercent": 97
+      },
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991",
+      "shortDescription": "You are Geralt of Rivia, mercenary monster slayer. Before you stands a war-torn, monster-infested continent you can explore at will. Your current contract? Tracking down Ciri — the Child of Prophecy, a living weapon that can alter the shape of the world.",
+      "releaseDate": "18 May, 2015",
+      "developers": [
+        "CD PROJEKT RED"
+      ],
+      "genres": [
+        "RPG"
+      ]
+    }
+  ],
+  "games": [
+    {
+      "appid": 2246340,
+      "name": "Monster Hunter Wilds",
+      "playtimeMinutes": 16276,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2246340/23474d61e4506351f9b26f230fd417d017cf2806.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2246340",
+      "communityUrl": "https://steamcommunity.com/app/2246340",
+      "achievementStats": {
+        "unlockedCount": 50,
+        "totalCount": 50
+      }
+    },
+    {
+      "appid": 582010,
+      "name": "Monster Hunter: World",
+      "playtimeMinutes": 11147,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/582010/6ec147f2d423f435e15eb79b3d82f771913de634.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/582010",
+      "communityUrl": "https://steamcommunity.com/app/582010",
+      "achievementStats": {
+        "unlockedCount": 64,
+        "totalCount": 100
+      }
+    },
+    {
+      "appid": 1086940,
+      "name": "Baldur's Gate 3",
+      "playtimeMinutes": 10868,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1086940/d866cae7ea1e471fdbc206287111f1b642373bd9.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1086940",
+      "communityUrl": "https://steamcommunity.com/app/1086940",
+      "achievementStats": {
+        "unlockedCount": 38,
+        "totalCount": 54
+      }
+    },
+    {
+      "appid": 292030,
+      "name": "The Witcher 3: Wild Hunt",
+      "playtimeMinutes": 9512,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/292030/78d0ff98b67851f24539cdf2402cf147679134f4.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/292030",
+      "communityUrl": "https://steamcommunity.com/app/292030",
+      "achievementStats": {
+        "unlockedCount": 48,
+        "totalCount": 78
+      }
+    },
+    {
+      "appid": 289070,
+      "name": "Sid Meier's Civilization VI",
+      "playtimeMinutes": 7842,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/289070/9dc914132fec244adcede62fb8e7524a72a7398c.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/289070",
+      "communityUrl": "https://steamcommunity.com/app/289070",
+      "achievementStats": {
+        "unlockedCount": 59,
+        "totalCount": 320
+      }
+    },
+    {
+      "appid": 812140,
+      "name": "Assassin's Creed Odyssey",
+      "playtimeMinutes": 7030,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/812140/4b6cf0715b30669411bf204bce7ed99a9c84671b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/812140",
+      "communityUrl": "https://steamcommunity.com/app/812140",
+      "achievementStats": {
+        "unlockedCount": 67,
+        "totalCount": 93
+      }
+    },
+    {
+      "appid": 1091500,
+      "name": "Cyberpunk 2077",
+      "playtimeMinutes": 6804,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1091500/42b9b33fa0f0d997beb299c6157592a8fe7d8f68.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1091500",
+      "communityUrl": "https://steamcommunity.com/app/1091500",
+      "achievementStats": {
+        "unlockedCount": 42,
+        "totalCount": 57
+      }
+    },
+    {
+      "appid": 1174180,
+      "name": "Red Dead Redemption 2",
+      "playtimeMinutes": 5275,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1174180/5106abd9c1187a97f23295a0ba9470c94804ec6c.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1174180",
+      "communityUrl": "https://steamcommunity.com/app/1174180",
+      "achievementStats": {
+        "unlockedCount": 21,
+        "totalCount": 51
+      }
+    },
+    {
+      "appid": 2358720,
+      "name": "Black Myth: Wukong",
+      "playtimeMinutes": 4144,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2358720/764ad8ff458f7020d63a3f7f0abf6ad8882c05df.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2358720",
+      "communityUrl": "https://steamcommunity.com/app/2358720",
+      "achievementStats": {
+        "unlockedCount": 75,
+        "totalCount": 81
+      }
+    },
+    {
+      "appid": 1868140,
+      "name": "DAVE THE DIVER",
+      "playtimeMinutes": 3313,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1868140/2f19d6889f66eae88e8b5a36727d560ec88a00cb.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1868140",
+      "communityUrl": "https://steamcommunity.com/app/1868140",
+      "achievementStats": {
+        "unlockedCount": 43,
+        "totalCount": 43
+      }
+    },
+    {
+      "appid": 2322010,
+      "name": "God of War Ragnarök",
+      "playtimeMinutes": 3132,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2322010/1e04d2b41906d6851f21c8d20c9db63f7eb10e64.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2322010",
+      "communityUrl": "https://steamcommunity.com/app/2322010",
+      "achievementStats": {
+        "unlockedCount": 40,
+        "totalCount": 48
+      }
+    },
+    {
+      "appid": 431960,
+      "name": "Wallpaper Engine",
+      "playtimeMinutes": 3072,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/431960/72edaed9d748c6cf7397ffb1c83f0b837b9ebd9d.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/431960",
+      "communityUrl": "https://steamcommunity.com/app/431960",
+      "achievementStats": {
+        "unlockedCount": 5,
+        "totalCount": 17
+      }
+    },
+    {
+      "appid": 1145360,
+      "name": "Hades",
+      "playtimeMinutes": 2999,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1145360/8a3fca36a00883e8066263ad35dd15d77a1f9abc.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1145360",
+      "communityUrl": "https://steamcommunity.com/app/1145360",
+      "achievementStats": {
+        "unlockedCount": 25,
+        "totalCount": 49
+      }
+    },
+    {
+      "appid": 242050,
+      "name": "Assassin's Creed IV Black Flag",
+      "playtimeMinutes": 2931,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/242050/a03c06290af00eed66814815663b68f5fd063882.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/242050",
+      "communityUrl": "https://steamcommunity.com/app/242050",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 60
+      }
+    },
+    {
+      "appid": 1817070,
+      "name": "Marvel’s Spider-Man Remastered",
+      "playtimeMinutes": 2717,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1817070/346333cb340139ad8b697005e5c79a3162c387b0.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1817070",
+      "communityUrl": "https://steamcommunity.com/app/1817070",
+      "achievementStats": {
+        "unlockedCount": 74,
+        "totalCount": 78
+      }
+    },
+    {
+      "appid": 1659420,
+      "name": "UNCHARTED™: Legacy of Thieves Collection",
+      "playtimeMinutes": 2662,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1659420/b566a403067d6abf75136a3c19f9ed0d2e4fb5b1.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1659420",
+      "communityUrl": "https://steamcommunity.com/app/1659420",
+      "achievementStats": {
+        "unlockedCount": 26,
+        "totalCount": 101
+      }
+    },
+    {
+      "appid": 1850570,
+      "name": "DEATH STRANDING DIRECTOR'S CUT",
+      "playtimeMinutes": 2617,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1850570/dd1abd2566c95d1e89408570719657a663591f8f.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1850570",
+      "communityUrl": "https://steamcommunity.com/app/1850570",
+      "achievementStats": {
+        "unlockedCount": 47,
+        "totalCount": 63
+      }
+    },
+    {
+      "appid": 3167550,
+      "name": "Tiny Pasture",
+      "playtimeMinutes": 2605,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/3167550/f71b6fbdab14f65f2d84e86d382bbfe2f37c242f.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/3167550",
+      "communityUrl": "https://steamcommunity.com/app/3167550",
+      "achievementStats": {
+        "unlockedCount": 55,
+        "totalCount": 55
+      }
+    },
+    {
+      "appid": 271590,
+      "name": "Grand Theft Auto V Legacy",
+      "playtimeMinutes": 2601,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/271590/1e72f87eb927fa1485e68aefaff23c7fd7178251.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/271590",
+      "communityUrl": "https://steamcommunity.com/app/271590",
+      "achievementStats": {
+        "unlockedCount": 14,
+        "totalCount": 77
+      }
+    },
+    {
+      "appid": 814380,
+      "name": "Sekiro™: Shadows Die Twice",
+      "playtimeMinutes": 2506,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/814380/2704fb9c5465045d00a5b19a0cb1e9bdabbd15cc.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/814380",
+      "communityUrl": "https://steamcommunity.com/app/814380",
+      "achievementStats": {
+        "unlockedCount": 25,
+        "totalCount": 34
+      }
+    },
+    {
+      "appid": 208650,
+      "name": "Batman™: Arkham Knight",
+      "playtimeMinutes": 2238,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/208650/f6c2ce13796844750dfbd01685fb009eeac4bf70.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/208650",
+      "communityUrl": "https://steamcommunity.com/app/208650",
+      "achievementStats": {
+        "unlockedCount": 64,
+        "totalCount": 113
+      }
+    },
+    {
+      "appid": 1057090,
+      "name": "Ori and the Will of the Wisps",
+      "playtimeMinutes": 2171,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1057090/ea50b151bb1e2c39e7bdd3ff4f8cc5e8738d6983.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1057090",
+      "communityUrl": "https://steamcommunity.com/app/1057090",
+      "achievementStats": {
+        "unlockedCount": 19,
+        "totalCount": 37
+      }
+    },
+    {
+      "appid": 275850,
+      "name": "No Man's Sky",
+      "playtimeMinutes": 2141,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/275850/fccb20f309ac5ae05b3cb4576a8a3357edf86f2e.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/275850",
+      "communityUrl": "https://steamcommunity.com/app/275850",
+      "achievementStats": {
+        "unlockedCount": 13,
+        "totalCount": 27
+      }
+    },
+    {
+      "appid": 646570,
+      "name": "Slay the Spire",
+      "playtimeMinutes": 1998,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/646570/33ea124ea8c03a9ce7012d34c3b348a351612fca.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/646570",
+      "communityUrl": "https://steamcommunity.com/app/646570",
+      "achievementStats": {
+        "unlockedCount": 20,
+        "totalCount": 46
+      }
+    },
+    {
+      "appid": 2001120,
+      "name": "Split Fiction",
+      "playtimeMinutes": 1929,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2001120/a01dc6ea47db8c74964d581fe9f1f8039e0e4f33.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2001120",
+      "communityUrl": "https://steamcommunity.com/app/2001120",
+      "achievementStats": {
+        "unlockedCount": 11,
+        "totalCount": 20
+      }
+    },
+    {
+      "appid": 997070,
+      "name": "Marvel's Avengers - The Definitive Edition",
+      "playtimeMinutes": 1913,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/997070/86a7b69906c6ed25d52822bcd3f8831f0876e9d3.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/997070",
+      "communityUrl": "https://steamcommunity.com/app/997070",
+      "achievementStats": {
+        "unlockedCount": 30,
+        "totalCount": 50
+      }
+    },
+    {
+      "appid": 553850,
+      "name": "HELLDIVERS™ 2",
+      "playtimeMinutes": 1910,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/553850/c3dff088e090f81d6e3d88eabbb67732647c69cf.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/553850",
+      "communityUrl": "https://steamcommunity.com/app/553850",
+      "achievementStats": {
+        "unlockedCount": 26,
+        "totalCount": 38
+      }
+    },
+    {
+      "appid": 2651280,
+      "name": "Marvel's Spider-Man 2",
+      "playtimeMinutes": 1694,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2651280/74853ef20b2cce99818a4732ffb38a1234db2827.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2651280",
+      "communityUrl": "https://steamcommunity.com/app/2651280",
+      "achievementStats": {
+        "unlockedCount": 42,
+        "totalCount": 43
+      }
+    },
+    {
+      "appid": 33230,
+      "name": "Assassin's Creed II",
+      "playtimeMinutes": 1512,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/33230/0492d8ee860ac99168e46efeb003029c3224cb38.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/33230",
+      "communityUrl": "https://steamcommunity.com/app/33230",
+      "achievementStats": null
+    },
+    {
+      "appid": 2050650,
+      "name": "Resident Evil 4",
+      "playtimeMinutes": 1475,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2050650/817358b8013c55831ea10d031ef9c0b151110826.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2050650",
+      "communityUrl": "https://steamcommunity.com/app/2050650",
+      "achievementStats": {
+        "unlockedCount": 19,
+        "totalCount": 46
+      }
+    },
+    {
+      "appid": 319630,
+      "name": "Life is Strange™",
+      "playtimeMinutes": 1439,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/319630/e54b13da0710a35e7088664a77632e79157d8332.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/319630",
+      "communityUrl": "https://steamcommunity.com/app/319630",
+      "achievementStats": {
+        "unlockedCount": 23,
+        "totalCount": 60
+      }
+    },
+    {
+      "appid": 3167020,
+      "name": "Escape From Duckov",
+      "playtimeMinutes": 1317,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/3167020/5bb8d31708442a8f3ddbc100d7be7c3fde530d18.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/3167020",
+      "communityUrl": "https://steamcommunity.com/app/3167020",
+      "achievementStats": {
+        "unlockedCount": 33,
+        "totalCount": 55
+      }
+    },
+    {
+      "appid": 632470,
+      "name": "Disco Elysium",
+      "playtimeMinutes": 1301,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/632470/b681544caa931c7c1a6788e6e3e33cb42892d17c.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/632470",
+      "communityUrl": "https://steamcommunity.com/app/632470",
+      "achievementStats": {
+        "unlockedCount": 12,
+        "totalCount": 45
+      }
+    },
+    {
+      "appid": 48190,
+      "name": "Assassin's Creed Brotherhood",
+      "playtimeMinutes": 1298,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/48190/6a87d0b61e45e8075decd1f8ace549300b036a52.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/48190",
+      "communityUrl": "https://steamcommunity.com/app/48190",
+      "achievementStats": null
+    },
+    {
+      "appid": 588650,
+      "name": "Dead Cells",
+      "playtimeMinutes": 1192,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/588650/a431361e5dae5fd6ac2433064b62b2a37abc38f1.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/588650",
+      "communityUrl": "https://steamcommunity.com/app/588650",
+      "achievementStats": {
+        "unlockedCount": 54,
+        "totalCount": 121
+      }
+    },
+    {
+      "appid": 1426210,
+      "name": "It Takes Two",
+      "playtimeMinutes": 1122,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1426210/6b15f6d81c4fc52056f4928b363b7fac591a945b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1426210",
+      "communityUrl": "https://steamcommunity.com/app/1426210",
+      "achievementStats": {
+        "unlockedCount": 13,
+        "totalCount": 20
+      }
+    },
+    {
+      "appid": 880940,
+      "name": "Pummel Party",
+      "playtimeMinutes": 1073,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/880940/0e2e222010d009ca46b575cc5c53a23250434341.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/880940",
+      "communityUrl": "https://steamcommunity.com/app/880940",
+      "achievementStats": {
+        "unlockedCount": 13,
+        "totalCount": 31
+      }
+    },
+    {
+      "appid": 1088850,
+      "name": "Marvel's Guardians of the Galaxy",
+      "playtimeMinutes": 1069,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1088850/8aec558b5e9c3aa185869d438f78200a2d4bf885.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1088850",
+      "communityUrl": "https://steamcommunity.com/app/1088850",
+      "achievementStats": {
+        "unlockedCount": 49,
+        "totalCount": 59
+      }
+    },
+    {
+      "appid": 1817190,
+      "name": "Marvel's Spider-Man: Miles Morales",
+      "playtimeMinutes": 988,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1817190/fac57db36817793f8b53b220dfe76c692f502a8f.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1817190",
+      "communityUrl": "https://steamcommunity.com/app/1817190",
+      "achievementStats": {
+        "unlockedCount": 35,
+        "totalCount": 50
+      }
+    },
+    {
+      "appid": 55230,
+      "name": "Saints Row: The Third",
+      "playtimeMinutes": 986,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/55230/ec83645f13643999e7c91da75d418053d6b56529.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/55230",
+      "communityUrl": "https://steamcommunity.com/app/55230",
+      "achievementStats": {
+        "unlockedCount": 34,
+        "totalCount": 83
+      }
+    },
+    {
+      "appid": 1888930,
+      "name": "The Last of Us™ Part I",
+      "playtimeMinutes": 940,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1888930/6991d13038a61e35bade3aabea400c74bbbf966d.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1888930",
+      "communityUrl": "https://steamcommunity.com/app/1888930",
+      "achievementStats": {
+        "unlockedCount": 5,
+        "totalCount": 29
+      }
+    },
+    {
+      "appid": 870780,
+      "name": "Control Ultimate Edition",
+      "playtimeMinutes": 888,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/870780/3438e3a03c82194349d66f99ee642ba59cbcc3dc.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/870780",
+      "communityUrl": "https://steamcommunity.com/app/870780",
+      "achievementStats": {
+        "unlockedCount": 49,
+        "totalCount": 67
+      }
+    },
+    {
+      "appid": 1446780,
+      "name": "MONSTER HUNTER RISE",
+      "playtimeMinutes": 880,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1446780/560dd364b52075b783424961a43c01f9b69fde15.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1446780",
+      "communityUrl": "https://steamcommunity.com/app/1446780",
+      "achievementStats": {
+        "unlockedCount": 4,
+        "totalCount": 100
+      }
+    },
+    {
+      "appid": 203160,
+      "name": "Tomb Raider",
+      "playtimeMinutes": 876,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/203160/3ee640a8aba6992678e36f4e40cba9c71c02348b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/203160",
+      "communityUrl": "https://steamcommunity.com/app/203160",
+      "achievementStats": {
+        "unlockedCount": 17,
+        "totalCount": 50
+      }
+    },
+    {
+      "appid": 753640,
+      "name": "Outer Wilds",
+      "playtimeMinutes": 864,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/753640/8d0c2dcfc599445affcbad76a34d89478c022780.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/753640",
+      "communityUrl": "https://steamcommunity.com/app/753640",
+      "achievementStats": {
+        "unlockedCount": 4,
+        "totalCount": 31
+      }
+    },
+    {
+      "appid": 209000,
+      "name": "Batman™: Arkham Origins",
+      "playtimeMinutes": 861,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/209000/76dac70a2206de1a80da4950da43e1b05ea302a8.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/209000",
+      "communityUrl": "https://steamcommunity.com/app/209000",
+      "achievementStats": {
+        "unlockedCount": 10,
+        "totalCount": 60
+      }
+    },
+    {
+      "appid": 391220,
+      "name": "Rise of the Tomb Raider",
+      "playtimeMinutes": 793,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/391220/0b8a37f32ed2b7c934be8aa94d53f71e274c6497.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/391220",
+      "communityUrl": "https://steamcommunity.com/app/391220",
+      "achievementStats": {
+        "unlockedCount": 25,
+        "totalCount": 143
+      }
+    },
+    {
+      "appid": 829110,
+      "name": "LEGO® DC Super-Villains",
+      "playtimeMinutes": 774,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/829110/003876fcdd012cc6a7974f1f8bf29a158e459577.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/829110",
+      "communityUrl": "https://steamcommunity.com/app/829110",
+      "achievementStats": {
+        "unlockedCount": 24,
+        "totalCount": 75
+      }
+    },
+    {
+      "appid": 647830,
+      "name": "LEGO® MARVEL Super Heroes 2",
+      "playtimeMinutes": 618,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/647830/d9b911462b336dd60ddd44c4f7728fe84468c5a6.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/647830",
+      "communityUrl": "https://steamcommunity.com/app/647830",
+      "achievementStats": {
+        "unlockedCount": 6,
+        "totalCount": 75
+      }
+    },
+    {
+      "appid": 1222670,
+      "name": "The Sims™ 4",
+      "playtimeMinutes": 594,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1222670/ca6bc8b2411bce4a2cd325ab75f0204bc3a4ad98.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1222670",
+      "communityUrl": "https://steamcommunity.com/app/1222670",
+      "achievementStats": null
+    },
+    {
+      "appid": 35140,
+      "name": "Batman: Arkham Asylum GOTY Edition",
+      "playtimeMinutes": 525,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/35140/e52f91ecb0d3f20263e96fe188de1bcc8c91643e.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/35140",
+      "communityUrl": "https://steamcommunity.com/app/35140",
+      "achievementStats": {
+        "unlockedCount": 26,
+        "totalCount": 47
+      }
+    },
+    {
+      "appid": 2868840,
+      "name": "Slay the Spire 2",
+      "playtimeMinutes": 519,
+      "recentPlaytimeMinutes": 519,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2868840/f92b09dab91f1d1738f72fe0dd9be18dcc2901f9.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2868840",
+      "communityUrl": "https://steamcommunity.com/app/2868840",
+      "achievementStats": null
+    },
+    {
+      "appid": 1172380,
+      "name": "STAR WARS Jedi: Fallen Order™ ",
+      "playtimeMinutes": 511,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1172380/0ea1d285a8ee6fbeef0e8f7f3b2d7fa4cbcb423b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1172380",
+      "communityUrl": "https://steamcommunity.com/app/1172380",
+      "achievementStats": {
+        "unlockedCount": 4,
+        "totalCount": 39
+      }
+    },
+    {
+      "appid": 261570,
+      "name": "Ori and the Blind Forest",
+      "playtimeMinutes": 473,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/261570/a8b0c1ca89fa421e5061d4ac5c17e2fbf4f08845.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/261570",
+      "communityUrl": "https://steamcommunity.com/app/261570",
+      "achievementStats": {
+        "unlockedCount": 22,
+        "totalCount": 50
+      }
+    },
+    {
+      "appid": 3065170,
+      "name": "Monster Hunter Wilds Beta test",
+      "playtimeMinutes": 449,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/3065170/cb8345c0f9742dad3764d058c9da49c8860d15f9.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/3065170",
+      "communityUrl": "https://steamcommunity.com/app/3065170",
+      "achievementStats": null
+    },
+    {
+      "appid": 205100,
+      "name": "Dishonored",
+      "playtimeMinutes": 405,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/205100/74f8ee1ba536e0759e64a9bf801fc013e16c8dd1.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/205100",
+      "communityUrl": "https://steamcommunity.com/app/205100",
+      "achievementStats": {
+        "unlockedCount": 7,
+        "totalCount": 80
+      }
+    },
+    {
+      "appid": 435150,
+      "name": "Divinity: Original Sin 2",
+      "playtimeMinutes": 401,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/435150/519a99caef7c5e2b4625c8c2fa0620fb66a752f3.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/435150",
+      "communityUrl": "https://steamcommunity.com/app/435150",
+      "achievementStats": {
+        "unlockedCount": 3,
+        "totalCount": 97
+      }
+    },
+    {
+      "appid": 1222700,
+      "name": "A Way Out",
+      "playtimeMinutes": 395,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1222700/ac36b7d06c117d34c204166c3120e15910ef2b8b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1222700",
+      "communityUrl": "https://steamcommunity.com/app/1222700",
+      "achievementStats": {
+        "unlockedCount": 6,
+        "totalCount": 14
+      }
+    },
+    {
+      "appid": 414340,
+      "name": "Hellblade: Senua's Sacrifice",
+      "playtimeMinutes": 377,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/414340/8a5d8f2d1cb52b21eaf4f6609592c6634731c962.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/414340",
+      "communityUrl": "https://steamcommunity.com/app/414340",
+      "achievementStats": {
+        "unlockedCount": 13,
+        "totalCount": 14
+      }
+    },
+    {
+      "appid": 249130,
+      "name": "LEGO® MARVEL Super Heroes",
+      "playtimeMinutes": 366,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/249130/8462ed9e1004624c7109233eafd7098211da9f86.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/249130",
+      "communityUrl": "https://steamcommunity.com/app/249130",
+      "achievementStats": {
+        "unlockedCount": 11,
+        "totalCount": 45
+      }
+    },
+    {
+      "appid": 346110,
+      "name": "ARK: Survival Evolved",
+      "playtimeMinutes": 342,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/346110/fef1799533131c10f538d2dd697bbbd89e663265.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/346110",
+      "communityUrl": "https://steamcommunity.com/app/346110",
+      "achievementStats": {
+        "unlockedCount": 3,
+        "totalCount": 32
+      }
+    },
+    {
+      "appid": 206420,
+      "name": "Saints Row IV",
+      "playtimeMinutes": 324,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/206420/211c502e385781a17b4d02cad7a3ef53f09f1e91.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/206420",
+      "communityUrl": "https://steamcommunity.com/app/206420",
+      "achievementStats": {
+        "unlockedCount": 11,
+        "totalCount": 73
+      }
+    },
+    {
+      "appid": 3590,
+      "name": "Plants vs. Zombies: Game of the Year",
+      "playtimeMinutes": 320,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/3590/d2a9c24de11210560f579e7fd9303960c5060155.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/3590",
+      "communityUrl": "https://steamcommunity.com/app/3590",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 21
+      }
+    },
+    {
+      "appid": 489830,
+      "name": "The Elder Scrolls V: Skyrim Special Edition",
+      "playtimeMinutes": 318,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/489830/0dfe3eed5658f9fbd8b62f8021038c0a4190f21d.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/489830",
+      "communityUrl": "https://steamcommunity.com/app/489830",
+      "achievementStats": {
+        "unlockedCount": 2,
+        "totalCount": 75
+      }
+    },
+    {
+      "appid": 688420,
+      "name": "Bad North: Jotunn Edition",
+      "playtimeMinutes": 310,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/688420/038a9c080d91b1963b51498541a718f844a0f162.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/688420",
+      "communityUrl": "https://steamcommunity.com/app/688420",
+      "achievementStats": {
+        "unlockedCount": 9,
+        "totalCount": 11
+      }
+    },
+    {
+      "appid": 670290,
+      "name": "Real Pool 3D - Poolians",
+      "playtimeMinutes": 299,
+      "recentPlaytimeMinutes": 34,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/670290/b74acc3e1996c8cb9ce9e2933c190575fa0be457.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/670290",
+      "communityUrl": "https://steamcommunity.com/app/670290",
+      "achievementStats": {
+        "unlockedCount": 2,
+        "totalCount": 13
+      }
+    },
+    {
+      "appid": 2379780,
+      "name": "Balatro",
+      "playtimeMinutes": 298,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2379780/b6018068070ab0e23561694c11f7950dd6f4c752.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2379780",
+      "communityUrl": "https://steamcommunity.com/app/2379780",
+      "achievementStats": {
+        "unlockedCount": 7,
+        "totalCount": 31
+      }
+    },
+    {
+      "appid": 1151640,
+      "name": "Horizon Zero Dawn™ Complete Edition",
+      "playtimeMinutes": 290,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1151640/08a1b6df68bdc8c28c974b79325ed8c89417af48.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1151640",
+      "communityUrl": "https://steamcommunity.com/app/1151640",
+      "achievementStats": {
+        "unlockedCount": 10,
+        "totalCount": 79
+      }
+    },
+    {
+      "appid": 728880,
+      "name": "Overcooked! 2",
+      "playtimeMinutes": 267,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/728880/bac36f471109038ae0b40619de4109d475f86a54.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/728880",
+      "communityUrl": "https://steamcommunity.com/app/728880",
+      "achievementStats": {
+        "unlockedCount": 6,
+        "totalCount": 54
+      }
+    },
+    {
+      "appid": 1237970,
+      "name": "Titanfall® 2",
+      "playtimeMinutes": 267,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1237970/d73c7e572859bd7490947d1aeab5c33eda18fd64.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1237970",
+      "communityUrl": "https://steamcommunity.com/app/1237970",
+      "achievementStats": {
+        "unlockedCount": 7,
+        "totalCount": 50
+      }
+    },
+    {
+      "appid": 1238840,
+      "name": "Battlefield™ 1",
+      "playtimeMinutes": 259,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1238840/325c78f6940b57a43b65468d2dc10e22601b0ec5.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1238840",
+      "communityUrl": "https://steamcommunity.com/app/1238840",
+      "achievementStats": {
+        "unlockedCount": 5,
+        "totalCount": 50
+      }
+    },
+    {
+      "appid": 993090,
+      "name": "Lossless Scaling",
+      "playtimeMinutes": 249,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/993090/42900f430ed7828d2dfa25f07ac02e3de96bc520.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/993090",
+      "communityUrl": "https://steamcommunity.com/app/993090",
+      "achievementStats": null
+    },
+    {
+      "appid": 241260,
+      "name": "Sherlock Holmes: Crimes and Punishments",
+      "playtimeMinutes": 247,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/241260/4524c12e7e674740b5c3932e14427e5902587e4d.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/241260",
+      "communityUrl": "https://steamcommunity.com/app/241260",
+      "achievementStats": {
+        "unlockedCount": 1,
+        "totalCount": 25
+      }
+    },
+    {
+      "appid": 367450,
+      "name": "Poly Bridge",
+      "playtimeMinutes": 245,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/367450/7bc695b845364099d87469c2d9074a3782c68638.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/367450",
+      "communityUrl": "https://steamcommunity.com/app/367450",
+      "achievementStats": {
+        "unlockedCount": 2,
+        "totalCount": 22
+      }
+    },
+    {
+      "appid": 3035570,
+      "name": "Assassin's Creed Mirage",
+      "playtimeMinutes": 237,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/3035570/e5d6098ec84423be04e5d8a4fac2784b392dae86.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/3035570",
+      "communityUrl": "https://steamcommunity.com/app/3035570",
+      "achievementStats": {
+        "unlockedCount": 3,
+        "totalCount": 61
+      }
+    },
+    {
+      "appid": 200260,
+      "name": "Batman: Arkham City GOTY",
+      "playtimeMinutes": 233,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/200260/746ecf3ce44b2525eb7ad643e76a3b60913d2662.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/200260",
+      "communityUrl": "https://steamcommunity.com/app/200260",
+      "achievementStats": {
+        "unlockedCount": 7,
+        "totalCount": 64
+      }
+    },
+    {
+      "appid": 619150,
+      "name": "while True: learn()",
+      "playtimeMinutes": 227,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/619150/f2019d200f83652bd900d0227a12cf3bf486e4e7.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/619150",
+      "communityUrl": "https://steamcommunity.com/app/619150",
+      "achievementStats": {
+        "unlockedCount": 13,
+        "totalCount": 31
+      }
+    },
+    {
+      "appid": 2141730,
+      "name": "Backrooms: Escape Together",
+      "playtimeMinutes": 217,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2141730/d4b430f9594dcad772f320fe8792b2c94cf99e06.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2141730",
+      "communityUrl": "https://steamcommunity.com/app/2141730",
+      "achievementStats": {
+        "unlockedCount": 7,
+        "totalCount": 20
+      }
+    },
+    {
+      "appid": 379720,
+      "name": "DOOM",
+      "playtimeMinutes": 213,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/379720/b6e72ff47d1990cb644700751eeeff14e0aba6dc.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/379720",
+      "communityUrl": "https://steamcommunity.com/app/379720",
+      "achievementStats": {
+        "unlockedCount": 2,
+        "totalCount": 54
+      }
+    },
+    {
+      "appid": 1599600,
+      "name": "PlateUp!",
+      "playtimeMinutes": 201,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1599600/c13221a2369c16d90681faf7786265a709586efe.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1599600",
+      "communityUrl": "https://steamcommunity.com/app/1599600",
+      "achievementStats": {
+        "unlockedCount": 3,
+        "totalCount": 26
+      }
+    },
+    {
+      "appid": 932850,
+      "name": "Simmiland",
+      "playtimeMinutes": 194,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/932850/f756db37132f4bcd9c367d7323bd3c150fcc691a.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/932850",
+      "communityUrl": "https://steamcommunity.com/app/932850",
+      "achievementStats": {
+        "unlockedCount": 11,
+        "totalCount": 27
+      }
+    },
+    {
+      "appid": 2238040,
+      "name": "Tiny Terry's Turbo Trip",
+      "playtimeMinutes": 193,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2238040/67e3ca1e528f3d0c1b9581e66b6747fe077073e5.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2238040",
+      "communityUrl": "https://steamcommunity.com/app/2238040",
+      "achievementStats": {
+        "unlockedCount": 26,
+        "totalCount": 31
+      }
+    },
+    {
+      "appid": 2138710,
+      "name": "Sifu",
+      "playtimeMinutes": 192,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2138710/3930eb06cc31a6c91ab243afd4c45f49c9d0c5c1.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2138710",
+      "communityUrl": "https://steamcommunity.com/app/2138710",
+      "achievementStats": {
+        "unlockedCount": 15,
+        "totalCount": 61
+      }
+    },
+    {
+      "appid": 313690,
+      "name": "LEGO® Batman™ 3: Beyond Gotham",
+      "playtimeMinutes": 187,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/313690/4bd5b11c55070ddb17b14f05293eac8a464f71ac.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/313690",
+      "communityUrl": "https://steamcommunity.com/app/313690",
+      "achievementStats": {
+        "unlockedCount": 4,
+        "totalCount": 70
+      }
+    },
+    {
+      "appid": 3478870,
+      "name": "GeoGuessr Steam Edition",
+      "playtimeMinutes": 174,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/3478870/b00bdaf4b696b337e8cd38cb7f0db07c044f6f90.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/3478870",
+      "communityUrl": "https://steamcommunity.com/app/3478870",
+      "achievementStats": {
+        "unlockedCount": 5,
+        "totalCount": 40
+      }
+    },
+    {
+      "appid": 1291010,
+      "name": "Warpips",
+      "playtimeMinutes": 170,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1291010/ff187db322aba39cb43ac7e47aaf836de98e9bf7.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1291010",
+      "communityUrl": "https://steamcommunity.com/app/1291010",
+      "achievementStats": {
+        "unlockedCount": 4,
+        "totalCount": 21
+      }
+    },
+    {
+      "appid": 945360,
+      "name": "Among Us",
+      "playtimeMinutes": 161,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/945360/b82c3f46da8f3c918e1c9e0d18bd6fa8fcef6801.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/945360",
+      "communityUrl": "https://steamcommunity.com/app/945360",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 33
+      }
+    },
+    {
+      "appid": 1139900,
+      "name": "Ghostrunner",
+      "playtimeMinutes": 154,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1139900/ed987f3c8a114549fca26e0c2e9bbc62a9691d57.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1139900",
+      "communityUrl": "https://steamcommunity.com/app/1139900",
+      "achievementStats": {
+        "unlockedCount": 1,
+        "totalCount": 45
+      }
+    },
+    {
+      "appid": 3527290,
+      "name": "PEAK",
+      "playtimeMinutes": 154,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/3527290/b3a992fd5991bd2f4c956d58e062b0ce2988d6cd.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/3527290",
+      "communityUrl": "https://steamcommunity.com/app/3527290",
+      "achievementStats": {
+        "unlockedCount": 2,
+        "totalCount": 54
+      }
+    },
+    {
+      "appid": 787480,
+      "name": "Phoenix Wright: Ace Attorney Trilogy",
+      "playtimeMinutes": 143,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/787480/fbacf38826f9e6fbbd65535496847def4fe54229.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/787480",
+      "communityUrl": "https://steamcommunity.com/app/787480",
+      "achievementStats": {
+        "unlockedCount": 3,
+        "totalCount": 30
+      }
+    },
+    {
+      "appid": 477160,
+      "name": "Human Fall Flat",
+      "playtimeMinutes": 138,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/477160/15c6f6a4d69633a63ee410b24a2417f16d803b06.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/477160",
+      "communityUrl": "https://steamcommunity.com/app/477160",
+      "achievementStats": {
+        "unlockedCount": 8,
+        "totalCount": 151
+      }
+    },
+    {
+      "appid": 15100,
+      "name": "Assassin's Creed",
+      "playtimeMinutes": 137,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/15100/cd8f7a795e34e16449f7ad8d8190dce521967917.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/15100",
+      "communityUrl": "https://steamcommunity.com/app/15100",
+      "achievementStats": null
+    },
+    {
+      "appid": 49520,
+      "name": "Borderlands 2",
+      "playtimeMinutes": 135,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/49520/a3f4945226e69b6196074df4c776e342d3e5a3be.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/49520",
+      "communityUrl": "https://steamcommunity.com/app/49520",
+      "achievementStats": {
+        "unlockedCount": 2,
+        "totalCount": 75
+      }
+    },
+    {
+      "appid": 3730100,
+      "name": "Whispers from the Star",
+      "playtimeMinutes": 135,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/3730100/e811acdedc2b17faf255bc6f0094f2e6ac07f993.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/3730100",
+      "communityUrl": "https://steamcommunity.com/app/3730100",
+      "achievementStats": {
+        "unlockedCount": 13,
+        "totalCount": 35
+      }
+    },
+    {
+      "appid": 223850,
+      "name": "3DMark",
+      "playtimeMinutes": 133,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/223850/ea1a6e0c0d7451cf5a39210a4de30f7edfc214ca.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/223850",
+      "communityUrl": "https://steamcommunity.com/app/223850",
+      "achievementStats": {
+        "unlockedCount": 9,
+        "totalCount": 29
+      }
+    },
+    {
+      "appid": 373420,
+      "name": "Divinity: Original Sin Enhanced Edition",
+      "playtimeMinutes": 128,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/373420/822ff912b2e464fbebbedf7a75ae1eb24921f16b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/373420",
+      "communityUrl": "https://steamcommunity.com/app/373420",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 54
+      }
+    },
+    {
+      "appid": 227300,
+      "name": "Euro Truck Simulator 2",
+      "playtimeMinutes": 128,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/227300/adc18a4fc9adc0330144b76d61cbda68bb2394a0.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/227300",
+      "communityUrl": "https://steamcommunity.com/app/227300",
+      "achievementStats": {
+        "unlockedCount": 1,
+        "totalCount": 106
+      }
+    },
+    {
+      "appid": 400,
+      "name": "Portal",
+      "playtimeMinutes": 128,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/400/cfa928ab4119dd137e50d728e8fe703e4e970aff.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/400",
+      "communityUrl": "https://steamcommunity.com/app/400",
+      "achievementStats": {
+        "unlockedCount": 2,
+        "totalCount": 15
+      }
+    },
+    {
+      "appid": 845070,
+      "name": "The Awesome Adventures of Captain Spirit",
+      "playtimeMinutes": 121,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/845070/b0a58984e1e24531843f2bfe0b3d70135b0a8e57.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/845070",
+      "communityUrl": "https://steamcommunity.com/app/845070",
+      "achievementStats": null
+    },
+    {
+      "appid": 220200,
+      "name": "Kerbal Space Program",
+      "playtimeMinutes": 113,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/220200/6dc8c1377c6b0ffedaeaec59c253f8c33fb3e62b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/220200",
+      "communityUrl": "https://steamcommunity.com/app/220200",
+      "achievementStats": null
+    },
+    {
+      "appid": 976730,
+      "name": "Halo: The Master Chief Collection",
+      "playtimeMinutes": 108,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/976730/196a45d8df1981ff6b6b1872a38dc38f6c22875d.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/976730",
+      "communityUrl": "https://steamcommunity.com/app/976730",
+      "achievementStats": {
+        "unlockedCount": 2,
+        "totalCount": 700
+      }
+    },
+    {
+      "appid": 20920,
+      "name": "The Witcher 2: Assassins of Kings Enhanced Edition",
+      "playtimeMinutes": 93,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/20920/62dd5c627664df1bcabc47727c7dcd7ccab353e9.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/20920",
+      "communityUrl": "https://steamcommunity.com/app/20920",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 52
+      }
+    },
+    {
+      "appid": 633060,
+      "name": "Orwell: Ignorance is Strength",
+      "playtimeMinutes": 88,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/633060/79d876ffb01ca3a45d5a916df0ca5510574208aa.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/633060",
+      "communityUrl": "https://steamcommunity.com/app/633060",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 19
+      }
+    },
+    {
+      "appid": 973760,
+      "name": "Thronebreaker: The Witcher Tales",
+      "playtimeMinutes": 88,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/973760/c1f8e9dddd16f817b624d7e18f0af525dbb867dd.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/973760",
+      "communityUrl": "https://steamcommunity.com/app/973760",
+      "achievementStats": {
+        "unlockedCount": 1,
+        "totalCount": 39
+      }
+    },
+    {
+      "appid": 702670,
+      "name": "Donut County",
+      "playtimeMinutes": 84,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/702670/c9a5bdbeb3d74b0926e8abbecdca904ee32d6184.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/702670",
+      "communityUrl": "https://steamcommunity.com/app/702670",
+      "achievementStats": {
+        "unlockedCount": 8,
+        "totalCount": 20
+      }
+    },
+    {
+      "appid": 225540,
+      "name": "Just Cause 3",
+      "playtimeMinutes": 81,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/225540/c82c69c8d616d9d273d749e3dd3bd7a0f9da594a.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/225540",
+      "communityUrl": "https://steamcommunity.com/app/225540",
+      "achievementStats": {
+        "unlockedCount": 3,
+        "totalCount": 66
+      }
+    },
+    {
+      "appid": 557600,
+      "name": "Gorogoa",
+      "playtimeMinutes": 80,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/557600/ae001eaabbb76bf67661566249c978b73c4693e7.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/557600",
+      "communityUrl": "https://steamcommunity.com/app/557600",
+      "achievementStats": {
+        "unlockedCount": 6,
+        "totalCount": 11
+      }
+    },
+    {
+      "appid": 2229850,
+      "name": "Command & Conquer: Red Alert™ 2 and Yuri’s Revenge™",
+      "playtimeMinutes": 73,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2229850/3ffff6e06d54ac701c45e4a92ac1dbeaaf4503d9.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2229850",
+      "communityUrl": "https://steamcommunity.com/app/2229850",
+      "achievementStats": null
+    },
+    {
+      "appid": 1102130,
+      "name": "Florence",
+      "playtimeMinutes": 71,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1102130/4d790af511cc96b23f32829a7ee0313445865e5e.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1102130",
+      "communityUrl": "https://steamcommunity.com/app/1102130",
+      "achievementStats": {
+        "unlockedCount": 3,
+        "totalCount": 12
+      }
+    },
+    {
+      "appid": 365670,
+      "name": "Blender",
+      "playtimeMinutes": 69,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/365670/48733cd333eea6e40711a1b9c6dde32ffe363ced.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/365670",
+      "communityUrl": "https://steamcommunity.com/app/365670",
+      "achievementStats": null
+    },
+    {
+      "appid": 250180,
+      "name": "METAL SLUG 3",
+      "playtimeMinutes": 67,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/250180/102c6efe9fc37ecdc929258c52dcaf3d445b873f.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/250180",
+      "communityUrl": "https://steamcommunity.com/app/250180",
+      "achievementStats": {
+        "unlockedCount": 11,
+        "totalCount": 30
+      }
+    },
+    {
+      "appid": 1222140,
+      "name": "Detroit: Become Human",
+      "playtimeMinutes": 66,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1222140/3d9f5bc971d44398aef740c0d8e79a358be2e800.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1222140",
+      "communityUrl": "https://steamcommunity.com/app/1222140",
+      "achievementStats": {
+        "unlockedCount": 2,
+        "totalCount": 48
+      }
+    },
+    {
+      "appid": 20900,
+      "name": "The Witcher: Enhanced Edition",
+      "playtimeMinutes": 66,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/20900/746d1cd48fb2e57d579b05b6e9eccba95859e549.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/20900",
+      "communityUrl": "https://steamcommunity.com/app/20900",
+      "achievementStats": null
+    },
+    {
+      "appid": 336240,
+      "name": "Typoman",
+      "playtimeMinutes": 64,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/336240/44680606ed14db443e7c4028e6f2b13bd0bd07d7.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/336240",
+      "communityUrl": "https://steamcommunity.com/app/336240",
+      "achievementStats": {
+        "unlockedCount": 1,
+        "totalCount": 20
+      }
+    },
+    {
+      "appid": 346010,
+      "name": "Besiege",
+      "playtimeMinutes": 62,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/346010/16667f445723c720782314269e41f9daa8a7fb56.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/346010",
+      "communityUrl": "https://steamcommunity.com/app/346010",
+      "achievementStats": {
+        "unlockedCount": 5,
+        "totalCount": 50
+      }
+    },
+    {
+      "appid": 377160,
+      "name": "Fallout 4",
+      "playtimeMinutes": 60,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/377160/779c4356ebe32af2af7c9f0bbba595dfe872cd7f.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/377160",
+      "communityUrl": "https://steamcommunity.com/app/377160",
+      "achievementStats": {
+        "unlockedCount": 1,
+        "totalCount": 84
+      }
+    },
+    {
+      "appid": 552500,
+      "name": "Warhammer: Vermintide 2",
+      "playtimeMinutes": 59,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/552500/a671f2ddf7359beba9702ac097baf6d50cb07202.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/552500",
+      "communityUrl": "https://steamcommunity.com/app/552500",
+      "achievementStats": {
+        "unlockedCount": 1,
+        "totalCount": 26
+      }
+    },
+    {
+      "appid": 1062160,
+      "name": "Poly Bridge 2",
+      "playtimeMinutes": 58,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1062160/9be50a08f160c70f07d4f870ca12c909242ad332.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1062160",
+      "communityUrl": "https://steamcommunity.com/app/1062160",
+      "achievementStats": {
+        "unlockedCount": 2,
+        "totalCount": 22
+      }
+    },
+    {
+      "appid": 493340,
+      "name": "Planet Coaster",
+      "playtimeMinutes": 52,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/493340/1b2f29e743dd3048f21fefd9642d86a5f5123968.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/493340",
+      "communityUrl": "https://steamcommunity.com/app/493340",
+      "achievementStats": {
+        "unlockedCount": 2,
+        "totalCount": 32
+      }
+    },
+    {
+      "appid": 17480,
+      "name": "Command & Conquer™ Red Alert™ 3",
+      "playtimeMinutes": 48,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/17480/02f2c2f9e3511f7c6d4a0afa184cc0a121581a13.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/17480",
+      "communityUrl": "https://steamcommunity.com/app/17480",
+      "achievementStats": null
+    },
+    {
+      "appid": 206440,
+      "name": "To the Moon",
+      "playtimeMinutes": 48,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/206440/6e29eb4076a6253fdbccb987a2a21746d2df54d7.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/206440",
+      "communityUrl": "https://steamcommunity.com/app/206440",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 1
+      }
+    },
+    {
+      "appid": 366250,
+      "name": "METAL SLUG",
+      "playtimeMinutes": 46,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/366250/3169de7e7d03769312cdb12fbb418ad224613317.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/366250",
+      "communityUrl": "https://steamcommunity.com/app/366250",
+      "achievementStats": {
+        "unlockedCount": 10,
+        "totalCount": 15
+      }
+    },
+    {
+      "appid": 714010,
+      "name": "Aimlabs",
+      "playtimeMinutes": 44,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/714010/15347de11efc127539c388e585af9e92d10d5189.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/714010",
+      "communityUrl": "https://steamcommunity.com/app/714010",
+      "achievementStats": {
+        "unlockedCount": 3,
+        "totalCount": 100
+      }
+    },
+    {
+      "appid": 730,
+      "name": "Counter-Strike 2",
+      "playtimeMinutes": 44,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/730/8dbc71957312bbd3baea65848b545be9eae2a355.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/730",
+      "communityUrl": "https://steamcommunity.com/app/730",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 1
+      }
+    },
+    {
+      "appid": 260230,
+      "name": "Valiant Hearts: The Great War™ / Soldats Inconnus : Mémoires de la Grande Guerre™",
+      "playtimeMinutes": 44,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/260230/903f95e08ebcd45dfb78deb171b2f12909892be2.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/260230",
+      "communityUrl": "https://steamcommunity.com/app/260230",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 20
+      }
+    },
+    {
+      "appid": 405310,
+      "name": "LEGO® MARVEL's Avengers",
+      "playtimeMinutes": 40,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/405310/63fb4a5b4b11dc5b2e16ef7e70f3935cf17a5ae8.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/405310",
+      "communityUrl": "https://steamcommunity.com/app/405310",
+      "achievementStats": {
+        "unlockedCount": 2,
+        "totalCount": 70
+      }
+    },
+    {
+      "appid": 491950,
+      "name": "Orwell",
+      "playtimeMinutes": 39,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/491950/b441225f23801a11dce373c2ee9caea2061b3858.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/491950",
+      "communityUrl": "https://steamcommunity.com/app/491950",
+      "achievementStats": {
+        "unlockedCount": 1,
+        "totalCount": 27
+      }
+    },
+    {
+      "appid": 683320,
+      "name": "GRIS",
+      "playtimeMinutes": 38,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/683320/10a3afeac4adedb37acaec02885bdc3c102eca93.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/683320",
+      "communityUrl": "https://steamcommunity.com/app/683320",
+      "achievementStats": {
+        "unlockedCount": 1,
+        "totalCount": 17
+      }
+    },
+    {
+      "appid": 1898290,
+      "name": "LEGO® Bricktales",
+      "playtimeMinutes": 38,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1898290/29cb341d378ebb9220bfafaa46811e2c5371af9c.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1898290",
+      "communityUrl": "https://steamcommunity.com/app/1898290",
+      "achievementStats": {
+        "unlockedCount": 2,
+        "totalCount": 21
+      }
+    },
+    {
+      "appid": 620,
+      "name": "Portal 2",
+      "playtimeMinutes": 36,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/620/25a5a16b2423bf7487ac5340b5b0948cef48c5f8.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/620",
+      "communityUrl": "https://steamcommunity.com/app/620",
+      "achievementStats": {
+        "unlockedCount": 3,
+        "totalCount": 51
+      }
+    },
+    {
+      "appid": 537800,
+      "name": "Bomber Crew",
+      "playtimeMinutes": 34,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/537800/8af44d76dd3688b8b5b12a7fd9091f6d32fd3703.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/537800",
+      "communityUrl": "https://steamcommunity.com/app/537800",
+      "achievementStats": {
+        "unlockedCount": 3,
+        "totalCount": 30
+      }
+    },
+    {
+      "appid": 48700,
+      "name": "Mount & Blade: Warband",
+      "playtimeMinutes": 26,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/48700/0773e90a6991a5427df4ee516687d832d92b050e.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/48700",
+      "communityUrl": "https://steamcommunity.com/app/48700",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 80
+      }
+    },
+    {
+      "appid": 1284410,
+      "name": "GWENT: The Witcher Card Game",
+      "playtimeMinutes": 25,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1284410/3e089897714dfc658a5e62246c342e2826a708e1.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1284410",
+      "communityUrl": "https://steamcommunity.com/app/1284410",
+      "achievementStats": {
+        "unlockedCount": 1,
+        "totalCount": 46
+      }
+    },
+    {
+      "appid": 335300,
+      "name": "DARK SOULS™ II: Scholar of the First Sin",
+      "playtimeMinutes": 18,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/335300/6e665503e93d1383b774a68dfea23ac7afc0e3aa.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/335300",
+      "communityUrl": "https://steamcommunity.com/app/335300",
+      "achievementStats": {
+        "unlockedCount": 1,
+        "totalCount": 38
+      }
+    },
+    {
+      "appid": 552100,
+      "name": "Brick Rigs",
+      "playtimeMinutes": 17,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/552100/0f7d533ce3ae56ae8b117638edc77868ba18949c.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/552100",
+      "communityUrl": "https://steamcommunity.com/app/552100",
+      "achievementStats": null
+    },
+    {
+      "appid": 307690,
+      "name": "Sleeping Dogs: Definitive Edition",
+      "playtimeMinutes": 17,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/307690/8ef5e84ffbd9a4b3fb28d308073bccb415fc25ab.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/307690",
+      "communityUrl": "https://steamcommunity.com/app/307690",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 59
+      }
+    },
+    {
+      "appid": 374900,
+      "name": "Agatha Christie - The ABC Murders",
+      "playtimeMinutes": 14,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/374900/72aebb2dc862b2d879a79934c724b4613083c26e.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/374900",
+      "communityUrl": "https://steamcommunity.com/app/374900",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 50
+      }
+    },
+    {
+      "appid": 7670,
+      "name": "BioShock",
+      "playtimeMinutes": 14,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/7670/9a7c9f640a76e6a32592277dbbc36a0f6da05372.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/7670",
+      "communityUrl": "https://steamcommunity.com/app/7670",
+      "achievementStats": null
+    },
+    {
+      "appid": 684410,
+      "name": "Bridge Constructor Portal",
+      "playtimeMinutes": 12,
+      "recentPlaytimeMinutes": 12,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/684410/8bb9f59fa001f71795d88d2288243ba4e21fabda.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/684410",
+      "communityUrl": "https://steamcommunity.com/app/684410",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 26
+      }
+    },
+    {
+      "appid": 391540,
+      "name": "Undertale",
+      "playtimeMinutes": 10,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/391540/2ce672b89b63ec1e70d2f12862e72eb4a33e9268.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/391540",
+      "communityUrl": "https://steamcommunity.com/app/391540",
+      "achievementStats": null
+    },
+    {
+      "appid": 225080,
+      "name": "Brothers - A Tale of Two Sons",
+      "playtimeMinutes": 7,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/225080/9d6e8bcae597582734b382d8da93e5fa7b1c640b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/225080",
+      "communityUrl": "https://steamcommunity.com/app/225080",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 12
+      }
+    },
+    {
+      "appid": 204360,
+      "name": "Castle Crashers",
+      "playtimeMinutes": 7,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/204360/9b7625f9b70f103397fd0416fd92abb583db8659.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/204360",
+      "communityUrl": "https://steamcommunity.com/app/204360",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 12
+      }
+    },
+    {
+      "appid": 365450,
+      "name": "Hacknet",
+      "playtimeMinutes": 7,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/365450/2445c4ead6ee47784a326922271ec1c0b41d64e2.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/365450",
+      "communityUrl": "https://steamcommunity.com/app/365450",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 11
+      }
+    },
+    {
+      "appid": 8870,
+      "name": "BioShock Infinite",
+      "playtimeMinutes": 6,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/8870/4ebaf5f9ee74f50152f7ff361debef7553fa0e4e.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/8870",
+      "communityUrl": "https://steamcommunity.com/app/8870",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 80
+      }
+    },
+    {
+      "appid": 3390,
+      "name": "Feeding Frenzy 2: Shipwreck Showdown Deluxe",
+      "playtimeMinutes": 6,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/3390/d34697dfa581120f4204fef71e2fbdf9a4800b6b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/3390",
+      "communityUrl": "https://steamcommunity.com/app/3390",
+      "achievementStats": null
+    },
+    {
+      "appid": 312610,
+      "name": "METAL SLUG X",
+      "playtimeMinutes": 3,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/312610/9ada8e531324056d8b31e175bc30fb7dcd582a65.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/312610",
+      "communityUrl": "https://steamcommunity.com/app/312610",
+      "achievementStats": {
+        "unlockedCount": 0,
+        "totalCount": 15
+      }
+    },
+    {
+      "appid": 219740,
+      "name": "Don't Starve",
+      "playtimeMinutes": 1,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/219740/03fe647df40dccc4d19bf42a0185cd3e6b9f2953.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/219740",
+      "communityUrl": "https://steamcommunity.com/app/219740",
+      "achievementStats": null
+    },
+    {
+      "appid": 407530,
+      "name": "ARK: Survival Of The Fittest",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/407530/807c673cddebbfee0700a947a75f4872ad136e9b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/407530",
+      "communityUrl": "https://steamcommunity.com/app/407530",
+      "achievementStats": null
+    },
+    {
+      "appid": 911400,
+      "name": "Assassin's Creed III Remastered",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/911400/68e5640754e5ddf29aadff49062fa68cc8c8f4a5.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/911400",
+      "communityUrl": "https://steamcommunity.com/app/911400",
+      "achievementStats": null
+    },
+    {
+      "appid": 498240,
+      "name": "Batman - The Telltale Series",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/498240/f7d48a2727c415d45412c50dcb228252f57f689b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/498240",
+      "communityUrl": "https://steamcommunity.com/app/498240",
+      "achievementStats": null
+    },
+    {
+      "appid": 675260,
+      "name": "Batman: The Enemy Within - The Telltale Series",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/675260/c53d5014995576b7b7f784998940da736cb7f357.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/675260",
+      "communityUrl": "https://steamcommunity.com/app/675260",
+      "achievementStats": null
+    },
+    {
+      "appid": 475550,
+      "name": "Beholder",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/475550/1025e7d1606b1e7a7f17048532039d78241e9f5d.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/475550",
+      "communityUrl": "https://steamcommunity.com/app/475550",
+      "achievementStats": null
+    },
+    {
+      "appid": 761620,
+      "name": "Beholder 2",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/761620/04ef5b7192f02400ea32331b3ac6b2ae322d9f93.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/761620",
+      "communityUrl": "https://steamcommunity.com/app/761620",
+      "achievementStats": null
+    },
+    {
+      "appid": 8850,
+      "name": "BioShock 2",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/8850/f5eda925c0e57373aaea4cae17b6f175115a8d54.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/8850",
+      "communityUrl": "https://steamcommunity.com/app/8850",
+      "achievementStats": null
+    },
+    {
+      "appid": 409720,
+      "name": "BioShock 2 Remastered",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/409720/97527a02b36f8ac4aba21005c2d953cc908a08e1.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/409720",
+      "communityUrl": "https://steamcommunity.com/app/409720",
+      "achievementStats": null
+    },
+    {
+      "appid": 409710,
+      "name": "BioShock Remastered",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/409710/eb72262cd3ccc3219dd76392be3b60a4b6cbfd38.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/409710",
+      "communityUrl": "https://steamcommunity.com/app/409710",
+      "achievementStats": null
+    },
+    {
+      "appid": 397540,
+      "name": "Borderlands 3",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/397540/0ac7b8d98fad581f65b0533bbce63bf953d743ac.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/397540",
+      "communityUrl": "https://steamcommunity.com/app/397540",
+      "achievementStats": null
+    },
+    {
+      "appid": 261640,
+      "name": "Borderlands: The Pre-Sequel",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/261640/af5ef05eac8b1eb618e4f57354ac7b3e918ab1bd.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/261640",
+      "communityUrl": "https://steamcommunity.com/app/261640",
+      "achievementStats": null
+    },
+    {
+      "appid": 1042490,
+      "name": "Call of the Sea",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1042490/ec91d394beed7123356920cc1ad1bd7700540ff0.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1042490",
+      "communityUrl": "https://steamcommunity.com/app/1042490",
+      "achievementStats": null
+    },
+    {
+      "appid": 1515950,
+      "name": "Capcom Arcade Stadium",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1515950/2715c826a625a0cac409491c1982a459a71f7349.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1515950",
+      "communityUrl": "https://steamcommunity.com/app/1515950",
+      "achievementStats": null
+    },
+    {
+      "appid": 231430,
+      "name": "Company of Heroes 2",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/231430/5e7e1866fb4f33a17393b0441cd1c750dbd91c5f.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/231430",
+      "communityUrl": "https://steamcommunity.com/app/231430",
+      "achievementStats": null
+    },
+    {
+      "appid": 2881650,
+      "name": "Content Warning",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2881650/513cf7f2e22c94f4372369e29bffccc4c239e9c0.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2881650",
+      "communityUrl": "https://steamcommunity.com/app/2881650",
+      "achievementStats": null
+    },
+    {
+      "appid": 383180,
+      "name": "Dead Island Riptide Definitive Edition",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/383180/68ea0c6d8ed1d089687da6318a62a7c3e3b5741b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/383180",
+      "communityUrl": "https://steamcommunity.com/app/383180",
+      "achievementStats": null
+    },
+    {
+      "appid": 520720,
+      "name": "Dear Esther: Landmark Edition",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/520720/886a70c7c78c240da7daa1de01490b44c9855f89.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/520720",
+      "communityUrl": "https://steamcommunity.com/app/520720",
+      "achievementStats": null
+    },
+    {
+      "appid": 323720,
+      "name": "Decay - The Mare",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/323720/9ec8e9f834898ffce37cdd13356ced14e25effe0.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/323720",
+      "communityUrl": "https://steamcommunity.com/app/323720",
+      "achievementStats": null
+    },
+    {
+      "appid": 403640,
+      "name": "Dishonored 2",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/403640/6d6bac950a234764a353c518607dcd01973f5b65.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/403640",
+      "communityUrl": "https://steamcommunity.com/app/403640",
+      "achievementStats": null
+    },
+    {
+      "appid": 614570,
+      "name": "Dishonored®: Death of the Outsider™ ",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/614570/7e3bbe2deae930b57651565810b7f7b41349af53.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/614570",
+      "communityUrl": "https://steamcommunity.com/app/614570",
+      "achievementStats": null
+    },
+    {
+      "appid": 1294660,
+      "name": "Divine Knockout (DKO)",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1294660/2f2112d19f357a6bdaccafbdda5bd3ad82bb0d9f.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1294660",
+      "communityUrl": "https://steamcommunity.com/app/1294660",
+      "achievementStats": null
+    },
+    {
+      "appid": 230230,
+      "name": "Divinity: Original Sin (Classic)",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/230230/ca9cdafd4257253dba68babeed300874190fbbff.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/230230",
+      "communityUrl": "https://steamcommunity.com/app/230230",
+      "achievementStats": null
+    },
+    {
+      "appid": 782330,
+      "name": "DOOM Eternal",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/782330/14235f425d27ab3b83661ba14c17d22dc90e566b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/782330",
+      "communityUrl": "https://steamcommunity.com/app/782330",
+      "achievementStats": null
+    },
+    {
+      "appid": 442070,
+      "name": "Drawful 2",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/442070/a2aab99a9ec657f817aff247593b3310cae44288.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/442070",
+      "communityUrl": "https://steamcommunity.com/app/442070",
+      "achievementStats": null
+    },
+    {
+      "appid": 289130,
+      "name": "ENDLESS™ Legend",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/289130/02277be6b9b09671b857948006316057974d7036.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/289130",
+      "communityUrl": "https://steamcommunity.com/app/289130",
+      "achievementStats": null
+    },
+    {
+      "appid": 1496790,
+      "name": "Gotham Knights",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1496790/1c133f57d64f54f24e4ef314b1ee08b8f5715df7.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1496790",
+      "communityUrl": "https://steamcommunity.com/app/1496790",
+      "achievementStats": null
+    },
+    {
+      "appid": 3240220,
+      "name": "Grand Theft Auto V Enhanced",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/3240220/8355a7bbdb704f727bfba80ec56bc7228991338e.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/3240220",
+      "communityUrl": "https://steamcommunity.com/app/3240220",
+      "achievementStats": null
+    },
+    {
+      "appid": 815370,
+      "name": "Green Hell",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/815370/d118d766ef0107189e71b1410bebe13831b70d7b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/815370",
+      "communityUrl": "https://steamcommunity.com/app/815370",
+      "achievementStats": null
+    },
+    {
+      "appid": 220,
+      "name": "Half-Life 2",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/220/fcfb366051782b8ebf2aa297f3b746395858cb62.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/220",
+      "communityUrl": "https://steamcommunity.com/app/220",
+      "achievementStats": null
+    },
+    {
+      "appid": 320,
+      "name": "Half-Life 2: Deathmatch",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/320/795e85364189511f4990861b578084deef086cb1.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/320",
+      "communityUrl": "https://steamcommunity.com/app/320",
+      "achievementStats": null
+    },
+    {
+      "appid": 360,
+      "name": "Half-Life Deathmatch: Source",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/360/40b8a62efff5a9ab356e5c56f5c8b0532c8e1aa3.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/360",
+      "communityUrl": "https://steamcommunity.com/app/360",
+      "achievementStats": null
+    },
+    {
+      "appid": 747350,
+      "name": "Hellblade: Senua's Sacrifice VR Edition",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/747350/8a5d8f2d1cb52b21eaf4f6609592c6634731c962.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/747350",
+      "communityUrl": "https://steamcommunity.com/app/747350",
+      "achievementStats": null
+    },
+    {
+      "appid": 863550,
+      "name": "HITMAN™ 2",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/863550/3f7c071da7a338e03f6243b73c02c072f1bacee9.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/863550",
+      "communityUrl": "https://steamcommunity.com/app/863550",
+      "achievementStats": null
+    },
+    {
+      "appid": 304430,
+      "name": "INSIDE",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/304430/047e00c80d6aca008ce5eaaf54df4d98c822ee19.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/304430",
+      "communityUrl": "https://steamcommunity.com/app/304430",
+      "achievementStats": null
+    },
+    {
+      "appid": 283270,
+      "name": "Jagged Alliance Gold",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/283270/86a354502320aa70da2bc7e441db5e311c7c369d.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/283270",
+      "communityUrl": "https://steamcommunity.com/app/283270",
+      "achievementStats": null
+    },
+    {
+      "appid": 1977170,
+      "name": "Jusant",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1977170/ebc32b7dd0128e3efe11d5368e59404e59e46ccf.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1977170",
+      "communityUrl": "https://steamcommunity.com/app/1977170",
+      "achievementStats": null
+    },
+    {
+      "appid": 8190,
+      "name": "Just Cause 2",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/8190/73582e392a2b9413fe93b011665a5b9cf26ff175.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/8190",
+      "communityUrl": "https://steamcommunity.com/app/8190",
+      "achievementStats": null
+    },
+    {
+      "appid": 561770,
+      "name": "Just Ignore Them",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/561770/b119c3d3d6d1d767a74f93f7968bdb866cab6216.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/561770",
+      "communityUrl": "https://steamcommunity.com/app/561770",
+      "achievementStats": null
+    },
+    {
+      "appid": 532210,
+      "name": "Life is Strange 2",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/532210/4bc11557267819da12bb45488ffd3f1fb3945279.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/532210",
+      "communityUrl": "https://steamcommunity.com/app/532210",
+      "achievementStats": null
+    },
+    {
+      "appid": 424840,
+      "name": "Little Nightmares",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/424840/1904c041f963b5e2cb22b56c370444517cc4e288.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/424840",
+      "communityUrl": "https://steamcommunity.com/app/424840",
+      "achievementStats": null
+    },
+    {
+      "appid": 2149010,
+      "name": "Little Nightmares Enhanced Edition",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2149010/6d1326d97decbaeddca21c14daa5041d464a1a63.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2149010",
+      "communityUrl": "https://steamcommunity.com/app/2149010",
+      "achievementStats": null
+    },
+    {
+      "appid": 1507190,
+      "name": "Machinika Museum",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1507190/f4bb2176803e4b08c0da1032ea59d9a995ccff5b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1507190",
+      "communityUrl": "https://steamcommunity.com/app/1507190",
+      "achievementStats": null
+    },
+    {
+      "appid": 1030840,
+      "name": "Mafia: Definitive Edition",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1030840/883ceebf7d8ebce37c9244a62777ef4a800393ce.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1030840",
+      "communityUrl": "https://steamcommunity.com/app/1030840",
+      "achievementStats": null
+    },
+    {
+      "appid": 43110,
+      "name": "Metro 2033",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/43110/a70fe6dc214f24107d20596f3040dbfa220ed42d.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/43110",
+      "communityUrl": "https://steamcommunity.com/app/43110",
+      "achievementStats": null
+    },
+    {
+      "appid": 412020,
+      "name": "Metro Exodus",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/412020/f9863ed0ffc717b130744488f088ae95fe6e9bd8.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/412020",
+      "communityUrl": "https://steamcommunity.com/app/412020",
+      "achievementStats": null
+    },
+    {
+      "appid": 1449560,
+      "name": "Metro Exodus Enhanced Edition",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1449560/f9863ed0ffc717b130744488f088ae95fe6e9bd8.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1449560",
+      "communityUrl": "https://steamcommunity.com/app/1449560",
+      "achievementStats": null
+    },
+    {
+      "appid": 43160,
+      "name": "Metro: Last Light Complete Edition",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/43160/7b84b80d2cebe41ba87c59b28e2473d3b33e797d.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/43160",
+      "communityUrl": "https://steamcommunity.com/app/43160",
+      "achievementStats": null
+    },
+    {
+      "appid": 241930,
+      "name": "Middle-earth™: Shadow of Mordor™",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/241930/161afab3c9f725f593635723cc64a7fbeb324ead.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/241930",
+      "communityUrl": "https://steamcommunity.com/app/241930",
+      "achievementStats": null
+    },
+    {
+      "appid": 356190,
+      "name": "Middle-earth™: Shadow of War™",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/356190/316c479e5d51d21e15eb8f82338fce82c42c4115.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/356190",
+      "communityUrl": "https://steamcommunity.com/app/356190",
+      "achievementStats": null
+    },
+    {
+      "appid": 489520,
+      "name": "Minion Masters",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/489520/ad87d123224d786a413a6021ddaf9257e26c0a28.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/489520",
+      "communityUrl": "https://steamcommunity.com/app/489520",
+      "achievementStats": null
+    },
+    {
+      "appid": 613900,
+      "name": "Museum of Other Realities",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/613900/3cb3c9033a81122b2c262cfee741bb7053bcbba6.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/613900",
+      "communityUrl": "https://steamcommunity.com/app/613900",
+      "achievementStats": null
+    },
+    {
+      "appid": 1466640,
+      "name": "Road 96",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1466640/031fb207de40b078417ab77b2c4e00545e910ad1.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1466640",
+      "communityUrl": "https://steamcommunity.com/app/1466640",
+      "achievementStats": null
+    },
+    {
+      "appid": 742420,
+      "name": "Saints Row",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/742420/aebb7688ba04cb6b184248a50581d493126dcbd6.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/742420",
+      "communityUrl": "https://steamcommunity.com/app/742420",
+      "achievementStats": null
+    },
+    {
+      "appid": 465760,
+      "name": "Scrap Garden",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/465760/340656d5dbd647d42642987b25791d720d2485b7.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/465760",
+      "communityUrl": "https://steamcommunity.com/app/465760",
+      "achievementStats": null
+    },
+    {
+      "appid": 750920,
+      "name": "Shadow of the Tomb Raider",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/750920/7db38cff16091c9c058892fcfeee102a6ed589d9.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/750920",
+      "communityUrl": "https://steamcommunity.com/app/750920",
+      "achievementStats": null
+    },
+    {
+      "appid": 418240,
+      "name": "Shadow Tactics: Blades of the Shogun",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/418240/7f933b7e1bcb83caf3bbcc9a143aee85b8a677af.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/418240",
+      "communityUrl": "https://steamcommunity.com/app/418240",
+      "achievementStats": null
+    },
+    {
+      "appid": 1579380,
+      "name": "Shadow Tactics: Blades of the Shogun - Aiko's Choice",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1579380/2696fc7ba08cab22ea50f0b8db787a63e6fa3004.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1579380",
+      "communityUrl": "https://steamcommunity.com/app/1579380",
+      "achievementStats": null
+    },
+    {
+      "appid": 1176710,
+      "name": "Space Crew: Legendary Edition",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1176710/c1c0a0c7c7dae3525bc6a4bb07bc0bd69bc62ab0.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1176710",
+      "communityUrl": "https://steamcommunity.com/app/1176710",
+      "achievementStats": null
+    },
+    {
+      "appid": 1237980,
+      "name": "STAR WARS™ Battlefront™",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1237980/e146da909b6bd522cfbb3c3732014a4f182c2d40.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1237980",
+      "communityUrl": "https://steamcommunity.com/app/1237980",
+      "achievementStats": null
+    },
+    {
+      "appid": 571310,
+      "name": "SteamWorld Dig 2",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/571310/dd93b3ef55eca4f9b30dac04450bf03fed2c31a6.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/571310",
+      "communityUrl": "https://steamcommunity.com/app/571310",
+      "achievementStats": null
+    },
+    {
+      "appid": 46500,
+      "name": "Syberia",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/46500/bd19a0149639c539662f8bfc6086623dcd517214.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/46500",
+      "communityUrl": "https://steamcommunity.com/app/46500",
+      "achievementStats": null
+    },
+    {
+      "appid": 46510,
+      "name": "Syberia 2",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/46510/7648a84341ef713722ca5a33a962defe39f3e5b8.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/46510",
+      "communityUrl": "https://steamcommunity.com/app/46510",
+      "achievementStats": null
+    },
+    {
+      "appid": 1180660,
+      "name": "Tell Me Why",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1180660/6eb40e6f71226ce5bea75601a1ec0f9d6f647dd1.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1180660",
+      "communityUrl": "https://steamcommunity.com/app/1180660",
+      "achievementStats": null
+    },
+    {
+      "appid": 105600,
+      "name": "Terraria",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/105600/858961e95fbf869f136e1770d586e0caefd4cfac.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/105600",
+      "communityUrl": "https://steamcommunity.com/app/105600",
+      "achievementStats": null
+    },
+    {
+      "appid": 646910,
+      "name": "The Crew 2",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/646910/c627b2fa24d61b4042afbd2b183f49b9ca59bc45.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/646910",
+      "communityUrl": "https://steamcommunity.com/app/646910",
+      "achievementStats": null
+    },
+    {
+      "appid": 1449690,
+      "name": "The Walking Dead: The Telltale Definitive Series",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1449690/bd1fd090e72bc6584f1b271341a1be6d7fe6881e.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1449690",
+      "communityUrl": "https://steamcommunity.com/app/1449690",
+      "achievementStats": null
+    },
+    {
+      "appid": 518790,
+      "name": "theHunter: Call of the Wild™",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/518790/8cd121cb62c8f98019ed333716657449c8da2b81.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/518790",
+      "communityUrl": "https://steamcommunity.com/app/518790",
+      "achievementStats": null
+    },
+    {
+      "appid": 475150,
+      "name": "Titan Quest Anniversary Edition",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/475150/be3384e7936f548303c77ee2abc4c9026285f554.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/475150",
+      "communityUrl": "https://steamcommunity.com/app/475150",
+      "achievementStats": null
+    },
+    {
+      "appid": 297130,
+      "name": "Titan Souls",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/297130/37ab14d4261626c8850487467ff38b2fc3d71f5b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/297130",
+      "communityUrl": "https://steamcommunity.com/app/297130",
+      "achievementStats": null
+    },
+    {
+      "appid": 353640,
+      "name": "Train Valley",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/353640/242d5e780ad9f6d9cf218177ef7e701b684f8770.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/353640",
+      "communityUrl": "https://steamcommunity.com/app/353640",
+      "achievementStats": null
+    },
+    {
+      "appid": 35720,
+      "name": "Trine 2",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/35720/061ecbbd7c70ae1c052377bad136c7759cbb708d.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/35720",
+      "communityUrl": "https://steamcommunity.com/app/35720",
+      "achievementStats": null
+    },
+    {
+      "appid": 1436700,
+      "name": "Trine 5: A Clockwork Conspiracy",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1436700/3ef869db216460baed5dcd9caedc3d86510db597.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1436700",
+      "communityUrl": "https://steamcommunity.com/app/1436700",
+      "achievementStats": null
+    },
+    {
+      "appid": 489630,
+      "name": "Warhammer 40,000: Gladius - Relics of War",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/489630/ba6ea4fbeec62073763e103450e8aa7c5373d010.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/489630",
+      "communityUrl": "https://steamcommunity.com/app/489630",
+      "achievementStats": null
+    },
+    {
+      "appid": 501300,
+      "name": "What Remains of Edith Finch",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/501300/f71d2d0caa02bf35eafb5031a3d50c034a389605.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/501300",
+      "communityUrl": "https://steamcommunity.com/app/501300",
+      "achievementStats": null
+    },
+    {
+      "appid": 268500,
+      "name": "XCOM 2",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/268500/f275aeb0b1b947262810569356a199848c643754.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/268500",
+      "communityUrl": "https://steamcommunity.com/app/268500",
+      "achievementStats": null
+    },
+    {
+      "appid": 570780,
+      "name": "古剑奇谭(GuJian)",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/570780/5b3f83df52d07a90a124db06f16c416b2a164197.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/570780",
+      "communityUrl": "https://steamcommunity.com/app/570780",
+      "achievementStats": null
+    }
+  ]
+}

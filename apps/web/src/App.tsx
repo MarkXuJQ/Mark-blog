@@ -43,6 +43,9 @@ const Life = lazy(() =>
 const Movies = lazy(() =>
   import('./pages/Movies').then((module) => ({ default: module.Movies }))
 )
+const Games = lazy(() =>
+  import('./pages/Games').then((module) => ({ default: module.Games }))
+)
 const Search = lazy(() =>
   import('./pages/Search').then((module) => ({ default: module.Search }))
 )
@@ -166,7 +169,7 @@ function App() {
               path="games"
               element={
                 <LazyRoute>
-                  <UnderConstruction />
+                  <Games />
                 </LazyRoute>
               }
             />
