@@ -38,10 +38,11 @@
    - 复制 `apps/web/.env.example` 为 `apps/web/.env.local`
    - 在 `apps/web/.env.local` 中填写：
      - `VITE_TWIKOO_ENV_ID=<你的 Twikoo 环境 ID 或后端地址（例如 https://comments.example.com/api/twikoo）>`
-     - `VITE_TMDB_API_TOKEN=<你的 TMDB Read Access Token>`（可选，用于 TMDB 增强模式）
-     - `VITE_TMDB_API_KEY=<你的 TMDB API Key>`（可选，作为 token 的备选）
+     - `TMDB_API_TOKEN=<你的 TMDB Read Access Token>`（可选，用于 TMDB 增强模式，服务端使用）
+     - `TMDB_API_KEY=<你的 TMDB API Key>`（可选，作为 token 的备选，服务端使用）
 4. 启动与构建
    - 启动开发：`pnpm -F web dev`
+   - 如需本地验证 TMDB 增强接口（`/api/tmdb`），请在 `apps/web` 目录使用 `vercel dev`
    - 生产构建：`pnpm -F web build`
    - 本地预览：`pnpm -F web preview`
 
@@ -55,6 +56,8 @@
    - Output Directory: `dist`
 4. 环境变量
    - `VITE_TWIKOO_ENV_ID`：你的 Twikoo 环境 ID 或私有部署后端地址（需指向 `/api/twikoo`）
+   - `TMDB_API_TOKEN`：TMDB Read Access Token（可选，影视页增强模式）
+   - `TMDB_API_KEY`：TMDB API Key（可选，作为 token 备选）
 5. 绑定自定义域名（推荐），确保评论与资源可正常访问
 
 ## 使用声明
