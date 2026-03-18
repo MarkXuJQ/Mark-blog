@@ -105,7 +105,74 @@
     "backHome": "Back to Homepage"
   },
   "movies": {
-    "description": "Tracking watchlist and short reviews."
+    "description": "A small archive of movies I have watched, with a few simple stats and notes along the way.",
+    "stats": {
+      "watchedCount": "Watched Movies",
+      "ratedCount": "Rated",
+      "overallScore": "Overall Score out of 100",
+      "overallScoreHint": "Calculated from rated movies",
+      "ratingBreakdown": "Rating Distribution",
+      "latestWatch": "Latest Watch"
+    },
+    "mode": {
+      "label": "Data Mode",
+      "csv": "Default",
+      "tmdb": "Enhanced",
+      "hint": "Default mode works without external access."
+    },
+    "layout": {
+      "label": "Layout",
+      "list": "List",
+      "grid": "Grid"
+    },
+    "profile": {
+      "label": "Profiles",
+      "douban": "Douban",
+      "tmdb": "TMDB"
+    },
+    "calendar": {
+      "title": "Watch Activity Calendar",
+      "summary": "{{count}} active watch days and {{total}} movies in {{year}}",
+      "year": "Year",
+      "tooltip": "{{date}}: {{count}} movies",
+      "less": "Less",
+      "more": "More",
+      "week": {
+        "mon": "Mon",
+        "wed": "Wed",
+        "fri": "Fri"
+      }
+    },
+    "tmdb": {
+      "notice": "TMDB may be inaccessible from mainland China.",
+      "loading": "Loading TMDB data for this page...",
+      "noPoster": "No poster",
+      "releaseDate": "Release",
+      "errors": {
+        "missingConfig": "TMDB token/key is missing. Add VITE_TMDB_API_TOKEN or VITE_TMDB_API_KEY in apps/web/.env.local.",
+        "authFailed": "TMDB authentication failed. Please verify your token/key.",
+        "network": "TMDB request failed (network may be blocked)."
+      }
+    },
+    "searchPlaceholder": "Search title, original title, platform, or notes...",
+    "filters": {
+      "allPlatforms": "All Platforms",
+      "newestFirst": "Newest Watched First",
+      "oldestFirst": "Oldest Watched First"
+    },
+    "empty": {
+      "title": "No movie data available",
+      "description": "Make sure content/movies/movie.csv exists and contains your Douban-exported records. You can enrich platform/note/tmdbId/tmdbQuery in content/movies/movie-overrides.json."
+    },
+    "noResults": "No movies match the current filters.",
+    "rating": {
+      "value": "{{rating}} stars",
+      "unrated": "Not rated"
+    },
+    "watchDate": "Watch date",
+    "actions": {
+      "openDouban": "Douban"
+    }
   },
   "games": {
     "description": "Recording gameplay logs and thoughts."

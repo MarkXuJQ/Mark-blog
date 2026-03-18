@@ -40,6 +40,9 @@ const About = lazy(() =>
 const Life = lazy(() =>
   import('./pages/Life').then((module) => ({ default: module.Life }))
 )
+const Movies = lazy(() =>
+  import('./pages/Movies').then((module) => ({ default: module.Movies }))
+)
 const Search = lazy(() =>
   import('./pages/Search').then((module) => ({ default: module.Search }))
 )
@@ -155,7 +158,7 @@ function App() {
               path="movies"
               element={
                 <LazyRoute>
-                  <UnderConstruction />
+                  <Movies />
                 </LazyRoute>
               }
             />

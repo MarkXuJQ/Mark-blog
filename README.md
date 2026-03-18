@@ -23,9 +23,9 @@
 - [x] 关于页面
 - [x] 时间线页面
 - [x] 图床接入（img.markxu.icu）
-- [ ] 影视页面（观影记录，当前路由为施工页）
+- [x] 生活页面（随笔/相册）
+- [x] 影视页面（CSV 默认 + TMDB 增强切换）
 - [ ] 游戏页面（游玩记录，当前路由为施工页）
-- [ ] 生活页面（随笔/相册，当前路由为施工页）
 
 ## 快速开始
 
@@ -35,8 +35,11 @@
 2. 克隆仓库并安装依赖
    - `pnpm install`
 3. 配置环境变量
-   - 在 `apps/web/.env.local` 中添加：
+   - 复制 `apps/web/.env.example` 为 `apps/web/.env.local`
+   - 在 `apps/web/.env.local` 中填写：
      - `VITE_TWIKOO_ENV_ID=<你的 Twikoo 环境 ID 或后端地址（例如 https://comments.example.com/api/twikoo）>`
+     - `VITE_TMDB_API_TOKEN=<你的 TMDB Read Access Token>`（可选，用于 TMDB 增强模式）
+     - `VITE_TMDB_API_KEY=<你的 TMDB API Key>`（可选，作为 token 的备选）
 4. 启动与构建
    - 启动开发：`pnpm -F web dev`
    - 生产构建：`pnpm -F web build`

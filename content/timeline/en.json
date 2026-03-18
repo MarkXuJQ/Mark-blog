@@ -1,5 +1,87 @@
 [
   {
+    "date": "2026-03-18",
+    "title": "Movie Page Completed and Visual Style Unified",
+    "description": "From March 13 to March 18, the movie page was completed step by step across features, interaction structure, and site-wide visual alignment.",
+    "categories": [
+      {
+        "title": "Data Modes & Sources",
+        "items": [
+          {
+            "id": "movies-20260317-1",
+            "content": "Added CSV default mode from content/movies/movie.csv with watch dates and personal ratings",
+            "date": "2026-03-13"
+          },
+          {
+            "id": "movies-20260317-2",
+            "content": "Added TMDB enhanced mode with Token/API Key fallback, posters, and release metadata",
+            "date": "2026-03-14"
+          },
+          {
+            "id": "movies-20260317-3",
+            "content": "Added direct profile links for both Douban and TMDB",
+            "date": "2026-03-14"
+          }
+        ]
+      },
+      {
+        "title": "Interaction & Information Layout",
+        "items": [
+          {
+            "id": "movies-20260317-4",
+            "content": "Moved data-mode and layout toggles into the same search row for faster control",
+            "date": "2026-03-15"
+          },
+          {
+            "id": "movies-20260317-5",
+            "content": "Added list/grid switching with responsive grid density based on viewport width",
+            "date": "2026-03-16"
+          },
+          {
+            "id": "movies-20260318-1",
+            "content": "Reduced card noise and prioritized title, rating, watch date, and external actions",
+            "date": "2026-03-17"
+          }
+        ]
+      },
+      {
+        "title": "Analytics & Visualization",
+        "items": [
+          {
+            "id": "movies-20260317-6",
+            "content": "Added watch activity calendar with year selector and daily heatmap counts",
+            "date": "2026-03-15"
+          },
+          {
+            "id": "movies-20260318-2",
+            "content": "Built right-side stats panel for watch count, overall score (100-point), and 1-5 star distribution",
+            "date": "2026-03-16"
+          }
+        ]
+      },
+      {
+        "title": "Design System Alignment",
+        "items": [
+          {
+            "id": "movies-20260318-3",
+            "content": "Extracted reusable SegmentedToggle to unify toggle behavior across Movies and NavBar",
+            "date": "2026-03-13"
+          },
+          {
+            "id": "movies-20260318-4",
+            "content": "Moved diagonal highlight effect to RootLayout and fixed bottom white-strip overflow",
+            "date": "2026-03-18"
+          },
+          {
+            "id": "movies-20260318-5",
+            "content": "Flattened dark-mode toggle visuals to remove outdated glossy styling",
+            "date": "2026-03-17"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-03-11",
     "title": "Life Page Completed",
     "description": "Launched the Life waterfall feed with multi-image modal, comments, and filtering/sorting.",

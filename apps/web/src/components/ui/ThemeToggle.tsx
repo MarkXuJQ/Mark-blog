@@ -8,7 +8,11 @@ export type ThemeToggleProps = {
 
 export function ThemeToggle({ mode, onModeChange }: ThemeToggleProps) {
   const themes = ['light', 'system', 'dark'] as const
-  const currentIndex = themes.indexOf(mode)
+  const knobTransformByMode: Record<ThemeMode, string> = {
+    light: 'translateX(0%) translateY(-1px) rotate(-8deg) scale(1.02)',
+    system: 'translateX(100%) translateY(0px) rotate(0deg) scale(1)',
+    dark: 'translateX(200%) translateY(1px) rotate(8deg) scale(0.98)',
+  }
   const knobClassNameByMode: Record<ThemeMode, string> = {
     light:
       'bg-gradient-to-b from-white to-amber-50 ring-1 ring-amber-200/60 shadow-[0_8px_18px_-10px_rgba(0,0,0,0.35)]',
@@ -37,11 +41,10 @@ export function ThemeToggle({ mode, onModeChange }: ThemeToggleProps) {
         aria-label="Theme preference"
         className="relative isolate flex items-center rounded-full bg-white/70 p-1 shadow-2xl ring-1 ring-slate-900/10 backdrop-blur-md transition-[background-color,box-shadow] duration-500 before:pointer-events-none before:absolute before:inset-0 before:z-0 before:rounded-full before:content-[''] before:bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.95),rgba(255,255,255,0.55),rgba(255,255,255,0.20))] dark:bg-slate-900/80 dark:ring-white/10 dark:before:bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.14),rgba(99,102,241,0.08),rgba(2,6,23,0.00))]"
       >
-        {/* The sliding knob */}
         <div
-          className={`absolute left-1 top-1 z-[1] h-7 w-9 rounded-full transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${knobClassNameByMode[mode]}`}
+          className={`absolute left-1 top-1 z-[1] h-7 w-9 rounded-full transition-[transform,box-shadow,background] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] will-change-transform ${knobClassNameByMode[mode]}`}
           style={{
-            transform: `translateX(${currentIndex * 100}%)`,
+            transform: knobTransformByMode[mode],
           }}
         />
 
@@ -69,7 +72,9 @@ export function ThemeToggle({ mode, onModeChange }: ThemeToggleProps) {
             {m === 'light' && (
               <Sun
                 size={14}
-                className="transition-transform duration-500 group-hover:rotate-180"
+                className={`transition-transform duration-500 ${
+                  mode === 'light' ? '-rotate-12 scale-110' : ''
+                } group-hover:rotate-180`}
               />
             )}
 
@@ -77,41 +82,50 @@ export function ThemeToggle({ mode, onModeChange }: ThemeToggleProps) {
               <span className="relative inline-flex h-[14px] w-[14px] items-center justify-center">
                 <Monitor
                   size={14}
-                  className="transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
+                  className={`transition-transform duration-300 ${
+                    mode === 'system' ? 'scale-110 -rotate-2' : ''
+                  } group-hover:scale-110 group-hover:rotate-3`}
                 />
-                <span className="pointer-events-none absolute left-0 right-0 top-[55%] h-px rounded-full bg-current opacity-0 shadow-[0_0_10px_currentColor] transition-all duration-500 group-hover:top-[25%] group-hover:opacity-60" />
+                <span
+                  className={`pointer-events-none absolute left-0 right-0 h-px rounded-full bg-current shadow-[0_0_10px_currentColor] transition-all duration-500 ${
+                    mode === 'system'
+                      ? 'top-[25%] opacity-60'
+                      : 'top-[55%] opacity-0 group-hover:top-[25%] group-hover:opacity-60'
+                  }`}
+                />
               </span>
             )}
 
             {m === 'dark' && (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-    className="overflow-visible"
-  >
-    {/* The true, unmistakable crescent moon path */}
-    <path
-      d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"
-      className="transition-transform duration-500 origin-center group-hover:-rotate-[10deg]"
-    />
-
-    {/* The 4-point sparkle star appearing in the upper right gap */}
-    <path
-      d="M 18 2 Q 18 5.5 21.5 5.5 Q 18 5.5 18 9 Q 18 5.5 14.5 5.5 Q 18 5.5 18 2 Z"
-      fill="currentColor"
-      stroke="none"
-      className="scale-0 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-100 origin-[18px_5.5px]"
-    />
-  </svg>
-)}
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                className="overflow-visible"
+              >
+                <path
+                  d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"
+                  className={`origin-center transition-transform duration-500 ${
+                    mode === 'dark' ? '-rotate-[10deg]' : ''
+                  } group-hover:-rotate-[10deg]`}
+                />
+                <path
+                  d="M 18 2 Q 18 5.5 21.5 5.5 Q 18 5.5 18 9 Q 18 5.5 14.5 5.5 Q 18 5.5 18 2 Z"
+                  fill="currentColor"
+                  stroke="none"
+                  className={`origin-[18px_5.5px] transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+                    mode === 'dark' ? 'scale-100' : 'scale-0 group-hover:scale-100'
+                  }`}
+                />
+              </svg>
+            )}
           </button>
         ))}
       </div>

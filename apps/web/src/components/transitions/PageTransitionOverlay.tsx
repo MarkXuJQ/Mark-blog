@@ -1,6 +1,39 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
+import pixelFontUrl from '../../assets/pixel/Uranus_Pixel_11Px.ttf'
+
+const SWEEP_DURATION = 0.82
+const EASTER_LINES = [
+  {
+    text: 'BLOG · LIFE · MOVIES · GAMES',
+    top: 'calc(28% - 55px)',
+    tilt: -24,
+    direction: 1,
+    duration: 24,
+  },
+  {
+    text: 'EASTER EGG UNLOCKED',
+    top: '28%',
+    tilt: -24,
+    direction: 1,
+    duration: 22,
+  },
+  {
+    text: 'HIDDEN ROUTE ACTIVATED',
+    top: '66%',
+    tilt: -24,
+    direction: -1,
+    duration: 26,
+  },
+  {
+    text: 'BLOG · LIFE · MOVIES · GAMES',
+    top: 'calc(66% + 55px)',
+    tilt: -24,
+    direction: -1,
+    duration: 24,
+  },
+] as const
 
 export function requestPageTransition(to: string) {
   window.dispatchEvent(new CustomEvent('app:page-transition', { detail: { to } }))
@@ -12,11 +45,13 @@ export function PageTransitionOverlay({
   onActiveChange?: (active: boolean) => void
 }) {
   const navigate = useNavigate()
+  const [pausedLineIndex, setPausedLineIndex] = useState<number | null>(null)
   const [pageTransition, setPageTransition] = useState<{
-    phase: 'idle' | 'cover' | 'reveal'
+    phase: 'idle' | 'cover' | 'hold' | 'reveal'
     to: string | null
   }>({ phase: 'idle', to: null })
   const hasNavigatedRef = useRef(false)
+  const holdStartedAtRef = useRef(0)
 
   useEffect(() => {
     onActiveChange?.(pageTransition.phase !== 'idle')
@@ -46,32 +81,81 @@ export function PageTransitionOverlay({
   }, [])
 
   const isActive = pageTransition.phase !== 'idle'
+  const isWaitingClick = pageTransition.phase === 'hold'
+
+  const dismissOverlay = () => {
+    if (pageTransition.phase !== 'hold') return
+    if (Date.now() - holdStartedAtRef.current < 140) return
+    setPageTransition((prev) =>
+      prev.phase === 'hold' ? { ...prev, phase: 'reveal' } : prev
+    )
+  }
 
   return (
     <AnimatePresence>
       {isActive && (
         <motion.div
           className="fixed inset-0 z-[2000] pointer-events-auto"
+          onClick={dismissOverlay}
+          onKeyDown={(event) => {
+            if (
+              (event.key === 'Enter' ||
+                event.key === ' ' ||
+                event.key === 'Escape') &&
+              pageTransition.phase === 'hold'
+            ) {
+              event.preventDefault()
+              dismissOverlay()
+            }
+          }}
+          role={isWaitingClick ? 'button' : undefined}
+          tabIndex={isWaitingClick ? 0 : -1}
+          aria-label={isWaitingClick ? 'Click to continue transition' : undefined}
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.12 }}
         >
+          <style>{`
+            @font-face {
+              font-family: 'Uranus Pixel';
+              src: url('${pixelFontUrl}') format('truetype');
+              font-display: swap;
+            }
+            @keyframes easter-scroll-forward {
+              from { transform: translateX(-50%); }
+              to { transform: translateX(0%); }
+            }
+            @keyframes easter-scroll-backward {
+              from { transform: translateX(0%); }
+              to { transform: translateX(-50%); }
+            }
+          `}</style>
+
           <motion.div
-            className="absolute inset-0 bg-gradient-to-br from-yellow-300 via-amber-300 to-yellow-200"
+            className="absolute -inset-px bg-gradient-to-br from-yellow-300 via-amber-300 to-yellow-200 will-change-transform"
             initial={{ scaleX: 0 }}
             animate={{
-              scaleX: pageTransition.phase === 'cover' ? 1 : 0,
-              originX: pageTransition.phase === 'cover' ? 0 : 1,
+              scaleX:
+                pageTransition.phase === 'cover' || pageTransition.phase === 'hold'
+                  ? 1
+                  : 0,
             }}
-            exit={{ scaleX: 0, originX: 1 }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              transformOrigin:
+                pageTransition.phase === 'cover' || pageTransition.phase === 'hold'
+                  ? 'left center'
+                  : 'right center',
+            }}
+            exit={{ scaleX: 0 }}
+            transition={{ duration: SWEEP_DURATION, ease: [0.22, 1, 0.36, 1] }}
             onAnimationComplete={() => {
               if (pageTransition.phase === 'cover' && !hasNavigatedRef.current) {
                 hasNavigatedRef.current = true
                 if (pageTransition.to) navigate(pageTransition.to)
+                holdStartedAtRef.current = Date.now()
                 setPageTransition((prev) =>
-                  prev.phase === 'cover' ? { ...prev, phase: 'reveal' } : prev
+                  prev.phase === 'cover' ? { ...prev, phase: 'hold' } : prev
                 )
                 return
               }
@@ -79,9 +163,67 @@ export function PageTransitionOverlay({
               if (pageTransition.phase === 'reveal') {
                 setPageTransition({ phase: 'idle', to: null })
                 hasNavigatedRef.current = false
+                holdStartedAtRef.current = 0
               }
             }}
           />
+
+          <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
+            {EASTER_LINES.map((line, index) => (
+              <div
+                key={`${line.text}-${index}`}
+                className="pointer-events-auto absolute left-1/2 w-[230vw] -translate-x-1/2 overflow-hidden"
+                style={{
+                  top: line.top,
+                  rotate: `${line.tilt}deg`,
+                }}
+                onMouseEnter={() => setPausedLineIndex(index)}
+                onMouseLeave={() =>
+                  setPausedLineIndex((prev) => (prev === index ? null : prev))
+                }
+              >
+                <div
+                  className="whitespace-nowrap text-[clamp(30px,4.2vw,56px)] font-black uppercase leading-none tracking-[0.26em] text-black/82 drop-shadow-[0_1px_0_rgba(255,255,255,0.2)]"
+                  style={{
+                    fontFamily:
+                      "'Uranus Pixel', 'MiSans', Inter, system-ui, sans-serif",
+                    animationName:
+                      line.direction > 0
+                        ? 'easter-scroll-forward'
+                        : 'easter-scroll-backward',
+                    animationDuration: `${line.duration}s`,
+                    animationTimingFunction: 'linear',
+                    animationIterationCount: 'infinite',
+                    animationDirection: 'normal',
+                    animationPlayState:
+                      pausedLineIndex === index ? 'paused' : 'running',
+                  }}
+                >
+                  {`${line.text}  •  `.repeat(14)}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <AnimatePresence>
+            {isWaitingClick && (
+              <motion.div
+                className="pointer-events-none absolute inset-x-0 bottom-10 z-[3] flex justify-center"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+              >
+                <motion.div
+                  className="rounded-full border border-black/35 bg-black/18 px-4 py-2 text-sm font-semibold tracking-wide text-black"
+                  animate={{ opacity: [0.88, 1, 0.88] }}
+                  transition={{ duration: 1.4, repeat: Number.POSITIVE_INFINITY }}
+                >
+                  点击继续 · Click to continue
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.div
@@ -89,13 +231,19 @@ export function PageTransitionOverlay({
               aria-hidden="true"
               initial={{ opacity: 0, scale: 0.86, rotate: 192 }}
               animate={{
-                opacity: pageTransition.phase === 'cover' ? 1 : 0,
-                scale: pageTransition.phase === 'cover' ? 1 : 0.86,
+                opacity:
+                  pageTransition.phase === 'cover' || pageTransition.phase === 'hold'
+                    ? 1
+                    : 0,
+                scale:
+                  pageTransition.phase === 'cover' || pageTransition.phase === 'hold'
+                    ? 1
+                    : 0.86,
                 rotate: 202,
               }}
               exit={{ opacity: 0, scale: 0.86 }}
               transition={{
-                duration: pageTransition.phase === 'cover' ? 0.38 : 0.22,
+                duration: pageTransition.phase === 'cover' ? 0.46 : 0.26,
                 ease: [0.22, 1, 0.36, 1],
               }}
             >
