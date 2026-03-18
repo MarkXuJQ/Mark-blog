@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next'
 import { Pagination } from '../components/ui/Pagination'
 import { SelectMenu } from '../components/ui/SelectMenu'
 import { Seo } from '../components/seo/Seo'
+import { DraggableBackToTop } from '../components/ui/DraggableBackToTop'
 import { cn } from '../utils/cn'
 
 type LoadStatus = 'loading' | 'ready' | 'error'
@@ -889,6 +890,8 @@ export function Games() {
           ) : null}
         </div>
       </div>
+
+      <DraggableBackToTop />
     </>
   )
 }
