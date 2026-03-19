@@ -4,6 +4,8 @@ import {
   useMemo,
   useRef,
   type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
 } from 'react'
 import { cn } from '../../utils/cn'
 import {
@@ -51,8 +53,16 @@ function getYearDepthClass(distance: number) {
 function CalendarYearWheelControl(props: CalendarYearWheelProps) {
   const { years, value, onValueChange, ariaLabel, label } = props
   const { isOpen, setIsOpen } = useDropdown()
+  const controlRootRef = useRef<HTMLDivElement>(null)
   const wheelDeltaRef = useRef(0)
   const wheelViewportRef = useRef<HTMLDivElement>(null)
+  const activePointerIdRef = useRef<number | null>(null)
+  const lastPointerYRef = useRef(0)
+  const pointerDistanceRef = useRef(0)
+  const selectedIndexRef = useRef(0)
+  const suppressClickRef = useRef(false)
+  const suppressClickTimeoutRef = useRef<number | null>(null)
+  const valueRef = useRef(value)
 
   const selectedIndex = clampIndex(years.indexOf(value), years.length)
   const selectedYear = years[selectedIndex] ?? value
@@ -62,6 +72,11 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
     [selectedIndex]
   )
 
+  useEffect(() => {
+    selectedIndexRef.current = selectedIndex
+    valueRef.current = value
+  }, [selectedIndex, value])
+
   const commitIndex = (nextIndex: number, closeAfterChange = false) => {
     const safeIndex = clampIndex(nextIndex, years.length)
     const nextYear = years[safeIndex]
@@ -69,7 +84,7 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
 
     wheelDeltaRef.current = 0
 
-    if (nextYear !== value) {
+    if (nextYear !== valueRef.current) {
       onValueChange(nextYear)
     }
 
@@ -80,7 +95,7 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
 
   const moveBySteps = (deltaSteps: number) => {
     if (deltaSteps === 0) return
-    commitIndex(selectedIndex + deltaSteps)
+    commitIndex(selectedIndexRef.current + deltaSteps)
   }
 
   const processWheelDelta = (deltaY: number) => {
@@ -100,28 +115,105 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
     }
   }
 
+  const clearSuppressedClick = () => {
+    if (suppressClickTimeoutRef.current !== null) {
+      window.clearTimeout(suppressClickTimeoutRef.current)
+      suppressClickTimeoutRef.current = null
+    }
+    suppressClickRef.current = false
+  }
+
+  const resetPointerState = () => {
+    activePointerIdRef.current = null
+    lastPointerYRef.current = 0
+    pointerDistanceRef.current = 0
+    wheelDeltaRef.current = 0
+  }
+
   useEffect(() => {
     if (!isOpen) return
 
+    const controlRoot = controlRootRef.current
     const wheelViewport = wheelViewportRef.current
-    if (!wheelViewport) return
+    if (!controlRoot || !wheelViewport) return
 
     wheelViewport.focus({ preventScroll: true })
 
-    const handleNativeWheel = (event: WheelEvent) => {
+    const handleDesktopWheel = (event: WheelEvent) => {
       event.preventDefault()
       event.stopPropagation()
       processWheelDelta(event.deltaY)
     }
 
-    wheelViewport.addEventListener('wheel', handleNativeWheel, {
+    controlRoot.addEventListener('wheel', handleDesktopWheel, {
       passive: false,
     })
 
     return () => {
-      wheelViewport.removeEventListener('wheel', handleNativeWheel)
+      controlRoot.removeEventListener('wheel', handleDesktopWheel)
+      clearSuppressedClick()
+      resetPointerState()
     }
-  }, [isOpen, selectedIndex, years.length, value])
+  }, [isOpen])
+
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse') return
+
+    clearSuppressedClick()
+    suppressClickRef.current = false
+    activePointerIdRef.current = event.pointerId
+    lastPointerYRef.current = event.clientY
+    pointerDistanceRef.current = 0
+    wheelDeltaRef.current = 0
+    event.currentTarget.setPointerCapture(event.pointerId)
+    event.currentTarget.focus({ preventScroll: true })
+  }
+
+  const finishPointerInteraction = (
+    event: ReactPointerEvent<HTMLDivElement>
+  ) => {
+    if (activePointerIdRef.current !== event.pointerId) return
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+
+    if (suppressClickRef.current) {
+      suppressClickTimeoutRef.current = window.setTimeout(() => {
+        suppressClickRef.current = false
+        suppressClickTimeoutRef.current = null
+      }, 0)
+    }
+
+    resetPointerState()
+  }
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (activePointerIdRef.current !== event.pointerId) return
+
+    const deltaY = lastPointerYRef.current - event.clientY
+    if (deltaY === 0) return
+
+    event.preventDefault()
+    event.stopPropagation()
+
+    lastPointerYRef.current = event.clientY
+    pointerDistanceRef.current += Math.abs(deltaY)
+
+    if (pointerDistanceRef.current >= 6) {
+      suppressClickRef.current = true
+    }
+
+    processWheelDelta(deltaY)
+  }
+
+  const handleClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (!suppressClickRef.current) return
+
+    event.preventDefault()
+    event.stopPropagation()
+    clearSuppressedClick()
+  }
 
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
     switch (event.key) {
@@ -159,19 +251,19 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
   }
 
   return (
-    <>
+    <div ref={controlRootRef} className="relative">
       <DropdownTrigger
         aria-label={ariaLabel}
         className={cn(
-          'group flex min-w-[10rem] cursor-pointer items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm transition-[border-color,background-color,color,box-shadow] hover:border-slate-300 hover:bg-slate-50/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-700 dark:hover:bg-slate-900/90 dark:focus-visible:ring-blue-500/60 dark:focus-visible:ring-offset-slate-950',
+          'group flex min-w-[4.875rem] cursor-pointer items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 shadow-sm transition-[border-color,background-color,color,box-shadow] hover:border-slate-300 hover:bg-slate-50/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-w-[10rem] sm:gap-3 sm:px-4 sm:py-3 sm:text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-700 dark:hover:bg-slate-900/90 dark:focus-visible:ring-blue-500/60 dark:focus-visible:ring-offset-slate-950',
           isOpen &&
             'border-slate-300 bg-slate-50/95 text-slate-700 dark:border-slate-700 dark:bg-slate-900/95 dark:text-slate-200'
         )}
       >
-        <span className="shrink-0">{label}</span>
+        <span className="hidden shrink-0 sm:inline">{label}</span>
         <span
           className={cn(
-            'ml-auto flex min-w-[4.5rem] items-center justify-end gap-2 font-medium text-slate-900 transition-opacity duration-200 dark:text-slate-100',
+            'flex min-w-[3.875rem] items-center justify-center gap-1 text-sm font-medium text-slate-900 transition-opacity duration-200 sm:ml-auto sm:min-w-[4.5rem] sm:justify-end sm:gap-2 sm:text-base dark:text-slate-100',
             isOpen && 'opacity-0'
           )}
         >
@@ -188,9 +280,9 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
 
       <DropdownContent
         align="end"
-        className="!top-1/2 !right-3 !mt-0 !min-w-0 origin-center -translate-y-1/2 overflow-visible border-0 bg-transparent p-0 shadow-none ring-0"
+        className="!top-1/2 !right-1 !mt-0 !min-w-0 origin-center -translate-y-1/2 overflow-visible border-0 bg-transparent p-0 shadow-none ring-0 sm:!right-3"
       >
-        <div className="relative w-[4.5rem] overflow-hidden bg-transparent px-0 py-0 shadow-none [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)] [-webkit-mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)]">
+        <div className="relative w-[4.25rem] overflow-hidden bg-transparent px-0 py-0 shadow-none sm:w-[4.5rem] [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)] [-webkit-mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)]">
           <div className="relative" style={{ height: `${WHEEL_HEIGHT}px` }}>
             <div
               role="listbox"
@@ -198,8 +290,13 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
               tabIndex={0}
               aria-label={ariaLabel}
               aria-activedescendant={`calendar-year-${selectedYear}`}
-              className="relative z-[3] h-full overflow-hidden overscroll-contain outline-none select-none"
+              className="relative z-[3] h-full touch-none overflow-hidden overscroll-contain outline-none select-none"
+              onClickCapture={handleClickCapture}
               onKeyDown={handleKeyDown}
+              onPointerCancel={finishPointerInteraction}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={finishPointerInteraction}
               onMouseEnter={() => {
                 wheelViewportRef.current?.focus({ preventScroll: true })
               }}
@@ -220,7 +317,7 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
                       role="option"
                       aria-selected={year === value}
                       className={cn(
-                        'relative z-[4] flex h-10 w-full items-center justify-center rounded-full text-base font-semibold tracking-[0.06em] tabular-nums transition-[transform,opacity,color,filter] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                        'relative z-[4] flex h-10 w-full items-center justify-center rounded-full text-sm font-semibold tracking-[0.04em] tabular-nums transition-[transform,opacity,color,filter] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:text-base sm:tracking-[0.06em]',
                         getYearDepthClass(distance)
                       )}
                       onClick={() => commitIndex(index)}
@@ -234,7 +331,7 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
           </div>
         </div>
       </DropdownContent>
-    </>
+    </div>
   )
 }
 

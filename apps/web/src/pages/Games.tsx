@@ -5,6 +5,7 @@ import {
   Search,
   TimerReset,
   Trophy,
+  X,
 } from 'lucide-react'
 import {
   startTransition,
@@ -12,6 +13,7 @@ import {
   useDeferredValue,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -240,15 +242,17 @@ function StatTile(props: {
   const { label, value, hint, icon } = props
 
   return (
-    <div className="rounded-3xl border border-white/50 bg-white/75 p-4 shadow-[0_14px_30px_-22px_rgba(15,23,42,0.45)] backdrop-blur-sm dark:border-slate-700/70 dark:bg-slate-950/45">
+    <div className="rounded-[1.4rem] border border-white/50 bg-white/75 p-3.5 shadow-[0_14px_30px_-22px_rgba(15,23,42,0.45)] backdrop-blur-sm dark:border-slate-700/70 dark:bg-slate-950/45 sm:rounded-3xl sm:p-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+        <p className="min-w-0 flex-1 text-[0.65rem] font-semibold uppercase leading-snug tracking-[0.16em] text-slate-500 dark:text-slate-400 sm:text-xs sm:tracking-[0.24em]">
           {label}
         </p>
-        <span className="text-slate-500 dark:text-slate-400">{icon}</span>
+        <span className="shrink-0 text-slate-500 dark:text-slate-400">
+          {icon}
+        </span>
       </div>
 
-      <p className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+      <p className="mt-2.5 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-50 sm:mt-3 sm:text-3xl">
         {value}
       </p>
 
@@ -329,7 +333,7 @@ function FeaturedGameCard(props: {
   } = props
 
   return (
-    <article className="group relative overflow-hidden rounded-[28px] border border-slate-200/80 bg-slate-950 text-white shadow-[0_24px_70px_-38px_rgba(15,23,42,0.7)] dark:border-slate-800">
+    <article className="group relative min-h-[238px] w-[calc(100vw-3.25rem)] flex-none snap-start overflow-hidden rounded-[28px] border border-slate-200/80 bg-slate-950 text-white shadow-[0_24px_70px_-38px_rgba(15,23,42,0.7)] dark:border-slate-800 sm:w-[30rem] lg:w-[32rem]">
       {game.headerImage ? (
         <img
           src={game.headerImage}
@@ -342,57 +346,62 @@ function FeaturedGameCard(props: {
         />
       ) : null}
 
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.4),transparent_35%),linear-gradient(180deg,rgba(2,6,23,0.08),rgba(2,6,23,0.84))]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.4),transparent_30%),linear-gradient(112deg,rgba(2,6,23,0.94)_8%,rgba(2,6,23,0.82)_42%,rgba(2,6,23,0.44)_100%)]" />
 
-      <div className="relative flex h-full min-h-[320px] flex-col justify-between p-5 sm:p-6">
-        <div className="flex items-start justify-between gap-4">
+      <div className="relative flex h-full flex-col justify-between p-4 sm:p-5">
+        <div className="flex items-start gap-3">
           <GameIcon
             name={game.name}
             iconUrl={game.iconUrl}
-            className="h-14 w-14 shrink-0 border-white/20 bg-white/10"
+            className="h-12 w-12 shrink-0 border-white/20 bg-white/10 sm:h-14 sm:w-14"
           />
 
-          <a
-            href={game.storeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white/90 transition hover:bg-white/20"
-            aria-label={openStoreLabel}
-          >
-            <ExternalLink className="h-4 w-4" />
-          </a>
-        </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-200/90">
+                  Steam
+                </p>
+                <h3 className="mt-1.5 line-clamp-2 text-xl font-semibold tracking-tight text-white sm:text-2xl">
+                  {game.name}
+                </h3>
+              </div>
 
-        <div className="mt-6 space-y-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200/90">
-              Steam
-            </p>
-            <h3 className="mt-2 text-2xl font-semibold tracking-tight text-white">
-              {game.name}
-            </h3>
+              <a
+                href={game.storeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white/90 transition hover:bg-white/20"
+                aria-label={openStoreLabel}
+              >
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </div>
+
             {game.shortDescription ? (
-              <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-slate-200/85">
+              <p className="mt-3 line-clamp-2 max-w-[28rem] text-sm leading-relaxed text-slate-200/85">
                 {game.shortDescription}
               </p>
             ) : null}
           </div>
+        </div>
 
-          <div className="grid gap-3 text-sm text-slate-100/90 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-300">
+        <div className="mt-4 space-y-3">
+          <div className="grid grid-cols-2 gap-2.5 text-sm text-slate-100/90">
+            <div className="rounded-2xl border border-white/10 bg-white/10 px-3.5 py-3 backdrop-blur-sm">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300">
                 {lifetimeLabel}
               </p>
-              <p className="mt-2 text-lg font-semibold">
+              <p className="mt-1.5 text-base font-semibold sm:text-lg">
                 {formatHours(game.playtimeMinutes, locale)}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-300">
+            <div className="rounded-2xl border border-white/10 bg-white/10 px-3.5 py-3 backdrop-blur-sm">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300">
                 {achievementLabel}
               </p>
-              <p className="mt-2 text-lg font-semibold">
+              <p className="mt-1.5 text-base font-semibold sm:text-lg">
                 {game.achievementStats
                   ? formatAchievementValue(game.achievementStats, locale)
                   : noAchievementsLabel}
@@ -400,7 +409,7 @@ function FeaturedGameCard(props: {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 text-xs text-slate-100/85">
+          <div className="flex flex-wrap gap-2 text-[11px] text-slate-100/85">
             {game.reviewSummary ? (
               <>
                 <span className="rounded-full border border-emerald-300/25 bg-emerald-400/20 px-3 py-1.5 font-medium text-emerald-100">
@@ -443,8 +452,10 @@ export function Games() {
   const [dashboard, setDashboard] = useState<SteamDashboard | null>(null)
   const [errorCode, setErrorCode] = useState<string>('')
   const [search, setSearch] = useState('')
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
   const [sort, setSort] = useState<GameSort>('playtime')
   const [currentPage, setCurrentPage] = useState(1)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     let active = true
@@ -525,13 +536,29 @@ export function Games() {
     })
   }, [deferredSearch, sort])
 
+  const featuredGames = useMemo(() => dashboard?.featured ?? [], [dashboard?.featured])
   const totalPages = Math.max(1, Math.ceil(filteredGames.length / ITEMS_PER_PAGE))
+  const hasSearch = search.trim().length > 0
+  const isMobileSearchVisible = isMobileSearchOpen || hasSearch
+  const searchInputId = 'games-library-search'
 
   useEffect(() => {
     if (currentPage > totalPages) {
       setCurrentPage(totalPages)
     }
   }, [currentPage, totalPages])
+
+  useEffect(() => {
+    if (!isMobileSearchOpen) return
+
+    const frameId = requestAnimationFrame(() => {
+      searchInputRef.current?.focus()
+    })
+
+    return () => {
+      cancelAnimationFrame(frameId)
+    }
+  }, [isMobileSearchOpen])
 
   const visibleGames = filteredGames.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
@@ -635,7 +662,7 @@ export function Games() {
                 </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
                 <StatTile
                   label={t('games.stats.totalGames')}
                   value={formatInteger(dashboard?.summary.gameCount ?? 0, locale)}
@@ -696,7 +723,7 @@ export function Games() {
           {status === 'ready' && dashboard ? (
             <>
               <section className="mt-10">
-                <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div className="mb-5 flex items-end justify-between gap-4">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-700 dark:text-cyan-300">
                       {t('games.featured.eyebrow')}
@@ -710,23 +737,25 @@ export function Games() {
                   </div>
                 </div>
 
-                {dashboard.featured.length > 0 ? (
-                  <div className="grid gap-4 xl:grid-cols-2">
-                    {dashboard.featured.map((game) => (
-                      <FeaturedGameCard
-                        key={game.appid}
-                        game={game}
-                        locale={locale}
-                        reviewLabel={t('games.featured.reviewPositive')}
-                        reviewCountLabel={t('games.featured.reviewCount')}
-                        noReviewLabel={t('games.featured.noReview')}
-                        lifetimeLabel={t('games.featured.lifetimeHours')}
-                        achievementLabel={t('games.featured.achievements')}
-                        noAchievementsLabel={t('games.featured.noAchievements')}
-                        releaseDateLabel={t('games.featured.releaseDate')}
-                        openStoreLabel={t('games.actions.openStore')}
-                      />
-                    ))}
+                {featuredGames.length > 0 ? (
+                  <div className="-mx-5 overflow-x-auto px-5 pb-2 scrollbar-hide sm:mx-0 sm:px-0">
+                    <div className="flex snap-x snap-mandatory gap-3.5 scroll-px-5 sm:gap-4 sm:scroll-px-0">
+                      {featuredGames.map((game) => (
+                        <FeaturedGameCard
+                          key={game.appid}
+                          game={game}
+                          locale={locale}
+                          reviewLabel={t('games.featured.reviewPositive')}
+                          reviewCountLabel={t('games.featured.reviewCount')}
+                          noReviewLabel={t('games.featured.noReview')}
+                          lifetimeLabel={t('games.featured.lifetimeHours')}
+                          achievementLabel={t('games.featured.achievements')}
+                          noAchievementsLabel={t('games.featured.noAchievements')}
+                          releaseDateLabel={t('games.featured.releaseDate')}
+                          openStoreLabel={t('games.actions.openStore')}
+                        />
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-6 text-sm text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-400">
@@ -736,55 +765,189 @@ export function Games() {
               </section>
 
               <section className="mt-10 rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_24px_80px_-42px_rgba(15,23,42,0.28)] backdrop-blur dark:border-slate-800 dark:bg-slate-950/55 sm:p-6">
-                <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-                  <div>
-                    <h2 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+                <div className="relative">
+                  <div className="hidden items-center justify-between gap-4 sm:flex">
+                    <h2 className="min-w-0 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
                       {t('games.library.title')}
                     </h2>
-                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                      {t('games.library.showing', {
-                        shown: formatInteger(visibleGames.length, locale),
-                        total: formatInteger(filteredGames.length, locale),
-                      })}
-                    </p>
+
+                    <div className="flex shrink-0 items-center gap-2.5">
+                      <label className="flex h-11 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3.5 shadow-sm transition dark:border-slate-800 dark:bg-slate-900">
+                        <Search className="h-4 w-4 shrink-0 text-slate-500 dark:text-slate-400" />
+                        <input
+                          type="search"
+                          value={search}
+                          onChange={(event) => setSearch(event.target.value)}
+                          placeholder={t('games.library.searchPlaceholder')}
+                          className="w-[15rem] min-w-0 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+                        />
+
+                        {hasSearch ? (
+                          <button
+                            type="button"
+                            onClick={() => setSearch('')}
+                            aria-label={t('games.library.clearSearch')}
+                            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        ) : null}
+                      </label>
+
+                      <SelectMenu
+                        value={sort}
+                        options={sortOptions}
+                        onValueChange={setSort}
+                        label={t('games.library.sortLabel')}
+                        ariaLabel={t('games.library.sortLabel')}
+                        className="shrink-0"
+                        containerClassName="h-11 gap-1.5 rounded-[1.1rem] px-3 pr-2.5 sm:gap-2 sm:px-3.5 sm:pr-3"
+                        labelClassName="hidden sm:inline"
+                        buttonClassName="max-w-[6.8rem] gap-1 text-sm"
+                        menuClassName="w-52 max-w-[calc(100vw-2rem)]"
+                      />
+                    </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 sm:flex-row">
-                    <label className="flex min-w-0 items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                  <div className="relative min-h-11 sm:hidden">
+                    <div
+                      className={cn(
+                        'flex items-center justify-between gap-2 transition duration-200',
+                        isMobileSearchVisible
+                          ? 'pointer-events-none translate-x-3 opacity-0'
+                          : 'translate-x-0 opacity-100'
+                      )}
+                    >
+                      <h2 className="min-w-0 flex-1 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+                        {t('games.library.title')}
+                      </h2>
+
+                      <div className="flex shrink-0 items-center gap-2">
+                        <SelectMenu
+                          value={sort}
+                          options={sortOptions}
+                          onValueChange={setSort}
+                          label={t('games.library.sortLabel')}
+                          ariaLabel={t('games.library.sortLabel')}
+                          className="shrink-0"
+                          containerClassName="h-11 gap-1 rounded-[1.1rem] px-3 pr-2.5"
+                          labelClassName="hidden"
+                          buttonClassName="max-w-[5.75rem] gap-1 text-sm"
+                          menuClassName="w-52 max-w-[calc(100vw-2rem)]"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() => setIsMobileSearchOpen(true)}
+                          aria-controls={searchInputId}
+                          aria-expanded={isMobileSearchVisible}
+                          aria-label={t('games.library.searchToggle')}
+                          className="inline-flex h-11 max-w-[6.5rem] items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3 text-sm font-medium text-slate-500 shadow-sm transition hover:border-slate-300 hover:text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-700 dark:hover:text-slate-100"
+                        >
+                          <Search className="h-4 w-4 shrink-0" />
+                          <span className="truncate">
+                            {t('games.library.searchToggle')}
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <label
+                      className={cn(
+                        'absolute inset-0 flex h-11 min-w-0 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3 shadow-sm transition duration-200 dark:border-slate-800 dark:bg-slate-900',
+                        isMobileSearchVisible
+                          ? 'translate-x-0 opacity-100'
+                          : 'pointer-events-none translate-x-3 opacity-0'
+                      )}
+                    >
                       <Search className="h-4 w-4 shrink-0 text-slate-500 dark:text-slate-400" />
                       <input
+                        ref={searchInputRef}
+                        id={searchInputId}
                         type="search"
                         value={search}
                         onChange={(event) => setSearch(event.target.value)}
-                        placeholder={t('games.library.searchPlaceholder')}
-                        className="w-full min-w-[220px] bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
-                      />
-                    </label>
+                        onBlur={() => {
+                          if (!search) {
+                            setIsMobileSearchOpen(false)
+                          }
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key !== 'Escape') return
 
-                    <SelectMenu
-                      value={sort}
-                      options={sortOptions}
-                      onValueChange={setSort}
-                      label={t('games.library.sortLabel')}
-                      ariaLabel={t('games.library.sortLabel')}
-                      buttonClassName="min-w-[7rem]"
-                    />
+                          if (search) {
+                            setSearch('')
+                            return
+                          }
+
+                          setIsMobileSearchOpen(false)
+                        }}
+                        placeholder={t('games.library.searchPlaceholder')}
+                        className="w-full min-w-0 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearch('')
+                          setIsMobileSearchOpen(false)
+                        }}
+                        aria-label={
+                          search
+                            ? t('games.library.clearSearch')
+                            : t('games.library.closeSearch')
+                        }
+                        className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </label>
                   </div>
+
+                  <p
+                    className={cn(
+                      'mt-2 text-sm text-slate-600 dark:text-slate-400',
+                      isMobileSearchVisible ? 'hidden sm:block' : 'block'
+                    )}
+                  >
+                    {t('games.library.showing', {
+                      shown: formatInteger(visibleGames.length, locale),
+                      total: formatInteger(filteredGames.length, locale),
+                    })}
+                  </p>
                 </div>
 
                 {visibleGames.length > 0 ? (
-                  <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  <div className="mt-3 grid gap-2.5 md:grid-cols-2 xl:grid-cols-3 sm:mt-4 sm:gap-3">
                     {visibleGames.map((game) => {
                       const achievementProgress = getAchievementProgress(game)
                       const achievementPercent =
                         achievementProgress.totalCount > 0
                           ? Math.round(achievementProgress.ratio * 100)
                           : 0
+                      const playtimeLabel = t('games.library.playtime', {
+                        hours: formatHours(game.playtimeMinutes, locale),
+                      })
+                      const statusLabel =
+                        game.playtimeMinutes <= 0
+                          ? t('games.library.neverPlayed')
+                          : game.recentPlaytimeMinutes > 0
+                            ? t('games.library.recentPlaytime', {
+                                hours: formatHours(
+                                  game.recentPlaytimeMinutes,
+                                  locale
+                                ),
+                              })
+                            : null
+                      const achievementLabel =
+                        achievementProgress.totalCount > 0
+                          ? formatAchievementValue(game.achievementStats, locale)
+                          : t('games.library.achievementMissing')
 
                       return (
                         <article
                           key={game.appid}
-                          className="group relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/80 p-4 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-slate-700"
+                          className="group relative overflow-hidden rounded-[22px] border border-slate-200/80 bg-white/80 p-3.5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-slate-700 sm:rounded-[24px] sm:p-4"
                         >
                           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(16,185,129,0.08),transparent_42%,rgba(14,165,233,0.09))] opacity-0 transition duration-300 group-hover:opacity-100" />
 
@@ -793,81 +956,75 @@ export function Games() {
                               <GameIcon
                                 name={game.name}
                                 iconUrl={game.iconUrl}
-                                className="h-14 w-14 shrink-0"
+                                className="h-12 w-12 shrink-0 sm:h-14 sm:w-14"
                               />
 
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-start justify-between gap-3">
                                   <div className="min-w-0">
-                                    <h3 className="truncate text-base font-semibold text-slate-950 dark:text-slate-50">
+                                    <h3 className="line-clamp-2 pr-1 text-[0.95rem] font-semibold leading-snug text-slate-950 dark:text-slate-50 sm:text-base">
                                       {game.name}
                                     </h3>
-                                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-                                      {t('games.library.playtime', {
-                                        hours: formatHours(
-                                          game.playtimeMinutes,
-                                          locale
-                                        ),
-                                      })}
-                                    </p>
-                                    {game.playtimeMinutes <= 0 ? (
-                                      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                                        {t('games.library.neverPlayed')}
-                                      </p>
-                                    ) : game.recentPlaytimeMinutes > 0 ? (
-                                      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                                        {t('games.library.recentPlaytime', {
-                                          hours: formatHours(
-                                            game.recentPlaytimeMinutes,
-                                            locale
-                                          ),
-                                        })}
-                                      </p>
-                                    ) : null}
                                   </div>
 
                                   <a
                                     href={game.storeUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-slate-300 hover:text-slate-950 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:text-white"
+                                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-slate-300 hover:text-slate-950 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:text-white sm:h-9 sm:w-9"
                                     aria-label={t('games.actions.openStore')}
                                   >
                                     <ExternalLink className="h-4 w-4" />
                                   </a>
                                 </div>
+
+                                <div className="mt-2.5 flex flex-wrap gap-1.5">
+                                  <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                                    {playtimeLabel}
+                                  </span>
+
+                                  {statusLabel ? (
+                                    <span
+                                      className={cn(
+                                        'inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium',
+                                        game.playtimeMinutes <= 0
+                                          ? 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                                          : 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-200'
+                                      )}
+                                    >
+                                      {statusLabel}
+                                    </span>
+                                  ) : null}
+                                </div>
                               </div>
                             </div>
 
-                            <div className="mt-5 flex items-center justify-between gap-3 text-sm">
-                              <p className="font-medium text-slate-900 dark:text-slate-100">
-                                {achievementProgress.totalCount > 0
-                                  ? formatAchievementValue(
-                                      game.achievementStats,
-                                      locale
-                                    )
-                                  : t('games.library.achievementMissing')}
-                              </p>
-
-                              {achievementProgress.totalCount > 0 ? (
-                                <p className="text-slate-500 dark:text-slate-400">
-                                  {formatInteger(achievementPercent, locale)}%
+                            <div className="mt-4 border-t border-slate-200/70 pt-3 dark:border-slate-800 sm:mt-5">
+                              <div className="flex items-center justify-between gap-3 text-sm">
+                                <p className="truncate font-medium text-slate-900 dark:text-slate-100">
+                                  {achievementLabel}
                                 </p>
-                              ) : null}
-                            </div>
 
-                            <div className="relative mt-2 h-2.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                              {achievementProgress.widthPercent > 0 ? (
-                                <div
-                                  className={cn(
-                                    'h-full rounded-full',
-                                    achievementProgress.fillClassName
-                                  )}
-                                  style={{
-                                    width: `${achievementProgress.widthPercent}%`,
-                                  }}
-                                />
-                              ) : null}
+                                {achievementProgress.totalCount > 0 ? (
+                                  <p className="shrink-0 text-xs font-medium text-slate-500 dark:text-slate-400">
+                                    {formatInteger(achievementPercent, locale)}%
+                                  </p>
+                                ) : null}
+                              </div>
+
+                              <div className="relative mt-1.5 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800 sm:mt-2 sm:h-2.5">
+                                {achievementProgress.widthPercent > 0 ? (
+                                  <div
+                                    className={cn(
+                                      'h-full rounded-full',
+                                      achievementProgress.fillClassName
+                                    )}
+                                    style={{
+                                      width: `${achievementProgress.widthPercent}%`,
+                                    }}
+                                  />
+                                ) : null}
+                              </div>
                             </div>
                           </div>
                         </article>

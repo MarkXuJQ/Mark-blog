@@ -174,8 +174,25 @@ export function WatchActivityCalendar({
   )
 
   return (
-    <section className="mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+    <section className="relative mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
+      {years.length > 0 ? (
+        <div className="absolute right-4 top-4 z-10">
+          <CalendarYearWheel
+            years={years}
+            value={selectedYear}
+            onValueChange={setSelectedYear}
+            label={t('movies.calendar.year')}
+            ariaLabel={t('movies.calendar.year')}
+          />
+        </div>
+      ) : null}
+
+      <div
+        className={cn(
+          'mb-3',
+          years.length > 0 && 'min-h-[3.25rem] pr-24 sm:pr-28'
+        )}
+      >
         <div>
           <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
             {t('movies.calendar.title')}
@@ -188,16 +205,6 @@ export function WatchActivityCalendar({
             })}
           </p>
         </div>
-
-        {years.length > 0 ? (
-          <CalendarYearWheel
-            years={years}
-            value={selectedYear}
-            onValueChange={setSelectedYear}
-            label={t('movies.calendar.year')}
-            ariaLabel={t('movies.calendar.year')}
-          />
-        ) : null}
       </div>
 
       <div className="overflow-x-auto">

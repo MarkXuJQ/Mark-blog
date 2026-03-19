@@ -549,9 +549,9 @@ export function Movies() {
               </p>
             </section>
 
-            <section className="mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-3 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
-              <div className="flex flex-wrap items-center gap-3">
-                <label className="relative min-w-[220px] flex-1">
+            <section className="mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-2.5 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 sm:p-3">
+              <div className="flex flex-nowrap items-center gap-2 overflow-hidden sm:gap-3">
+                <label className="relative min-w-0 flex-[1_1_8rem]">
                   <Search
                     size={16}
                     className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
@@ -561,7 +561,7 @@ export function Movies() {
                     value={keyword}
                     onChange={(event) => setKeyword(event.target.value)}
                     placeholder={t('movies.searchPlaceholder')}
-                    className="w-full rounded-xl border border-slate-200 bg-white/90 py-2.5 pl-10 pr-3 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-blue-500 dark:focus:ring-blue-900/40"
+                    className="w-full rounded-[1rem] border border-slate-200 bg-white/90 py-2.5 pl-10 pr-3 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-blue-500 dark:focus:ring-blue-900/40"
                   />
                 </label>
 
@@ -570,6 +570,8 @@ export function Movies() {
                   onValueChange={setViewMode}
                   ariaLabel="Movie data mode"
                   size="sm"
+                  className="shrink-0"
+                  buttonClassName="px-2.5 sm:px-3"
                   items={[
                     {
                       value: 'csv',
@@ -591,7 +593,8 @@ export function Movies() {
                   onValueChange={setCardLayout}
                   ariaLabel="Movie card layout"
                   size="sm"
-                  buttonClassName="gap-1"
+                  className="shrink-0"
+                  buttonClassName="w-8 px-0 gap-0 sm:w-auto sm:px-3 sm:gap-1"
                   items={[
                     {
                       value: 'list',
@@ -599,7 +602,9 @@ export function Movies() {
                       content: (
                         <>
                           <List size={14} />
-                          {t('movies.layout.list')}
+                          <span className="hidden sm:inline">
+                            {t('movies.layout.list')}
+                          </span>
                         </>
                       ),
                       activeTextClassName: 'text-slate-900 dark:text-slate-100',
@@ -610,7 +615,9 @@ export function Movies() {
                       content: (
                         <>
                           <LayoutGrid size={14} />
-                          {t('movies.layout.grid')}
+                          <span className="hidden sm:inline">
+                            {t('movies.layout.grid')}
+                          </span>
                         </>
                       ),
                       activeTextClassName: 'text-slate-900 dark:text-slate-100',

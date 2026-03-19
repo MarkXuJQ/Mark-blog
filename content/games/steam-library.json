@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-18T19:09:23.160Z",
+  "generatedAt": "2026-03-19T04:15:06.440Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -33,9 +33,9 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 150389,
-        "totalNegative": 163562,
-        "totalReviews": 313951,
+        "totalPositive": 150426,
+        "totalNegative": 163557,
+        "totalReviews": 313983,
         "positivePercent": 48
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1771382452",
@@ -64,9 +64,9 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 447082,
+        "totalPositive": 447099,
         "totalNegative": 56790,
-        "totalReviews": 503872,
+        "totalReviews": 503889,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
@@ -93,9 +93,9 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 803285,
-        "totalNegative": 26482,
-        "totalReviews": 829767,
+        "totalPositive": 803344,
+        "totalNegative": 26486,
+        "totalReviews": 829830,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1773079016",
@@ -124,9 +124,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 834830,
-        "totalNegative": 27729,
-        "totalReviews": 862559,
+        "totalPositive": 834857,
+        "totalNegative": 27731,
+        "totalReviews": 862588,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991",
@@ -136,6 +136,70 @@
         "CD PROJEKT RED"
       ],
       "genres": [
+        "RPG"
+      ]
+    },
+    {
+      "appid": 289070,
+      "name": "Sid Meier's Civilization VI",
+      "playtimeMinutes": 7842,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/289070/9dc914132fec244adcede62fb8e7524a72a7398c.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/289070",
+      "communityUrl": "https://steamcommunity.com/app/289070",
+      "achievementStats": {
+        "unlockedCount": 59,
+        "totalCount": 320
+      },
+      "reviewSummary": {
+        "totalPositive": 318622,
+        "totalNegative": 52003,
+        "totalReviews": 370625,
+        "positivePercent": 86
+      },
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1740607040",
+      "shortDescription": "Expand your empire, advance your culture and go head-to-head against history’s greatest leaders. Will your civilization stand the test of time?",
+      "releaseDate": "20 Oct, 2016",
+      "developers": [
+        "Firaxis Games",
+        "Aspyr (Mac)",
+        "Aspyr (Linux)"
+      ],
+      "genres": [
+        "Strategy"
+      ]
+    },
+    {
+      "appid": 812140,
+      "name": "Assassin's Creed Odyssey",
+      "playtimeMinutes": 7030,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/812140/4b6cf0715b30669411bf204bce7ed99a9c84671b.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/812140",
+      "communityUrl": "https://steamcommunity.com/app/812140",
+      "achievementStats": {
+        "unlockedCount": 67,
+        "totalCount": 93
+      },
+      "reviewSummary": {
+        "totalPositive": 161688,
+        "totalNegative": 20403,
+        "totalReviews": 182091,
+        "positivePercent": 89
+      },
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1758656673",
+      "shortDescription": "In this action-adventure game, set sail for Ancient Greece to alter its fate. Fight in visceral battles on land and sea, shape your destiny from outcast to legend, and uncover secrets of your past.",
+      "releaseDate": "5 Oct, 2018",
+      "developers": [
+        "Ubisoft Quebec",
+        "Ubisoft Montreal",
+        "Ubisoft Bucharest"
+      ],
+      "genres": [
+        "Action",
+        "Adventure",
         "RPG"
       ]
     }
