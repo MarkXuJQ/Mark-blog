@@ -23,6 +23,8 @@ interface SelectMenuProps<T extends SelectValue> {
   label?: string
   align?: 'start' | 'end'
   className?: string
+  containerClassName?: string
+  labelClassName?: string
   buttonClassName?: string
   menuClassName?: string
 }
@@ -65,6 +67,8 @@ export function SelectMenu<T extends SelectValue>(props: SelectMenuProps<T>) {
     label,
     align = 'end',
     className,
+    containerClassName,
+    labelClassName,
     buttonClassName,
     menuClassName,
   } = props
@@ -78,10 +82,13 @@ export function SelectMenu<T extends SelectValue>(props: SelectMenuProps<T>) {
     <Dropdown className={className}>
       <div
         className={cn(
-          'flex items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300'
+          'flex items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300',
+          containerClassName
         )}
       >
-        {label ? <span className="shrink-0">{label}</span> : null}
+        {label ? (
+          <span className={cn('shrink-0', labelClassName)}>{label}</span>
+        ) : null}
 
         <SelectMenuTrigger
           selectedLabel={selectedOption.label}

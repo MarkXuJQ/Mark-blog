@@ -1,7 +1,7 @@
 const STEAM_API_BASE_URL = 'https://api.steampowered.com'
 const STEAM_STORE_BASE_URL = 'https://store.steampowered.com'
 const DEFAULT_STEAM_PROFILE_ID = '76561199085291248'
-const FEATURED_GAME_LIMIT = 4
+const FEATURED_GAME_LIMIT = 6
 const ACHIEVEMENT_CONCURRENCY = 10
 
 export class SteamHttpError extends Error {
@@ -581,8 +581,9 @@ function shouldRefreshAchievementStats(staticGame, liveGame) {
 }
 
 function mergeFeaturedWithLiveGames(staticFeatured, liveGamesByAppId, achievementMap) {
-  if (staticFeatured.length > 0) {
-    return staticFeatured.map((game) => {
+  const mergedStaticFeatured = staticFeatured
+    .slice(0, FEATURED_GAME_LIMIT)
+    .map((game) => {
       const liveGame = liveGamesByAppId.get(game.appid)
       const mergedGame = mergeStaticGameWithLiveGame(game, liveGame)
       return {
@@ -591,11 +592,16 @@ function mergeFeaturedWithLiveGames(staticFeatured, liveGamesByAppId, achievemen
           achievementMap.get(game.appid) ?? game.achievementStats ?? null,
       }
     })
+
+  if (mergedStaticFeatured.length >= FEATURED_GAME_LIMIT) {
+    return mergedStaticFeatured
   }
 
-  return sortGamesByPlaytime(Array.from(liveGamesByAppId.values()))
+  const featuredIds = new Set(mergedStaticFeatured.map((game) => game.appid))
+  const fallbackFeatured = sortGamesByPlaytime(Array.from(liveGamesByAppId.values()))
     .filter((game) => game.playtimeMinutes > 0)
-    .slice(0, FEATURED_GAME_LIMIT)
+    .filter((game) => !featuredIds.has(game.appid))
+    .slice(0, FEATURED_GAME_LIMIT - mergedStaticFeatured.length)
     .map((game) => ({
       ...game,
       achievementStats: achievementMap.get(game.appid) ?? game.achievementStats ?? null,
@@ -606,6 +612,8 @@ function mergeFeaturedWithLiveGames(staticFeatured, liveGamesByAppId, achievemen
       developers: [],
       genres: [],
     }))
+
+  return [...mergedStaticFeatured, ...fallbackFeatured]
 }
 
 export async function createSteamStaticLibrary(config = getSteamConfig()) {
