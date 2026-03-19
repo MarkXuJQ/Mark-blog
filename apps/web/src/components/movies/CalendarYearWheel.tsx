@@ -19,7 +19,8 @@ const VISIBLE_YEAR_COUNT = 5
 const YEAR_ITEM_HEIGHT = 40
 const WHEEL_HEIGHT = VISIBLE_YEAR_COUNT * YEAR_ITEM_HEIGHT
 const WHEEL_PADDING = (WHEEL_HEIGHT - YEAR_ITEM_HEIGHT) / 2
-const WHEEL_STEP_THRESHOLD = 24
+const POINTER_DRAG_STEP_THRESHOLD = 24
+const DESKTOP_WHEEL_STEP_THRESHOLD = 24
 
 interface CalendarYearWheelProps {
   years: number[]
@@ -98,20 +99,29 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
     commitIndex(selectedIndexRef.current + deltaSteps)
   }
 
-  const processWheelDelta = (deltaY: number) => {
+  const processDelta = (
+    deltaY: number,
+    options: { threshold: number; maxSteps?: number }
+  ) => {
     if (years.length <= 1) return
+    const { threshold, maxSteps } = options
 
     wheelDeltaRef.current += deltaY
     let stepCount = 0
 
-    while (Math.abs(wheelDeltaRef.current) >= WHEEL_STEP_THRESHOLD) {
+    while (Math.abs(wheelDeltaRef.current) >= threshold) {
       const direction = wheelDeltaRef.current > 0 ? 1 : -1
       stepCount += direction
-      wheelDeltaRef.current -= direction * WHEEL_STEP_THRESHOLD
+      wheelDeltaRef.current -= direction * threshold
     }
 
     if (stepCount !== 0) {
-      moveBySteps(stepCount)
+      const limitedStepCount =
+        typeof maxSteps === 'number'
+          ? Math.sign(stepCount) * Math.min(Math.abs(stepCount), maxSteps)
+          : stepCount
+
+      moveBySteps(limitedStepCount)
     }
   }
 
@@ -142,7 +152,10 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
     const handleDesktopWheel = (event: WheelEvent) => {
       event.preventDefault()
       event.stopPropagation()
-      processWheelDelta(event.deltaY)
+      processDelta(event.deltaY, {
+        threshold: DESKTOP_WHEEL_STEP_THRESHOLD,
+        maxSteps: 1,
+      })
     }
 
     controlRoot.addEventListener('wheel', handleDesktopWheel, {
@@ -204,7 +217,9 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
       suppressClickRef.current = true
     }
 
-    processWheelDelta(deltaY)
+    processDelta(deltaY, {
+      threshold: POINTER_DRAG_STEP_THRESHOLD,
+    })
   }
 
   const handleClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
