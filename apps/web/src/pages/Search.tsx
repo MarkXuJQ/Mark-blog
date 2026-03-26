@@ -7,12 +7,12 @@ import { getAllPosts } from '../utils/posts'
 import { buildBlogSearchDocs, normalizeQuery, searchBlogDocs } from '../components/search/blogSearch'
 
 export function Search() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const query = normalizeQuery(searchParams.get('q') || '')
 
-  const posts = useMemo(() => getAllPosts(), [])
+  const posts = useMemo(() => getAllPosts(i18n.language), [i18n.language])
   const docs = useMemo(() => buildBlogSearchDocs(posts), [posts])
 
   const hits = useMemo(() => searchBlogDocs(docs, query, 50, 3), [docs, query])

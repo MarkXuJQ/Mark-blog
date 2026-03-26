@@ -15,6 +15,26 @@ const BASE_URL = `http://localhost:${PORT}`
 const DIST_DIR = path.resolve(__dirname, '../dist')
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
 
+function collectMarkdownFiles(dirPath) {
+  if (!fs.existsSync(dirPath)) return []
+
+  const entries = fs.readdirSync(dirPath, { withFileTypes: true })
+  const files = []
+
+  for (const entry of entries) {
+    const fullPath = path.join(dirPath, entry.name)
+    if (entry.isDirectory()) {
+      files.push(...collectMarkdownFiles(fullPath))
+      continue
+    }
+    if (entry.isFile() && entry.name.endsWith('.md')) {
+      files.push(fullPath)
+    }
+  }
+
+  return files
+}
+
 // Utility to verify dist exists
 if (!fs.existsSync(DIST_DIR)) {
   console.error(
@@ -38,16 +58,14 @@ function getRoutes() {
 
   // Add blog post routes
   if (fs.existsSync(POSTS_DIR)) {
-    const files = fs
-      .readdirSync(POSTS_DIR)
-      .filter((file) => file.endsWith('.md'))
-    files.forEach((file) => {
-      const slug = file.replace(/\.md$/, '')
+    const files = collectMarkdownFiles(POSTS_DIR)
+    files.forEach((filePath) => {
+      const slug = path.basename(filePath, '.md')
       routes.push(`/blog/${slug}`)
     })
   }
 
-  return routes
+  return Array.from(new Set(routes))
 }
 
 async function prerender() {

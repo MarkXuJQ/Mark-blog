@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import { useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { LeftSidebarWidget, StatsWidget } from '../components/blog/BlogWidgets'
 import { BlogTocCard } from '../components/blog/BlogTocCard'
 import { getAllPosts } from '../utils/posts'
@@ -8,7 +9,8 @@ import { useToc } from '../hooks/useToc'
 import { DraggableBackToTop } from '../components/ui/DraggableBackToTop'
 
 export function BlogLayout() {
-  const posts = getAllPosts()
+  const { i18n } = useTranslation()
+  const posts = getAllPosts(i18n.language)
   const { pathname, hash } = useLocation()
   const isBlogList = pathname === '/blog'
   const isBlogPost = pathname.startsWith('/blog/')

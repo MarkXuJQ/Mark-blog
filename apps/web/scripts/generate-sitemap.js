@@ -8,8 +8,6 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const DOMAIN = 'https://markxu.icu'
 
-// 调整路径，脚本在 apps/web/scripts/
-// content 在 apps/web/../../content/posts
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
 const PUBLIC_DIR = path.resolve(__dirname, '../public')
 const DIST_DIR = path.resolve(__dirname, '../dist')
@@ -21,17 +19,33 @@ if (!fs.existsSync(POSTS_DIR)) {
   process.exit(1)
 }
 
-const files = fs.readdirSync(POSTS_DIR).filter((file) => file.endsWith('.md'))
+function collectMarkdownFiles(dirPath) {
+  const entries = fs.readdirSync(dirPath, { withFileTypes: true })
+  const files = []
 
-const posts = files.map((file) => {
-  const content = fs.readFileSync(path.join(POSTS_DIR, file), 'utf-8')
+  for (const entry of entries) {
+    const fullPath = path.join(dirPath, entry.name)
+    if (entry.isDirectory()) {
+      files.push(...collectMarkdownFiles(fullPath))
+      continue
+    }
+    if (entry.isFile() && entry.name.endsWith('.md')) {
+      files.push(fullPath)
+    }
+  }
+
+  return files
+}
+
+const files = collectMarkdownFiles(POSTS_DIR)
+
+const allPosts = files.map((filePath) => {
+  const content = fs.readFileSync(filePath, 'utf-8')
   const { data } = matter(content)
-  // slug 是文件名去掉 .md
-  const slug = file.replace(/\.md$/, '')
+  const slug = path.basename(filePath, '.md')
 
   return {
     slug,
-    // 优先使用 frontmatter 中的 date，如果没有则使用当前时间
     date: data.date
       ? new Date(data.date).toISOString()
       : new Date().toISOString(),
@@ -40,12 +54,26 @@ const posts = files.map((file) => {
   }
 })
 
-// 按照日期倒序排序
+const postsBySlug = new Map()
+allPosts.forEach((post) => {
+  const existing = postsBySlug.get(post.slug)
+  if (!existing) {
+    postsBySlug.set(post.slug, post)
+    return
+  }
+
+  const currentTimestamp = new Date(post.updated || post.date).getTime()
+  const existingTimestamp = new Date(existing.updated || existing.date).getTime()
+  if (currentTimestamp > existingTimestamp) {
+    postsBySlug.set(post.slug, post)
+  }
+})
+
+const posts = Array.from(postsBySlug.values())
 posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
 console.log(`Found ${posts.length} posts.`)
 
-// 生成 Sitemap XML
 const sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -110,7 +138,6 @@ if (fs.existsSync(DIST_DIR)) {
   console.log(`Sitemap copied to ${distSitemapPath}`)
 }
 
-// 生成 robots.txt
 const robotsContent = `User-agent: *
 Allow: /
 Sitemap: ${DOMAIN}/sitemap.xml
