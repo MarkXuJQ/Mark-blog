@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename)
 const DOMAIN = 'https://markxu.icu'
 
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
+const MOVIE_REVIEWS_DIR = path.resolve(__dirname, '../../../content/movies/reviews')
 const PUBLIC_DIR = path.resolve(__dirname, '../public')
 const DIST_DIR = path.resolve(__dirname, '../dist')
 
@@ -74,6 +75,31 @@ posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
 console.log(`Found ${posts.length} posts.`)
 
+const reviewFiles = fs.existsSync(MOVIE_REVIEWS_DIR)
+  ? collectMarkdownFiles(MOVIE_REVIEWS_DIR)
+  : []
+const reviewPages = reviewFiles
+  .map((filePath) => {
+    const slug = path.basename(filePath, '.md')
+    if (slug.toLowerCase() === 'readme' || slug.startsWith('_')) return null
+
+    const content = fs.readFileSync(filePath, 'utf-8')
+    const { data } = matter(content)
+    const dateIso = data.updated
+      ? new Date(data.updated).toISOString()
+      : data.date
+        ? new Date(data.date).toISOString()
+        : null
+
+    return {
+      slug,
+      updated: dateIso,
+    }
+  })
+  .filter((item) => Boolean(item))
+
+console.log(`Found ${reviewPages.length} movie review pages.`)
+
 const sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -123,6 +149,16 @@ ${posts
     <lastmod>${(post.updated || post.date).split('T')[0]}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
+  </url>`
+  )
+  .join('\n')}
+${reviewPages
+  .map(
+    (review) => `  <url>
+    <loc>${DOMAIN}/movies/reviews/${encodeURIComponent(review.slug)}</loc>
+    ${review.updated ? `<lastmod>${review.updated.split('T')[0]}</lastmod>` : ''}
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>`
   )
   .join('\n')}

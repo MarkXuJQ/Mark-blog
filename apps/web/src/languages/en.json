@@ -172,6 +172,15 @@
     "watchDate": "Watch date",
     "actions": {
       "openDouban": "Douban"
+    },
+    "reviews": {
+      "pageTitle": "Movie Reviews",
+      "backToMovies": "Back to Movies",
+      "notFoundTitle": "Review not found",
+      "hasReviewBadge": "Review",
+      "readReview": "Read Review",
+      "onlyWithReviewsOn": "With Reviews",
+      "onlyWithReviewsOff": "All Movies"
     }
   },
   "games": {

@@ -172,6 +172,15 @@
     "watchDate": "观看日期",
     "actions": {
       "openDouban": "豆瓣条目"
+    },
+    "reviews": {
+      "pageTitle": "\u5f71\u89c6\u5f71\u8bc4",
+      "backToMovies": "\u8fd4\u56de\u5f71\u89c6\u9875",
+      "notFoundTitle": "\u672a\u627e\u5230\u5f71\u8bc4",
+      "hasReviewBadge": "\u6709\u5f71\u8bc4",
+      "readReview": "\u67e5\u770b\u5f71\u8bc4",
+      "onlyWithReviewsOn": "\u4ec5\u770b\u6709\u5f71\u8bc4",
+      "onlyWithReviewsOff": "\u5168\u90e8\u5f71\u7247"
     }
   },
   "games": {

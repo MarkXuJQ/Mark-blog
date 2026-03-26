@@ -14,6 +14,7 @@ const PORT = 4173
 const BASE_URL = `http://localhost:${PORT}`
 const DIST_DIR = path.resolve(__dirname, '../dist')
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
+const MOVIE_REVIEWS_DIR = path.resolve(__dirname, '../../../content/movies/reviews')
 
 function collectMarkdownFiles(dirPath) {
   if (!fs.existsSync(dirPath)) return []
@@ -62,6 +63,16 @@ function getRoutes() {
     files.forEach((filePath) => {
       const slug = path.basename(filePath, '.md')
       routes.push(`/blog/${slug}`)
+    })
+  }
+
+  // Add movie review routes
+  if (fs.existsSync(MOVIE_REVIEWS_DIR)) {
+    const files = collectMarkdownFiles(MOVIE_REVIEWS_DIR)
+    files.forEach((filePath) => {
+      const slug = path.basename(filePath, '.md')
+      if (slug.toLowerCase() === 'readme' || slug.startsWith('_')) return
+      routes.push(`/movies/reviews/${slug}`)
     })
   }
 
