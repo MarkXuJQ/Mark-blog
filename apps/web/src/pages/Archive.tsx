@@ -7,8 +7,9 @@ import { Seo } from '../components/seo/Seo'
 import type { BlogPost } from '../types'
 
 export function Archive() {
-  const { t } = useTranslation()
-  const posts = getAllPosts()
+  const { t, i18n } = useTranslation()
+  const posts = getAllPosts(i18n.language)
+  const dateLocale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
 
   // Group posts by year
   const postsByYear = posts.reduce(
@@ -59,7 +60,7 @@ export function Archive() {
                     <div className={styles.postMeta}>
                       <Calendar size={14} />
                       <time dateTime={post.date}>
-                        {new Date(post.date).toLocaleDateString('zh-CN', {
+                        {new Date(post.date).toLocaleDateString(dateLocale, {
                           month: 'short',
                           day: 'numeric',
                         })}

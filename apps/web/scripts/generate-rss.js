@@ -29,12 +29,30 @@ if (!fs.existsSync(POSTS_DIR)) {
   process.exit(1)
 }
 
-const files = fs.readdirSync(POSTS_DIR).filter((file) => file.endsWith('.md'))
+function collectMarkdownFiles(dirPath) {
+  const entries = fs.readdirSync(dirPath, { withFileTypes: true })
+  const files = []
 
-const posts = files.map((file) => {
-  const content = fs.readFileSync(path.join(POSTS_DIR, file), 'utf-8')
+  for (const entry of entries) {
+    const fullPath = path.join(dirPath, entry.name)
+    if (entry.isDirectory()) {
+      files.push(...collectMarkdownFiles(fullPath))
+      continue
+    }
+    if (entry.isFile() && entry.name.endsWith('.md')) {
+      files.push(fullPath)
+    }
+  }
+
+  return files
+}
+
+const files = collectMarkdownFiles(POSTS_DIR)
+
+const allPosts = files.map((filePath) => {
+  const content = fs.readFileSync(filePath, 'utf-8')
   const { data, content: markdownContent } = matter(content)
-  const slug = file.replace(/\.md$/, '')
+  const slug = path.basename(filePath, '.md')
 
   let coverImage = data.image ? `${DOMAIN}${data.image}` : undefined
   if (!coverImage) {
@@ -71,6 +89,22 @@ const posts = files.map((file) => {
   }
 })
 
+const postsBySlug = new Map()
+allPosts.forEach((post) => {
+  const existing = postsBySlug.get(post.slug)
+  if (!existing) {
+    postsBySlug.set(post.slug, post)
+    return
+  }
+
+  const currentTimestamp = (post.updated || post.date).getTime()
+  const existingTimestamp = (existing.updated || existing.date).getTime()
+  if (currentTimestamp > existingTimestamp) {
+    postsBySlug.set(post.slug, post)
+  }
+})
+
+const posts = Array.from(postsBySlug.values())
 posts.sort((a, b) => b.date.getTime() - a.date.getTime())
 
 console.log(`Found ${posts.length} posts.`)

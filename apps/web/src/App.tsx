@@ -43,6 +43,11 @@ const Life = lazy(() =>
 const Movies = lazy(() =>
   import('./pages/Movies').then((module) => ({ default: module.Movies }))
 )
+const MovieReviewPost = lazy(() =>
+  import('./pages/MovieReviewPost').then((module) => ({
+    default: module.MovieReviewPost,
+  }))
+)
 const Games = lazy(() =>
   import('./pages/Games').then((module) => ({ default: module.Games }))
 )
@@ -162,6 +167,14 @@ function App() {
               element={
                 <LazyRoute>
                   <Movies />
+                </LazyRoute>
+              }
+            />
+            <Route
+              path="movies/reviews/:slug"
+              element={
+                <LazyRoute>
+                  <MovieReviewPost />
                 </LazyRoute>
               }
             />

@@ -14,6 +14,27 @@ const PORT = 4173
 const BASE_URL = `http://localhost:${PORT}`
 const DIST_DIR = path.resolve(__dirname, '../dist')
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
+const MOVIE_REVIEWS_DIR = path.resolve(__dirname, '../../../content/movies/reviews')
+
+function collectMarkdownFiles(dirPath) {
+  if (!fs.existsSync(dirPath)) return []
+
+  const entries = fs.readdirSync(dirPath, { withFileTypes: true })
+  const files = []
+
+  for (const entry of entries) {
+    const fullPath = path.join(dirPath, entry.name)
+    if (entry.isDirectory()) {
+      files.push(...collectMarkdownFiles(fullPath))
+      continue
+    }
+    if (entry.isFile() && entry.name.endsWith('.md')) {
+      files.push(fullPath)
+    }
+  }
+
+  return files
+}
 
 // Utility to verify dist exists
 if (!fs.existsSync(DIST_DIR)) {
@@ -38,16 +59,24 @@ function getRoutes() {
 
   // Add blog post routes
   if (fs.existsSync(POSTS_DIR)) {
-    const files = fs
-      .readdirSync(POSTS_DIR)
-      .filter((file) => file.endsWith('.md'))
-    files.forEach((file) => {
-      const slug = file.replace(/\.md$/, '')
+    const files = collectMarkdownFiles(POSTS_DIR)
+    files.forEach((filePath) => {
+      const slug = path.basename(filePath, '.md')
       routes.push(`/blog/${slug}`)
     })
   }
 
-  return routes
+  // Add movie review routes
+  if (fs.existsSync(MOVIE_REVIEWS_DIR)) {
+    const files = collectMarkdownFiles(MOVIE_REVIEWS_DIR)
+    files.forEach((filePath) => {
+      const slug = path.basename(filePath, '.md')
+      if (slug.toLowerCase() === 'readme' || slug.startsWith('_')) return
+      routes.push(`/movies/reviews/${slug}`)
+    })
+  }
+
+  return Array.from(new Set(routes))
 }
 
 async function prerender() {

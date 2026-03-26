@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getAllPosts } from '../utils/posts'
 import { useSearch } from './useSearch'
 import type { BlogPost } from '../types'
@@ -6,7 +7,8 @@ import type { BlogPost } from '../types'
 export type SortBy = 'date' | 'updated'
 
 export function useBlogPosts() {
-  const allPosts = useMemo(() => getAllPosts(), [])
+  const { i18n } = useTranslation()
+  const allPosts = useMemo(() => getAllPosts(i18n.language), [i18n.language])
 
   // State
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)

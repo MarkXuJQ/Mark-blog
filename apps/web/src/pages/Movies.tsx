@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import {
   Clapperboard,
   ExternalLink,
@@ -17,6 +18,7 @@ import { Pagination } from '../components/ui/Pagination'
 import { SegmentedToggle } from '../components/ui/SegmentedToggle'
 import movieCsvRaw from '@content/movies/movie.csv?raw'
 import movieOverridesRaw from '@content/movies/movie-overrides.json'
+import { getMovieReviewBySlug, getMovieReviewBySubjectId } from '../utils/movieReviews'
 
 type ViewMode = 'csv' | 'tmdb'
 type CardLayout = 'list' | 'grid'
@@ -27,6 +29,7 @@ interface MovieOverride {
   note?: string
   tmdbId?: number | string
   tmdbQuery?: string
+  reviewSlug?: string
 }
 
 interface CsvMovieItem {
@@ -41,6 +44,8 @@ interface CsvMovieItem {
   note: string
   tmdbId: number | null
   tmdbQuery: string
+  reviewSlug: string
+  reviewSummary: string
 }
 
 interface TmdbSearchMovie {
@@ -293,6 +298,10 @@ function buildCsvMovies(
     const rating = toValidRating(rawRating)
     const platform = (override.platform || DEFAULT_PLATFORM).trim()
     const note = (override.note || '').trim()
+    const linkedReview = subjectId ? getMovieReviewBySubjectId(subjectId) : undefined
+    const reviewSlug = (override.reviewSlug || linkedReview?.slug || '').trim()
+    const reviewBySlug = reviewSlug ? getMovieReviewBySlug(reviewSlug) : undefined
+    const reviewSummary = (reviewBySlug?.summary || linkedReview?.summary || '').trim()
     const rowId = subjectId ? `${subjectId}-${index}` : `row-${index}`
 
     movies.push({
@@ -307,6 +316,8 @@ function buildCsvMovies(
       note,
       tmdbId: parseTmdbId(override.tmdbId),
       tmdbQuery: (override.tmdbQuery || '').trim(),
+      reviewSlug,
+      reviewSummary,
     })
   }
 
@@ -377,9 +388,11 @@ async function fetchTmdbEnrichment(options: {
 
 export function Movies() {
   const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
   const [keyword, setKeyword] = useState('')
   const [viewMode, setViewMode] = useState<ViewMode>('csv')
   const [cardLayout, setCardLayout] = useState<CardLayout>('list')
+  const [onlyWithReviews, setOnlyWithReviews] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [tmdbMap, setTmdbMap] = useState<Record<string, TmdbEnrichedMovie | null>>({})
   const [tmdbStatus, setTmdbStatus] = useState<TmdbStatus>('idle')
@@ -405,6 +418,8 @@ export function Movies() {
     const normalizedKeyword = keyword.trim().toLowerCase()
 
     return movieItems.filter((movie) => {
+      if (onlyWithReviews && !movie.reviewSlug) return false
+
       if (!normalizedKeyword) return true
 
       const haystack = [
@@ -412,6 +427,7 @@ export function Movies() {
         movie.originalTitle,
         movie.platform,
         movie.note,
+        movie.reviewSummary,
         movie.link,
       ]
         .filter(Boolean)
@@ -420,13 +436,13 @@ export function Movies() {
 
       return haystack.includes(normalizedKeyword)
     })
-  }, [movieItems, keyword])
+  }, [movieItems, keyword, onlyWithReviews])
 
   const totalPages = Math.max(1, Math.ceil(filteredMovies.length / ITEMS_PER_PAGE))
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [keyword, viewMode, cardLayout])
+  }, [keyword, viewMode, cardLayout, onlyWithReviews])
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -624,6 +640,21 @@ export function Movies() {
                     },
                   ]}
                 />
+
+                <button
+                  type="button"
+                  onClick={() => setOnlyWithReviews((prev) => !prev)}
+                  className={cn(
+                    'shrink-0 rounded-full border px-3 py-2 text-xs font-medium transition',
+                    onlyWithReviews
+                      ? 'border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-500/50 dark:bg-emerald-900/30 dark:text-emerald-300'
+                      : 'border-slate-200 bg-white/85 text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-600'
+                  )}
+                >
+                  {onlyWithReviews
+                    ? t('movies.reviews.onlyWithReviewsOn')
+                    : t('movies.reviews.onlyWithReviewsOff')}
+                </button>
               </div>
 
               {viewMode === 'tmdb' ? (
@@ -679,12 +710,39 @@ export function Movies() {
                     const tmdbLink = tmdb?.tmdbId
                       ? `https://www.themoviedb.org/movie/${tmdb.tmdbId}`
                       : ''
+                    const reviewPath = movie.reviewSlug
+                      ? `/movies/reviews/${encodeURIComponent(movie.reviewSlug)}`
+                      : ''
+
+                    const canOpenReview = Boolean(reviewPath)
+                    const hasReview = Boolean(movie.reviewSlug)
 
                     return (
                       <article
                         key={movie.id}
+                        role={canOpenReview ? 'link' : undefined}
+                        tabIndex={canOpenReview ? 0 : undefined}
+                        onClick={
+                          canOpenReview ? () => navigate(reviewPath) : undefined
+                        }
+                        onKeyDown={
+                          canOpenReview
+                            ? (event) => {
+                                if (event.key === 'Enter' || event.key === ' ') {
+                                  event.preventDefault()
+                                  navigate(reviewPath)
+                                }
+                              }
+                            : undefined
+                        }
                         className={cn(
-                          'group rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur transition-transform duration-300 hover:-translate-y-1 hover:shadow-md dark:border-slate-800 dark:bg-slate-900/80',
+                          'group rounded-2xl border p-4 shadow-sm backdrop-blur transition-transform duration-300 hover:-translate-y-1 hover:shadow-md',
+                          hasReview
+                            ? 'border-emerald-300/90 bg-emerald-100/70 shadow-emerald-200/50 dark:border-emerald-400/60 dark:bg-emerald-900/28 dark:shadow-emerald-900/40'
+                            : 'border-slate-200/70 bg-white/80 dark:border-slate-800 dark:bg-slate-900/80',
+                          canOpenReview
+                            ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-300 dark:focus:ring-emerald-700'
+                            : '',
                           cardLayout === 'grid'
                             ? 'flex h-full flex-col'
                             : viewMode === 'tmdb'
@@ -769,6 +827,7 @@ export function Movies() {
                                   href={tmdbLink}
                                   target="_blank"
                                   rel="noopener noreferrer"
+                                  onClick={(event) => event.stopPropagation()}
                                   className={cn(
                                     'inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700/80 dark:bg-slate-900/55 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300',
                                     cardLayout === 'grid' ? 'px-2 py-1' : ''
@@ -783,6 +842,7 @@ export function Movies() {
                                   href={movie.link}
                                   target="_blank"
                                   rel="noopener noreferrer"
+                                  onClick={(event) => event.stopPropagation()}
                                   className={cn(
                                     'inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700/80 dark:bg-slate-900/55 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300',
                                     cardLayout === 'grid' ? 'px-2 py-1' : ''
@@ -830,6 +890,12 @@ export function Movies() {
                               {t('movies.watchDate')}: {watchedAt || '--'}
                             </span>
                           </div>
+
+                          {movie.reviewSummary && cardLayout !== 'grid' ? (
+                            <p className="mt-2 rounded-xl border border-emerald-200/80 bg-emerald-50/60 px-3 py-2 text-sm text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-900/20 dark:text-emerald-200">
+                              {movie.reviewSummary}
+                            </p>
+                          ) : null}
 
                           {movie.note && cardLayout !== 'grid' ? (
                             <p className="mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">

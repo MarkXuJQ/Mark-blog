@@ -1,5 +1,27 @@
 [
   {
+    "date": "2026-03-22",
+    "title": "Games Page Polish Completed",
+    "description": "Completed UI and interaction refinements for the Steam games page, including search, sorting, stats, and bilingual localization polish.",
+    "categories": [
+      {
+        "title": "Data & Presentation",
+        "items": [
+          {
+            "id": "games-20260322-1",
+            "content": "Integrated and stabilized Steam dashboard rendering for playtime, achievements, and review summary",
+            "date": "2026-03-22"
+          },
+          {
+            "id": "games-20260322-2",
+            "content": "Refined game card information hierarchy to prioritize title, playtime, and key indicators",
+            "date": "2026-03-22"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-03-18",
     "title": "Movie Page Completed and Visual Style Unified",
     "description": "From March 13 to March 18, the movie page was completed step by step across features, interaction structure, and site-wide visual alignment.",
@@ -188,30 +210,66 @@
       {
         "title": "Features",
         "items": [
-          { "id": "p3", "content": "Improved About Page (Intro & History)", "date": "2026-03-01" },
-          { "id": "f3", "content": "Integrated Lightbox for Images", "date": "2026-03-01" },
-          { "id": "s1", "content": "Enhanced SEO (Meta Tags, Sitemap, Prerender)", "date": "2026-03-01" }
+          {
+            "id": "p3",
+            "content": "Improved About Page (Intro & History)",
+            "date": "2026-03-01"
+          },
+          {
+            "id": "f3",
+            "content": "Integrated Lightbox for Images",
+            "date": "2026-03-01"
+          },
+          {
+            "id": "s1",
+            "content": "Enhanced SEO (Meta Tags, Sitemap, Prerender)",
+            "date": "2026-03-01"
+          }
         ]
       },
       {
         "title": "Mobile Experience",
         "items": [
-          { "id": "m1", "content": "Auto-hide NavBar & Hamburger Menu Refactor", "date": "2026-03-01" },
-          { "id": "m2", "content": "Optimized Mobile Padding & Layout", "date": "2026-03-01" }
+          {
+            "id": "m1",
+            "content": "Auto-hide NavBar & Hamburger Menu Refactor",
+            "date": "2026-03-01"
+          },
+          {
+            "id": "m2",
+            "content": "Optimized Mobile Padding & Layout",
+            "date": "2026-03-01"
+          }
         ]
       },
       {
         "title": "Blog System",
         "items": [
-          { "id": "b4", "content": "Introduced Category Filtering System", "date": "2026-03-01" },
-          { "id": "b5", "content": "Added Tags Display in Archive Page", "date": "2026-03-01" }
+          {
+            "id": "b4",
+            "content": "Introduced Category Filtering System",
+            "date": "2026-03-01"
+          },
+          {
+            "id": "b5",
+            "content": "Added Tags Display in Archive Page",
+            "date": "2026-03-01"
+          }
         ]
       },
       {
         "title": "Refactoring",
         "items": [
-          { "id": "r1", "content": "Introduced Headless UI Components (Dropdown)", "date": "2026-03-01" },
-          { "id": "r2", "content": "Extracted & Organized Component Styles", "date": "2026-03-01" }
+          {
+            "id": "r1",
+            "content": "Introduced Headless UI Components (Dropdown)",
+            "date": "2026-03-01"
+          },
+          {
+            "id": "r2",
+            "content": "Extracted & Organized Component Styles",
+            "date": "2026-03-01"
+          }
         ]
       }
     ]
@@ -224,15 +282,31 @@
       {
         "title": "Service Integration",
         "items": [
-          { "id": "si1", "content": "Integrated img.markxu.icu Image Hosting", "date": "2026-02-28" },
-          { "id": "si2", "content": "Upgraded Twikoo to 1.7.0 (Image Upload Support)", "date": "2026-02-28" }
+          {
+            "id": "si1",
+            "content": "Integrated img.markxu.icu Image Hosting",
+            "date": "2026-02-28"
+          },
+          {
+            "id": "si2",
+            "content": "Upgraded Twikoo to 1.7.0 (Image Upload Support)",
+            "date": "2026-02-28"
+          }
         ]
       },
       {
         "title": "Architecture",
         "items": [
-          { "id": "ao1", "content": "Standalone Vercel Backend Deployment", "date": "2026-02-28" },
-          { "id": "ao2", "content": "Optimized Markdown Image Loading & Layout", "date": "2026-02-28" }
+          {
+            "id": "ao1",
+            "content": "Standalone Vercel Backend Deployment",
+            "date": "2026-02-28"
+          },
+          {
+            "id": "ao2",
+            "content": "Optimized Markdown Image Loading & Layout",
+            "date": "2026-02-28"
+          }
         ]
       }
     ]
@@ -245,23 +319,51 @@
       {
         "title": "Core Features",
         "items": [
-          { "id": "f1", "content": "English/Chinese i18n Support", "date": "2026-02-05" },
-          { "id": "f2", "content": "Dark/Light Mode Toggle", "date": "2026-02-04" }
+          {
+            "id": "f1",
+            "content": "English/Chinese i18n Support",
+            "date": "2026-02-05"
+          },
+          {
+            "id": "f2",
+            "content": "Dark/Light Mode Toggle",
+            "date": "2026-02-04"
+          }
         ]
       },
       {
         "title": "Pages",
         "items": [
-          { "id": "p1", "content": "Blog Page Construction (List & Detail)", "date": "2026-02-27" },
-          { "id": "p2", "content": "Home Page Construction", "date": "2026-02-24" }
+          {
+            "id": "p1",
+            "content": "Blog Page Construction (List & Detail)",
+            "date": "2026-02-27"
+          },
+          {
+            "id": "p2",
+            "content": "Home Page Construction",
+            "date": "2026-02-24"
+          }
         ]
       },
       {
         "title": "Blog Features",
         "items": [
-          { "id": "b1", "content": "Article Search", "date": "2026-02-27" },
-          { "id": "b2", "content": "Reading Time & Other Utilities", "date": "2026-02-27" },
-          { "id": "b3", "content": "Table of Contents (TOC)", "date": "2026-02-25" }
+          {
+            "id": "b1",
+            "content": "Article Search",
+            "date": "2026-02-27"
+          },
+          {
+            "id": "b2",
+            "content": "Reading Time & Other Utilities",
+            "date": "2026-02-27"
+          },
+          {
+            "id": "b3",
+            "content": "Table of Contents (TOC)",
+            "date": "2026-02-25"
+          }
         ]
       }
     ]
@@ -274,8 +376,16 @@
       {
         "title": "Infrastructure",
         "items": [
-          { "id": "i1", "content": "Repository Initialization", "date": "2026-01-31" },
-          { "id": "i2", "content": "Tech Stack: React + Vite + Tailwind CSS", "date": "2026-01-31" }
+          {
+            "id": "i1",
+            "content": "Repository Initialization",
+            "date": "2026-01-31"
+          },
+          {
+            "id": "i2",
+            "content": "Tech Stack: React + Vite + Tailwind CSS",
+            "date": "2026-01-31"
+          }
         ]
       }
     ]

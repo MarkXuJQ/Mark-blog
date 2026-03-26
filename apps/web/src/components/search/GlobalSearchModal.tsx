@@ -17,7 +17,7 @@ export function GlobalSearchModal({
 }: {
   onOpenChange?: (open: boolean) => void
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -25,7 +25,7 @@ export function GlobalSearchModal({
   const inputRef = useRef<HTMLInputElement | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
 
-  const posts = useMemo(() => getAllPosts(), [])
+  const posts = useMemo(() => getAllPosts(i18n.language), [i18n.language])
   const docs = useMemo(() => buildBlogSearchDocs(posts), [posts])
 
   const hits = useMemo(() => searchBlogDocs(docs, query, 24, 3), [docs, query])

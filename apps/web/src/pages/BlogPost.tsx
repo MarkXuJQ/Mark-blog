@@ -25,11 +25,11 @@ import {
 
 export function BlogPost() {
   const { slug } = useParams()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [searchParams] = useSearchParams()
-  const post = slug ? getPostBySlug(slug) : undefined
+  const post = slug ? getPostBySlug(slug, i18n.language) : undefined
   const adjacentPosts = slug
-    ? getAdjacentPosts(slug)
+    ? getAdjacentPosts(slug, i18n.language)
     : { prev: undefined, next: undefined }
 
   // We use a callback ref to handle the DOM node changes robustly
@@ -91,12 +91,13 @@ export function BlogPost() {
   const postImageUrl = toAbsoluteUrl(imageSource, siteUrl)
   const publishedAt = toIsoDateTime(post.date)
   const modifiedAt = toIsoDateTime(post.updated || post.date)
+  const schemaLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const blogPostingSchema: JsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.summary,
-    inLanguage: post.title.match(/[\u4e00-\u9fff]/) ? 'zh-CN' : 'en-US',
+    inLanguage: schemaLanguage,
     url: postUrl,
     mainEntityOfPage: {
       '@type': 'WebPage',
