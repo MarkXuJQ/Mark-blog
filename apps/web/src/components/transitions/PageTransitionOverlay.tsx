@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import pixelFontUrl from '../../assets/pixel/Uranus_Pixel_11Px.ttf'
+import pixelFontUrl from '../../assets/fonts/UranusPixel-Subset.woff2'
+import {
+  clearPendingPageTransition,
+  subscribePageTransition,
+} from './pageTransitionBus'
 
 const SWEEP_DURATION = 0.82
 const EASTER_LINES = [
@@ -35,10 +39,6 @@ const EASTER_LINES = [
   },
 ] as const
 
-export function requestPageTransition(to: string) {
-  window.dispatchEvent(new CustomEvent('app:page-transition', { detail: { to } }))
-}
-
 export function PageTransitionOverlay({
   onActiveChange,
 }: {
@@ -49,7 +49,8 @@ export function PageTransitionOverlay({
   const [pageTransition, setPageTransition] = useState<{
     phase: 'idle' | 'cover' | 'hold' | 'reveal'
     to: string | null
-  }>({ phase: 'idle', to: null })
+    requestId: number | null
+  }>({ phase: 'idle', to: null, requestId: null })
   const hasNavigatedRef = useRef(false)
   const holdStartedAtRef = useRef(0)
 
@@ -58,26 +59,19 @@ export function PageTransitionOverlay({
   }, [onActiveChange, pageTransition.phase])
 
   useEffect(() => {
-    const onPageTransition = (event: Event) => {
-      const e = event as CustomEvent<{ to?: string }>
-      const to = e.detail?.to
-      if (!to) return
-      setPageTransition((prev) => {
-        if (prev.phase !== 'idle') return prev
-        hasNavigatedRef.current = false
-        return { phase: 'cover', to }
-      })
-    }
+    return subscribePageTransition(
+      (request) => {
+        if (!request.to) return
 
-    window.addEventListener(
-      'app:page-transition',
-      onPageTransition as EventListener
+        setPageTransition((prev) => {
+          clearPendingPageTransition(request.id)
+          if (prev.phase !== 'idle') return prev
+          hasNavigatedRef.current = false
+          return { phase: 'cover', to: request.to, requestId: request.id }
+        })
+      },
+      { replayPending: true }
     )
-    return () =>
-      window.removeEventListener(
-        'app:page-transition',
-        onPageTransition as EventListener
-      )
   }, [])
 
   const isActive = pageTransition.phase !== 'idle'
@@ -119,7 +113,7 @@ export function PageTransitionOverlay({
           <style>{`
             @font-face {
               font-family: 'Uranus Pixel';
-              src: url('${pixelFontUrl}') format('truetype');
+              src: url('${pixelFontUrl}') format('woff2');
               font-display: swap;
             }
             @keyframes easter-scroll-forward {
@@ -161,7 +155,7 @@ export function PageTransitionOverlay({
               }
 
               if (pageTransition.phase === 'reveal') {
-                setPageTransition({ phase: 'idle', to: null })
+                setPageTransition({ phase: 'idle', to: null, requestId: null })
                 hasNavigatedRef.current = false
                 holdStartedAtRef.current = 0
               }
@@ -186,7 +180,7 @@ export function PageTransitionOverlay({
                   className="whitespace-nowrap text-[clamp(30px,4.2vw,56px)] font-black uppercase leading-none tracking-[0.26em] text-black/82 drop-shadow-[0_1px_0_rgba(255,255,255,0.2)]"
                   style={{
                     fontFamily:
-                      "'Uranus Pixel', 'MiSans', Inter, system-ui, sans-serif",
+                      "'Uranus Pixel', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif",
                     animationName:
                       line.direction > 0
                         ? 'easter-scroll-forward'

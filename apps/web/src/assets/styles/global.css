@@ -40,7 +40,17 @@
 }
 
 :root {
-  font-family: "MiSans", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Microsoft YaHei UI",
+    "Microsoft YaHei",
+    sans-serif;
   line-height: 1.5;
   font-weight: 400;
   --brand-500: #2e7ea3;
@@ -53,7 +63,7 @@
   --border-color: rgba(15, 23, 42, 0.08);
   --radius-md: 0.75rem;
   --shadow-card: 0 1px 2px rgba(2, 6, 23, 0.05), 0 8px 24px rgba(2, 6, 23, 0.06);
-  --font-heading: "Noto Serif SC", "MiSans", serif;
+  --font-heading: "Noto Serif SC", "Songti SC", "STSong", serif;
   --letter-spacing-heading: 0.06em;
 }
 
@@ -133,51 +143,8 @@ h1, h2, h3 {
 
 @font-face {
   font-family: "Noto Serif SC";
-  src: url("../Noto_Serif_SC/NotoSerifSC-VariableFont_wght.ttf") format("truetype");
+  src: url("../fonts/NotoSerifSC-Subset.woff2") format("woff2");
   font-weight: 200 900;
   font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "MiSans";
-  src: url("../MiSans/MiSans/woff2/MiSans-ExtraLight.woff2") format("woff2");
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "MiSans";
-  src: url("../MiSans/MiSans/woff2/MiSans-Light.woff2") format("woff2");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "MiSans";
-  src: url("../MiSans/MiSans/woff2/MiSans-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "MiSans";
-  src: url("../MiSans/MiSans/woff2/MiSans-Medium.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "MiSans";
-  src: url("../MiSans/MiSans/woff2/MiSans-Semibold.woff2") format("woff2");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "MiSans";
-  src: url("../MiSans/MiSans/woff2/MiSans-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+  font-display: fallback;
 }

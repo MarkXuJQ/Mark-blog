@@ -77,24 +77,23 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': [
-            'react',
-            'react-dom',
-            'react-router-dom',
-            'react-helmet-async',
-          ],
-          'vendor-i18n': [
-            'i18next',
-            'react-i18next',
-            'i18next-browser-languagedetector',
-          ],
-          'vendor-motion': ['framer-motion'],
-          'vendor-lightbox': [
-            'yet-another-react-lightbox',
-            'yet-another-react-lightbox/plugins/zoom',
-            'yet-another-react-lightbox/plugins/captions',
-          ],
+        manualChunks(id) {
+          if (id.includes('/node_modules/react/')) return 'vendor-react'
+          if (id.includes('/node_modules/react-dom/')) return 'vendor-react'
+          if (id.includes('/node_modules/react-router-dom/')) return 'vendor-react'
+          if (id.includes('/node_modules/react-helmet-async/')) return 'vendor-react'
+
+          if (id.includes('/node_modules/i18next/')) return 'vendor-i18n'
+          if (id.includes('/node_modules/react-i18next/')) return 'vendor-i18n'
+          if (id.includes('/node_modules/i18next-browser-languagedetector/')) {
+            return 'vendor-i18n'
+          }
+
+          if (id.includes('/node_modules/framer-motion/')) return 'vendor-motion'
+
+          if (id.includes('/node_modules/yet-another-react-lightbox/')) {
+            return 'vendor-lightbox'
+          }
         },
       },
     },
