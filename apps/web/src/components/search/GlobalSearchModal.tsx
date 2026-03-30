@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getAllPosts } from '../../utils/posts'
 import { SearchInput } from './SearchInput'
+import { closeGlobalSearch, subscribeGlobalSearch } from './globalSearchBus'
 import {
   buildBlogSearchDocs,
   searchBlogDocs,
@@ -30,12 +31,16 @@ export function GlobalSearchModal({
 
   const hits = useMemo(() => searchBlogDocs(docs, query, 24, 3), [docs, query])
 
+  const handleClose = useCallback(() => {
+    closeGlobalSearch()
+  }, [])
+
   const navigateToHit = useCallback(
     (hit: BlogSearchHit) => {
       const q = normalizeQuery(query)
       const slug = encodeURIComponent(hit.post.slug)
       const target = `/blog/${slug}?q=${encodeURIComponent(q)}&i=${hit.matchIndex}`
-      setIsOpen(false)
+      closeGlobalSearch()
       navigate(target)
     },
     [navigate, query]
@@ -46,44 +51,32 @@ export function GlobalSearchModal({
   }, [isOpen, onOpenChange])
 
   useEffect(() => {
-    const onGlobalSearch = (event: Event) => {
-      const e = event as CustomEvent<{ open?: boolean; query?: string }>
-      if (e.detail?.open === false) {
-        setIsOpen(false)
-        return
-      }
-      if (e.detail?.open === true) {
+    return subscribeGlobalSearch(
+      (state) => {
+        if (!state.open) {
+          setIsOpen(false)
+          return
+        }
+
         setIsOpen(true)
-        if (typeof e.detail.query === 'string') {
-          setQuery(e.detail.query)
+        if (typeof state.query === 'string') {
+          setQuery(state.query)
           setActiveIndex(0)
         }
-      }
-    }
-
-    window.addEventListener('app:global-search', onGlobalSearch as EventListener)
-    return () =>
-      window.removeEventListener(
-        'app:global-search',
-        onGlobalSearch as EventListener
-      )
+      },
+      { replayCurrent: true }
+    )
   }, [])
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      const key = e.key.toLowerCase()
-      const isShortcut = (e.ctrlKey || e.metaKey) && key === 'k'
-      if (isShortcut) {
-        e.preventDefault()
-        setIsOpen(true)
-        return
-      }
-
       if (!isOpen) return
+
+      const key = e.key.toLowerCase()
 
       if (key === 'escape') {
         e.preventDefault()
-        setIsOpen(false)
+        handleClose()
         return
       }
 
@@ -109,7 +102,7 @@ export function GlobalSearchModal({
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [activeIndex, hits, isOpen, navigateToHit])
+  }, [activeIndex, handleClose, hits, isOpen, navigateToHit])
 
   useEffect(() => {
     if (!isOpen) return
@@ -143,7 +136,7 @@ export function GlobalSearchModal({
             type="button"
             className="absolute inset-0 bg-black/35 backdrop-blur-sm"
             aria-label="Close search"
-            onClick={() => setIsOpen(false)}
+            onClick={handleClose}
           />
 
           <motion.div

@@ -3,7 +3,7 @@ import { useRef } from 'react'
 import { cn } from '../utils/cn'
 import { getImageUrl } from '../utils/image'
 import { Seo } from '../components/seo/Seo'
-import { requestPageTransition } from '../components/transitions/PageTransitionOverlay'
+import { requestPageTransition } from '../components/transitions/pageTransitionBus'
 import {
   DEFAULT_DESCRIPTION,
   getSiteUrl,

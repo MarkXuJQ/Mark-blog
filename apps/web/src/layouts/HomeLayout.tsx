@@ -9,6 +9,8 @@ interface ResponsiveBackgroundSources {
   fallback: string
 }
 
+type ThemeVariant = 'day' | 'night'
+
 const DAY_SOURCES: ResponsiveBackgroundSources = {
   avif: [
     `${getImageUrl('/images/day-640.avif')} 640w`,
@@ -48,8 +50,57 @@ function getInitialIsDarkMode() {
   return document.documentElement.classList.contains('dark')
 }
 
+function getThemeVariant(isDarkMode: boolean): ThemeVariant {
+  return isDarkMode ? 'night' : 'day'
+}
+
+const BACKGROUND_SOURCES: Record<ThemeVariant, ResponsiveBackgroundSources> = {
+  day: DAY_SOURCES,
+  night: NIGHT_SOURCES,
+}
+
+function HomeBackgroundLayer({
+  theme,
+  className,
+  fetchPriority = 'auto',
+}: {
+  theme: ThemeVariant
+  className?: string
+  fetchPriority?: 'auto' | 'high'
+}) {
+  const sources = BACKGROUND_SOURCES[theme]
+
+  return (
+    <div
+      className={cn(
+        'fixed inset-0 z-0 overflow-hidden transition-opacity duration-1000 ease-in-out',
+        className
+      )}
+      data-home-background={theme}
+    >
+      <picture>
+        <source type="image/avif" srcSet={sources.avif} sizes="100vw" />
+        <source type="image/webp" srcSet={sources.webp} sizes="100vw" />
+        <img
+          src={getImageUrl(sources.fallback)}
+          alt=""
+          aria-hidden="true"
+          className="h-full w-full object-cover"
+          decoding="async"
+          fetchPriority={fetchPriority}
+        />
+      </picture>
+    </div>
+  )
+}
+
 export function HomeLayout() {
   const [isDarkMode, setIsDarkMode] = useState(getInitialIsDarkMode)
+  const [activeTheme, setActiveTheme] = useState<ThemeVariant>(() =>
+    getThemeVariant(getInitialIsDarkMode())
+  )
+  const [exitingTheme, setExitingTheme] = useState<ThemeVariant | null>(null)
+  const [isExitingVisible, setIsExitingVisible] = useState(false)
 
   useEffect(() => {
     const root = document.documentElement
@@ -63,49 +114,36 @@ export function HomeLayout() {
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    const nextTheme = getThemeVariant(isDarkMode)
+    if (nextTheme === activeTheme) return
+
+    setExitingTheme(activeTheme)
+    setActiveTheme(nextTheme)
+    setIsExitingVisible(true)
+
+    const frameId = window.requestAnimationFrame(() => {
+      setIsExitingVisible(false)
+    })
+    const timeoutId = window.setTimeout(() => {
+      setExitingTheme(null)
+    }, 1000)
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      window.clearTimeout(timeoutId)
+    }
+  }, [activeTheme, isDarkMode])
+
   return (
     <>
-      {/* Home Background (Day) - Cross-fade transition */}
-      <div
-        className={cn(
-          'fixed inset-0 z-0 overflow-hidden transition-opacity duration-1000 ease-in-out',
-          isDarkMode ? 'opacity-0' : 'opacity-100'
-        )}
-      >
-        <picture>
-          <source type="image/avif" srcSet={DAY_SOURCES.avif} sizes="100vw" />
-          <source type="image/webp" srcSet={DAY_SOURCES.webp} sizes="100vw" />
-          <img
-            src={getImageUrl(DAY_SOURCES.fallback)}
-            alt=""
-            aria-hidden="true"
-            className="h-full w-full object-cover"
-            decoding="async"
-            fetchPriority={isDarkMode ? 'auto' : 'high'}
-          />
-        </picture>
-      </div>
-
-      {/* Home Background (Night) - Cross-fade transition */}
-      <div
-        className={cn(
-          'fixed inset-0 z-0 overflow-hidden transition-opacity duration-1000 ease-in-out',
-          isDarkMode ? 'opacity-100' : 'opacity-0'
-        )}
-      >
-        <picture>
-          <source type="image/avif" srcSet={NIGHT_SOURCES.avif} sizes="100vw" />
-          <source type="image/webp" srcSet={NIGHT_SOURCES.webp} sizes="100vw" />
-          <img
-            src={getImageUrl(NIGHT_SOURCES.fallback)}
-            alt=""
-            aria-hidden="true"
-            className="h-full w-full object-cover"
-            decoding="async"
-            fetchPriority={isDarkMode ? 'high' : 'auto'}
-          />
-        </picture>
-      </div>
+      <HomeBackgroundLayer theme={activeTheme} className="opacity-100" fetchPriority="high" />
+      {exitingTheme && (
+        <HomeBackgroundLayer
+          theme={exitingTheme}
+          className={isExitingVisible ? 'opacity-100' : 'opacity-0'}
+        />
+      )}
 
       <div className="fixed inset-0 z-0 bg-white/40 backdrop-blur-md transition-colors duration-500 dark:bg-black/50" />
 

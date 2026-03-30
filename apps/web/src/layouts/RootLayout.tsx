@@ -3,8 +3,8 @@ import { Outlet } from 'react-router-dom'
 import { NavBar } from '../components/layout/NavBar'
 import { Footer } from '../components/layout/Footer'
 import { ThemeToggle } from '../components/ui/ThemeToggle'
-import { PageTransitionOverlay } from '../components/transitions/PageTransitionOverlay'
-import { GlobalSearchModal } from '../components/search/GlobalSearchModal'
+import { PageTransitionHost } from '../components/transitions/PageTransitionHost'
+import { GlobalSearchHost } from '../components/search/GlobalSearchHost'
 import { useTheme } from '../hooks/useTheme'
 import { useScrollVisibility } from '../hooks/useScrollVisibility'
 
@@ -32,9 +32,9 @@ export function RootLayout() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_92%_0%,rgba(252,211,77,0.10),rgba(251,191,36,0.04)_24%,rgba(255,255,255,0)_50%)] dark:bg-gradient-to-bl dark:from-sky-500/12 dark:via-transparent dark:to-amber-500/8" />
-        <div className="absolute -right-50 -top-50 h-40 w-40 rounded-full bg-amber-300/8 blur-[110px] dark:bg-sky-500/12" />
-        <div className="absolute -left-28 -bottom-28 h-[30rem] w-[30rem] rounded-full bg-sky-200/12 blur-[138px] dark:bg-slate-500/8" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_92%_0%,rgba(252,211,77,0.10),rgba(251,191,36,0.04)_24%,rgba(255,255,255,0)_50%)] dark:bg-[radial-gradient(ellipse_at_92%_0%,rgba(56,189,248,0.12),rgba(14,165,233,0.05)_24%,rgba(2,6,23,0)_54%)]" />
+        <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(252,211,77,0.16)_0%,rgba(251,191,36,0.08)_34%,rgba(255,255,255,0)_68%)] dark:bg-[radial-gradient(circle,rgba(56,189,248,0.14)_0%,rgba(14,165,233,0.06)_36%,rgba(2,6,23,0)_72%)]" />
+        <div className="absolute -left-40 -bottom-40 h-[34rem] w-[34rem] rounded-full bg-[radial-gradient(circle,rgba(125,211,252,0.12)_0%,rgba(186,230,253,0.06)_34%,rgba(255,255,255,0)_70%)] dark:bg-[radial-gradient(circle,rgba(100,116,139,0.12)_0%,rgba(30,41,59,0.06)_38%,rgba(2,6,23,0)_74%)]" />
       </div>
       {/* Sticky NavBar Container - Floating Effect */}
       <div
@@ -65,8 +65,8 @@ export function RootLayout() {
       </main>
 
       <ThemeToggle mode={mode} onModeChange={setMode} />
-      <PageTransitionOverlay onActiveChange={setIsTransitionActive} />
-      <GlobalSearchModal onOpenChange={setIsSearchOpen} />
+      <PageTransitionHost onActiveChange={setIsTransitionActive} />
+      <GlobalSearchHost onOpenChange={setIsSearchOpen} />
     </div>
   )
 }
