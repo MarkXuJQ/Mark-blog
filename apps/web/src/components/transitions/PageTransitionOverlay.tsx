@@ -186,7 +186,7 @@ export function PageTransitionOverlay({
                   className="whitespace-nowrap text-[clamp(30px,4.2vw,56px)] font-black uppercase leading-none tracking-[0.26em] text-black/82 drop-shadow-[0_1px_0_rgba(255,255,255,0.2)]"
                   style={{
                     fontFamily:
-                      "'Uranus Pixel', 'MiSans', Inter, system-ui, sans-serif",
+                      "'Uranus Pixel', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif",
                     animationName:
                       line.direction > 0
                         ? 'easter-scroll-forward'
