@@ -152,3 +152,6 @@ vite.config.ts.timestamp-*
 
 # Project context prompts
 PROJECT_CONTEXT_PROMPT.txt
+
+# Local generated font manifests
+apps/web/.generated/

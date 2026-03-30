@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import pixelFontUrl from '../../assets/pixel/Uranus_Pixel_11Px.ttf'
+import pixelFontUrl from '../../assets/fonts/UranusPixel-Subset.woff2'
 
 const SWEEP_DURATION = 0.82
 const EASTER_LINES = [
@@ -119,7 +119,7 @@ export function PageTransitionOverlay({
           <style>{`
             @font-face {
               font-family: 'Uranus Pixel';
-              src: url('${pixelFontUrl}') format('truetype');
+              src: url('${pixelFontUrl}') format('woff2');
               font-display: swap;
             }
             @keyframes easter-scroll-forward {
