@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useParams, Link, useSearchParams } from 'react-router-dom'
+import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Clock, FileText } from 'lucide-react'
 import { Card } from '../components/ui/Card'
@@ -29,10 +29,13 @@ import {
 export function BlogPost() {
   const { slug } = useParams()
   const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const post = slug ? getPostBySlug(slug, i18n.language) : undefined
+  const post = slug
+    ? getPostBySlug(slug, i18n.language, { fallback: false })
+    : undefined
   const adjacentPosts = slug
-    ? getAdjacentPosts(slug, i18n.language)
+    ? getAdjacentPosts(slug, i18n.language, { fallback: false })
     : { prev: undefined, next: undefined }
 
   const contentHtml = post ? rewriteHtmlImageSrc(post.content) : ''
@@ -62,6 +65,12 @@ export function BlogPost() {
       target.scrollIntoView({ behavior: 'smooth', block: 'center' })
     })
   }, [contentHtml, contentRef, highlightIndexRaw, highlightQuery])
+
+  useEffect(() => {
+    if (slug && !post) {
+      navigate('/blog', { replace: true })
+    }
+  }, [navigate, post, slug])
 
   if (!post) {
     return (

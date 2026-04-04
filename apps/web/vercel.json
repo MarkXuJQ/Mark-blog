@@ -59,6 +59,32 @@
       ]
     },
     {
+      "source": "/feeds/zh/atom.xml",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, stale-while-revalidate=86400"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/xml; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/feeds/en/atom.xml",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, stale-while-revalidate=86400"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/xml; charset=utf-8"
+        }
+      ]
+    },
+    {
       "source": "/feeds/atom.xsl",
       "headers": [
         {
@@ -84,6 +110,22 @@
     {
       "source": "/feeds/",
       "destination": "/feeds/index.html"
+    },
+    {
+      "source": "/feeds/zh",
+      "destination": "/feeds/zh/index.html"
+    },
+    {
+      "source": "/feeds/zh/",
+      "destination": "/feeds/zh/index.html"
+    },
+    {
+      "source": "/feeds/en",
+      "destination": "/feeds/en/index.html"
+    },
+    {
+      "source": "/feeds/en/",
+      "destination": "/feeds/en/index.html"
     },
     {
       "source": "/(.*)",

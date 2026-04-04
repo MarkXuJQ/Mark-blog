@@ -103,18 +103,21 @@ const getAllPostsAcrossLanguages = (): BlogPost[] => {
 
 export const getPostBySlug = (
   slug: string,
-  language?: string
+  language?: string,
+  options?: { fallback?: boolean }
 ): BlogPost | undefined => {
-  return (
-    getAllPosts(language).find((post) => post.slug === slug) ||
-    getAllPostsAcrossLanguages().find((post) => post.slug === slug)
-  )
+  const fallbackEnabled = options?.fallback !== false
+  const exactMatch = getAllPosts(language).find((post) => post.slug === slug)
+  if (exactMatch || !fallbackEnabled) return exactMatch
+  return getAllPostsAcrossLanguages().find((post) => post.slug === slug)
 }
 
 export const getAdjacentPosts = (
   slug: string,
-  language?: string
+  language?: string,
+  options?: { fallback?: boolean }
 ): { prev?: BlogPost; next?: BlogPost } => {
+  const fallbackEnabled = options?.fallback !== false
   const languagePosts = getAllPosts(language)
   const index = languagePosts.findIndex((post) => post.slug === slug)
 
@@ -128,6 +131,8 @@ export const getAdjacentPosts = (
 
     return { prev, next }
   }
+
+  if (!fallbackEnabled) return {}
 
   // Fallback to global list when the slug doesn't exist in the current language.
   const allPosts = getAllPostsAcrossLanguages()
