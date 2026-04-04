@@ -6,13 +6,16 @@ import { Card } from '../components/ui/Card'
 import { getPostBySlug, getAdjacentPosts } from '../utils/posts'
 import { countWords } from '../utils/readingTime'
 import { cn } from '../utils/cn'
-import { rewriteHtmlImageSrc } from '../utils/image'
+import { getImageUrl, rewriteHtmlImageSrc } from '../utils/image'
 import { Seo } from '../components/seo/Seo'
 import { Copyright } from '../components/blog/Copyright'
 import { PostNavigation } from '../components/blog/PostNavigation'
 import { useImageLightbox } from '../hooks/useImageLightbox'
 import { DeferredComments } from '../components/comments/DeferredComments'
-import { applySearchHighlights, clearSearchHighlights } from '../components/search/domHighlight'
+import {
+  applySearchHighlights,
+  clearSearchHighlights,
+} from '../components/search/domHighlight'
 import {
   DEFAULT_IMAGE,
   buildBreadcrumbSchema,
@@ -31,10 +34,6 @@ export function BlogPost() {
   const adjacentPosts = slug
     ? getAdjacentPosts(slug, i18n.language)
     : { prev: undefined, next: undefined }
-
-  // We use a callback ref to handle the DOM node changes robustly
-  // We don't need useRef anymore for the content container
-  // But we need to make sure contentHtml is calculated before calling useImageLightbox
 
   const contentHtml = post ? rewriteHtmlImageSrc(post.content) : ''
   const contentRef = useImageLightbox([contentHtml])
@@ -81,16 +80,23 @@ export function BlogPost() {
   }
 
   const words = countWords(post.content)
+  const coverImage = post.image ? getImageUrl(post.image) : ''
+  const hasCoverImage = Boolean(coverImage)
   const siteUrl = getSiteUrl()
   const blogUrl = toAbsoluteUrl('/blog', siteUrl)
   const encodedSlug = encodeURIComponent(post.slug)
   const postPath = `/blog/${encodedSlug}`
   const postUrl = toAbsoluteUrl(postPath, siteUrl)
-  const imageSource = extractFirstImageFromHtml(post.content) || DEFAULT_IMAGE
+  const imageSource =
+    coverImage || extractFirstImageFromHtml(post.content) || DEFAULT_IMAGE
   const postImageUrl = toAbsoluteUrl(imageSource, siteUrl)
   const publishedAt = toIsoDateTime(post.date)
   const modifiedAt = toIsoDateTime(post.updated || post.date)
   const schemaLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
+  const categoryLabel = post.category
+    ? t(`blog.categories.${post.category}`, post.category)
+    : ''
+
   const blogPostingSchema: JsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -122,6 +128,7 @@ export function BlogPost() {
       },
     },
   }
+
   const breadcrumbSchema = buildBreadcrumbSchema([
     { name: t('nav.homepage'), url: siteUrl },
     { name: t('nav.blog'), url: blogUrl },
@@ -134,72 +141,171 @@ export function BlogPost() {
         title={post.title}
         description={post.summary}
         keywords={post.tags?.join(', ')}
+        image={imageSource}
         url={postPath}
         type="article"
         publishedTime={publishedAt}
         modifiedTime={modifiedAt}
         jsonLd={[blogPostingSchema, breadcrumbSchema]}
       />
-      <Card className={styles.postCard}>
-        <Link to="/blog" className={styles.backLink}>
-          ← {t('blog.back')}
-        </Link>
 
-        <article className={styles.article}>
-          <h1 className={styles.title}>{post.title}</h1>
-
-          <div className={styles.metaContainer}>
-            {post.tags && post.tags.length > 0 && (
-              <div className={styles.tagsContainer}>
-                {post.tags.map((tag) => (
-                  <span key={tag} className={styles.tag}>
-                    #{tag}
-                  </span>
-                ))}
+      <Card
+        className={cn(
+          styles.postCard,
+          hasCoverImage ? 'overflow-hidden p-0 sm:p-0' : ''
+        )}
+      >
+        {hasCoverImage ? (
+          <>
+            <section className="relative isolate min-h-[22rem] sm:min-h-[26rem]">
+              <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,black_0%,black_60%,black_76%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_60%,black_76%,transparent_100%)]">
+                <img
+                  src={coverImage}
+                  alt={post.title}
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
+                  referrerPolicy="no-referrer"
+                  className="h-full w-full object-cover object-center"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/35 via-slate-950/12 to-slate-950/55 dark:from-black/45 dark:via-slate-950/18 dark:to-black/65" />
               </div>
-            )}
-          </div>
 
-          <div className={styles.statsContainer}>
-            <div className={styles.iconText}>
-              <Calendar className="h-4 w-4" />
-              <time dateTime={post.date}>
-                {t('blog.publishedOn')} {post.date}
-              </time>
-            </div>
+              <div className="relative flex min-h-[22rem] flex-col justify-between px-5 py-5 sm:min-h-[26rem] sm:px-8 sm:py-8">
+                <Link
+                  to="/blog"
+                  className="inline-flex w-fit items-center rounded-full border border-white/18 bg-black/18 px-3 py-1.5 text-sm font-medium text-white/95 shadow-sm backdrop-blur transition-colors hover:bg-black/28"
+                >
+                  {'< '}
+                  {t('blog.back')}
+                </Link>
 
-            {post.updated && post.updated !== post.date && (
-              <div className={styles.updatedText}>
-                <Clock className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline text-[0.7rem]">
-                  {t('blog.updatedOn')}
-                </span>
-                <span className="text-[0.7rem]">: {post.updated}</span>
+                <div className="max-w-3xl">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {categoryLabel ? (
+                      <span className="rounded-full border border-white/18 bg-white/12 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
+                        {categoryLabel}
+                      </span>
+                    ) : null}
+                    {post.tags?.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full border border-white/18 bg-white/12 px-3 py-1 text-xs font-medium text-white/90 backdrop-blur"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  <h1 className="mt-4 max-w-3xl text-3xl font-black tracking-tight text-white drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)] sm:text-4xl md:text-5xl">
+                    {post.title}
+                  </h1>
+
+                  {post.summary ? (
+                    <p className="mt-4 max-w-2xl text-sm leading-7 text-white/90 drop-shadow-[0_2px_12px_rgba(15,23,42,0.4)] sm:text-base">
+                      {post.summary}
+                    </p>
+                  ) : null}
+
+                  <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/85 drop-shadow-[0_2px_12px_rgba(15,23,42,0.38)]">
+                    <div className="inline-flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      <time dateTime={post.date}>
+                        {t('blog.publishedOn')} {post.date}
+                      </time>
+                    </div>
+
+                    {post.updated && post.updated !== post.date ? (
+                      <div className="inline-flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        <span>
+                          {t('blog.updatedOn')}: {post.updated}
+                        </span>
+                      </div>
+                    ) : null}
+
+                    <div className="inline-flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      <span>{t('blog.wordCount', { count: words })}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            )}
+            </section>
 
-            <div className={styles.iconText}>
-              <FileText className="h-4 w-4" />
-              <span>{t('blog.wordCount', { count: words })}</span>
-            </div>
-          </div>
+            <article className={cn(styles.article, 'px-4 pb-4 pt-3 sm:px-6 sm:pb-6 sm:pt-4')}>
+              <div
+                ref={contentRef}
+                className="markdown-body"
+                dangerouslySetInnerHTML={{ __html: contentHtml }}
+              />
 
-          <div
-            ref={contentRef}
-            className="markdown-body"
-            dangerouslySetInnerHTML={{ __html: contentHtml }}
-          />
+              <Copyright url={postUrl} />
+              <PostNavigation prev={adjacentPosts.prev} next={adjacentPosts.next} />
+            </article>
+          </>
+        ) : (
+          <>
+            <Link to="/blog" className={styles.backLink}>
+              {'< '}
+              {t('blog.back')}
+            </Link>
 
-          <Copyright url={postUrl} />
-          <PostNavigation prev={adjacentPosts.prev} next={adjacentPosts.next} />
-        </article>
+            <article className={styles.article}>
+              <h1 className={styles.title}>{post.title}</h1>
+
+              <div className={styles.metaContainer}>
+                {post.tags && post.tags.length > 0 ? (
+                  <div className={styles.tagsContainer}>
+                    {post.tags.map((tag) => (
+                      <span key={tag} className={styles.tag}>
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+
+              <div className={styles.statsContainer}>
+                <div className={styles.iconText}>
+                  <Calendar className="h-4 w-4" />
+                  <time dateTime={post.date}>
+                    {t('blog.publishedOn')} {post.date}
+                  </time>
+                </div>
+
+                {post.updated && post.updated !== post.date ? (
+                  <div className={styles.updatedText}>
+                    <Clock className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline text-[0.7rem]">
+                      {t('blog.updatedOn')}
+                    </span>
+                    <span className="text-[0.7rem]">: {post.updated}</span>
+                  </div>
+                ) : null}
+
+                <div className={styles.iconText}>
+                  <FileText className="h-4 w-4" />
+                  <span>{t('blog.wordCount', { count: words })}</span>
+                </div>
+              </div>
+
+              <div
+                ref={contentRef}
+                className="markdown-body"
+                dangerouslySetInnerHTML={{ __html: contentHtml }}
+              />
+
+              <Copyright url={postUrl} />
+              <PostNavigation prev={adjacentPosts.prev} next={adjacentPosts.next} />
+            </article>
+          </>
+        )}
       </Card>
 
-      {/* <Card className="p-6"> */}
       <Card className="p-6">
         <DeferredComments key={slug} />
       </Card>
-      {/* </Card> */}
     </div>
   )
 }

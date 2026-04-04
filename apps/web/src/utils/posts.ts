@@ -46,6 +46,7 @@ const parsePost = (path: string, module: MarkdownPost): BlogPost | null => {
     date: attributes.date,
     updated: attributes.updated,
     summary: attributes.summary,
+    image: typeof attributes.image === 'string' ? attributes.image : undefined,
     content: html,
     tags: attributes.tags,
     category: attributes.category,
