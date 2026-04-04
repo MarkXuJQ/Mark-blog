@@ -12,7 +12,17 @@
     "links": "链接"
   },
   "timeline": {
-    "items": "项"
+    "items": "项",
+    "notes": "零碎修正",
+    "websiteTab": "网页里程碑",
+    "quickfixTab": "小修小补",
+    "lifeTab": "人生记录",
+    "websiteTitle": "网站时间线",
+    "websiteDesc": "重要里程碑与功能版本汇总。",
+    "quickfixTitle": "Quick Fix",
+    "quickfixDesc": "小修小补与界面微调，按条目独立记录。",
+    "lifeTitle": "人生记录",
+    "lifeDesc": "个人成长与片段记录。"
   },
   "search": {
     "title": "搜索",
@@ -97,7 +107,9 @@
   "underConstruction": {
     "title": "施工进行中",
     "description": "该板块正在建设中，请稍后再来！",
-    "backHome": "返回主页"
+    "backHome": "返回主页",
+    "lifeProgressTitle": "人生进度条",
+    "lifeProgressDesc": "个人进度追踪模块正在准备中。"
   },
   "notFound": {
     "title": "页面未找到",
@@ -174,13 +186,13 @@
       "openDouban": "豆瓣条目"
     },
     "reviews": {
-      "pageTitle": "\u5f71\u89c6\u5f71\u8bc4",
-      "backToMovies": "\u8fd4\u56de\u5f71\u89c6\u9875",
-      "notFoundTitle": "\u672a\u627e\u5230\u5f71\u8bc4",
-      "hasReviewBadge": "\u6709\u5f71\u8bc4",
-      "readReview": "\u67e5\u770b\u5f71\u8bc4",
-      "onlyWithReviewsOn": "\u4ec5\u770b\u6709\u5f71\u8bc4",
-      "onlyWithReviewsOff": "\u5168\u90e8\u5f71\u7247"
+      "pageTitle": "影视影评",
+      "backToMovies": "返回影视页",
+      "notFoundTitle": "未找到影评",
+      "hasReviewBadge": "有影评",
+      "readReview": "查看影评",
+      "onlyWithReviewsOn": "仅看有影评",
+      "onlyWithReviewsOff": "全部影片"
     }
   },
   "games": {

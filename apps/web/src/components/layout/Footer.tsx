@@ -4,8 +4,9 @@ import { RiBilibiliLine, RiTwitterXFill, RiInstagramLine } from "react-icons/ri"
 import { RiRssLine } from 'react-icons/ri'
 
 export function Footer() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const year = new Date().getFullYear()
+  const feedPath = i18n.language?.startsWith('zh') ? '/feeds/zh/' : '/feeds/en/'
 
   return (
     <footer className="mt-20 border-t border-slate-200 py-8 text-center text-sm text-slate-500 transition-colors dark:border-slate-800 dark:text-slate-400">
@@ -48,7 +49,7 @@ export function Footer() {
             <RiInstagramLine size={20} />
           </a>
           <a
-            href="/feeds/"
+            href={feedPath}
             target="_blank"
             rel="noopener noreferrer"
             className="transition-colors hover:text-slate-900 dark:hover:text-slate-200"

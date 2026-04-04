@@ -1,5 +1,27 @@
 [
   {
+    "date": "2026-03-24",
+    "title": "Website v1.0 Completed",
+    "description": "Shipped website v1.0 and published the first post.",
+    "categories": [
+      {
+        "title": "Launch",
+        "items": [
+          {
+            "id": "web-20260324-1",
+            "content": "Completed website build v1.0",
+            "date": "2026-03-24"
+          },
+          {
+            "id": "web-20260324-2",
+            "content": "Published the first post",
+            "date": "2026-03-24"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-03-22",
     "title": "Games Page Polish Completed",
     "description": "Completed UI and interaction refinements for the Steam games page, including search, sorting, stats, and bilingual localization polish.",

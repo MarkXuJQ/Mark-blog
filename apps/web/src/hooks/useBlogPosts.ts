@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getAllPosts } from '../utils/posts'
 import { useSearch } from './useSearch'
@@ -35,6 +35,13 @@ export function useBlogPosts() {
     items: allPosts,
     searchFn,
   })
+
+  useEffect(() => {
+    setSelectedCategory(null)
+    if (searchQuery) {
+      clearSearch()
+    }
+  }, [clearSearch, i18n.language, searchQuery])
 
   // Derived state
   const allCategories = useMemo(() => {

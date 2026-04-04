@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="/feeds/atom.xsl"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://markxu.icu</id>
-    <title>Mark的自留地</title>
+    <title>Mark's Space</title>
     <updated>2026-03-24T00:00:00.000Z</updated>
     <generator>Mark Xu Blog Generator</generator>
     <author>
@@ -11,25 +11,11 @@
         <uri>https://markxu.icu</uri>
     </author>
     <link rel="alternate" href="https://markxu.icu"/>
-    <link rel="self" href="https://markxu.icu/feeds/atom.xml"/>
-    <subtitle>这里是 Mark Xu 的个人网站，记录技术与生活。</subtitle>
+    <link rel="self" href="https://markxu.icu/feeds/en/atom.xml"/>
+    <subtitle>Welcome to Mark Xu's personal site, sharing tech and life.</subtitle>
     <logo>https://markxu.icu/images/IMG_1766.JPG</logo>
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
-    <entry>
-        <title type="html"><![CDATA[第一篇博客]]></title>
-        <id>https://markxu.icu/blog/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2</id>
-        <link href="https://markxu.icu/blog/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2"/>
-        <link rel="enclosure" href="https://img.markxu.icu/imgmarketshareofReactVueAngular.png" type="image/png"/>
-        <updated>2026-03-24T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[个人网站字面意义上的第一篇博客，分享下个人感受和经历。]]></summary>
-        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgmarketshareofReactVueAngular.png" alt="第一篇博客" /> <p>个人网站字面意义上的第一篇博客，分享下个人感受和经历。</p> <a class="view-full" href="https://markxu.icu/blog/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2" target="_blank">点击查看全文</a>]]></content>
-        <author>
-            <name>Mark Xu</name>
-            <email>xujianqiao86@gmail.com</email>
-            <uri>https://markxu.icu</uri>
-        </author>
-    </entry>
     <entry>
         <title type="html"><![CDATA[My First Blog]]></title>
         <id>https://markxu.icu/blog/My-first-blog</id>
@@ -45,20 +31,6 @@
         </author>
     </entry>
     <entry>
-        <title type="html"><![CDATA[广州游记]]></title>
-        <id>https://markxu.icu/blog/%E5%B9%BF%E5%B7%9E%E6%B8%B8%E8%AE%B0</id>
-        <link href="https://markxu.icu/blog/%E5%B9%BF%E5%B7%9E%E6%B8%B8%E8%AE%B0"/>
-        <link rel="enclosure" href="https://img.markxu.icu/imgIMG_20240323_广州tower.png" type="image/png"/>
-        <updated>2024-03-22T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[这是我在广州的游记，主要是流水账，但也记录了我和好兄弟在旅程中经历的小故事。]]></summary>
-        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgIMG_20240323_广州tower.png" alt="广州游记" /> <p>这是我在广州的游记，主要是流水账，但也记录了我和好兄弟在旅程中经历的小故事。</p> <a class="view-full" href="https://markxu.icu/blog/%E5%B9%BF%E5%B7%9E%E6%B8%B8%E8%AE%B0" target="_blank">点击查看全文</a>]]></content>
-        <author>
-            <name>Mark Xu</name>
-            <email>xujianqiao86@gmail.com</email>
-            <uri>https://markxu.icu</uri>
-        </author>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[Guangzhou Travel Notes]]></title>
         <id>https://markxu.icu/blog/guangzhou-travel-notes</id>
         <link href="https://markxu.icu/blog/guangzhou-travel-notes"/>
@@ -66,20 +38,6 @@
         <updated>2024-03-22T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[This is my travel note in Guangzhou. (translated by ai)]]></summary>
         <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgIMG_20240323_广州tower.png" alt="Guangzhou Travel Notes" /> <p>This is my travel note in Guangzhou. (translated by ai)</p> <a class="view-full" href="https://markxu.icu/blog/guangzhou-travel-notes" target="_blank">Read full article</a>]]></content>
-        <author>
-            <name>Mark Xu</name>
-            <email>xujianqiao86@gmail.com</email>
-            <uri>https://markxu.icu</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[潮汕游记]]></title>
-        <id>https://markxu.icu/blog/%E6%BD%AE%E6%B1%95%E6%B8%B8%E8%AE%B0</id>
-        <link href="https://markxu.icu/blog/%E6%BD%AE%E6%B1%95%E6%B8%B8%E8%AE%B0"/>
-        <link rel="enclosure" href="https://img.markxu.icu/imgIMG_20230922_汕头.png" type="image/png"/>
-        <updated>2023-09-27T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[这是我在潮汕的游记，记录了大二第一次独自出去玩的经历。]]></summary>
-        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgIMG_20230922_汕头.png" alt="潮汕游记" /> <p>这是我在潮汕的游记，记录了大二第一次独自出去玩的经历。</p> <a class="view-full" href="https://markxu.icu/blog/%E6%BD%AE%E6%B1%95%E6%B8%B8%E8%AE%B0" target="_blank">点击查看全文</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>

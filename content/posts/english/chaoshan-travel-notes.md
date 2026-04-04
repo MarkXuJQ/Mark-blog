@@ -2,11 +2,11 @@
 title: "Chaoshan Travel Notes"
 date: "2023-09-27"
 updated: "2026-02-25"
-summary: "This is my travel note in Chaoshan. (translated by ai)"
+summary: "This is my travel note in Chaoshan. Tracked my first experience of travelling by myself. (translated by ai)"
 tags: ["Life", "Travel"]
 category: "essay"
+image: "https://img.markxu.icu/imgIMG_20230922_汕头.png"
 ---
-
 Travel log:
 
 9/24: Station -> Chaoshan Station -> (K2 line) -> Central Hospital -> (walk) -> Xu Consort's Mansion (passed by) -> Kapok Mansion, check-in (video call / "live" sharing)

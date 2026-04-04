@@ -4,6 +4,7 @@ import { Card } from '../components/ui/Card'
 import { Construction } from 'lucide-react'
 import { cn } from '../utils/cn'
 import { Seo } from '../components/seo/Seo'
+import { LifeProgress } from '../components/progress/LifeProgress'
 
 export function UnderConstruction() {
   const { t } = useTranslation()
@@ -21,6 +22,9 @@ export function UnderConstruction() {
         <p className={styles.description}>
           {t('underConstruction.description')}
         </p>
+        <div className={styles.progressSection}>
+          <LifeProgress />
+        </div>
         <Link
           to="/"
           className={styles.button}
@@ -37,7 +41,8 @@ const styles = {
   iconContainer: "mb-8 rounded-full bg-slate-100 p-8 dark:bg-slate-800",
   icon: "text-slate-400 dark:text-slate-500",
   title: "mb-6 text-4xl font-bold text-slate-800 dark:text-slate-200 tracking-tight",
-  description: "mb-10 text-xl text-slate-600 dark:text-slate-400 max-w-lg mx-auto",
+  description: "mb-8 text-xl text-slate-600 dark:text-slate-400 max-w-lg mx-auto",
+  progressSection: "mb-10 w-full max-w-2xl",
   button: cn(
     "rounded-full bg-slate-900 px-8 py-4 text-base font-medium text-white transition-all hover:scale-105",
     "hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 shadow-lg hover:shadow-xl"

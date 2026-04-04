@@ -20,7 +20,11 @@ const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
 const PUBLIC_DIR = path.resolve(__dirname, '../public')
 const DIST_DIR = path.resolve(__dirname, '../dist')
 const FEEDS_DIR = path.join(PUBLIC_DIR, 'feeds')
+const FEEDS_ZH_DIR = path.join(FEEDS_DIR, 'zh')
+const FEEDS_EN_DIR = path.join(FEEDS_DIR, 'en')
 const DIST_FEEDS_DIR = path.join(DIST_DIR, 'feeds')
+const DIST_FEEDS_ZH_DIR = path.join(DIST_FEEDS_DIR, 'zh')
+const DIST_FEEDS_EN_DIR = path.join(DIST_FEEDS_DIR, 'en')
 
 console.log(`Scanning posts in: ${POSTS_DIR}`)
 
@@ -49,12 +53,23 @@ function collectMarkdownFiles(dirPath) {
 
 const files = collectMarkdownFiles(POSTS_DIR)
 
+const resolveLanguageFromPath = (filePath) => {
+  const normalized = filePath.replaceAll('\\', '/')
+  if (normalized.includes('/posts/chinese/')) return 'zh'
+  if (normalized.includes('/posts/english/')) return 'en'
+  return 'zh'
+}
+
 const allPosts = files.map((filePath) => {
   const content = fs.readFileSync(filePath, 'utf-8')
   const { data, content: markdownContent } = matter(content)
   const slug = path.basename(filePath, '.md')
+  const language = resolveLanguageFromPath(filePath)
 
-  let coverImage = data.image ? `${DOMAIN}${data.image}` : undefined
+  let coverImage = data.image || undefined
+  if (coverImage && !coverImage.startsWith('http')) {
+    coverImage = `${DOMAIN}${coverImage}`
+  }
   if (!coverImage) {
     const imageMatch = markdownContent.match(/!\[.*?\]\(([^)\s]+)/)
     if (imageMatch && imageMatch[1]) {
@@ -66,14 +81,16 @@ const allPosts = files.map((filePath) => {
 
   const postUrl = `${DOMAIN}/blog/${encodeURIComponent(slug)}`
 
+  const viewFullLabel = language === 'zh' ? '点击查看全文' : 'Read full article'
   const contentHtml = [
     coverImage ? `<img src="${coverImage}" alt="${data.title || slug}" />` : '',
     data.summary ? `<p>${data.summary}</p>` : '',
-    `<a class="view-full" href="${postUrl}" target="_blank">点击查看全文</a>`,
+    `<a class="view-full" href="${postUrl}" target="_blank">${viewFullLabel}</a>`,
   ].join(' ')
 
   return {
     slug,
+    language,
     date: data.date ? new Date(data.date) : new Date(),
     updated: data.updated ? new Date(data.updated) : null,
     title: data.title || slug,
@@ -89,27 +106,48 @@ const allPosts = files.map((filePath) => {
   }
 })
 
-const postsBySlug = new Map()
-allPosts.forEach((post) => {
-  const existing = postsBySlug.get(post.slug)
-  if (!existing) {
-    postsBySlug.set(post.slug, post)
-    return
-  }
+const dedupeBySlug = (inputPosts) => {
+  const postsBySlug = new Map()
+  inputPosts.forEach((post) => {
+    const existing = postsBySlug.get(post.slug)
+    if (!existing) {
+      postsBySlug.set(post.slug, post)
+      return
+    }
 
-  const currentTimestamp = (post.updated || post.date).getTime()
-  const existingTimestamp = (existing.updated || existing.date).getTime()
-  if (currentTimestamp > existingTimestamp) {
-    postsBySlug.set(post.slug, post)
-  }
-})
+    const currentTimestamp = (post.updated || post.date).getTime()
+    const existingTimestamp = (existing.updated || existing.date).getTime()
+    if (currentTimestamp > existingTimestamp) {
+      postsBySlug.set(post.slug, post)
+    }
+  })
 
-const posts = Array.from(postsBySlug.values())
-posts.sort((a, b) => b.date.getTime() - a.date.getTime())
+  const posts = Array.from(postsBySlug.values())
+  posts.sort((a, b) => b.date.getTime() - a.date.getTime())
+  return posts
+}
 
-console.log(`Found ${posts.length} posts.`)
+const zhPosts = dedupeBySlug(allPosts.filter((post) => post.language === 'zh'))
+const enPosts = dedupeBySlug(allPosts.filter((post) => post.language === 'en'))
+const posts = dedupeBySlug(allPosts)
 
-function renderFeedViewPage(feedPosts) {
+console.log(
+  `Found ${posts.length} posts. (zh: ${zhPosts.length}, en: ${enPosts.length})`
+)
+
+function renderFeedViewPage(feedPosts, options) {
+  const {
+    lang,
+    title,
+    displayTitle,
+    description,
+    feedUrl,
+    toggle,
+    backLabel,
+    copyLabel,
+    emptySummary,
+    readMoreLabel,
+  } = options
   const escapeHtml = (value) =>
     value
       .replaceAll('&', '&amp;')
@@ -121,7 +159,7 @@ function renderFeedViewPage(feedPosts) {
   const cards = feedPosts
     .map((post) => {
       const title = escapeHtml(post.title)
-      const summary = escapeHtml(post.description || '暂无摘要')
+      const summary = escapeHtml(post.description || emptySummary)
       const date = post.date.toISOString().slice(0, 10)
       const href = `${DOMAIN}/blog/${encodeURIComponent(post.slug)}`
       const cover = post.image?.url
@@ -133,7 +171,7 @@ function renderFeedViewPage(feedPosts) {
             <p>${summary}</p>
             <div class="meta">
               <time datetime="${post.date.toISOString()}">${date}</time>
-              <a href="${href}" target="_blank" rel="noopener noreferrer">Read full article</a>
+              <a href="${href}" target="_blank" rel="noopener noreferrer">${readMoreLabel}</a>
             </div>
           </div>
         </article>
@@ -142,11 +180,11 @@ function renderFeedViewPage(feedPosts) {
     .join('\n')
 
   return `<!doctype html>
-<html lang="zh-CN">
+<html lang="${lang}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mark的自留地 - RSS Feed</title>
+    <title>${title}</title>
     <style>
       :root {
         --bg-color: #f8fafc;
@@ -217,6 +255,60 @@ function renderFeedViewPage(feedPosts) {
         background: var(--card-bg);
         border-radius: 16px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      .header-actions {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
+      .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.45rem 0.9rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--bg-color);
+        color: var(--text-main);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+      }
+      .back-button:hover {
+        text-decoration: none;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      }
+      .lang-toggle {
+        display: inline-flex;
+        gap: 0.4rem;
+        padding: 0.25rem;
+        border-radius: 999px;
+        background: var(--bg-color);
+        border: 1px solid var(--border);
+      }
+      .lang-toggle a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.75rem;
+        padding: 0.35rem 0.8rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-sub);
+        text-decoration: none;
+        transition: background 0.2s, color 0.2s, transform 0.2s;
+      }
+      .lang-toggle a.active {
+        background: var(--card-bg);
+        color: var(--text-main);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
+      }
+      .lang-toggle a:hover {
+        color: var(--text-main);
       }
       h1 { margin: 0 0 0.5rem 0; font-size: 2rem; }
       .desc { color: var(--text-sub); margin-bottom: 1.5rem; }
@@ -306,12 +398,25 @@ function renderFeedViewPage(feedPosts) {
     <div class="page">
       <div class="container">
         <header>
-          <h1>Mark的自留地</h1>
-          <div class="desc">这里是 Mark Xu 的个人网站，记录技术与生活。</div>
+          <div class="header-actions">
+            <a class="back-button" href="${DOMAIN}">${backLabel}</a>
+          </div>
+          <div class="header-actions">
+            <div class="lang-toggle" role="tablist" aria-label="Language">
+              <a href="${toggle.zh.href}" class="${toggle.zh.active ? 'active' : ''}" role="tab" aria-selected="${toggle.zh.active}">
+                ${toggle.zh.label}
+              </a>
+              <a href="${toggle.en.href}" class="${toggle.en.active ? 'active' : ''}" role="tab" aria-selected="${toggle.en.active}">
+                ${toggle.en.label}
+              </a>
+            </div>
+          </div>
+          <h1>${displayTitle}</h1>
+          <div class="desc">${description}</div>
           <div class="subscribe-box">
-            <span>👇 复制下面的链接到您的 RSS 阅读器中订阅：</span>
+            <span>${copyLabel}</span>
             <div class="copy-area">
-              ${DOMAIN}/feeds/atom.xml
+              ${feedUrl}
             </div>
           </div>
         </header>
@@ -324,69 +429,140 @@ function renderFeedViewPage(feedPosts) {
 </html>`
 }
 
-const feed = new Feed({
-  title: 'Mark的自留地',
-  description: '这里是 Mark Xu 的个人网站，记录技术与生活。',
-  id: DOMAIN,
-  link: DOMAIN,
-  language: 'zh-CN',
-  image: `${DOMAIN}/images/IMG_1766.JPG`,
-  favicon: `${DOMAIN}/favicon.png`,
-  copyright: `All rights reserved ${new Date().getFullYear()}, Mark Xu`,
-  updated: posts.length > 0 ? posts[0].date : new Date(),
-  generator: 'Mark Xu Blog Generator',
-  feedLinks: {
-    atom: `${DOMAIN}/feeds/atom.xml`,
+const FEED_VIEW_OPTIONS = {
+  zh: {
+    lang: 'zh-CN',
+    title: 'Mark的自留地 - RSS Feed',
+    displayTitle: 'Mark的自留地',
+    description: '这里是 Mark Xu 的个人网站，记录技术与生活。',
+    feedUrl: `${DOMAIN}/feeds/zh/atom.xml`,
+    toggle: {
+      zh: { href: `${DOMAIN}/feeds/zh/`, label: '中文', active: true },
+      en: { href: `${DOMAIN}/feeds/en/`, label: 'EN', active: false },
+    },
+    backLabel: '← 返回主页',
+    copyLabel: '👇 复制下面的链接到您的 RSS 阅读器中订阅：',
+    emptySummary: '暂无摘要',
+    readMoreLabel: '阅读全文',
   },
-  author: {
-    name: 'Mark Xu',
-    email: 'xujianqiao86@gmail.com',
-    link: DOMAIN,
+  en: {
+    lang: 'en-US',
+    title: "Mark's Space - RSS Feed",
+    displayTitle: "Mark's Space",
+    description: "Welcome to Mark Xu's personal site, sharing tech and life.",
+    feedUrl: `${DOMAIN}/feeds/en/atom.xml`,
+    toggle: {
+      zh: { href: `${DOMAIN}/feeds/zh/`, label: '中文', active: false },
+      en: { href: `${DOMAIN}/feeds/en/`, label: 'EN', active: true },
+    },
+    backLabel: '← Back to Home',
+    copyLabel: '👇 Copy the link below into your RSS reader:',
+    emptySummary: 'No summary yet',
+    readMoreLabel: 'Read full article',
   },
-})
-
-posts.forEach((post) => {
-  const url = `${DOMAIN}/blog/${encodeURIComponent(post.slug)}`
-  feed.addItem({
-    title: post.title,
-    id: url,
-    link: url,
-    description: post.description,
-    content: post.content,
-    author: [
-      {
-        name: 'Mark Xu',
-        email: 'xujianqiao86@gmail.com',
-        link: DOMAIN,
-      },
-    ],
-    date: post.date,
-    image: post.image,
-  })
-})
-
-if (!fs.existsSync(FEEDS_DIR)) {
-  fs.mkdirSync(FEEDS_DIR, { recursive: true })
 }
 
-const atomPath = path.join(FEEDS_DIR, 'atom.xml')
-let atomContent = feed.atom1()
-atomContent = atomContent.replace(
-  '<?xml version="1.0" encoding="utf-8"?>',
-  '<?xml version="1.0" encoding="utf-8"?>\n<?xml-stylesheet type="text/xsl" href="/feeds/atom.xsl"?>'
-)
-fs.writeFileSync(atomPath, atomContent)
-console.log(`Atom generated at ${atomPath}`)
+const ensureDir = (dirPath) => {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true })
+  }
+}
 
-const feedViewPath = path.join(FEEDS_DIR, 'index.html')
-const feedViewContent = renderFeedViewPage(posts)
-fs.writeFileSync(feedViewPath, feedViewContent)
-console.log(`Feed view generated at ${feedViewPath}`)
+const createFeed = (feedPosts, options, atomUrl) => {
+  const feed = new Feed({
+    title: options.displayTitle,
+    description: options.description,
+    id: DOMAIN,
+    link: DOMAIN,
+    language: options.lang,
+    image: `${DOMAIN}/images/IMG_1766.JPG`,
+    favicon: `${DOMAIN}/favicon.png`,
+    copyright: `All rights reserved ${new Date().getFullYear()}, Mark Xu`,
+    updated: feedPosts.length > 0 ? feedPosts[0].date : new Date(),
+    generator: 'Mark Xu Blog Generator',
+    feedLinks: {
+      atom: atomUrl,
+    },
+    author: {
+      name: 'Mark Xu',
+      email: 'xujianqiao86@gmail.com',
+      link: DOMAIN,
+    },
+  })
+
+  feedPosts.forEach((post) => {
+    const url = `${DOMAIN}/blog/${encodeURIComponent(post.slug)}`
+    feed.addItem({
+      title: post.title,
+      id: url,
+      link: url,
+      description: post.description,
+      content: post.content,
+      author: [
+        {
+          name: 'Mark Xu',
+          email: 'xujianqiao86@gmail.com',
+          link: DOMAIN,
+        },
+      ],
+      date: post.date,
+      image: post.image,
+    })
+  })
+
+  return feed
+}
+
+const writeFeedFiles = ({ atomPath, viewPath, feedPosts, viewOptions, atomUrl }) => {
+  const feed = createFeed(feedPosts, viewOptions, atomUrl)
+  let atomContent = feed.atom1()
+  atomContent = atomContent.replace(
+    '<?xml version="1.0" encoding="utf-8"?>',
+    '<?xml version="1.0" encoding="utf-8"?>\n<?xml-stylesheet type="text/xsl" href="/feeds/atom.xsl"?>'
+  )
+  fs.writeFileSync(atomPath, atomContent)
+  console.log(`Atom generated at ${atomPath}`)
+
+  const feedViewContent = renderFeedViewPage(feedPosts, viewOptions)
+  fs.writeFileSync(viewPath, feedViewContent)
+  console.log(`Feed view generated at ${viewPath}`)
+
+  return { atomContent, feedViewContent }
+}
+
+ensureDir(FEEDS_DIR)
+ensureDir(FEEDS_ZH_DIR)
+ensureDir(FEEDS_EN_DIR)
+
+const { atomContent, feedViewContent } = writeFeedFiles({
+  atomPath: path.join(FEEDS_DIR, 'atom.xml'),
+  viewPath: path.join(FEEDS_DIR, 'index.html'),
+  feedPosts: posts,
+  viewOptions: FEED_VIEW_OPTIONS.zh,
+  atomUrl: `${DOMAIN}/feeds/atom.xml`,
+})
+
+writeFeedFiles({
+  atomPath: path.join(FEEDS_ZH_DIR, 'atom.xml'),
+  viewPath: path.join(FEEDS_ZH_DIR, 'index.html'),
+  feedPosts: zhPosts,
+  viewOptions: FEED_VIEW_OPTIONS.zh,
+  atomUrl: FEED_VIEW_OPTIONS.zh.feedUrl,
+})
+
+writeFeedFiles({
+  atomPath: path.join(FEEDS_EN_DIR, 'atom.xml'),
+  viewPath: path.join(FEEDS_EN_DIR, 'index.html'),
+  feedPosts: enPosts,
+  viewOptions: FEED_VIEW_OPTIONS.en,
+  atomUrl: FEED_VIEW_OPTIONS.en.feedUrl,
+})
 
 if (fs.existsSync(DIST_DIR)) {
-  if (!fs.existsSync(DIST_FEEDS_DIR)) {
-    fs.mkdirSync(DIST_FEEDS_DIR, { recursive: true })
-  }
+  ensureDir(DIST_FEEDS_DIR)
+  ensureDir(DIST_FEEDS_ZH_DIR)
+  ensureDir(DIST_FEEDS_EN_DIR)
+
   const distAtomPath = path.join(DIST_FEEDS_DIR, 'atom.xml')
   fs.writeFileSync(distAtomPath, atomContent)
   console.log(`Atom copied to ${distAtomPath}`)
@@ -394,6 +570,22 @@ if (fs.existsSync(DIST_DIR)) {
   const distFeedViewPath = path.join(DIST_FEEDS_DIR, 'index.html')
   fs.writeFileSync(distFeedViewPath, feedViewContent)
   console.log(`Feed view copied to ${distFeedViewPath}`)
+
+  writeFeedFiles({
+    atomPath: path.join(DIST_FEEDS_ZH_DIR, 'atom.xml'),
+    viewPath: path.join(DIST_FEEDS_ZH_DIR, 'index.html'),
+    feedPosts: zhPosts,
+    viewOptions: FEED_VIEW_OPTIONS.zh,
+    atomUrl: FEED_VIEW_OPTIONS.zh.feedUrl,
+  })
+
+  writeFeedFiles({
+    atomPath: path.join(DIST_FEEDS_EN_DIR, 'atom.xml'),
+    viewPath: path.join(DIST_FEEDS_EN_DIR, 'index.html'),
+    feedPosts: enPosts,
+    viewOptions: FEED_VIEW_OPTIONS.en,
+    atomUrl: FEED_VIEW_OPTIONS.en.feedUrl,
+  })
 
   const atomXslPath = path.join(FEEDS_DIR, 'atom.xsl')
   if (fs.existsSync(atomXslPath)) {

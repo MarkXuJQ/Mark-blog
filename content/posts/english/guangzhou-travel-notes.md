@@ -5,8 +5,8 @@ updated: "2026-03-03"
 summary: "This is my travel note in Guangzhou. (translated by ai)"
 tags: ["Life", "Travel"]
 category: "essay"
+image: "https://img.markxu.icu/imgIMG_20240323_广州tower.png"
 ---
-
 Itinerary:
 
 3/22: Train at 8:50 AM -> Arrive in Guangzhou at 12:30 PM -> Dim sum at Dian Du De -> Chen Clan Ancestral Hall -> Liwan Lake -> Yongqing Fang -> Shangxiajiu -> Shamian Island -> Canton Customs -> Sacred Heart Cathedral -> Beijing Road -> Guesthouse -> Dafo Temple

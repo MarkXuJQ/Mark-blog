@@ -12,7 +12,17 @@
     "links": "Links"
   },
   "timeline": {
-    "items": "items"
+    "items": "items",
+    "notes": "Quick fixes",
+    "websiteTab": "Website Milestones",
+    "quickfixTab": "Quick Fixes",
+    "lifeTab": "Life Log",
+    "websiteTitle": "Website Timeline",
+    "websiteDesc": "Major milestones and feature drops, grouped by release.",
+    "quickfixTitle": "Quick Fixes",
+    "quickfixDesc": "Small patches and UI tweaks tracked as standalone entries.",
+    "lifeTitle": "Life Log",
+    "lifeDesc": "Personal progress and moments."
   },
   "search": {
     "title": "Search",
@@ -97,7 +107,9 @@
   "underConstruction": {
     "title": "Construction in Progress",
     "description": "This section is still being built. Check back later!",
-    "backHome": "Back to Homepage"
+    "backHome": "Back to Homepage",
+    "lifeProgressTitle": "Life Progress",
+    "lifeProgressDesc": "A personal progress tracker is being prepared."
   },
   "notFound": {
     "title": "Page Not Found",

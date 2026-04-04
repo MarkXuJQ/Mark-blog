@@ -4,63 +4,94 @@ import { useTranslation } from 'react-i18next'
 import { Card } from '../ui/Card'
 import { countWords } from '../../utils/readingTime'
 import { cn } from '../../utils/cn'
-
-interface Post {
-  id: string
-  slug: string
-  title: string
-  date: string
-  updated?: string
-  tags?: string[]
-  category?: string
-  summary?: string
-  content: string
-}
+import { getImageUrl } from '../../utils/image'
+import type { BlogPost } from '../../types'
 
 interface BlogPostCardProps {
-  post: Post
+  post: BlogPost
 }
 
 export function BlogPostCard({ post }: BlogPostCardProps) {
   const { t } = useTranslation()
   const words = countWords(post.content)
+  const coverImage = post.image ? getImageUrl(post.image) : ''
+  const titleClass = cn(
+    'mb-2 line-clamp-2 text-2xl font-bold leading-snug transition-colors',
+    'text-slate-900 group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400'
+  )
+  const summaryClass =
+    'text-sm leading-6 text-slate-600 dark:text-slate-400 sm:text-[0.95rem]'
+  const metaClass =
+    'mt-auto flex flex-wrap items-center gap-2 border-t border-slate-100 pt-2 text-[0.7rem] text-slate-500 dark:border-slate-800 dark:text-slate-400'
 
+  // Layout A: no cover image, text-only card.
+  if (!coverImage) {
+    return (
+      <div key={post.id} className="animate-in fade-in duration-200">
+        <Link to={`/blog/${post.slug}`} className="block">
+          <Card className="group block p-4 sm:p-5 transition-transform hover:-translate-y-1 hover:shadow-md">
+            <article>
+              {/* Title */}
+              <h2 className={titleClass}>{post.title}</h2>
+
+              {/* Summary */}
+              <p className={cn('mb-3 line-clamp-3', summaryClass)}>
+                {post.summary}
+              </p>
+
+              {/* Meta info row: category + date + word count */}
+              <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
+                <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                  {post.category && (
+                    <span className="rounded-md bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                      {t(`blog.categories.${post.category}`, post.category)}
+                    </span>
+                  )}
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-4 w-4" />
+                    <span>{post.date}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <FileText className="h-4 w-4" />
+                    <span>{t('blog.wordCount', { count: words })}</span>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </Card>
+        </Link>
+      </div>
+    )
+  }
+
+  // Layout B: cover image present, split card (image + text).
   return (
     <div key={post.id} className="animate-in fade-in duration-200">
       <Link to={`/blog/${post.slug}`} className="block">
-        <Card className="group block w-full transition-transform hover:-translate-y-1 hover:shadow-md">
-          <article>
-            <h2
-              className={cn(
-                'mb-3 text-2xl font-bold transition-colors',
-                'text-slate-900 group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400'
-              )}
-            >
-              {post.title}
-            </h2>
-
-            {post.tags && post.tags.length > 0 && (
-              <div className="mb-3 flex flex-wrap gap-2">
-                {post.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className={cn(
-                      'rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium',
-                      'text-slate-600 dark:bg-slate-800 dark:text-slate-300'
-                    )}
-                  >
-                    #{tag}
-                  </span>
-                ))}
+        <Card className="group block overflow-hidden p-0 sm:p-0 transition-transform hover:-translate-y-1 hover:shadow-md">
+          {/* Mobile template */}
+          <article className="flex min-h-[220px] flex-col sm:hidden">
+            {/* Image (top, golden ratio portion) */}
+            <div className="relative isolate h-[120px] overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,1)_60%,rgba(0,0,0,0.4)_82%,rgba(0,0,0,0)_100%)] [-webkit-mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,1)_60%,rgba(0,0,0,0.4)_82%,rgba(0,0,0,0)_100%)]">
+              <div className="h-full w-full">
+                <img
+                  src={coverImage}
+                  alt={post.title}
+                  loading="lazy"
+                  decoding="async"
+                  referrerPolicy="no-referrer"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
               </div>
-            )}
+            </div>
 
-            <p className="mb-4 text-slate-600 dark:text-slate-400">
-              {post.summary}
-            </p>
+            {/* Text (bottom, overlaps image for aesthetics) */}
+            <div className="-mt-10 flex min-w-0 flex-1 flex-col overflow-hidden bg-white p-3 pt-6 dark:bg-slate-950 sm:mt-0">
+              <h2 className={titleClass}>{post.title}</h2>
 
-            <div className="flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-800">
-              <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+              <p className={cn('mb-2 pb-4', summaryClass)}>{post.summary}</p>
+
+              <div className={metaClass}>
                 {post.category && (
                   <span className="rounded-md bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                     {t(`blog.categories.${post.category}`, post.category)}
@@ -74,6 +105,46 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
                   <FileText className="h-4 w-4" />
                   <span>{t('blog.wordCount', { count: words })}</span>
                 </div>
+              </div>
+            </div>
+          </article>
+
+          {/* Desktop template */}
+          <article className="hidden min-h-[170px] sm:grid sm:grid-cols-[minmax(0,1.618fr)_minmax(0,1fr)] sm:grid-rows-1">
+            {/* Text (left) */}
+            <div className="order-1 relative z-10 flex min-w-0 flex-col overflow-hidden p-4">
+              <h2 className={titleClass}>{post.title}</h2>
+
+              <p className={cn('mb-2 pb-6', summaryClass)}>{post.summary}</p>
+
+              <div className={metaClass}>
+                {post.category && (
+                  <span className="rounded-md bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                    {t(`blog.categories.${post.category}`, post.category)}
+                  </span>
+                )}
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4" />
+                  <span>{post.date}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <FileText className="h-4 w-4" />
+                  <span>{t('blog.wordCount', { count: words })}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Image (right, golden ratio portion) */}
+            <div className="order-2 relative isolate overflow-visible">
+              <div className="absolute inset-0 -left-10 w-[calc(100%+2.5rem)] [mask-image:linear-gradient(to_left,black_0%,black_78%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_left,black_0%,black_78%,transparent_100%)]">
+                <img
+                  src={coverImage}
+                  alt={post.title}
+                  loading="lazy"
+                  decoding="async"
+                  referrerPolicy="no-referrer"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
               </div>
             </div>
           </article>
