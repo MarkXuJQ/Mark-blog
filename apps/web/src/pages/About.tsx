@@ -11,7 +11,7 @@ export function About() {
     <>
       <Seo title={t('about.title')} description={t('about.description')} />
 
-      <div className="mx-auto max-w-3xl px-4 py-12 md:py-20">
+      <div className="mx-auto max-w-2xl px-6 py-12 sm:px-8 md:py-20">
         <h1 className="mb-8 text-left text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-slate-100">
           {t('about.title')}
         </h1>

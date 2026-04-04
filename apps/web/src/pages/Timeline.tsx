@@ -153,7 +153,7 @@ export function Timeline() {
 }
 
 const styles = {
-  container: 'mx-auto flex w-full max-w-[1400px] justify-center px-4 py-8',
+  container: 'mx-auto flex w-full max-w-[1400px] justify-center px-5 py-8 sm:px-6',
   wrapper: 'w-full max-w-3xl space-y-8',
   header: 'flex items-center justify-between',
   title: 'text-3xl font-bold text-slate-900 dark:text-slate-100',
