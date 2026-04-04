@@ -630,7 +630,7 @@ export function Movies() {
                 <div
                   className={cn(
                     cardLayout === 'grid'
-                      ? 'grid grid-cols-2 gap-3 md:grid-cols-[repeat(auto-fit,minmax(190px,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(210px,1fr))] lg:gap-4'
+                      ? 'grid grid-cols-2 gap-3 md:grid-cols-[repeat(auto-fit,minmax(190px,230px))] md:justify-start lg:grid-cols-[repeat(auto-fit,minmax(210px,250px))] lg:gap-4'
                       : 'space-y-4'
                   )}
                 >
@@ -675,7 +675,7 @@ export function Movies() {
                             ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-300 dark:focus:ring-emerald-700'
                             : '',
                           cardLayout === 'grid'
-                            ? 'flex h-full flex-col'
+                            ? 'flex h-full w-full flex-col md:min-w-[190px] md:max-w-[230px] lg:min-w-[210px] lg:max-w-[250px]'
                             : viewMode === 'tmdb'
                               ? 'grid gap-4 sm:grid-cols-[110px_minmax(0,1fr)]'
                               : 'block'
