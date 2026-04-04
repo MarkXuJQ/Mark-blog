@@ -5,7 +5,6 @@ import { Clapperboard, ExternalLink, Search, Star } from 'lucide-react'
 import { MovieStatsPanel } from '../components/movies/MovieStatsPanel'
 import { Seo } from '../components/seo/Seo'
 import { WatchActivityCalendar } from '../components/movies/WatchActivityCalendar'
-import { DraggableBackToTop } from '../components/ui/DraggableBackToTop'
 import { cn } from '../utils/cn'
 import { Pagination } from '../components/ui/Pagination'
 import { SegmentedToggle } from '../components/ui/SegmentedToggle'
@@ -861,7 +860,6 @@ export function Movies() {
         </div>
       </div>
 
-      <DraggableBackToTop />
     </>
   )
 }

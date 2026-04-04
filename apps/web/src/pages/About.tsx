@@ -1,7 +1,6 @@
 import { useTranslation, Trans } from 'react-i18next'
 import { Seo } from '../components/seo/Seo'
 import { DeferredComments } from '../components/comments/DeferredComments'
-import { DraggableBackToTop } from '../components/ui/DraggableBackToTop'
 import { WebsiteCard } from '../components/ui/WebsiteCard'
 
 export function About() {
@@ -85,7 +84,6 @@ export function About() {
         </div>
       </div>
 
-      <DraggableBackToTop />
     </>
   )
 }

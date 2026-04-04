@@ -6,7 +6,6 @@ import { BlogTocCard } from '../components/blog/BlogTocCard'
 import { getAllPosts } from '../utils/posts'
 import { cn } from '../utils/cn'
 import { useToc } from '../hooks/useToc'
-import { DraggableBackToTop } from '../components/ui/DraggableBackToTop'
 
 export function BlogLayout() {
   const { i18n } = useTranslation()
@@ -53,7 +52,6 @@ export function BlogLayout() {
           </div>
         </aside>
       </div>
-      <DraggableBackToTop />
     </div>
   )
 }

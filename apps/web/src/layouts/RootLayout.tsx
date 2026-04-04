@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import { NavBar } from '../components/layout/NavBar'
 import { Footer } from '../components/layout/Footer'
 import { ThemeToggle } from '../components/ui/ThemeToggle'
 import { PageTransitionHost } from '../components/transitions/PageTransitionHost'
 import { GlobalSearchHost } from '../components/search/GlobalSearchHost'
+import { DraggableBackToTop } from '../components/ui/DraggableBackToTop'
 import { useTheme } from '../hooks/useTheme'
 import { useScrollVisibility } from '../hooks/useScrollVisibility'
 
 export function RootLayout() {
   const { mode, setMode } = useTheme()
+  const { pathname } = useLocation()
   const isNavBarVisible = useScrollVisibility()
   const [isOverlayOpen, setIsOverlayOpen] = useState(false)
   const [isTransitionActive, setIsTransitionActive] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const hideBackToTop = pathname === '/'
 
   useEffect(() => {
     const onOverlayChange = (event: Event) => {
@@ -65,6 +68,7 @@ export function RootLayout() {
       </main>
 
       <ThemeToggle mode={mode} onModeChange={setMode} />
+      {!hideBackToTop && <DraggableBackToTop />}
       <PageTransitionHost onActiveChange={setIsTransitionActive} />
       <GlobalSearchHost onOpenChange={setIsSearchOpen} />
     </div>
