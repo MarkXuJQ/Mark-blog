@@ -1,0 +1,26 @@
+[
+  {
+    "id": "qf-20260404",
+    "date": "2026-04-04",
+    "content": [
+      "Polished RSS feeds view with back-to-home and bilingual toggle",
+      "Enabled article TOC visibility on mobile",
+      "Added scroll-to-top progress button",
+      "Updated timeline logic"
+    ]
+  },
+  {
+    "id": "qf-20260403",
+    "date": "2026-04-03",
+    "content": [
+      "Added blog homepage cover image and surfaced it in the overview list"
+    ]
+  },
+  {
+    "id": "qf-20260402",
+    "date": "2026-04-02",
+    "content": [
+      "Simplified blog overview cards by reorganizing the information layout"
+    ]
+  }
+]

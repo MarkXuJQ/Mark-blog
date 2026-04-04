@@ -66,7 +66,10 @@ const allPosts = files.map((filePath) => {
   const slug = path.basename(filePath, '.md')
   const language = resolveLanguageFromPath(filePath)
 
-  let coverImage = data.image ? `${DOMAIN}${data.image}` : undefined
+  let coverImage = data.image || undefined
+  if (coverImage && !coverImage.startsWith('http')) {
+    coverImage = `${DOMAIN}${coverImage}`
+  }
   if (!coverImage) {
     const imageMatch = markdownContent.match(/!\[.*?\]\(([^)\s]+)/)
     if (imageMatch && imageMatch[1]) {

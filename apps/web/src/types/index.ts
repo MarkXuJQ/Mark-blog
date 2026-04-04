@@ -42,5 +42,12 @@ export interface TimelineEvent {
   date: string
   title: string
   description?: string
+  notes?: TimelineItem[]
   categories?: TimelineCategory[]
+}
+
+export interface QuickFixGroup {
+  id: string
+  date: string
+  content: string[]
 }
