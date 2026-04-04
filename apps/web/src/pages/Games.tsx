@@ -804,12 +804,12 @@ export function Games() {
                         containerClassName="h-11 gap-1.5 rounded-[1.1rem] px-3 pr-2.5 sm:gap-2 sm:px-3.5 sm:pr-3"
                         labelClassName="hidden sm:inline"
                         buttonClassName="max-w-[6.8rem] gap-1 text-sm"
-                        menuClassName="w-52 max-w-[calc(100vw-2rem)]"
+                        menuClassName="w-52 max-w-[calc(100vw-2rem)] z-[70]"
                       />
                     </div>
                   </div>
 
-                  <div className="relative min-h-11 sm:hidden">
+                  <div className="relative z-20 min-h-11 sm:hidden">
                     <div
                       className={cn(
                         'flex items-center justify-between gap-2 transition duration-200',
@@ -823,19 +823,6 @@ export function Games() {
                       </h2>
 
                       <div className="flex shrink-0 items-center gap-2">
-                        <SelectMenu
-                          value={sort}
-                          options={sortOptions}
-                          onValueChange={setSort}
-                          label={t('games.library.sortLabel')}
-                          ariaLabel={t('games.library.sortLabel')}
-                          className="shrink-0"
-                          containerClassName="h-11 gap-1 rounded-[1.1rem] px-3 pr-2.5"
-                          labelClassName="hidden"
-                          buttonClassName="max-w-[5.75rem] gap-1 text-sm"
-                          menuClassName="w-52 max-w-[calc(100vw-2rem)]"
-                        />
-
                         <button
                           type="button"
                           onClick={() => setIsMobileSearchOpen(true)}
@@ -849,6 +836,19 @@ export function Games() {
                             {t('games.library.searchToggle')}
                           </span>
                         </button>
+
+                        <SelectMenu
+                          value={sort}
+                          options={sortOptions}
+                          onValueChange={setSort}
+                          label={t('games.library.sortLabel')}
+                          ariaLabel={t('games.library.sortLabel')}
+                          className="shrink-0"
+                          containerClassName="h-11 gap-1 rounded-[1.1rem] px-3 pr-2.5"
+                          labelClassName="hidden"
+                          buttonClassName="max-w-[5.75rem] gap-1 text-sm"
+                          menuClassName="w-52 max-w-[calc(100vw-2rem)] z-[70]"
+                        />
                       </div>
                     </div>
 

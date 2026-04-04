@@ -1,14 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import {
-  Clapperboard,
-  ExternalLink,
-  LayoutGrid,
-  List,
-  Search,
-  Star,
-} from 'lucide-react'
+import { Clapperboard, ExternalLink, Search, Star } from 'lucide-react'
 import { MovieStatsPanel } from '../components/movies/MovieStatsPanel'
 import { Seo } from '../components/seo/Seo'
 import { WatchActivityCalendar } from '../components/movies/WatchActivityCalendar'
@@ -390,8 +383,8 @@ export function Movies() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [keyword, setKeyword] = useState('')
-  const [viewMode, setViewMode] = useState<ViewMode>('csv')
-  const [cardLayout, setCardLayout] = useState<CardLayout>('list')
+  const [viewMode] = useState<ViewMode>('tmdb')
+  const [cardLayout] = useState<CardLayout>('grid')
   const [onlyWithReviews, setOnlyWithReviews] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [tmdbMap, setTmdbMap] = useState<Record<string, TmdbEnrichedMovie | null>>({})
@@ -442,7 +435,7 @@ export function Movies() {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [keyword, viewMode, cardLayout, onlyWithReviews])
+  }, [keyword, onlyWithReviews])
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -580,66 +573,6 @@ export function Movies() {
                     className="w-full rounded-[1rem] border border-slate-200 bg-white/90 py-2.5 pl-10 pr-3 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-blue-500 dark:focus:ring-blue-900/40"
                   />
                 </label>
-
-                <SegmentedToggle
-                  value={viewMode}
-                  onValueChange={setViewMode}
-                  ariaLabel="Movie data mode"
-                  size="sm"
-                  className="shrink-0"
-                  buttonClassName="px-2.5 sm:px-3"
-                  items={[
-                    {
-                      value: 'csv',
-                      ariaLabel: t('movies.mode.csv'),
-                      content: t('movies.mode.csv'),
-                      activeTextClassName: 'text-slate-900 dark:text-slate-100',
-                    },
-                    {
-                      value: 'tmdb',
-                      ariaLabel: t('movies.mode.tmdb'),
-                      content: t('movies.mode.tmdb'),
-                      activeTextClassName: 'text-slate-900 dark:text-slate-100',
-                    },
-                  ]}
-                />
-
-                <SegmentedToggle
-                  value={cardLayout}
-                  onValueChange={setCardLayout}
-                  ariaLabel="Movie card layout"
-                  size="sm"
-                  className="shrink-0"
-                  buttonClassName="w-8 px-0 gap-0 sm:w-auto sm:px-3 sm:gap-1"
-                  items={[
-                    {
-                      value: 'list',
-                      ariaLabel: t('movies.layout.list'),
-                      content: (
-                        <>
-                          <List size={14} />
-                          <span className="hidden sm:inline">
-                            {t('movies.layout.list')}
-                          </span>
-                        </>
-                      ),
-                      activeTextClassName: 'text-slate-900 dark:text-slate-100',
-                    },
-                    {
-                      value: 'grid',
-                      ariaLabel: t('movies.layout.grid'),
-                      content: (
-                        <>
-                          <LayoutGrid size={14} />
-                          <span className="hidden sm:inline">
-                            {t('movies.layout.grid')}
-                          </span>
-                        </>
-                      ),
-                      activeTextClassName: 'text-slate-900 dark:text-slate-100',
-                    },
-                  ]}
-                />
 
                 <button
                   type="button"
