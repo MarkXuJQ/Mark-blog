@@ -6,7 +6,7 @@ import zhEvents from '@content/timeline/website/zh.json'
 import enEvents from '@content/timeline/website/en.json'
 import zhQuickFixes from '@content/timeline/quickfix/zh.json'
 import enQuickFixes from '@content/timeline/quickfix/en.json'
-import type { TimelineEvent, TimelineItem, QuickFixGroup } from '../types'
+import type { TimelineEvent, QuickFixGroup } from '../types'
 import { GitCommit, ChevronDown, ChevronRight } from 'lucide-react'
 import { Seo } from '../components/seo/Seo'
 
