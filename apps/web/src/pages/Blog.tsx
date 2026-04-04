@@ -74,47 +74,45 @@ export function Blog() {
         noindex={Boolean(searchQuery)}
         jsonLd={[collectionPageSchema, breadcrumbSchema]}
       />
-      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-              {pageTitle}
-            </h1>
-            <SearchStatus
-              query={searchQuery}
-              count={posts.length}
-              onClear={clearSearch}
-            />
-          </div>
-
-          <BlogFilter
-            allCategories={allCategories}
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-            sortBy={sortBy}
-            onToggleSort={toggleSort}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+            {pageTitle}
+          </h1>
+          <SearchStatus
+            query={searchQuery}
+            count={posts.length}
+            onClear={clearSearch}
           />
         </div>
 
-        <div className="space-y-6">
-          {currentPosts.length > 0 ? (
-            <>
-              {currentPosts.map((post) => (
-                <BlogPostCard key={post.id} post={post} />
-              ))}
+        <BlogFilter
+          allCategories={allCategories}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+          sortBy={sortBy}
+          onToggleSort={toggleSort}
+        />
+      </div>
 
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-            </>
-          ) : (
-            <div className="py-12 text-center text-slate-500 dark:text-slate-400">
-              {t('blog.search.noResults')}
-            </div>
-          )}
-        </div>
+      <div className="space-y-6">
+        {currentPosts.length > 0 ? (
+          <>
+            {currentPosts.map((post) => (
+              <BlogPostCard key={post.id} post={post} />
+            ))}
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </>
+        ) : (
+          <div className="py-12 text-center text-slate-500 dark:text-slate-400">
+            {t('blog.search.noResults')}
+          </div>
+        )}
       </div>
     </>
   )
