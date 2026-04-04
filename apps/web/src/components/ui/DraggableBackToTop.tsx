@@ -9,6 +9,7 @@ export function DraggableBackToTop() {
   const controls = useAnimation()
   const isDragging = useRef(false)
   const [scrollProgress, setScrollProgress] = useState(0)
+  const [footerOffset, setFooterOffset] = useState(0)
 
   const handleDragStart = () => {
     isDragging.current = true
@@ -42,6 +43,19 @@ export function DraggableBackToTop() {
       const maxScroll = Math.max(1, scrollHeight - clientHeight)
       const progress = Math.min(1, Math.max(0, scrollTop / maxScroll))
       setScrollProgress(progress)
+
+      const footer = document.querySelector('footer')
+      if (!footer) {
+        setFooterOffset(0)
+        return
+      }
+
+      const footerTop = footer.getBoundingClientRect().top
+      const overlap = Math.max(0, window.innerHeight - footerTop)
+      const baseBottom = 64
+      const margin = 8
+      const extraOffset = Math.max(0, overlap + margin - baseBottom)
+      setFooterOffset(extraOffset)
     }
 
     updateProgress()
@@ -71,11 +85,11 @@ export function DraggableBackToTop() {
       style={{
         opacity: showTopBtn ? 1 : 0,
         pointerEvents: showTopBtn ? 'auto' : 'none',
-        y: 0, // Ensure initial y is 0 relative to bottom-6
+        y: -footerOffset, // Keep above footer when it's in view
       }}
       whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.95 }}
-      className="fixed right-6 bottom-6 z-50 h-11 w-11 cursor-grab active:cursor-grabbing"
+      className="fixed right-6 bottom-18 z-50 h-11 w-11 cursor-grab active:cursor-grabbing"
     >
       <svg
         width={ringSize}

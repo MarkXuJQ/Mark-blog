@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Card } from '../ui/Card'
 import { cn } from '../../utils/cn'
 import '../../i18n'
+import { X } from 'lucide-react'
 
 interface TocItem {
   id: string
@@ -14,6 +15,12 @@ interface TocItem {
 interface BlogTocCardProps {
   toc?: TocItem[]
   title?: string
+}
+interface BlogTocDrawerProps {
+  toc?: TocItem[]
+  title?: string
+  open: boolean
+  onClose: () => void
 }
 
 const styles = {
@@ -142,8 +149,7 @@ function TocList({
   )
 }
 
-export function BlogTocCard({ toc = [], title }: BlogTocCardProps) {
-  const { t } = useTranslation()
+function useActiveTocId(toc: TocItem[]) {
   const [activeId, setActiveId] = useState<string>('page-top')
 
   useEffect(() => {
@@ -179,6 +185,13 @@ export function BlogTocCard({ toc = [], title }: BlogTocCardProps) {
     return () => observer.disconnect()
   }, [toc])
 
+  return activeId
+}
+
+export function BlogTocCard({ toc = [], title }: BlogTocCardProps) {
+  const { t } = useTranslation()
+  const activeId = useActiveTocId(toc)
+
   return (
     <Card className={styles.tocCard}>
       <div className={styles.tocHeader}>
@@ -213,5 +226,59 @@ export function BlogTocCard({ toc = [], title }: BlogTocCardProps) {
         </div>
       </div>
     </Card>
+  )
+}
+
+export function BlogTocDrawer({
+  toc = [],
+  title,
+  open,
+  onClose,
+}: BlogTocDrawerProps) {
+  const { t } = useTranslation()
+  const activeId = useActiveTocId(toc)
+
+  return (
+    <>
+      <div
+        className={cn(
+          'fixed inset-0 z-40 bg-transparent',
+          open ? 'pointer-events-auto' : 'pointer-events-none'
+        )}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      <div
+        className={cn(
+          'fixed right-6 top-[10vh] z-50 w-[min(82vw,320px)] rounded-2xl border border-slate-200 bg-white/95 shadow-xl backdrop-blur-0 transition-all duration-200',
+          'dark:border-slate-800 dark:bg-slate-950/95',
+          open
+            ? 'translate-x-0 opacity-100'
+            : 'pointer-events-none translate-x-4 opacity-0'
+        )}
+      >
+        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 dark:border-slate-800 dark:text-slate-200">
+          <span>{t('blog.toc.title')}</span>
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+            aria-label={t('blog.toc.close', 'Close')}
+          >
+            <X size={14} />
+          </button>
+        </div>
+        <div className="max-h-[60vh] overflow-y-auto px-4 py-3">
+          {toc.length === 0 && !title ? (
+            <div className="text-sm text-slate-500 italic">
+              {t('blog.toc.empty')}
+            </div>
+          ) : (
+            <TocList toc={toc} activeId={activeId} title={title} />
+          )}
+        </div>
+      </div>
+    </>
   )
 }
