@@ -47,7 +47,12 @@ export function BlogLayout() {
     <div ref={containerRef} className={styles.container}>
       <span id="page-top" />
       <div className={styles.layoutGrid}>
-        <aside className={styles.leftSidebar}>
+        <aside
+          className={cn(
+            styles.leftSidebar,
+            isBlogPost && styles.leftSidebarBlogPost
+          )}
+        >
           <div className={cn(styles.stickyWrapper, topClass)}>
             <LeftSidebarWidget />
           </div>
@@ -57,7 +62,12 @@ export function BlogLayout() {
           <Outlet />
         </main>
 
-        <aside className={styles.rightSidebar}>
+        <aside
+          className={cn(
+            styles.rightSidebar,
+            isBlogPost && styles.rightSidebarBlogPost
+          )}
+        >
           <div className={cn(styles.stickyWrapper, topClass)}>
             {isBlogList && <StatsWidget posts={posts} />}
             {isBlogPost && <BlogTocCard toc={toc} />}
@@ -110,7 +120,9 @@ const styles = {
   layoutGrid: 'flex justify-center gap-8 items-stretch flex-1',
 
   leftSidebar: 'hidden lg:block w-[280px] shrink-0',
+  leftSidebarBlogPost: 'lg:hidden xl:block',
   rightSidebar: 'hidden xl:block w-[280px] shrink-0',
+  rightSidebarBlogPost: 'lg:block',
   stickyWrapper:
     'sticky h-[calc(100vh-8rem)] overflow-y-auto space-y-6 pb-10 scrollbar-hide',
 
