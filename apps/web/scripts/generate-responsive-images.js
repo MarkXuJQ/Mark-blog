@@ -7,6 +7,7 @@ import sharp from 'sharp'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const PUBLIC_IMAGES_DIR = path.resolve(__dirname, '../public/images')
+const SKIP_IMAGE_GENERATION_ENV = 'SKIP_RESPONSIVE_IMAGE_GENERATION'
 
 const BACKGROUND_IMAGES = [
   {
@@ -20,6 +21,24 @@ const BACKGROUND_IMAGES = [
     widths: [640, 960, 1280],
   },
 ]
+
+function isTruthy(value) {
+  if (!value) return false
+  const normalized = String(value).trim().toLowerCase()
+  return normalized === '1' || normalized === 'true' || normalized === 'yes'
+}
+
+function shouldSkipImageGeneration() {
+  if (isTruthy(process.env[SKIP_IMAGE_GENERATION_ENV])) {
+    return `${SKIP_IMAGE_GENERATION_ENV}=${process.env[SKIP_IMAGE_GENERATION_ENV]}`
+  }
+
+  if (isTruthy(process.env.VERCEL)) {
+    return 'VERCEL environment detected'
+  }
+
+  return ''
+}
 
 function outputPath(base, width, format) {
   return path.join(PUBLIC_IMAGES_DIR, `${base}-${width}.${format}`)
@@ -91,7 +110,15 @@ async function generateResponsiveBackgrounds() {
   }
 }
 
-generateResponsiveBackgrounds().catch((error) => {
-  console.error('Failed to generate responsive images:', error)
-  process.exit(1)
-})
+const skipReason = shouldSkipImageGeneration()
+
+if (skipReason) {
+  console.log(
+    `Skipping responsive image generation (${skipReason}). Reusing committed assets.`
+  )
+} else {
+  generateResponsiveBackgrounds().catch((error) => {
+    console.error('Failed to generate responsive images:', error)
+    process.exit(1)
+  })
+}

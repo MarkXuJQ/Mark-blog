@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useAnimation } from 'framer-motion'
 import { IoArrowUpSharp } from 'react-icons/io5'
 import { useScrollToTop } from '../../hooks/useScrollToTop'
@@ -8,6 +8,8 @@ export function DraggableBackToTop() {
   const { showTopBtn, scrollToTop } = useScrollToTop()
   const controls = useAnimation()
   const isDragging = useRef(false)
+  const [scrollProgress, setScrollProgress] = useState(0)
+  const [footerOffset, setFooterOffset] = useState(0)
 
   const handleDragStart = () => {
     isDragging.current = true
@@ -20,7 +22,7 @@ export function DraggableBackToTop() {
       x: 0,
       transition: { type: 'spring', stiffness: 400, damping: 30 },
     })
-    
+
     // Reset dragging state after a short delay to prevent onClick from firing immediately after drag
     setTimeout(() => {
       isDragging.current = false
@@ -33,8 +35,46 @@ export function DraggableBackToTop() {
     }
   }
 
+  useEffect(() => {
+    const updateProgress = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop
+      const scrollHeight = document.documentElement.scrollHeight
+      const clientHeight = document.documentElement.clientHeight
+      const maxScroll = Math.max(1, scrollHeight - clientHeight)
+      const progress = Math.min(1, Math.max(0, scrollTop / maxScroll))
+      setScrollProgress(progress)
+
+      const footer = document.querySelector('footer')
+      if (!footer) {
+        setFooterOffset(0)
+        return
+      }
+
+      const footerTop = footer.getBoundingClientRect().top
+      const overlap = Math.max(0, window.innerHeight - footerTop)
+      const baseBottom = 64
+      const margin = 8
+      const extraOffset = Math.max(0, overlap + margin - baseBottom)
+      setFooterOffset(extraOffset)
+    }
+
+    updateProgress()
+    window.addEventListener('scroll', updateProgress, { passive: true })
+    window.addEventListener('resize', updateProgress)
+    return () => {
+      window.removeEventListener('scroll', updateProgress)
+      window.removeEventListener('resize', updateProgress)
+    }
+  }, [])
+
+  const ringSize = 44
+  const ringStroke = 2
+  const ringRadius = (ringSize - ringStroke) / 2
+  const ringCircumference = 2 * Math.PI * ringRadius
+  const ringOffset = ringCircumference * (1 - scrollProgress)
+
   return (
-    <motion.button
+    <motion.div
       drag
       dragMomentum={false}
       onDragStart={handleDragStart}
@@ -45,21 +85,53 @@ export function DraggableBackToTop() {
       style={{
         opacity: showTopBtn ? 1 : 0,
         pointerEvents: showTopBtn ? 'auto' : 'none',
-        y: 0, // Ensure initial y is 0 relative to bottom-6
+        y: -footerOffset, // Keep above footer when it's in view
       }}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
-      onClick={handleClick}
-      className={cn(
-        'fixed right-6 bottom-6 z-50 flex h-10 w-10 cursor-grab items-center justify-center active:cursor-grabbing',
-        'rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur',
-        'dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-300',
-        // Remove transition-opacity from class because we handle it via motion style
-        'transition-colors hover:bg-slate-50'
-      )}
-      aria-label="返回顶部"
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.95 }}
+      className="fixed right-6 bottom-18 z-50 h-11 w-11 cursor-grab active:cursor-grabbing"
     >
-      <IoArrowUpSharp size={20} />
-    </motion.button>
+      <svg
+        width={ringSize}
+        height={ringSize}
+        viewBox={`0 0 ${ringSize} ${ringSize}`}
+        className="absolute inset-0"
+        aria-hidden="true"
+      >
+        <circle
+          cx={ringSize / 2}
+          cy={ringSize / 2}
+          r={ringRadius}
+          strokeWidth={ringStroke}
+          className="stroke-slate-200/80 dark:stroke-slate-700/70"
+          fill="none"
+        />
+        <circle
+          cx={ringSize / 2}
+          cy={ringSize / 2}
+          r={ringRadius}
+          strokeWidth={ringStroke}
+          className="stroke-sky-500 dark:stroke-sky-400"
+          fill="none"
+          strokeDasharray={ringCircumference}
+          strokeDashoffset={ringOffset}
+          strokeLinecap="round"
+          transform={`rotate(-90 ${ringSize / 2} ${ringSize / 2})`}
+        />
+      </svg>
+
+      <button
+        type="button"
+        onClick={handleClick}
+        className={cn(
+          'absolute inset-[2px] flex items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur',
+          'dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-300',
+          'transition-colors hover:bg-slate-50'
+        )}
+        aria-label="??????"
+      >
+        <IoArrowUpSharp size={20} />
+      </button>
+    </motion.div>
   )
 }

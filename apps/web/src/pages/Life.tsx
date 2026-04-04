@@ -5,7 +5,6 @@ import { ChevronLeft, ChevronRight, MessageCircle, X, ListFilter, ChevronDown, A
 import { Seo } from '../components/seo/Seo'
 import { DeferredComments } from '../components/comments/DeferredComments'
 import { Dropdown, DropdownContent, DropdownTrigger } from '../components/ui/Dropdown'
-import { DraggableBackToTop } from '../components/ui/DraggableBackToTop'
 import { useLightbox } from '../components/ui/Lightbox'
 import { getImageUrl } from '../utils/image'
 import { cn } from '../utils/cn'
@@ -708,7 +707,6 @@ export function Life() {
         )}
       </AnimatePresence>
 
-      <DraggableBackToTop />
     </>
   )
 }
