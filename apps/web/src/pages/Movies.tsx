@@ -56,7 +56,12 @@ interface TmdbEnrichedMovie {
 }
 
 
-const ITEMS_PER_PAGE = 24
+const ROWS_PER_PAGE = 4
+const BASE_COLUMNS = 2
+const MIN_CARD_WIDTH_MD = 190
+const MIN_CARD_WIDTH_LG = 210
+const GAP_MD = 12
+const GAP_LG = 16
 const DEFAULT_PLATFORM = 'Douban'
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w342'
 const DOUBAN_PROFILE_URL =
@@ -183,11 +188,29 @@ function formatDate(input: string, locale: string) {
   }).format(parsed)
 }
 
+function toDateKeyFromString(input: string) {
+  if (!input) return ''
+  const parsed = new Date(input)
+  if (Number.isNaN(parsed.getTime())) return ''
+  const year = parsed.getFullYear()
+  const month = String(parsed.getMonth() + 1).padStart(2, '0')
+  const day = String(parsed.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 
 function normalizePosterUrl(path: string | undefined | null) {
   if (!path) return ''
   if (/^https?:\/\//i.test(path)) return path
   return `${TMDB_IMAGE_BASE_URL}${path}`
+}
+
+function calculateColumns(containerWidth: number, viewportWidth: number) {
+  if (viewportWidth < 768) return BASE_COLUMNS
+  const minCardWidth = viewportWidth >= 1024 ? MIN_CARD_WIDTH_LG : MIN_CARD_WIDTH_MD
+  const gap = viewportWidth >= 1024 ? GAP_LG : GAP_MD
+  const columns = Math.floor((containerWidth + gap) / (minCardWidth + gap))
+  return Math.max(BASE_COLUMNS, columns || BASE_COLUMNS)
 }
 
 class TmdbRequestError extends Error {
@@ -384,10 +407,14 @@ export function Movies() {
   const [viewMode] = useState<ViewMode>('tmdb')
   const [cardLayout] = useState<CardLayout>('grid')
   const [onlyWithReviews, setOnlyWithReviews] = useState(false)
+  const [selectedRating, setSelectedRating] = useState<number | null>(null)
+  const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [tmdbMap, setTmdbMap] = useState<Record<string, TmdbEnrichedMovie | null>>({})
   const [tmdbStatus, setTmdbStatus] = useState<TmdbStatus>('idle')
   const [tmdbErrorMessage, setTmdbErrorMessage] = useState('')
+  const [columns, setColumns] = useState(BASE_COLUMNS)
+  const [gridNode, setGridNode] = useState<HTMLDivElement | null>(null)
 
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const tmdbLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
@@ -410,6 +437,10 @@ export function Movies() {
 
     return movieItems.filter((movie) => {
       if (onlyWithReviews && !movie.reviewSlug) return false
+      if (selectedRating !== null && movie.rating !== selectedRating) return false
+      if (selectedDateKey && toDateKeyFromString(movie.watchDate) !== selectedDateKey) {
+        return false
+      }
 
       if (!normalizedKeyword) return true
 
@@ -427,13 +458,14 @@ export function Movies() {
 
       return haystack.includes(normalizedKeyword)
     })
-  }, [movieItems, keyword, onlyWithReviews])
+  }, [movieItems, keyword, onlyWithReviews, selectedRating, selectedDateKey])
 
-  const totalPages = Math.max(1, Math.ceil(filteredMovies.length / ITEMS_PER_PAGE))
+  const itemsPerPage = columns * ROWS_PER_PAGE
+  const totalPages = Math.max(1, Math.ceil(filteredMovies.length / itemsPerPage))
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [keyword, onlyWithReviews])
+  }, [keyword, onlyWithReviews, selectedRating, selectedDateKey])
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -442,9 +474,40 @@ export function Movies() {
   }, [currentPage, totalPages])
 
   const pageMovies = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE
-    return filteredMovies.slice(start, start + ITEMS_PER_PAGE)
-  }, [filteredMovies, currentPage])
+    const start = (currentPage - 1) * itemsPerPage
+    return filteredMovies.slice(start, start + itemsPerPage)
+  }, [filteredMovies, currentPage, itemsPerPage])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (!gridNode) return
+
+    const updateColumns = () => {
+      const width = gridNode.getBoundingClientRect().width
+      const nextColumns = calculateColumns(width, window.innerWidth)
+      setColumns((prev) => (prev === nextColumns ? prev : nextColumns))
+    }
+
+    updateColumns()
+
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(updateColumns)
+
+    if (resizeObserver) {
+      resizeObserver.observe(gridNode)
+    }
+
+    window.addEventListener('resize', updateColumns)
+
+    return () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect()
+      }
+      window.removeEventListener('resize', updateColumns)
+    }
+  }, [gridNode])
 
   useEffect(() => {
     if (viewMode !== 'tmdb') {
@@ -606,6 +669,8 @@ export function Movies() {
             <WatchActivityCalendar
               watchDates={movieItems.map((movie) => movie.watchDate)}
               locale={locale}
+              selectedDateKey={selectedDateKey}
+              onSelectDateKey={setSelectedDateKey}
             />
 
             {movieItems.length === 0 ? (
@@ -628,11 +693,17 @@ export function Movies() {
             ) : (
               <>
                 <div
+                  ref={setGridNode}
                   className={cn(
                     cardLayout === 'grid'
-                      ? 'grid grid-cols-2 gap-3 md:grid-cols-[repeat(auto-fit,minmax(190px,230px))] md:justify-start lg:grid-cols-[repeat(auto-fit,minmax(210px,250px))] lg:gap-4'
+                      ? 'grid gap-3 lg:gap-4'
                       : 'space-y-4'
                   )}
+                  style={
+                    cardLayout === 'grid'
+                      ? { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }
+                      : undefined
+                  }
                 >
                   {pageMovies.map((movie) => {
                     const watchedAt = formatDate(movie.watchDate, locale)
@@ -675,7 +746,7 @@ export function Movies() {
                             ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-300 dark:focus:ring-emerald-700'
                             : '',
                           cardLayout === 'grid'
-                            ? 'flex h-full w-full flex-col md:min-w-[190px] md:max-w-[230px] lg:min-w-[210px] lg:max-w-[250px]'
+                            ? 'flex h-full w-full flex-col'
                             : viewMode === 'tmdb'
                               ? 'grid gap-4 sm:grid-cols-[110px_minmax(0,1fr)]'
                               : 'block'
@@ -854,6 +925,8 @@ export function Movies() {
               ratings={movieItems.map((movie) => movie.rating)}
               doubanProfileUrl={DOUBAN_PROFILE_URL}
               tmdbProfileUrl={TMDB_PROFILE_URL}
+              selectedRating={selectedRating}
+              onSelectRating={setSelectedRating}
             />
           </aside>
         </div>
