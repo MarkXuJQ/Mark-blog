@@ -253,6 +253,7 @@
     "sort": {
       "playtime": "Most played",
       "recent": "Recently active",
+      "achievements": "Achievement completion",
       "alphabetical": "Alphabetical",
       "leastPlayed": "Least played"
     },

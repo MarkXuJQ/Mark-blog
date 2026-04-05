@@ -30,14 +30,14 @@ export function RootLayout() {
   }, [])
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
+    <div className="relative flex min-h-screen w-full flex-col bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-[var(--surface-0)] dark:text-[var(--text-primary)]">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_92%_0%,rgba(252,211,77,0.10),rgba(251,191,36,0.04)_24%,rgba(255,255,255,0)_50%)] dark:bg-[radial-gradient(ellipse_at_92%_0%,rgba(56,189,248,0.12),rgba(14,165,233,0.05)_24%,rgba(2,6,23,0)_54%)]" />
-        <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(252,211,77,0.16)_0%,rgba(251,191,36,0.08)_34%,rgba(255,255,255,0)_68%)] dark:bg-[radial-gradient(circle,rgba(56,189,248,0.14)_0%,rgba(14,165,233,0.06)_36%,rgba(2,6,23,0)_72%)]" />
-        <div className="absolute -left-40 -bottom-40 h-[34rem] w-[34rem] rounded-full bg-[radial-gradient(circle,rgba(125,211,252,0.12)_0%,rgba(186,230,253,0.06)_34%,rgba(255,255,255,0)_70%)] dark:bg-[radial-gradient(circle,rgba(100,116,139,0.12)_0%,rgba(30,41,59,0.06)_38%,rgba(2,6,23,0)_74%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_92%_0%,rgba(252,211,77,0.10),rgba(251,191,36,0.04)_24%,rgba(255,255,255,0)_50%)] dark:bg-[radial-gradient(ellipse_at_92%_0%,rgba(168,104,106,0.16),rgba(98,60,62,0.07)_26%,rgba(0,0,0,0)_56%)]" />
+        <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(252,211,77,0.16)_0%,rgba(251,191,36,0.08)_34%,rgba(255,255,255,0)_68%)] dark:bg-[radial-gradient(circle,rgba(96,154,120,0.16)_0%,rgba(60,96,76,0.08)_36%,rgba(0,0,0,0)_72%)]" />
+        <div className="absolute -left-40 -bottom-40 h-[34rem] w-[34rem] rounded-full bg-transparent dark:bg-transparent" />
       </div>
       {/* Sticky NavBar Container - Floating Effect */}
       <div

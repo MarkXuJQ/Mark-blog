@@ -13,6 +13,8 @@ interface CalendarDayCell {
 interface WatchActivityCalendarProps {
   watchDates: string[]
   locale: string
+  selectedDateKey: string | null
+  onSelectDateKey: (value: string | null) => void
 }
 
 function getMondayDayIndex(date: Date) {
@@ -35,7 +37,7 @@ function formatDateFromObject(input: Date, locale: string) {
 }
 
 function getHeatmapLevelClass(count: number) {
-  if (count <= 0) return 'bg-slate-100 dark:bg-slate-800'
+  if (count <= 0) return 'bg-slate-100 dark:bg-[#23262c]'
   if (count === 1) return 'bg-emerald-200 dark:bg-emerald-900/70'
   if (count === 2) return 'bg-emerald-300 dark:bg-emerald-700/80'
   if (count === 3) return 'bg-emerald-500 dark:bg-emerald-500/85'
@@ -66,6 +68,8 @@ function formatMonthLabel(date: Date, locale: string) {
 export function WatchActivityCalendar({
   watchDates,
   locale,
+  selectedDateKey,
+  onSelectDateKey,
 }: WatchActivityCalendarProps) {
   const { t } = useTranslation()
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())
@@ -173,8 +177,15 @@ export function WatchActivityCalendar({
     [parsedWatchDates, selectedYear]
   )
 
+  const selectedDateLabel = useMemo(() => {
+    if (!selectedDateKey) return ''
+    const parsed = new Date(`${selectedDateKey}T00:00:00`)
+    if (Number.isNaN(parsed.getTime())) return selectedDateKey
+    return formatDateFromObject(parsed, locale)
+  }, [selectedDateKey, locale])
+
   return (
-    <section className="relative mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
+    <section className="relative mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c]">
       {years.length > 0 ? (
         <div className="absolute right-4 top-4 z-10">
           <CalendarYearWheel
@@ -206,6 +217,19 @@ export function WatchActivityCalendar({
           </p>
         </div>
       </div>
+
+      {selectedDateKey ? (
+        <div className="mb-3 flex items-center justify-between rounded-2xl border border-slate-200/80 bg-slate-50/80 px-3.5 py-2.5 text-[11px] text-slate-500 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-400">
+          <span>{selectedDateLabel}</span>
+          <button
+            type="button"
+            onClick={() => onSelectDateKey(null)}
+            className="rounded-full border border-slate-200/80 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-emerald-300 hover:text-emerald-600 dark:border-slate-700/80 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:border-emerald-500 dark:hover:text-emerald-300"
+          >
+            {t('movies.stats.clearFilter', '清除筛选')}
+          </button>
+        </div>
+      ) : null}
 
       <div className="overflow-x-auto">
         <div className="min-w-max">
@@ -247,25 +271,38 @@ export function WatchActivityCalendar({
             <div className="flex gap-1">
               {calendarWeeks.map((week, weekIndex) => (
                 <div key={`week-${weekIndex}`} className="flex flex-col gap-1">
-                  {week.map((day) => (
-                    <div
-                      key={day.dateKey}
-                      className={cn(
-                        'h-3 w-3 rounded-[3px] ring-1 ring-black/5 transition-transform duration-200 hover:scale-[1.12] dark:ring-white/5',
-                        day.isCurrentYear
-                          ? getHeatmapLevelClass(day.count)
-                          : 'bg-transparent ring-transparent'
-                      )}
-                      title={
-                        day.isCurrentYear
-                          ? t('movies.calendar.tooltip', {
-                              date: formatDateFromObject(day.date, locale),
-                              count: day.count,
-                            })
-                          : ''
-                      }
-                    />
-                  ))}
+                  {week.map((day) => {
+                    const isInteractive = day.isCurrentYear && day.count > 0
+                    return (
+                      <button
+                        key={day.dateKey}
+                        type="button"
+                        onClick={
+                          isInteractive ? () => onSelectDateKey(day.dateKey) : undefined
+                        }
+                        className={cn(
+                          'h-3 w-3 rounded-[3px] ring-1 ring-black/5 transition-transform duration-200 dark:ring-white/5',
+                          isInteractive ? 'hover:scale-[1.12]' : '',
+                          selectedDateKey === day.dateKey
+                            ? 'ring-2 ring-emerald-400 dark:ring-emerald-500'
+                            : '',
+                          day.isCurrentYear
+                            ? getHeatmapLevelClass(day.count)
+                            : 'bg-transparent ring-transparent'
+                        )}
+                        title={
+                          day.isCurrentYear
+                            ? t('movies.calendar.tooltip', {
+                                date: formatDateFromObject(day.date, locale),
+                                count: day.count,
+                              })
+                            : ''
+                        }
+                        disabled={!isInteractive}
+                        aria-pressed={selectedDateKey === day.dateKey}
+                      />
+                    )
+                  })}
                 </div>
               ))}
             </div>

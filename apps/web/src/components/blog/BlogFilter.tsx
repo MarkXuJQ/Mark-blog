@@ -31,7 +31,7 @@ function FilterTrigger({
       className={cn(
         'flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors',
         'hover:bg-slate-50 hover:text-slate-900',
-        'dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100'
+        'dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100'
       )}
     >
       <ListFilter size={16} />
@@ -105,7 +105,7 @@ export function BlogFilter({
         className={cn(
           'flex cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors select-none active:scale-95',
           'hover:bg-slate-50 hover:text-slate-900',
-          'dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100'
+          'dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100'
         )}
       >
         <motion.div

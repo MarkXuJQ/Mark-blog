@@ -143,7 +143,7 @@ export function Comments({
       <div className="twikoo-wrap" data-layout={layout}>
         <div id={containerId} />
         {!TWIKOO_ENV_ID ? (
-          <div className="flex flex-col items-center justify-center py-12 text-slate-500 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 mx-4">
+          <div className="flex flex-col items-center justify-center py-12 text-slate-500 bg-slate-50 dark:bg-[#17191c] rounded-lg border border-dashed border-slate-300 dark:border-[#2b2f36] mx-4">
             <p className="mb-2 font-medium">评论区未配置</p>
             <p className="text-sm text-center max-w-md px-4">
               请在 <code className="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-xs">.env</code> 文件中配置 <code className="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-xs">VITE_TWIKOO_ENV_ID</code>，
@@ -177,23 +177,26 @@ export function Comments({
         }
         .dark .twikoo-wrap .tk-time,
         .dark .twikoo-wrap .tk-extras {
-            color: #94a3b8;
+            color: #9aa4b2;
         }
         .dark .twikoo-wrap .tk-nick {
             color: #e2e8f0;
         }
         .dark .twikoo-wrap .tk-input textarea {
             color: #e2e8f0;
-            background-color: #1e293b;
+            background-color: #17191c;
+            border-color: #2b2f36;
         }
         .dark .twikoo-wrap .tk-meta-input input {
             color: #e2e8f0;
+            background-color: #17191c;
+            border-color: #2b2f36;
         }
         .dark .twikoo-wrap .tk-action-icon {
-            color: #94a3b8;
+            color: #9aa4b2;
         }
         .dark .twikoo-wrap .tk-submit-action-icon {
-            color: #94a3b8;
+            color: #9aa4b2;
         }
         .twikoo-wrap .tk-action-icon svg,
         .twikoo-wrap .tk-submit-action-icon svg {

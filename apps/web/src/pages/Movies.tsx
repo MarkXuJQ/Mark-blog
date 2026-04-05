@@ -56,7 +56,12 @@ interface TmdbEnrichedMovie {
 }
 
 
-const ITEMS_PER_PAGE = 24
+const ROWS_PER_PAGE = 4
+const BASE_COLUMNS = 2
+const MIN_CARD_WIDTH_MD = 190
+const MIN_CARD_WIDTH_LG = 210
+const GAP_MD = 12
+const GAP_LG = 16
 const DEFAULT_PLATFORM = 'Douban'
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w342'
 const DOUBAN_PROFILE_URL =
@@ -183,11 +188,29 @@ function formatDate(input: string, locale: string) {
   }).format(parsed)
 }
 
+function toDateKeyFromString(input: string) {
+  if (!input) return ''
+  const parsed = new Date(input)
+  if (Number.isNaN(parsed.getTime())) return ''
+  const year = parsed.getFullYear()
+  const month = String(parsed.getMonth() + 1).padStart(2, '0')
+  const day = String(parsed.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 
 function normalizePosterUrl(path: string | undefined | null) {
   if (!path) return ''
   if (/^https?:\/\//i.test(path)) return path
   return `${TMDB_IMAGE_BASE_URL}${path}`
+}
+
+function calculateColumns(containerWidth: number, viewportWidth: number) {
+  if (viewportWidth < 768) return BASE_COLUMNS
+  const minCardWidth = viewportWidth >= 1024 ? MIN_CARD_WIDTH_LG : MIN_CARD_WIDTH_MD
+  const gap = viewportWidth >= 1024 ? GAP_LG : GAP_MD
+  const columns = Math.floor((containerWidth + gap) / (minCardWidth + gap))
+  return Math.max(BASE_COLUMNS, columns || BASE_COLUMNS)
 }
 
 class TmdbRequestError extends Error {
@@ -384,10 +407,14 @@ export function Movies() {
   const [viewMode] = useState<ViewMode>('tmdb')
   const [cardLayout] = useState<CardLayout>('grid')
   const [onlyWithReviews, setOnlyWithReviews] = useState(false)
+  const [selectedRating, setSelectedRating] = useState<number | null>(null)
+  const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [tmdbMap, setTmdbMap] = useState<Record<string, TmdbEnrichedMovie | null>>({})
   const [tmdbStatus, setTmdbStatus] = useState<TmdbStatus>('idle')
   const [tmdbErrorMessage, setTmdbErrorMessage] = useState('')
+  const [columns, setColumns] = useState(BASE_COLUMNS)
+  const [gridNode, setGridNode] = useState<HTMLDivElement | null>(null)
 
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const tmdbLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
@@ -410,6 +437,10 @@ export function Movies() {
 
     return movieItems.filter((movie) => {
       if (onlyWithReviews && !movie.reviewSlug) return false
+      if (selectedRating !== null && movie.rating !== selectedRating) return false
+      if (selectedDateKey && toDateKeyFromString(movie.watchDate) !== selectedDateKey) {
+        return false
+      }
 
       if (!normalizedKeyword) return true
 
@@ -427,13 +458,14 @@ export function Movies() {
 
       return haystack.includes(normalizedKeyword)
     })
-  }, [movieItems, keyword, onlyWithReviews])
+  }, [movieItems, keyword, onlyWithReviews, selectedRating, selectedDateKey])
 
-  const totalPages = Math.max(1, Math.ceil(filteredMovies.length / ITEMS_PER_PAGE))
+  const itemsPerPage = columns * ROWS_PER_PAGE
+  const totalPages = Math.max(1, Math.ceil(filteredMovies.length / itemsPerPage))
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [keyword, onlyWithReviews])
+  }, [keyword, onlyWithReviews, selectedRating, selectedDateKey])
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -442,9 +474,40 @@ export function Movies() {
   }, [currentPage, totalPages])
 
   const pageMovies = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE
-    return filteredMovies.slice(start, start + ITEMS_PER_PAGE)
-  }, [filteredMovies, currentPage])
+    const start = (currentPage - 1) * itemsPerPage
+    return filteredMovies.slice(start, start + itemsPerPage)
+  }, [filteredMovies, currentPage, itemsPerPage])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (!gridNode) return
+
+    const updateColumns = () => {
+      const width = gridNode.getBoundingClientRect().width
+      const nextColumns = calculateColumns(width, window.innerWidth)
+      setColumns((prev) => (prev === nextColumns ? prev : nextColumns))
+    }
+
+    updateColumns()
+
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(updateColumns)
+
+    if (resizeObserver) {
+      resizeObserver.observe(gridNode)
+    }
+
+    window.addEventListener('resize', updateColumns)
+
+    return () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect()
+      }
+      window.removeEventListener('resize', updateColumns)
+    }
+  }, [gridNode])
 
   useEffect(() => {
     if (viewMode !== 'tmdb') {
@@ -556,7 +619,7 @@ export function Movies() {
               </p>
             </section>
 
-            <section className="mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-2.5 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 sm:p-3">
+            <section className="mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-2.5 shadow-sm backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c] sm:p-3">
               <div className="flex flex-nowrap items-center gap-2 overflow-hidden sm:gap-3">
                 <label className="relative min-w-0 flex-[1_1_8rem]">
                   <Search
@@ -568,7 +631,7 @@ export function Movies() {
                     value={keyword}
                     onChange={(event) => setKeyword(event.target.value)}
                     placeholder={t('movies.searchPlaceholder')}
-                    className="w-full rounded-[1rem] border border-slate-200 bg-white/90 py-2.5 pl-10 pr-3 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-blue-500 dark:focus:ring-blue-900/40"
+                    className="w-full rounded-[1rem] border border-slate-200 bg-white/90 py-2.5 pl-10 pr-3 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-200 dark:focus:border-blue-500 dark:focus:ring-blue-900/40"
                   />
                 </label>
 
@@ -579,7 +642,7 @@ export function Movies() {
                     'shrink-0 rounded-full border px-3 py-2 text-xs font-medium transition',
                     onlyWithReviews
                       ? 'border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-500/50 dark:bg-emerald-900/30 dark:text-emerald-300'
-                      : 'border-slate-200 bg-white/85 text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-600'
+                      : 'border-slate-200 bg-white/85 text-slate-600 hover:border-slate-300 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-[#3a3f48]'
                   )}
                 >
                   {onlyWithReviews
@@ -606,6 +669,8 @@ export function Movies() {
             <WatchActivityCalendar
               watchDates={movieItems.map((movie) => movie.watchDate)}
               locale={locale}
+              selectedDateKey={selectedDateKey}
+              onSelectDateKey={setSelectedDateKey}
             />
 
             {movieItems.length === 0 ? (
@@ -628,11 +693,17 @@ export function Movies() {
             ) : (
               <>
                 <div
+                  ref={setGridNode}
                   className={cn(
                     cardLayout === 'grid'
-                      ? 'grid grid-cols-2 gap-3 md:grid-cols-[repeat(auto-fit,minmax(190px,230px))] md:justify-start lg:grid-cols-[repeat(auto-fit,minmax(210px,250px))] lg:gap-4'
+                      ? 'grid gap-3 lg:gap-4'
                       : 'space-y-4'
                   )}
+                  style={
+                    cardLayout === 'grid'
+                      ? { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }
+                      : undefined
+                  }
                 >
                   {pageMovies.map((movie) => {
                     const watchedAt = formatDate(movie.watchDate, locale)
@@ -670,12 +741,12 @@ export function Movies() {
                           'group rounded-2xl border p-4 shadow-sm backdrop-blur transition-transform duration-300 hover:-translate-y-1 hover:shadow-md',
                           hasReview
                             ? 'border-emerald-300/90 bg-emerald-100/70 shadow-emerald-200/50 dark:border-emerald-400/60 dark:bg-emerald-900/28 dark:shadow-emerald-900/40'
-                            : 'border-slate-200/70 bg-white/80 dark:border-slate-800 dark:bg-slate-900/80',
+                            : 'border-slate-200/70 bg-white/80 dark:border-[#2b2f36] dark:bg-[#17191c]',
                           canOpenReview
                             ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-300 dark:focus:ring-emerald-700'
                             : '',
                           cardLayout === 'grid'
-                            ? 'flex h-full w-full flex-col md:min-w-[190px] md:max-w-[230px] lg:min-w-[210px] lg:max-w-[250px]'
+                            ? 'flex h-full w-full flex-col'
                             : viewMode === 'tmdb'
                               ? 'grid gap-4 sm:grid-cols-[110px_minmax(0,1fr)]'
                               : 'block'
@@ -684,7 +755,7 @@ export function Movies() {
                         {viewMode === 'tmdb' ? (
                           <div
                             className={cn(
-                              'aspect-[2/3] overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800',
+                              'aspect-[2/3] overflow-hidden rounded-xl bg-slate-100 dark:bg-[#1f2328]',
                               cardLayout === 'grid' ? 'mb-3' : ''
                             )}
                           >
@@ -760,7 +831,7 @@ export function Movies() {
                                   rel="noopener noreferrer"
                                   onClick={(event) => event.stopPropagation()}
                                   className={cn(
-                                    'inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700/80 dark:bg-slate-900/55 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300',
+                                    'inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300',
                                     cardLayout === 'grid' ? 'px-2 py-1' : ''
                                   )}
                                 >
@@ -775,7 +846,7 @@ export function Movies() {
                                   rel="noopener noreferrer"
                                   onClick={(event) => event.stopPropagation()}
                                   className={cn(
-                                    'inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700/80 dark:bg-slate-900/55 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300',
+                                    'inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300',
                                     cardLayout === 'grid' ? 'px-2 py-1' : ''
                                   )}
                                 >
@@ -804,7 +875,7 @@ export function Movies() {
                                   className={cn(
                                     active
                                       ? 'fill-amber-400 text-amber-400'
-                                      : 'text-slate-300 dark:text-slate-700'
+                                      : 'text-slate-300 dark:text-[#3a3f48]'
                                   )}
                                 />
                               )
@@ -854,6 +925,8 @@ export function Movies() {
               ratings={movieItems.map((movie) => movie.rating)}
               doubanProfileUrl={DOUBAN_PROFILE_URL}
               tmdbProfileUrl={TMDB_PROFILE_URL}
+              selectedRating={selectedRating}
+              onSelectRating={setSelectedRating}
             />
           </aside>
         </div>

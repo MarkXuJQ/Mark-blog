@@ -23,7 +23,7 @@ export function SearchStatus({ query, count, onClear }: SearchStatusProps) {
       </span>
       <button
         onClick={onClear}
-        className="flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+        className="flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-200 dark:bg-[#23262c] dark:text-slate-300 dark:hover:bg-[#2b2f36]"
       >
         <X size={12} />
         {t('blog.search.clear')}

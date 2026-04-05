@@ -8,7 +8,7 @@ export function Copyright({ url }: CopyrightProps) {
   const { t } = useTranslation()
 
   return (
-    <div className="my-8 rounded-lg border border-l-4 border-slate-200 border-l-blue-500 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+    <div className="my-8 rounded-lg border border-l-4 border-slate-200 border-l-blue-500 bg-slate-50 p-4 dark:border-[#2b2f36] dark:bg-[#17191c]">
       <ul className="space-y-2 text-sm">
         <li className="flex flex-col gap-1 sm:flex-row sm:gap-2">
           <span className="min-w-[4rem] font-bold text-slate-700 dark:text-slate-200">

@@ -21,7 +21,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
 
   return (
     <div className={cn('relative flex items-center', containerClassName)}>
-      <Search className="absolute left-3 text-slate-400" size={18} />
+      <Search className="absolute left-3 text-slate-400 dark:text-slate-500" size={18} />
       <input
         ref={ref}
         type="text"
@@ -29,7 +29,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
           'w-full rounded-full border border-slate-200 bg-slate-50 px-4 py-2 pl-10 text-sm outline-none transition-all',
           rightSlot ? 'pr-28' : '',
           'placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20',
-          'dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:focus:border-blue-400',
+          'dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:border-blue-400',
           className
         )}
         onKeyDown={handleKeyDown}

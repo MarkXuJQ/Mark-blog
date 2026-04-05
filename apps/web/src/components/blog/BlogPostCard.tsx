@@ -86,7 +86,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
             </div>
 
             {/* Text (bottom, overlaps image for aesthetics) */}
-            <div className="-mt-10 flex min-w-0 flex-1 flex-col overflow-hidden bg-white p-3 pt-6 dark:bg-slate-950 sm:mt-0">
+            <div className="-mt-10 flex min-w-0 flex-1 flex-col overflow-hidden bg-white p-3 pt-6 dark:bg-[#17191c] sm:mt-0">
               <h2 className={titleClass}>{post.title}</h2>
 
               <p className={cn('mb-2 pb-4', summaryClass)}>{post.summary}</p>

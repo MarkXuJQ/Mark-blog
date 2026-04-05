@@ -140,7 +140,7 @@ export function GlobalSearchModal({
           />
 
           <motion.div
-            className="absolute left-1/2 top-[14vh] w-[min(720px,calc(100vw-2rem))] -translate-x-1/2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-950"
+            className="absolute left-1/2 top-[14vh] w-[min(720px,calc(100vw-2rem))] -translate-x-1/2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-[#2b2f36] dark:bg-[#17191c]"
             initial={{ y: 10, scale: 0.98, opacity: 0 }}
             animate={{ y: 0, scale: 1, opacity: 1 }}
             exit={{ y: 8, scale: 0.98, opacity: 0 }}
@@ -149,7 +149,7 @@ export function GlobalSearchModal({
             aria-modal="true"
             aria-label="Global search"
           >
-            <div className="border-b border-slate-100 p-3 dark:border-slate-900">
+            <div className="border-b border-slate-100 p-3 dark:border-[#2b2f36]">
               <SearchInput
                 ref={inputRef}
                 placeholder={t('search.placeholder')}
@@ -163,7 +163,7 @@ export function GlobalSearchModal({
                   setActiveIndex(0)
                 }}
               />
-              <div className="mt-2 flex items-center justify-between text-xs text-slate-400">
+              <div className="mt-2 flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
                 <span>Ctrl/⌘ K</span>
                 <span>
                   {hits.length > 0 ? t('search.resultsCount', { count: hits.length }) : ''}
@@ -191,8 +191,8 @@ export function GlobalSearchModal({
                     className={[
                       'w-full rounded-xl px-3 py-2 text-left transition-colors',
                       idx === activeIndex
-                        ? 'bg-slate-100 dark:bg-slate-900'
-                        : 'hover:bg-slate-50 dark:hover:bg-slate-900/60',
+                        ? 'bg-slate-100 dark:bg-[#23262c]'
+                        : 'hover:bg-slate-50 dark:hover:bg-[#1f2328]',
                     ].join(' ')}
                     role="option"
                     aria-selected={idx === activeIndex}

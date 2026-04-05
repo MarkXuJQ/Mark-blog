@@ -274,7 +274,7 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
 
 const styles = {
   header:
-    'relative mb-6 flex h-14 items-center justify-between rounded-full border border-slate-200/70 bg-white/80 px-4 py-3 backdrop-blur transition-colors duration-300 sm:px-6 dark:border-slate-800 dark:bg-slate-900/80 dark:text-slate-100',
+    'relative mb-6 flex h-14 items-center justify-between rounded-full border border-slate-200/70 bg-white/80 px-4 py-3 backdrop-blur transition-colors duration-300 sm:px-6 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-100',
   logo: {
     link: 'heading-brand flex items-center gap-2 text-lg font-semibold transition-opacity hover:opacity-80',
     img: 'h-8 w-8 rounded-sm',
@@ -292,28 +292,28 @@ const styles = {
   mobile: {
     toggle:
       'flex p-1 text-slate-600 transition-colors hover:text-slate-900 md:hidden dark:text-slate-300 dark:hover:text-white',
-    menu: 'absolute top-full right-0 left-0 z-50 mt-2 flex flex-col gap-1 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl md:hidden dark:border-slate-800 dark:bg-slate-900',
+    menu: 'absolute top-full right-0 left-0 z-50 mt-2 flex flex-col gap-1 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl md:hidden dark:border-[#2b2f36] dark:bg-[#17191c]',
     link: (isActive: boolean) =>
       cn(
         'block px-4 py-3 text-base transition-colors rounded-md',
         isActive
-          ? 'bg-slate-100 font-bold text-slate-900 dark:bg-slate-800 dark:text-slate-100'
-          : 'font-normal text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200'
+          ? 'bg-slate-100 font-bold text-slate-900 dark:bg-[#23262c] dark:text-slate-100'
+          : 'font-normal text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-[#23262c] dark:hover:text-slate-200'
       ),
-    section: 'my-2 border-t border-slate-100 pt-2 dark:border-slate-800',
+    section: 'my-2 border-t border-slate-100 pt-2 dark:border-[#2b2f36]',
     sectionTitle:
       'px-4 py-2 text-xs font-semibold text-slate-500 uppercase dark:text-slate-500',
     grid: 'grid grid-cols-2 gap-2',
     controls:
-      'mt-2 flex items-center justify-center border-t border-slate-100 pt-4 dark:border-slate-800',
+      'mt-2 flex items-center justify-center border-t border-slate-100 pt-4 dark:border-[#2b2f36]',
     themeContainer:
-      'mt-2 flex items-center justify-center gap-4 border-t border-slate-100 pt-4 pb-2 dark:border-slate-800',
+      'mt-2 flex items-center justify-center gap-4 border-t border-slate-100 pt-4 pb-2 dark:border-[#2b2f36]',
     themeButton: (isActive: boolean) =>
       cn(
         'flex h-10 w-10 items-center justify-center rounded-full transition-colors',
         isActive
-          ? 'bg-slate-100 text-slate-900 ring-2 ring-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-700'
-          : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800'
+          ? 'bg-slate-100 text-slate-900 ring-2 ring-slate-200 dark:bg-[#23262c] dark:text-slate-100 dark:ring-[#2b2f36]'
+          : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-[#23262c]'
       ),
   },
   dropdown: {
@@ -326,13 +326,13 @@ const styles = {
           : 'font-normal text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
       ),
     label: 'inline-flex w-[3.75rem] justify-center truncate text-center',
-    menu: 'absolute top-full right-0 mt-2 w-32 origin-top-right rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 dark:border-slate-800 dark:bg-slate-900 dark:ring-white/10',
+    menu: 'absolute top-full right-0 mt-2 w-32 origin-top-right rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 dark:border-[#2b2f36] dark:bg-[#17191c] dark:ring-white/10',
     item: (isActive: boolean) =>
       cn(
         'block rounded-md px-4 py-2 text-sm transition-colors',
         isActive
-          ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100'
-          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200'
+          ? 'bg-slate-100 text-slate-900 dark:bg-[#23262c] dark:text-slate-100'
+          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-[#23262c] dark:hover:text-slate-200'
       ),
   },
 }
