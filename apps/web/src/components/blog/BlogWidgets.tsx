@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SearchTriggerInput } from '../search/SearchTriggerInput'
 import { Card } from '../ui/Card'
@@ -12,36 +13,48 @@ import { countWords } from '../../utils/readingTime'
 
 // --- Profile Content (Internal) ---
 function ProfileContent() {
-  const { t } = useTranslation()
-  const signature = t('blog.sidebar.profile.signature')
-  let line1 = signature
-  let line2 = ''
-  const lower = signature.toLowerCase()
-  const idxResume = lower.indexOf('resume')
-  if (idxResume >= 0) {
-    line1 = signature.slice(0, idxResume).trim()
-    line2 = signature.slice(idxResume).trim()
-  } else {
-    const idxChi = signature.indexOf('，')
-    const idxEng = signature.indexOf(',')
-    const idxSemi = signature.indexOf(';')
-    let idx = -1
-    if (idxChi >= 0) {
-      idx = idxChi
-    } else if (idxEng >= 0) {
-      idx = idxEng
-    } else if (idxSemi >= 0) {
-      idx = idxSemi
+  const { t, i18n } = useTranslation()
+  const signatureOptions = useMemo(
+    () => [
+      t('blog.sidebar.profile.signature'),
+      i18n.language?.startsWith('zh')
+        ? '光阴分百份，此周占二分。\n五十二之一，逝水不重温。'
+        : 'One of fifty-two, two percent of the year,\nGone with the flow, and never reappear.',
+      i18n.language?.startsWith('zh')
+        ? '衣沾不足惜\n但使愿无违'
+        : 'If my dress is wet, what do I care\nAs long as my wish is fulfilled there.',
+    ],
+    [i18n.language, t]
+  )
+  const [signatureIndex, setSignatureIndex] = useState(() =>
+    signatureOptions.length > 0
+      ? Math.floor(Math.random() * signatureOptions.length)
+      : 0
+  )
+  const signature = signatureOptions[signatureIndex] ?? signatureOptions[0] ?? ''
+  const normalizedSignature = (() => {
+    if (signature.includes('\n')) return signature
+
+    if (signature.includes('乔装成大神改简历')) {
+      return signature.replace('乔装成大神改简历', '\n乔装成大神改简历')
     }
-    if (idx >= 0) {
-      line1 = signature.slice(0, idx + 1)
-      line2 = signature.slice(idx + 1).trim()
+
+    if (/resume/i.test(signature)) {
+      return signature.replace(/resume/gi, '\n$&')
     }
-  }
+
+    return signature
+  })()
+  const signatureLines = normalizedSignature
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
 
   return (
     <>
       <div className={styles.profileContainer}>
+        <div className={styles.profileBackdropImage} aria-hidden="true" />
+        <div className={styles.profileTextScrim} aria-hidden="true" />
         <div className={styles.avatarWrapper}>
           <img
             src={getImageUrl('/images/IMG_1766.JPG')}
@@ -54,18 +67,29 @@ function ProfileContent() {
           />
         </div>
         <h3 className={styles.profileName}>Mark Xu</h3>
-        <p className={styles.profileSignature}>
-          <span>{line1}</span>
-          {line2 && (
-            <>
-              <br />
-              <span>{line2}</span>
-            </>
-          )}
-        </p>
+        <button
+          type="button"
+          className={styles.profileSignatureButton}
+          onClick={() => {
+            if (signatureOptions.length <= 1) return
+            setSignatureIndex((prev) => (prev + 1) % signatureOptions.length)
+          }}
+          aria-label="切换口号"
+        >
+          <p className={styles.profileSignature}>
+            {signatureLines.map((line, index) => (
+              <span key={`${line}-${index}`} className="block">
+                {line}
+              </span>
+            ))}
+          </p>
+        </button>
       </div>
 
-      <SearchTriggerInput placeholder={t('blog.sidebar.search.placeholder')} />
+      <SearchTriggerInput
+        placeholder={t('blog.sidebar.search.placeholder')}
+        containerClassName="relative -mt-5 mb-7"
+      />
 
       <SocialLinks />
     </>
@@ -265,13 +289,21 @@ const styles = {
   widgetCard: 'p-6 transition-all hover:shadow-md',
 
   // Profile
-  profileContainer: 'flex flex-col items-center text-center',
+  profileContainer:
+    'relative -mx-6 -mt-6 mb-1 flex flex-col items-center overflow-hidden px-6 pt-6 pb-4 text-center',
+  profileBackdropImage:
+    "absolute inset-x-0 top-0 z-0 h-[15rem] rounded-t-2xl bg-[image:url('/images/day-640.avif')] bg-cover bg-center blur-[1.5px] scale-[1.02] [mask-image:linear-gradient(to_bottom,black_0%,black_58%,rgba(0,0,0,0.82)_72%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_58%,rgba(0,0,0,0.82)_72%,transparent_100%)] dark:bg-[image:url('/images/night-640.avif')]",
+  profileTextScrim:
+    'absolute inset-x-0 top-0 z-[1] h-[15rem] rounded-t-2xl bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0)_24%,rgba(255,255,255,0.58)_54%,rgba(255,255,255,0.94)_74%,rgba(255,255,255,1)_100%)] dark:bg-[linear-gradient(180deg,rgba(15,23,42,0.1),rgba(23,25,28,0)_24%,rgba(23,25,28,0.5)_54%,rgba(23,25,28,0.9)_74%,rgba(23,25,28,1)_100%)]',
   avatarWrapper:
-    'mb-4 overflow-hidden rounded-full border-4 border-slate-100 shadow-sm dark:border-slate-800',
+    'relative z-10 mb-4 overflow-hidden rounded-full border-4 border-slate-100 shadow-sm dark:border-[#2b2f36]',
   avatar: 'h-24 w-24 object-cover transition-transform hover:scale-105',
-  profileName: 'mb-2 text-xl font-bold text-slate-800 dark:text-slate-100',
+  profileName:
+    'relative z-10 mb-2 text-xl font-bold text-slate-900 drop-shadow-[0_1px_1px_rgba(255,255,255,0.35)] dark:text-slate-50 dark:drop-shadow-[0_1px_1px_rgba(0,0,0,0.35)]',
+  profileSignatureButton:
+    'relative z-10 mb-8 cursor-pointer rounded-lg px-2 py-1 transition-colors hover:bg-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60 dark:hover:bg-white/5',
   profileSignature:
-    'mb-8 text-sm italic leading-relaxed text-slate-500 dark:text-slate-400',
+    'text-sm italic leading-relaxed text-slate-600 dark:text-slate-300',
 
   // Search
   searchContainer: 'relative flex items-center',
