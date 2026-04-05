@@ -3,7 +3,9 @@
     "id": "qf-20260405",
     "date": "2026-04-05",
     "content": [
-      "Fixed movie page display logic"
+      "Fixed movie page display logic",
+      "Adjusted dark mode colors for a more comfortable reading experience (previously too cold and unappealing)",
+      "Added homepage cover image for blog page, optimized motto display, and enriched page content."
     ]
   },
   {
