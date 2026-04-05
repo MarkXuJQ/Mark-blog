@@ -13,9 +13,9 @@ category: "tech"
 
 image: "https://img.markxu.icu/imgvoiceinput.jpeg"
 ---
-最近在 GitHub 上闲逛，又看到了一个另我感到震撼又好笑的项目： **[voice-input-src](https://github.com/yetone/voice-input-src?tab=readme-ov-file)** 。一个为mac写的语音输入软件。它号称是“源码”，但打开仓库你会发现，里面根本没有我们传统认知中的 Swift 代码，只有一段写给 AI（Claude）的、极其详细的英文 Prompt。
+最近在 GitHub 上闲逛，又看到了一个另我感到震撼又好笑的项目： **[voice-input-src](https://github.com/yetone/voice-input-src?tab=readme-ov-file)** 。一个为Mac写的语音输入软件。打开仓库你会发现，里面根本没有我们传统认知中的 Swift 这类的具体代码，只有一段写给 AI（Claude）的、极其详细的中英文两种 Prompt。
 
-这引发了我的强烈好奇：**这种开源的方式真的有效？** 刚好我也有一个macbook，我尝试在我的 Mac 上复现这一过程，验证这种模式的可行性。
+这引发了我的强烈好奇：**这种开源的方式真的有效嘛？** 刚好我也有一个macbook，便想着在我的 Mac 上尝试复现下，验证这个模式的可行性。
 
 ---
 
@@ -23,22 +23,21 @@ image: "https://img.markxu.icu/imgvoiceinput.jpeg"
 
 ### **1. 极简的仓库结构**
 
-* **README.md** ：项目说明。
-* **Prompt 文本** ：一段长达 1.6k+ 字符的英文指令，详细描述了从 UI 到系统集成的每一个细节。
+**README.md** ：项目说明里面包含了所需的**Prompt 文本，再无其他。**
 
 ![项目仓库](https://img.markxu.icu/imgvoiceInputRepo.png)
 
 不得不说，这种开源方式真的很方便理解项目😂。
 
-### **2. Prompt 即源码**
+### **2. Prompt 即源码（哈哈哈）**
 
-传统的开源是“人读代码，编译器执行”，而这个项目是“人读 Prompt，AI 执行”。作者 yetone 甚至专门建立了一个 `voice-input-dist`的[repo](https://github.com/yetone/voice-input-dist)来存放最终构建出的 App，以方便将“源”与“产物”彻底分离。
+传统的开源是“人读代码，编译器执行”，而这个项目是“人复制 Prompt，AI 执行”。作者 yetone 甚至专门建立了一个 [voice-input-dist的repo](https://github.com/yetone/voice-input-dist) 来存放最终构建出的 App，以方便将“源”与“产物”彻底分离，也方便用户进行对比？
 
 ---
 
-## 技术实现蓝图：Prompt 里藏了什么？
+## Prompt 里藏了什么？
 
-为了尝试后续的复现，我仔细读了下这段 Prompt 。而是对 macOS 底层 API 有精准的调用要求：
+为了尝试后续的复现，我仔细读了下这段 Prompt 。这不是一个小白随手写的需求文档，而是对 macOS 底层 API 有精准的调用要求的程序员级别的文档：
 
 | 模块                 | 实现细节                                                                                     |
 | -------------------- | -------------------------------------------------------------------------------------------- |
@@ -48,11 +47,11 @@ image: "https://img.markxu.icu/imgvoiceinput.jpeg"
 | **输入法兼容** | 检测当前输入法，粘贴前自动切换至 ABC 键盘（防 Cmd+V 拦截），粘贴后恢复。                     |
 | **LLM 后处理** | 调用 OpenAI 兼容 API 进行纠错（仅修正明显错误，如“配森”->“Python”）。                    |
 
-其实可以看出作者在写这段 prompt 的时候，并不是一个小白的样子，而是清晰的知道需要调用什么组件，有什么框架可以去使用，而且对于整个mac的系统都是十分了解的。因为作者足够了解相关的技术知识，所以才可以这样精准的写出整个项目。
+其实可以看出作者在写这段 prompt 的时候，并不是一个小白的样子，只是泛泛的说明自己的需求，而是清晰的知道需要调用什么组件，有什么框架可以去使用，而且对于整个mac的系统都是十分了解的。因为作者足够了解相关的技术知识，所以才可以这样精准的写出整个项目。
 
 ---
 
-## 我的复现实验计划 (On My Mac)
+## 我的复现 (On My Mac)
 
 为了真的去验证下这种开源真的有效，也体验下这种逆天的prompt engineer，我在我的 Mac 上进行一次“从 Prompt 到 App”的实验。我先介绍下我的实验内容：
 
@@ -75,7 +74,7 @@ image: "https://img.markxu.icu/imgvoiceinput.jpeg"
 ![发给Codex的Prompt](https://img.markxu.icu/imgSendItToCodex.png)
 
 3.具体实现：
-其实在我这里并没有一次生成成功，第一次完整的构建花了大概23min，花了我 $1.3994（USD）, 后续我接着让codex进行了两次修复，加上修复一共花了 $1.9734（USD）。
+其实在我这里并没有一次生成成功，第一次完整的构建花了大概**23min**，花了我 **$1.3994**（USD）, 后续我接着让codex进行了两次修复，加上修复一共花了 $1.9734（USD）。
 
 > 这两次修复，本质上分别解决了一个“编译期问题”和一个“运行期崩溃问题”。
 >
@@ -109,7 +108,7 @@ image: "https://img.markxu.icu/imgvoiceinput.jpeg"
 
 ![我与作者的结构对比](https://img.markxu.icu/imgContrastBetweenMineandAuthor.png)
 
------------------------------------------------------------------------------------------
+---
 
 总的来说，我认为这一次尝试不是件坏事，相反作者特别具有创意的repo发布方式还带给了我点小小的震撼。其实可以把这次看作一个更好的AI教程,而不是具体实现项目的方式，因为如果想要达到作者这样的prompt的话,还是需要一定的功底和基础知识。不说高手的情况，但论我自己，是无法做到一次性就写出像作者这么完美的提示词的。
 

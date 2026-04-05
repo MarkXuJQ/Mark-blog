@@ -16,6 +16,7 @@ export function Home() {
   const nameClickCountRef = useRef<number>(0)
   const lastNameClickMsRef = useRef<number>(0)
   const siteUrl = getSiteUrl()
+  const isZh = i18n.language?.startsWith('zh')
   const language = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const webSiteSchema: JsonLd = {
     '@context': 'https://schema.org',
@@ -76,19 +77,52 @@ export function Home() {
       </div>
 
       <h1 className={cn(styles.title, 'no-heading-letter-spacing')}>
-        <Trans
-          i18nKey="home.title"
-          components={[
-            <span
-              key="0"
-              className={styles.highlightText}
-              role="link"
-              tabIndex={0}
-              onClick={handleNameClick}
-              onKeyDown={handleNameKeyDown}
-            />,
-          ]}
-        />
+        {isZh ? (
+          <>
+            <span className="block sm:hidden">欢迎来到</span>
+            <span className="block sm:hidden">
+              <span
+                className={styles.highlightText}
+                role="link"
+                tabIndex={0}
+                onClick={handleNameClick}
+                onKeyDown={handleNameKeyDown}
+              >
+                Mark
+              </span>
+              的自留地
+            </span>
+            <span className="hidden sm:inline">
+              <Trans
+                i18nKey="home.title"
+                components={[
+                  <span
+                    key="0"
+                    className={styles.highlightText}
+                    role="link"
+                    tabIndex={0}
+                    onClick={handleNameClick}
+                    onKeyDown={handleNameKeyDown}
+                  />,
+                ]}
+              />
+            </span>
+          </>
+        ) : (
+          <Trans
+            i18nKey="home.title"
+            components={[
+              <span
+                key="0"
+                className={styles.highlightText}
+                role="link"
+                tabIndex={0}
+                onClick={handleNameClick}
+                onKeyDown={handleNameKeyDown}
+              />,
+            ]}
+          />
+        )}
       </h1>
 
       <div className={styles.contentContainer}>
