@@ -37,7 +37,7 @@ function formatDateFromObject(input: Date, locale: string) {
 }
 
 function getHeatmapLevelClass(count: number) {
-  if (count <= 0) return 'bg-slate-100 dark:bg-slate-800'
+  if (count <= 0) return 'bg-slate-100 dark:bg-[#23262c]'
   if (count === 1) return 'bg-emerald-200 dark:bg-emerald-900/70'
   if (count === 2) return 'bg-emerald-300 dark:bg-emerald-700/80'
   if (count === 3) return 'bg-emerald-500 dark:bg-emerald-500/85'
@@ -185,7 +185,7 @@ export function WatchActivityCalendar({
   }, [selectedDateKey, locale])
 
   return (
-    <section className="relative mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
+    <section className="relative mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c]">
       {years.length > 0 ? (
         <div className="absolute right-4 top-4 z-10">
           <CalendarYearWheel

@@ -57,9 +57,9 @@ export function MovieStatsPanel({
   }, [ratedValues])
 
   return (
-    <section className="rounded-3xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
+    <section className="rounded-3xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c] dark:shadow-[0_12px_36px_rgba(0,0,0,0.45)]">
       <div className="space-y-4">
-        <div className="rounded-2xl border border-slate-200/70 bg-gradient-to-br from-slate-50/90 to-white/70 p-3.5 dark:border-slate-700/80 dark:from-slate-800/70 dark:to-slate-900/70">
+        <div className="rounded-2xl border border-slate-200/70 bg-gradient-to-br from-slate-50/90 to-white/70 p-3.5 dark:border-[#2b2f36] dark:from-[#1f2328] dark:to-[#1f2328]">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <div className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
@@ -73,7 +73,7 @@ export function MovieStatsPanel({
               </div>
             </div>
 
-            <div className="flex items-center justify-center rounded-2xl border border-slate-200/70 bg-white/70 p-2.5 shadow-sm dark:border-slate-700/70 dark:bg-slate-900/60">
+            <div className="flex items-center justify-center rounded-2xl border border-slate-200/70 bg-white/70 p-2.5 shadow-sm dark:border-[#2b2f36] dark:bg-[#17191c]">
               <div className="relative h-[86px] w-[86px]">
                 <svg
                   viewBox="0 0 100 100"
@@ -84,7 +84,7 @@ export function MovieStatsPanel({
                     cx="50"
                     cy="50"
                     r={circleRadius}
-                    className="fill-none stroke-slate-200 dark:stroke-slate-700"
+                    className="fill-none stroke-slate-200 dark:stroke-[#2b2f36]"
                     strokeWidth="8"
                   />
                   <circle
@@ -119,7 +119,7 @@ export function MovieStatsPanel({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-amber-50/80 via-slate-50/80 to-white/70 p-3.5 dark:border-slate-700/80 dark:from-slate-800/80 dark:via-slate-900/70 dark:to-slate-900/70">
+        <div className="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-amber-50/80 via-slate-50/80 to-white/70 p-3.5 dark:border-[#2b2f36] dark:from-[#1f2328] dark:via-[#1f2328] dark:to-[#1f2328]">
           <div className="space-y-2.5">
             {ratingDistribution.map((item) => (
               <div key={item.rating}>
@@ -150,7 +150,7 @@ export function MovieStatsPanel({
                       </span>
                     </button>
 
-                    <div className="relative h-1.5 overflow-hidden rounded-full bg-slate-200/60 dark:bg-slate-700/60">
+                    <div className="relative h-1.5 overflow-hidden rounded-full bg-slate-200/60 dark:bg-[#23262c]">
                       <div
                         className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-amber-300/80 via-orange-400/80 to-rose-400/80"
                         style={{ width: item.width }}
@@ -167,7 +167,7 @@ export function MovieStatsPanel({
           </div>
         </div>
 
-        <div className="flex items-center justify-between rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white/80 to-slate-50/80 px-3.5 py-2.5 text-[11px] text-slate-500 shadow-sm dark:border-slate-700/80 dark:from-slate-900/60 dark:to-slate-900/70 dark:text-slate-400">
+        <div className="flex items-center justify-between rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white/80 to-slate-50/80 px-3.5 py-2.5 text-[11px] text-slate-500 shadow-sm dark:border-[#2b2f36] dark:from-[#1f2328] dark:to-[#1f2328] dark:text-slate-400">
           <span className="font-medium text-slate-600 dark:text-slate-300">
             {selectedRating ? `${selectedRating}★` : '全部'}
           </span>
@@ -175,14 +175,14 @@ export function MovieStatsPanel({
             <button
               type="button"
               onClick={() => onSelectRating(null)}
-              className="rounded-full border border-slate-200/80 bg-white/80 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-emerald-300 hover:text-emerald-600 dark:border-slate-700/80 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:border-emerald-500 dark:hover:text-emerald-300"
+              className="rounded-full border border-slate-200/80 bg-white/80 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-emerald-300 hover:text-emerald-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-emerald-500 dark:hover:text-emerald-300"
             >
               {t('movies.stats.clearFilter', '清除筛选')}
             </button>
           ) : null}
         </div>
 
-        <div className="border-t border-slate-200/80 pt-3 dark:border-slate-700/80">
+        <div className="border-t border-slate-200/80 pt-3 dark:border-[#2b2f36]">
           <div className="mb-2 text-[11px] text-slate-500 dark:text-slate-400">
             {t('movies.profile.label')}
           </div>
@@ -191,7 +191,7 @@ export function MovieStatsPanel({
               href={doubanProfileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-emerald-300 hover:text-emerald-600 dark:border-slate-700/80 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:border-emerald-500 dark:hover:text-emerald-300"
+              className="inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-emerald-300 hover:text-emerald-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-emerald-500 dark:hover:text-emerald-300"
             >
               <RiDoubanLine size={14} />
               {t('movies.profile.douban')}
@@ -200,7 +200,7 @@ export function MovieStatsPanel({
               href={tmdbProfileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-sky-300 hover:text-sky-600 dark:border-slate-700/80 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:border-sky-500 dark:hover:text-sky-300"
+              className="inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-sky-300 hover:text-sky-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-sky-500 dark:hover:text-sky-300"
             >
               <RiMovie2Line size={14} />
               {t('movies.profile.tmdb')}

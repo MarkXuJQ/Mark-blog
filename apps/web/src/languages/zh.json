@@ -253,6 +253,7 @@
     "sort": {
       "playtime": "总时长优先",
       "recent": "近期活跃优先",
+      "achievements": "成就完成度优先",
       "alphabetical": "按名称排序",
       "leastPlayed": "最少时长优先"
     },

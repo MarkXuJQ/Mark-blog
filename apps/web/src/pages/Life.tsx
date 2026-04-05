@@ -365,7 +365,7 @@ export function Life() {
                           key={city}
                           className={cn(
                             'flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm',
-                            'hover:bg-slate-100 dark:hover:bg-slate-800'
+                            'hover:bg-slate-100 dark:hover:bg-[#23262c]'
                           )}
                         >
                           <input
@@ -385,11 +385,11 @@ export function Life() {
                       )
                     })}
                   </div>
-                  <div className="mt-2 flex items-center justify-between border-t border-slate-200 pt-2 dark:border-slate-800">
+                  <div className="mt-2 flex items-center justify-between border-t border-slate-200 pt-2 dark:border-[#2b2f36]">
                     <button
                       type="button"
                       onClick={() => setSelectedCities({})}
-                      className="rounded-md px-2 py-1 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                      className="rounded-md px-2 py-1 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-[#23262c]"
                     >
                       清空
                     </button>
@@ -411,7 +411,7 @@ export function Life() {
               key={post.id}
               className={cn(
                 'group relative mb-4 inline-block w-full overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-sm',
-                'text-left transition-colors hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-slate-700',
+                'text-left transition-colors hover:border-slate-300 dark:border-[#2b2f36] dark:bg-[#17191c] dark:hover:border-[#3a3f48]',
                 'focus-within:ring-2 focus-within:ring-blue-500/60',
                 'break-inside-avoid'
               )}
@@ -424,7 +424,7 @@ export function Life() {
                 >
                 <motion.div
                   layoutId={`life-image-${post.id}`}
-                  className="relative min-h-[160px] w-full overflow-hidden bg-slate-100 dark:bg-slate-800"
+                  className="relative min-h-[160px] w-full overflow-hidden bg-slate-100 dark:bg-[#1f2328]"
                   transition={{ duration: 0.16, ease: 'easeOut' }}
                 >
                   {failedCoverIds[post.id] ? (
@@ -502,7 +502,7 @@ export function Life() {
               aria-modal="true"
               className={cn(
                 'relative z-[1001] w-full max-w-5xl overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-2xl',
-                'dark:border-slate-800 dark:bg-slate-950'
+                'dark:border-[#2b2f36] dark:bg-[#17191c]'
               )}
             >
               <div className="flex max-h-[85vh] flex-col md:flex-row">

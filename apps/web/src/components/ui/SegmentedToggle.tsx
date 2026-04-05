@@ -56,7 +56,7 @@ export function SegmentedToggle<T extends string>({
       role="radiogroup"
       aria-label={ariaLabel}
       className={cn(
-        'relative isolate inline-grid grid-flow-col auto-cols-fr items-center rounded-full border border-slate-200/80 bg-white/85 shadow-sm ring-1 ring-slate-900/5 backdrop-blur-md dark:border-slate-700 dark:bg-slate-800/90 dark:ring-slate-700/60 dark:shadow-none',
+        'relative isolate inline-grid grid-flow-col auto-cols-fr items-center rounded-full border border-slate-200/80 bg-white/85 shadow-sm ring-1 ring-slate-900/5 backdrop-blur-md dark:border-[#2b2f36] dark:bg-[#17191c] dark:ring-[#2b2f36]/70 dark:shadow-none',
         sizeStyles[size].container,
         className
       )}
@@ -64,7 +64,7 @@ export function SegmentedToggle<T extends string>({
       <div
         aria-hidden="true"
         className={cn(
-          'pointer-events-none absolute left-0.5 top-0.5 z-[1] rounded-full border border-slate-200/90 bg-white shadow-sm transition-transform duration-300 ease-out dark:border-slate-600 dark:bg-slate-700 dark:shadow-none',
+          'pointer-events-none absolute left-0.5 top-0.5 z-[1] rounded-full border border-slate-200/90 bg-white shadow-sm transition-transform duration-300 ease-out dark:border-[#2b2f36] dark:bg-[#23262c] dark:shadow-none',
           sizeStyles[size].button,
           currentItem?.knobClassName
         )}

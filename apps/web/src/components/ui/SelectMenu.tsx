@@ -82,7 +82,7 @@ export function SelectMenu<T extends SelectValue>(props: SelectMenuProps<T>) {
     <Dropdown className={className}>
       <div
         className={cn(
-          'flex items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300',
+          'flex items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300',
           containerClassName
         )}
       >
@@ -100,7 +100,7 @@ export function SelectMenu<T extends SelectValue>(props: SelectMenuProps<T>) {
       <DropdownContent
         align={align}
         className={cn(
-          'w-auto min-w-[10rem] rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 dark:border-slate-800 dark:bg-slate-900 dark:ring-white/10',
+          'w-auto min-w-[10rem] rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 dark:border-[#2b2f36] dark:bg-[#17191c] dark:ring-white/10',
           menuClassName
         )}
       >
@@ -113,8 +113,8 @@ export function SelectMenu<T extends SelectValue>(props: SelectMenuProps<T>) {
               className={cn(
                 'flex w-full items-center justify-between rounded-md px-4 py-2 text-sm transition-colors',
                 isActive
-                  ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200'
+                  ? 'bg-slate-100 text-slate-900 dark:bg-[#23262c] dark:text-slate-100'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-[#23262c] dark:hover:text-slate-200'
               )}
               onClick={() => onValueChange(option.value)}
             >

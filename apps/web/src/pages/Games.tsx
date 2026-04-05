@@ -23,7 +23,7 @@ import { Seo } from '../components/seo/Seo'
 import { cn } from '../utils/cn'
 
 type LoadStatus = 'loading' | 'ready' | 'error'
-type GameSort = 'playtime' | 'recent' | 'alphabetical' | 'leastPlayed'
+type GameSort = 'playtime' | 'recent' | 'achievements'
 
 interface SteamProfile {
   steamId: string
@@ -198,7 +198,7 @@ function getAchievementProgress(game: SteamGame) {
       totalCount,
       ratio,
       widthPercent,
-      fillClassName: 'bg-gradient-to-r from-emerald-300 to-green-400',
+      fillClassName: 'bg-emerald-400',
     }
   }
 
@@ -208,7 +208,7 @@ function getAchievementProgress(game: SteamGame) {
       totalCount,
       ratio,
       widthPercent,
-      fillClassName: 'bg-gradient-to-r from-emerald-500 to-green-600',
+      fillClassName: 'bg-emerald-600',
     }
   }
 
@@ -218,19 +218,19 @@ function getAchievementProgress(game: SteamGame) {
       totalCount,
       ratio,
       widthPercent,
-      fillClassName: 'bg-gradient-to-r from-sky-500 via-cyan-500 to-blue-600',
+      fillClassName: 'bg-sky-500',
     }
   }
 
-  return {
-    unlockedCount,
-    totalCount,
-    ratio,
-    widthPercent,
-    fillClassName:
-      'bg-[linear-gradient(90deg,#22c55e_0%,#06b6d4_32%,#3b82f6_64%,#f59e0b_100%)]',
+    return {
+      unlockedCount,
+      totalCount,
+      ratio,
+      widthPercent,
+      fillClassName:
+        'bg-[linear-gradient(90deg,#22c55e_0%,#06b6d4_32%,#3b82f6_64%,#f59e0b_100%)]',
+    }
   }
-}
 
 function StatTile(props: {
   label: string
@@ -241,7 +241,7 @@ function StatTile(props: {
   const { label, value, hint, icon } = props
 
   return (
-    <div className="rounded-[1.4rem] border border-white/50 bg-white/75 p-3.5 shadow-[0_14px_30px_-22px_rgba(15,23,42,0.45)] backdrop-blur-sm dark:border-slate-700/70 dark:bg-slate-950/45 sm:rounded-3xl sm:p-4">
+    <div className="rounded-[1.4rem] border border-white/50 bg-white/75 p-3.5 shadow-[0_14px_30px_-22px_rgba(15,23,42,0.45)] backdrop-blur-sm dark:border-[#2b2f36] dark:bg-[#17191c] sm:rounded-3xl sm:p-4">
       <div className="flex items-center justify-between gap-3">
         <p className="min-w-0 flex-1 text-[0.65rem] font-semibold uppercase leading-snug tracking-[0.16em] text-slate-500 dark:text-slate-400 sm:text-xs sm:tracking-[0.24em]">
           {label}
@@ -296,7 +296,7 @@ function GameIcon(props: {
   return (
     <div
       className={cn(
-        'flex items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 via-cyan-500 to-sky-600 font-semibold text-white shadow-sm',
+        'flex items-center justify-center rounded-2xl bg-emerald-600 font-semibold text-white shadow-sm',
         className
       )}
       aria-hidden="true"
@@ -332,7 +332,7 @@ function FeaturedGameCard(props: {
   } = props
 
   return (
-    <article className="group relative min-h-[238px] w-[calc(100vw-3.25rem)] flex-none snap-start overflow-hidden rounded-[28px] border border-slate-200/80 bg-slate-950 text-white shadow-[0_24px_70px_-38px_rgba(15,23,42,0.7)] dark:border-slate-800 sm:w-[30rem] lg:w-[32rem]">
+    <article className="group relative min-h-[238px] w-[calc(100vw-3.25rem)] flex-none snap-start overflow-hidden rounded-[28px] border border-slate-200/80 bg-slate-950 text-white shadow-[0_24px_70px_-38px_rgba(15,23,42,0.7)] dark:border-[#2b2f36] sm:w-[30rem] lg:w-[32rem]">
       {game.headerImage ? (
         <img
           src={game.headerImage}
@@ -345,7 +345,7 @@ function FeaturedGameCard(props: {
         />
       ) : null}
 
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.4),transparent_30%),linear-gradient(112deg,rgba(2,6,23,0.94)_8%,rgba(2,6,23,0.82)_42%,rgba(2,6,23,0.44)_100%)]" />
+      <div className="absolute inset-0 bg-black/60" />
 
       <div className="relative flex h-full flex-col justify-between p-4 sm:p-5">
         <div className="flex items-start gap-3">
@@ -506,13 +506,17 @@ export function Games() {
         return left.name.localeCompare(right.name, locale)
       }
 
-      if (sort === 'alphabetical') {
-        return left.name.localeCompare(right.name, locale)
-      }
-
-      if (sort === 'leastPlayed') {
-        if (left.playtimeMinutes !== right.playtimeMinutes) {
-          return left.playtimeMinutes - right.playtimeMinutes
+      if (sort === 'achievements') {
+        const leftTotal = Number(left.achievementStats?.totalCount) || 0
+        const rightTotal = Number(right.achievementStats?.totalCount) || 0
+        const leftUnlocked = Number(left.achievementStats?.unlockedCount) || 0
+        const rightUnlocked = Number(right.achievementStats?.unlockedCount) || 0
+        const leftRatio = leftTotal > 0 ? leftUnlocked / leftTotal : 0
+        const rightRatio = rightTotal > 0 ? rightUnlocked / rightTotal : 0
+        if (rightRatio !== leftRatio) return rightRatio - leftRatio
+        if (rightUnlocked !== leftUnlocked) return rightUnlocked - leftUnlocked
+        if (right.playtimeMinutes !== left.playtimeMinutes) {
+          return right.playtimeMinutes - left.playtimeMinutes
         }
         return left.name.localeCompare(right.name, locale)
       }
@@ -582,8 +586,7 @@ export function Games() {
   const sortOptions: Array<{ value: GameSort; label: string }> = [
     { value: 'playtime', label: t('games.sort.playtime') },
     { value: 'recent', label: t('games.sort.recent') },
-    { value: 'alphabetical', label: t('games.sort.alphabetical') },
-    { value: 'leastPlayed', label: t('games.sort.leastPlayed') },
+    { value: 'achievements', label: t('games.sort.achievements') },
   ]
 
   return (
@@ -592,10 +595,10 @@ export function Games() {
 
       <div>
         <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-10">
-          <section className="rounded-[32px] border border-slate-200/80 bg-white/75 p-6 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/55 sm:p-8">
+          <section className="rounded-[32px] border border-slate-200/80 bg-white/75 p-6 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-[#2b2f36] dark:bg-[#17191c] sm:p-8">
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.95fr)]">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-                <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-[28px] border border-white/70 bg-slate-100 shadow-lg dark:border-slate-700 dark:bg-slate-900">
+                <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-[28px] border border-white/70 bg-slate-100 shadow-lg dark:border-[#2b2f36] dark:bg-[#17191c]">
                   {dashboard?.profile.avatarUrl ? (
                     <img
                       src={dashboard.profile.avatarUrl}
@@ -607,7 +610,7 @@ export function Games() {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald-500 via-cyan-500 to-sky-600 text-2xl font-semibold text-white">
+                    <div className="flex h-full w-full items-center justify-center bg-emerald-600 text-2xl font-semibold text-white">
                       M
                     </div>
                   )}
@@ -630,8 +633,8 @@ export function Games() {
                       className={cn(
                         'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition',
                         dashboard
-                          ? 'border-slate-200 bg-white text-slate-900 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-slate-600 dark:hover:bg-slate-800'
-                          : 'pointer-events-none border-slate-200/80 bg-slate-100 text-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500'
+                          ? 'border-slate-200 bg-white text-slate-900 hover:border-slate-300 hover:bg-slate-50 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-100 dark:hover:border-[#3a3f48] dark:hover:bg-[#23262c]'
+                          : 'pointer-events-none border-slate-200/80 bg-slate-100 text-slate-400 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-500'
                       )}
                     >
                       {t('games.profile.openProfile')}
@@ -646,7 +649,7 @@ export function Games() {
                         'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition',
                         dashboard
                           ? 'border-emerald-200 bg-emerald-50 text-emerald-900 hover:border-emerald-300 hover:bg-emerald-100 dark:border-emerald-900/70 dark:bg-emerald-950/50 dark:text-emerald-100 dark:hover:border-emerald-800 dark:hover:bg-emerald-950/80'
-                          : 'pointer-events-none border-slate-200/80 bg-slate-100 text-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500'
+                          : 'pointer-events-none border-slate-200/80 bg-slate-100 text-slate-400 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-500'
                       )}
                     >
                       {t('games.profile.openReviews')}
@@ -693,7 +696,7 @@ export function Games() {
           </section>
 
           {status === 'loading' ? (
-            <section className="mt-8 rounded-[28px] border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-950/50">
+            <section className="mt-8 rounded-[28px] border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c]">
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 {t('games.loading')}
               </p>
@@ -701,7 +704,7 @@ export function Games() {
                 {Array.from({ length: 4 }).map((_, index) => (
                   <div
                     key={index}
-                    className="h-72 animate-pulse rounded-[28px] bg-slate-100 dark:bg-slate-900"
+                    className="h-72 animate-pulse rounded-[28px] bg-slate-100 dark:bg-[#23262c]"
                   />
                 ))}
               </div>
@@ -757,13 +760,13 @@ export function Games() {
                     </div>
                   </div>
                 ) : (
-                  <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-6 text-sm text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-400">
+                  <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-6 text-sm text-slate-600 shadow-sm dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-400">
                     {t('games.featured.noData')}
                   </div>
                 )}
               </section>
 
-              <section className="mt-10 rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_24px_80px_-42px_rgba(15,23,42,0.28)] backdrop-blur dark:border-slate-800 dark:bg-slate-950/55 sm:p-6">
+              <section className="mt-10 rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_24px_80px_-42px_rgba(15,23,42,0.28)] backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c] sm:p-6">
                 <div className="relative">
                   <div className="hidden items-center justify-between gap-4 sm:flex">
                     <h2 className="min-w-0 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
@@ -771,7 +774,7 @@ export function Games() {
                     </h2>
 
                     <div className="flex shrink-0 items-center gap-2.5">
-                      <label className="flex h-11 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3.5 shadow-sm transition dark:border-slate-800 dark:bg-slate-900">
+                      <label className="flex h-11 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3.5 shadow-sm transition dark:border-[#2b2f36] dark:bg-[#17191c]">
                         <Search className="h-4 w-4 shrink-0 text-slate-500 dark:text-slate-400" />
                         <input
                           type="search"
@@ -786,7 +789,7 @@ export function Games() {
                             type="button"
                             onClick={() => setSearch('')}
                             aria-label={t('games.library.clearSearch')}
-                            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-[#23262c] dark:hover:text-slate-200"
                           >
                             <X className="h-4 w-4" />
                           </button>
@@ -828,7 +831,7 @@ export function Games() {
                           aria-controls={searchInputId}
                           aria-expanded={isMobileSearchVisible}
                           aria-label={t('games.library.searchToggle')}
-                          className="inline-flex h-11 max-w-[6.5rem] items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3 text-sm font-medium text-slate-500 shadow-sm transition hover:border-slate-300 hover:text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-700 dark:hover:text-slate-100"
+                          className="inline-flex h-11 max-w-[6.5rem] items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3 text-sm font-medium text-slate-500 shadow-sm transition hover:border-slate-300 hover:text-slate-700 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-[#3a3f48] dark:hover:text-slate-100"
                         >
                           <Search className="h-4 w-4 shrink-0" />
                           <span className="truncate">
@@ -853,7 +856,7 @@ export function Games() {
 
                     <label
                       className={cn(
-                        'absolute inset-0 flex h-11 min-w-0 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3 shadow-sm transition duration-200 dark:border-slate-800 dark:bg-slate-900',
+                        'absolute inset-0 flex h-11 min-w-0 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3 shadow-sm transition duration-200 dark:border-[#2b2f36] dark:bg-[#17191c]',
                         isMobileSearchVisible
                           ? 'translate-x-0 opacity-100'
                           : 'pointer-events-none translate-x-3 opacity-0'
@@ -896,7 +899,7 @@ export function Games() {
                             ? t('games.library.clearSearch')
                             : t('games.library.closeSearch')
                         }
-                        className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                        className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-[#23262c] dark:hover:text-slate-200"
                       >
                         <X className="h-4 w-4" />
                       </button>
@@ -927,6 +930,8 @@ export function Games() {
                       const playtimeLabel = t('games.library.playtime', {
                         hours: formatHours(game.playtimeMinutes, locale),
                       })
+                      const playtimeHours = formatHours(game.playtimeMinutes, locale)
+                      const playtimeSuffix = playtimeLabel.replace(playtimeHours, '').trim()
                       const statusLabel =
                         game.playtimeMinutes <= 0
                           ? t('games.library.neverPlayed')
@@ -946,9 +951,9 @@ export function Games() {
                       return (
                         <article
                           key={game.appid}
-                          className="group relative overflow-hidden rounded-[22px] border border-slate-200/80 bg-white/80 p-3.5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-slate-700 sm:rounded-[24px] sm:p-4"
+                          className="group relative overflow-hidden rounded-[22px] border border-slate-200/80 bg-white/80 p-3.5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg dark:border-[#2b2f36] dark:bg-[#17191c] dark:hover:border-[#3a3f48] sm:rounded-[24px] sm:p-4"
                         >
-                          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(16,185,129,0.08),transparent_42%,rgba(14,165,233,0.09))] opacity-0 transition duration-300 group-hover:opacity-100" />
+                          <div className="pointer-events-none absolute inset-0 bg-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
 
                           <div className="relative flex h-full flex-col">
                             <div className="flex items-start gap-3">
@@ -970,7 +975,7 @@ export function Games() {
                                     href={game.storeUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-slate-300 hover:text-slate-950 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:text-white sm:h-9 sm:w-9"
+                                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-slate-300 hover:text-slate-950 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-200 dark:hover:border-[#3a3f48] dark:hover:text-white sm:h-9 sm:w-9"
                                     aria-label={t('games.actions.openStore')}
                                   >
                                     <ExternalLink className="h-4 w-4" />
@@ -978,8 +983,13 @@ export function Games() {
                                 </div>
 
                                 <div className="mt-2.5 flex flex-wrap gap-1.5">
-                                  <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                                    {playtimeLabel}
+                                  <span className="inline-flex items-baseline gap-1">
+                                    <span className="text-base font-bold text-emerald-600 dark:text-emerald-300">
+                                      {playtimeHours}
+                                    </span>
+                                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                                      {playtimeSuffix}
+                                    </span>
                                   </span>
 
                                   {statusLabel ? (
@@ -987,7 +997,7 @@ export function Games() {
                                       className={cn(
                                         'inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium',
                                         game.playtimeMinutes <= 0
-                                          ? 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                                          ? 'bg-slate-100 text-slate-500 dark:bg-[#23262c] dark:text-slate-400'
                                           : 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-200'
                                       )}
                                     >
@@ -1011,7 +1021,7 @@ export function Games() {
                                 ) : null}
                               </div>
 
-                              <div className="relative mt-1.5 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800 sm:mt-2 sm:h-2.5">
+                              <div className="relative mt-1.5 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-[#23262c] sm:mt-2 sm:h-2.5">
                                 {achievementProgress.widthPercent > 0 ? (
                                   <div
                                     className={cn(
@@ -1031,7 +1041,7 @@ export function Games() {
                     })}
                   </div>
                 ) : (
-                  <div className="mt-6 rounded-[24px] border border-dashed border-slate-300 bg-slate-50/80 p-8 text-center text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-400">
+                  <div className="mt-6 rounded-[24px] border border-dashed border-slate-300 bg-slate-50/80 p-8 text-center text-sm text-slate-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-400">
                     {t('games.library.noResults')}
                   </div>
                 )}

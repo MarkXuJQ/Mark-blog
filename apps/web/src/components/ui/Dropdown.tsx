@@ -100,7 +100,7 @@ export function DropdownContent({
   return (
     <div
       className={cn(
-        'animate-in fade-in zoom-in-95 absolute top-full z-50 mt-2 min-w-[8rem] rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 duration-150 dark:border-slate-800 dark:bg-slate-900 dark:ring-white/10',
+        'animate-in fade-in zoom-in-95 absolute top-full z-50 mt-2 min-w-[8rem] rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 duration-150 dark:border-[#2b2f36] dark:bg-[#17191c] dark:ring-white/10',
         align === 'end'
           ? 'right-0 origin-top-right'
           : 'left-0 origin-top-left',
@@ -143,7 +143,7 @@ export function DropdownItem({
           }
         },
         className: cn(
-          'relative flex cursor-pointer select-none items-center rounded-md px-2 py-1.5 text-sm outline-none transition-colors hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-slate-800 dark:focus:bg-slate-800',
+          'relative flex cursor-pointer select-none items-center rounded-md px-2 py-1.5 text-sm outline-none transition-colors hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-[#23262c] dark:focus:bg-[#23262c]',
           className
         ),
       }

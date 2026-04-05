@@ -78,12 +78,12 @@ body {
 }
 
 .dark {
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --surface-0: #0b1220;
-  --surface-card: #0e172a;
-  --border-color: rgba(148, 163, 184, 0.18);
-  --shadow-card: 0 1px 2px rgba(2, 6, 23, 0.3), 0 8px 24px rgba(2, 6, 23, 0.4);
+  --text-primary: #ece8e1;
+  --text-secondary: #c2b8ad;
+  --surface-0: #141210;
+  --surface-card: #1c1a18;
+  --border-color: rgba(192, 176, 160, 0.2);
+  --shadow-card: 0 1px 2px rgba(6, 6, 5, 0.35), 0 8px 24px rgba(6, 6, 5, 0.45);
 }
 
 .heading-brand {

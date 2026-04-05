@@ -619,7 +619,7 @@ export function Movies() {
               </p>
             </section>
 
-            <section className="mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-2.5 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 sm:p-3">
+            <section className="mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-2.5 shadow-sm backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c] sm:p-3">
               <div className="flex flex-nowrap items-center gap-2 overflow-hidden sm:gap-3">
                 <label className="relative min-w-0 flex-[1_1_8rem]">
                   <Search
@@ -631,7 +631,7 @@ export function Movies() {
                     value={keyword}
                     onChange={(event) => setKeyword(event.target.value)}
                     placeholder={t('movies.searchPlaceholder')}
-                    className="w-full rounded-[1rem] border border-slate-200 bg-white/90 py-2.5 pl-10 pr-3 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-blue-500 dark:focus:ring-blue-900/40"
+                    className="w-full rounded-[1rem] border border-slate-200 bg-white/90 py-2.5 pl-10 pr-3 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-200 dark:focus:border-blue-500 dark:focus:ring-blue-900/40"
                   />
                 </label>
 
@@ -642,7 +642,7 @@ export function Movies() {
                     'shrink-0 rounded-full border px-3 py-2 text-xs font-medium transition',
                     onlyWithReviews
                       ? 'border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-500/50 dark:bg-emerald-900/30 dark:text-emerald-300'
-                      : 'border-slate-200 bg-white/85 text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-600'
+                      : 'border-slate-200 bg-white/85 text-slate-600 hover:border-slate-300 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-[#3a3f48]'
                   )}
                 >
                   {onlyWithReviews
@@ -741,7 +741,7 @@ export function Movies() {
                           'group rounded-2xl border p-4 shadow-sm backdrop-blur transition-transform duration-300 hover:-translate-y-1 hover:shadow-md',
                           hasReview
                             ? 'border-emerald-300/90 bg-emerald-100/70 shadow-emerald-200/50 dark:border-emerald-400/60 dark:bg-emerald-900/28 dark:shadow-emerald-900/40'
-                            : 'border-slate-200/70 bg-white/80 dark:border-slate-800 dark:bg-slate-900/80',
+                            : 'border-slate-200/70 bg-white/80 dark:border-[#2b2f36] dark:bg-[#17191c]',
                           canOpenReview
                             ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-300 dark:focus:ring-emerald-700'
                             : '',
@@ -755,7 +755,7 @@ export function Movies() {
                         {viewMode === 'tmdb' ? (
                           <div
                             className={cn(
-                              'aspect-[2/3] overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800',
+                              'aspect-[2/3] overflow-hidden rounded-xl bg-slate-100 dark:bg-[#1f2328]',
                               cardLayout === 'grid' ? 'mb-3' : ''
                             )}
                           >
@@ -831,7 +831,7 @@ export function Movies() {
                                   rel="noopener noreferrer"
                                   onClick={(event) => event.stopPropagation()}
                                   className={cn(
-                                    'inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700/80 dark:bg-slate-900/55 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300',
+                                    'inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300',
                                     cardLayout === 'grid' ? 'px-2 py-1' : ''
                                   )}
                                 >
@@ -846,7 +846,7 @@ export function Movies() {
                                   rel="noopener noreferrer"
                                   onClick={(event) => event.stopPropagation()}
                                   className={cn(
-                                    'inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700/80 dark:bg-slate-900/55 dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300',
+                                    'inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300',
                                     cardLayout === 'grid' ? 'px-2 py-1' : ''
                                   )}
                                 >
@@ -875,7 +875,7 @@ export function Movies() {
                                   className={cn(
                                     active
                                       ? 'fill-amber-400 text-amber-400'
-                                      : 'text-slate-300 dark:text-slate-700'
+                                      : 'text-slate-300 dark:text-[#3a3f48]'
                                   )}
                                 />
                               )

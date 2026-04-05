@@ -37,7 +37,7 @@ function clampIndex(index: number, length: number) {
 
 function getYearDepthClass(distance: number) {
   if (distance <= 0) {
-    return 'scale-[1.08] opacity-100 text-slate-950 drop-shadow-[0_1px_8px_rgba(15,23,42,0.18)] dark:text-slate-50 dark:drop-shadow-[0_1px_10px_rgba(148,163,184,0.18)]'
+    return 'scale-[1.08] opacity-100 text-slate-950 drop-shadow-[0_1px_8px_rgba(15,23,42,0.18)] dark:text-slate-100 dark:drop-shadow-[0_1px_10px_rgba(15,23,42,0.35)]'
   }
 
   if (distance === 1) {
@@ -45,10 +45,10 @@ function getYearDepthClass(distance: number) {
   }
 
   if (distance === 2) {
-    return 'scale-[0.82] opacity-14 text-slate-400 dark:text-slate-600'
+    return 'scale-[0.82] opacity-14 text-slate-400 dark:text-slate-500'
   }
 
-  return 'scale-[0.72] opacity-0 text-slate-400 dark:text-slate-700'
+  return 'scale-[0.72] opacity-0 text-slate-400 dark:text-slate-600'
 }
 
 function CalendarYearWheelControl(props: CalendarYearWheelProps) {
@@ -270,9 +270,9 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
       <DropdownTrigger
         aria-label={ariaLabel}
         className={cn(
-          'group flex min-w-[4.875rem] cursor-pointer items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 shadow-sm transition-[border-color,background-color,color,box-shadow] hover:border-slate-300 hover:bg-slate-50/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-w-[10rem] sm:gap-3 sm:px-4 sm:py-3 sm:text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-700 dark:hover:bg-slate-900/90 dark:focus-visible:ring-blue-500/60 dark:focus-visible:ring-offset-slate-950',
+          'group flex min-w-[4.875rem] cursor-pointer items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 shadow-sm transition-[border-color,background-color,color,box-shadow] hover:border-slate-300 hover:bg-slate-50/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-w-[10rem] sm:gap-3 sm:px-4 sm:py-3 sm:text-sm dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-[#3a3f48] dark:hover:bg-[#1f2328] dark:focus-visible:ring-blue-500/60 dark:focus-visible:ring-offset-[#17191c]',
           isOpen &&
-            'border-slate-300 bg-slate-50/95 text-slate-700 dark:border-slate-700 dark:bg-slate-900/95 dark:text-slate-200'
+            'border-slate-300 bg-slate-50/95 text-slate-700 dark:border-[#3a3f48] dark:bg-[#1f2328] dark:text-slate-200'
         )}
       >
         <span className="hidden shrink-0 sm:inline">{label}</span>

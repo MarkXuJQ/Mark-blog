@@ -19,7 +19,7 @@ export function ThemeToggle({ mode, onModeChange }: ThemeToggleProps) {
     system:
       'bg-gradient-to-b from-white to-indigo-50 ring-1 ring-indigo-200/60 shadow-[0_8px_18px_-10px_rgba(0,0,0,0.35)]',
     dark:
-      'bg-gradient-to-b from-slate-950 to-slate-800 ring-1 ring-white/10 shadow-[0_10px_22px_-12px_rgba(0,0,0,0.65)]',
+      'bg-gradient-to-b from-[#23262c] to-[#17191c] ring-1 ring-white/10 shadow-[0_10px_22px_-12px_rgba(0,0,0,0.65)]',
   }
 
   const activeTextClassNameByMode: Record<ThemeMode, string> = {
@@ -39,7 +39,7 @@ export function ThemeToggle({ mode, onModeChange }: ThemeToggleProps) {
       <div
         role="radiogroup"
         aria-label="Theme preference"
-        className="relative isolate flex items-center rounded-full bg-white/70 p-1 shadow-2xl ring-1 ring-slate-900/10 backdrop-blur-md transition-[background-color,box-shadow] duration-500 before:pointer-events-none before:absolute before:inset-0 before:z-0 before:rounded-full before:content-[''] before:bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.95),rgba(255,255,255,0.55),rgba(255,255,255,0.20))] dark:bg-slate-900/80 dark:ring-white/10 dark:before:bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.14),rgba(99,102,241,0.08),rgba(2,6,23,0.00))]"
+        className="relative isolate flex items-center rounded-full bg-white/70 p-1 shadow-2xl ring-1 ring-slate-900/10 backdrop-blur-md transition-[background-color,box-shadow] duration-500 before:pointer-events-none before:absolute before:inset-0 before:z-0 before:rounded-full before:content-[''] before:bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.95),rgba(255,255,255,0.55),rgba(255,255,255,0.20))] dark:bg-[#17191c] dark:ring-[#2b2f36] dark:before:bg-[radial-gradient(ellipse_at_top,rgba(120,130,145,0.18),rgba(23,25,28,0.00))]"
       >
         <div
           className={`absolute left-1 top-1 z-[1] h-7 w-9 rounded-full transition-[transform,box-shadow,background] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] will-change-transform ${knobClassNameByMode[mode]}`}
