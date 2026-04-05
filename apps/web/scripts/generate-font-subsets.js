@@ -25,10 +25,13 @@ const textExtensions = new Set([
 
 const headingFontSource =
   process.env.HEADING_FONT_SOURCE ||
-  path.join(projectRoot, 'src/assets/Noto_Serif_SC/NotoSerifSC-VariableFont_wght.ttf')
+  path.join(
+    projectRoot,
+    'src/assets/纳米丰宋_纳挼字库/NanoFullSong-Regular.ttf'
+  )
 const headingFontOutput = path.join(
   projectRoot,
-  'src/assets/fonts/NotoSerifSC-Subset.woff2'
+  'src/assets/fonts/NanoFullSong-Subset.woff2'
 )
 const pixelFontSource =
   process.env.PIXEL_FONT_SOURCE ||
@@ -115,14 +118,57 @@ function ensureDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true })
 }
 
+function canEncodeWoff2(candidate, inputFont) {
+  if (!fs.existsSync(inputFont)) return false
+
+  const probeOutput = path.join(
+    generatedDir,
+    `pyftsubset-probe-${process.pid}.woff2`
+  )
+  const result = spawnSync(
+    candidate,
+    [
+      inputFont,
+      '--text=A',
+      `--output-file=${probeOutput}`,
+      '--flavor=woff2',
+      '--no-hinting',
+    ],
+    {
+      cwd: projectRoot,
+      stdio: 'ignore',
+      shell: false,
+    }
+  )
+
+  const succeeded =
+    !result.error && result.status === 0 && fs.existsSync(probeOutput)
+
+  if (fs.existsSync(probeOutput)) {
+    fs.unlinkSync(probeOutput)
+  }
+
+  return succeeded
+}
+
 function findPyftsubset() {
+  const probeFontSource = [headingFontSource, pixelFontSource].find((filePath) =>
+    fs.existsSync(filePath)
+  )
   const candidates = [
     process.env.PYFTSUBSET,
-    'pyftsubset',
     '/Users/markxu/anaconda3/envs/pelvis_seg/bin/pyftsubset',
+    'pyftsubset',
   ].filter(Boolean)
 
   for (const candidate of candidates) {
+    if (probeFontSource) {
+      if (canEncodeWoff2(candidate, probeFontSource)) {
+        return candidate
+      }
+      continue
+    }
+
     const result = spawnSync(candidate, ['--help'], {
       stdio: 'ignore',
       shell: false,
@@ -195,11 +241,6 @@ function verifyOutputExists(filePath) {
   }
 }
 
-function verifyCommittedSubsetsExist() {
-  verifyOutputExists(headingFontOutput)
-  verifyOutputExists(pixelFontOutput)
-}
-
 async function main() {
   ensureDir(generatedDir)
   ensureDir(path.dirname(headingFontOutput))
@@ -213,37 +254,45 @@ async function main() {
   const pyftsubsetPath = findPyftsubset()
   const hasHeadingSource = fs.existsSync(headingFontSource)
   const hasPixelSource = fs.existsSync(pixelFontSource)
-  const hasAllSourceFonts = hasHeadingSource && hasPixelSource
+  const canGenerate = Boolean(pyftsubsetPath)
 
-  if (!hasAllSourceFonts) {
-    console.warn(
-      'Font source files not found, reusing committed subset fonts.'
-    )
-    verifyCommittedSubsetsExist()
-    return
-  }
-
-  if (!pyftsubsetPath) {
+  if (canGenerate) {
+    console.log('Generating font subsets with:', pyftsubsetPath)
+  } else {
     console.warn(
       'pyftsubset not found, reusing committed subset fonts if available.'
     )
-    verifyCommittedSubsetsExist()
-    return
   }
 
-  console.log('Generating font subsets with:', pyftsubsetPath)
+  if (canGenerate && hasHeadingSource) {
+    runSubset(pyftsubsetPath, {
+      input: headingFontSource,
+      textFile: headingTextPath,
+      output: headingFontOutput,
+    })
+  } else {
+    if (!hasHeadingSource) {
+      console.warn(
+        `Heading font source not found, reusing committed subset: ${headingFontSource}`
+      )
+    }
+    verifyOutputExists(headingFontOutput)
+  }
 
-  runSubset(pyftsubsetPath, {
-    input: headingFontSource,
-    textFile: headingTextPath,
-    output: headingFontOutput,
-  })
-
-  runSubset(pyftsubsetPath, {
-    input: pixelFontSource,
-    textFile: pixelTextPath,
-    output: pixelFontOutput,
-  })
+  if (canGenerate && hasPixelSource) {
+    runSubset(pyftsubsetPath, {
+      input: pixelFontSource,
+      textFile: pixelTextPath,
+      output: pixelFontOutput,
+    })
+  } else {
+    if (!hasPixelSource) {
+      console.warn(
+        `Pixel font source not found, reusing committed subset: ${pixelFontSource}`
+      )
+    }
+    verifyOutputExists(pixelFontOutput)
+  }
 
   const headingSize = fs.statSync(headingFontOutput).size
   const pixelSize = fs.statSync(pixelFontOutput).size
