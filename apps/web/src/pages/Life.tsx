@@ -446,7 +446,7 @@ export function Life() {
                 >
                 <motion.div
                   layoutId={`life-image-${post.id}`}
-                  className="relative min-h-[160px] w-full overflow-hidden bg-slate-100 dark:bg-[#1f2328]"
+                  className="relative min-h-[160px] w-full overflow-hidden rounded-2xl bg-slate-100 dark:bg-[#1f2328]"
                   transition={{ duration: 0.16, ease: 'easeOut' }}
                 >
                   {failedCoverIds[post.id] ? (
@@ -531,7 +531,7 @@ export function Life() {
                 <div className="relative shrink-0 bg-black md:w-[66%]">
                   <motion.div
                     layoutId={`life-image-${activePost.id}`}
-                    className="relative group isolate overflow-hidden"
+                    className="relative group isolate overflow-hidden rounded-2xl"
                   >
                     {!failedImagesRef.current.has(
                       activeImages[activeImageIndex] ?? activeImages[0]
