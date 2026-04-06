@@ -1,14 +1,17 @@
-import { Outlet, useLocation } from 'react-router-dom'
+import { Outlet, useLocation, useParams } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { LeftSidebarWidget } from '../components/blog/BlogWidgets'
 import { BlogTocCard, BlogTocDrawer } from '../components/blog/BlogTocCard'
+import { BlogRelatedPosts } from '../components/blog/BlogRelatedPosts'
 import { useToc } from '../hooks/useToc'
+import { getAllPosts, getPostBySlug } from '../utils/posts'
 
 export function BlogPostLayout() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { pathname, hash } = useLocation()
+  const { slug } = useParams()
   const [isMobileTocOpen, setIsMobileTocOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
 
@@ -20,6 +23,10 @@ export function BlogPostLayout() {
       trackActive: false,
     }
   )
+  const posts = getAllPosts(i18n.language)
+  const currentPost = slug
+    ? getPostBySlug(slug, i18n.language, { fallback: false }) ?? null
+    : null
 
   useEffect(() => {
     setIsMobileTocOpen(false)
@@ -46,6 +53,7 @@ export function BlogPostLayout() {
         <aside className={styles.rightSidebar}>
           <div className={styles.stickyWrapper}>
             <BlogTocCard toc={toc} />
+            <BlogRelatedPosts currentPost={currentPost} posts={posts} />
           </div>
         </aside>
       </div>
