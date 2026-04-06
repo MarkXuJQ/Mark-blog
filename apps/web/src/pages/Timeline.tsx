@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -54,6 +54,13 @@ export function Timeline() {
   const [activeTab, setActiveTab] = useState<'website' | 'quickfix' | 'life'>(
     'website'
   )
+  const tabOrder = useMemo(() => ['website', 'quickfix', 'life'] as const, [])
+  const pointerState = useRef({
+    isDown: false,
+    startX: 0,
+    startY: 0,
+    hasSwiped: false,
+  })
 
   const toggleExpand = (date: string) => {
     setExpandedDates((prev) =>
@@ -61,8 +68,64 @@ export function Timeline() {
     )
   }
 
+  const moveTab = (delta: number) => {
+    const currentIndex = tabOrder.indexOf(activeTab)
+    if (currentIndex === -1) return
+    const nextIndex = Math.max(
+      0,
+      Math.min(tabOrder.length - 1, currentIndex + delta)
+    )
+    if (nextIndex !== currentIndex) {
+      setActiveTab(tabOrder[nextIndex])
+    }
+  }
+
   return (
-    <div className={styles.container}>
+    <div
+      className={styles.container}
+      onKeyDown={(event) => {
+        if (event.key === 'ArrowLeft') {
+          event.preventDefault()
+          moveTab(-1)
+        }
+        if (event.key === 'ArrowRight') {
+          event.preventDefault()
+          moveTab(1)
+        }
+      }}
+      onPointerDown={(event) => {
+        if (event.pointerType === 'mouse' && event.button !== 0) return
+        event.currentTarget.setPointerCapture?.(event.pointerId)
+        pointerState.current.isDown = true
+        pointerState.current.startX = event.clientX
+        pointerState.current.startY = event.clientY
+        pointerState.current.hasSwiped = false
+      }}
+      onPointerMove={(event) => {
+        if (!pointerState.current.isDown || pointerState.current.hasSwiped) return
+        const dx = event.clientX - pointerState.current.startX
+        const dy = event.clientY - pointerState.current.startY
+        const absX = Math.abs(dx)
+        const absY = Math.abs(dy)
+        if (absX < 40 || absX < absY * 1.2) return
+        pointerState.current.hasSwiped = true
+        if (dx > 0) {
+          moveTab(-1)
+        } else {
+          moveTab(1)
+        }
+      }}
+      onPointerUp={() => {
+        // Pointer capture is automatically released on pointerup in most browsers.
+        pointerState.current.isDown = false
+        pointerState.current.hasSwiped = false
+      }}
+      onPointerCancel={() => {
+        pointerState.current.isDown = false
+        pointerState.current.hasSwiped = false
+      }}
+      tabIndex={0}
+    >
       <Seo title={t('nav.timeline')} />
       <div className={styles.wrapper}>
         <div className={styles.header}>
@@ -246,7 +309,7 @@ export function Timeline() {
 
 const styles = {
   container:
-    'mx-auto flex w-full max-w-[1400px] justify-center px-5 py-8 sm:px-6',
+    'mx-auto flex w-full max-w-[1400px] justify-center px-5 py-8 sm:px-6 focus:outline-none touch-pan-y select-none',
   wrapper: 'w-full max-w-3xl space-y-6',
   header: 'flex items-center justify-between',
   title: 'text-3xl font-bold text-slate-900 dark:text-slate-100',

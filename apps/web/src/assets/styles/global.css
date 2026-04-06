@@ -109,6 +109,21 @@ i {
   font-style: normal !important;
 }
 
+/* Quote blocks: de-emphasize and keep upright (no italics). */
+.markdown-body blockquote,
+.prose blockquote {
+  font-style: normal;
+  font-size: 0.95em;
+  color: var(--text-secondary);
+  opacity: 0.82;
+}
+.markdown-body blockquote em,
+.markdown-body blockquote i,
+.prose blockquote em,
+.prose blockquote i {
+  font-style: normal !important;
+}
+
 .btn-secondary {
   display: inline-flex;
   align-items: center;

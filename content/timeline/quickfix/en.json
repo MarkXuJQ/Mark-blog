@@ -1,5 +1,16 @@
 [
   {
+    "id": "qf-20260406",
+    "date": "2026-04-06",
+    "content": [
+      "Added font opacity levels to enhance hierarchy and highlight key information",
+      "Fixed the sticky logic of blog overview page widgets to ensure correct display during scrolling",
+      "Enhanced the design of our cc copyright page",
+      "Improved the styling of our blog pagination component",
+      "Enhanced the TOC sidebar"
+    ]
+  },
+  {
     "id": "qf-20260405",
     "date": "2026-04-05",
     "content": [
