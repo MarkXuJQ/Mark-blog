@@ -56,8 +56,10 @@
   --brand-500: #2e7ea3;
   --brand-600: #246c8d;
   --brand-400: #4e98ba;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
+  /* Material text legibility tiers for text on light surfaces: 87% / 60% / 38% */
+  --text-primary: rgba(15, 23, 42, 0.87);
+  --text-secondary: rgba(15, 23, 42, 0.6);
+  --text-disabled: rgba(15, 23, 42, 0.38);
   --surface-0: #ffffff;
   --surface-card: #ffffff;
   --border-color: rgba(15, 23, 42, 0.08);
@@ -75,11 +77,14 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  color: var(--text-primary);
 }
 
 .dark {
-  --text-primary: #ece8e1;
-  --text-secondary: #c2b8ad;
+  /* Material text legibility tiers for text on dark surfaces: 100% / 70% / 50% */
+  --text-primary: rgba(236, 232, 225, 1);
+  --text-secondary: rgba(236, 232, 225, 0.7);
+  --text-disabled: rgba(236, 232, 225, 0.5);
   --surface-0: #141210;
   --surface-card: #1c1a18;
   --border-color: rgba(192, 176, 160, 0.2);
@@ -96,6 +101,12 @@ h1, h2, h3 {
 }
 .no-heading-letter-spacing {
   letter-spacing: normal !important;
+}
+
+/* Keep typography upright site-wide: disable italic rendering. */
+em,
+i {
+  font-style: normal !important;
 }
 
 .btn-secondary {

@@ -303,7 +303,7 @@ const styles = {
   profileSignatureButton:
     'relative z-10 mb-8 cursor-pointer rounded-lg px-2 py-1 transition-colors hover:bg-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60 dark:hover:bg-white/5',
   profileSignature:
-    'text-sm italic leading-relaxed text-slate-600 dark:text-slate-300',
+    'text-sm leading-relaxed text-slate-600 dark:text-slate-300',
 
   // Search
   searchContainer: 'relative flex items-center',

@@ -26,17 +26,17 @@ interface BlogTocDrawerProps {
 const styles = {
   tocCard: 'p-4',
   tocHeader:
-    'mb-3 flex items-center justify-between gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300',
-  tocActions: 'flex items-center gap-2 text-slate-400 dark:text-slate-500',
+    'mb-3 flex items-center justify-between gap-2 text-sm font-semibold text-[var(--text-secondary)]',
+  tocActions: 'flex items-center gap-2 text-[var(--text-disabled)]',
   tocActionLink:
-    'transition-colors hover:text-slate-700 dark:hover:text-slate-300',
+    'transition-colors hover:text-[var(--text-primary)]',
   tocBody:
     "relative pl-3 before:absolute before:inset-1 before:w-[3px] before:rounded-full before:bg-slate-100 before:content-[''] dark:before:bg-slate-800",
   tocList: 'space-y-2',
   tocItem: cn(
     'relative block overflow-hidden rounded-md px-2 py-1 text-sm truncate',
-    'text-slate-700 hover:text-blue-600 cursor-pointer transition-colors',
-    'dark:text-slate-300 dark:hover:text-blue-400'
+    'text-[var(--text-secondary)] hover:text-blue-600 cursor-pointer transition-colors',
+    'dark:hover:text-blue-400'
   ),
   tocItemActive: cn(
     'relative text-blue-600 font-semibold',
@@ -86,24 +86,9 @@ function TocList({
     stack.push(node)
   }
 
-  function hasActive(node: Node): boolean {
-    if (node.id === activeId) return true
-    for (const c of node.children) {
-      if (hasActive(c)) return true
-    }
-    return false
-  }
-
   function render(nodes: Node[]) {
     return nodes.map((n) => (
-      <li
-        key={n.id}
-        className={cn(
-          'list-none',
-          'opacity-60 hover:opacity-95',
-          (hasActive(n) || n.id === activeId) && 'opacity-100'
-        )}
-      >
+      <li key={n.id} className="list-none">
         <a
           href={`#${n.id}`}
           onClick={(e) => handleLinkClick(e, n.id)}
@@ -125,13 +110,7 @@ function TocList({
   return (
     <ol className="space-y-1">
       {title && (
-        <li
-          className={cn(
-            'list-none',
-            'opacity-60 hover:opacity-95',
-            activeId === 'page-top' && 'opacity-100'
-          )}
-        >
+        <li className="list-none">
           <a
             href="#page-top"
             onClick={(e) => handleLinkClick(e, 'page-top')}
@@ -217,7 +196,7 @@ export function BlogTocCard({ toc = [], title }: BlogTocCardProps) {
       <div className={styles.tocBody}>
         <div className={styles.tocList}>
           {toc.length === 0 && !title ? (
-            <div className="text-sm text-slate-500 italic">
+            <div className="text-sm text-[var(--text-secondary)]">
               {t('blog.toc.empty')}
             </div>
           ) : (
@@ -258,12 +237,12 @@ export function BlogTocDrawer({
             : 'pointer-events-none translate-x-4 opacity-0'
         )}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 dark:border-slate-800 dark:text-slate-200">
+        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 text-sm font-semibold text-[var(--text-secondary)] dark:border-slate-800">
           <span>{t('blog.toc.title')}</span>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[var(--text-disabled)] transition hover:bg-slate-100 hover:text-[var(--text-primary)] dark:hover:bg-slate-800"
             aria-label={t('blog.toc.close', 'Close')}
           >
             <X size={14} />
@@ -271,7 +250,7 @@ export function BlogTocDrawer({
         </div>
         <div className="max-h-[60vh] overflow-y-auto px-4 py-3">
           {toc.length === 0 && !title ? (
-            <div className="text-sm text-slate-500 italic">
+            <div className="text-sm text-[var(--text-secondary)]">
               {t('blog.toc.empty')}
             </div>
           ) : (
@@ -282,3 +261,5 @@ export function BlogTocDrawer({
     </>
   )
 }
+
+

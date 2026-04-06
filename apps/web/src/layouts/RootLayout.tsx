@@ -30,7 +30,7 @@ export function RootLayout() {
   }, [])
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-[var(--surface-0)] dark:text-[var(--text-primary)]">
+    <div className="relative flex min-h-screen w-full flex-col bg-slate-50 text-[var(--text-primary)] transition-colors duration-300 dark:bg-[var(--surface-0)]">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 overflow-hidden"
