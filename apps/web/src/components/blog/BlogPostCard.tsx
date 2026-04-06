@@ -20,7 +20,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
     'text-slate-900 group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400'
   )
   const summaryClass =
-    'text-sm leading-6 text-slate-600 dark:text-slate-400 sm:text-[0.95rem]'
+    'text-sm leading-6 text-[var(--text-secondary)] sm:text-[0.95rem]'
   const metaClass =
     'mt-auto flex flex-wrap items-center gap-2 border-t border-slate-100 pt-2 text-[0.7rem] text-slate-500 dark:border-slate-800 dark:text-slate-400'
 

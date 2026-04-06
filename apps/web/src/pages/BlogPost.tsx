@@ -72,6 +72,14 @@ export function BlogPost() {
     }
   }, [navigate, post, slug])
 
+  useEffect(() => {
+    if (!slug) return
+    // Ensure navigation lands at the top of the next/prev post.
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    })
+  }, [slug])
+
   if (!post) {
     return (
       <div className="mx-auto max-w-4xl">
@@ -180,7 +188,7 @@ export function BlogPost() {
                 <div className="absolute inset-0 bg-gradient-to-b from-slate-950/35 via-slate-950/12 to-slate-950/55 dark:from-black/45 dark:via-slate-950/18 dark:to-black/65" />
               </div>
 
-              <div className="relative flex min-h-[22rem] flex-col justify-between px-5 py-5 sm:min-h-[26rem] sm:px-8 sm:py-8">
+              <div className="relative flex min-h-[22rem] flex-col gap-6 px-5 py-5 sm:min-h-[26rem] sm:justify-between sm:gap-0 sm:px-8 sm:py-8">
                 <Link
                   to="/blog"
                   className="inline-flex w-fit items-center rounded-full border border-white/18 bg-black/18 px-3 py-1.5 text-sm font-medium text-white/95 shadow-sm backdrop-blur transition-colors hover:bg-black/28"
@@ -191,11 +199,6 @@ export function BlogPost() {
 
                 <div className="max-w-3xl">
                   <div className="flex flex-wrap items-center gap-2">
-                    {categoryLabel ? (
-                      <span className="rounded-full border border-white/18 bg-white/12 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
-                        {categoryLabel}
-                      </span>
-                    ) : null}
                     {post.tags?.map((tag) => (
                       <span
                         key={tag}
@@ -217,6 +220,11 @@ export function BlogPost() {
                   ) : null}
 
                   <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/85 drop-shadow-[0_2px_12px_rgba(15,23,42,0.38)]">
+                    {categoryLabel ? (
+                      <span className="rounded-md border border-white/18 bg-white/14 px-2 py-0.5 text-xs font-semibold text-white/95 backdrop-blur">
+                        {categoryLabel}
+                      </span>
+                    ) : null}
                     <div className="inline-flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
                       <time dateTime={post.date}>
@@ -249,7 +257,7 @@ export function BlogPost() {
                 dangerouslySetInnerHTML={{ __html: contentHtml }}
               />
 
-              <Copyright url={postUrl} />
+              <Copyright />
               <PostNavigation prev={adjacentPosts.prev} next={adjacentPosts.next} />
             </article>
           </>
@@ -276,6 +284,9 @@ export function BlogPost() {
               </div>
 
               <div className={styles.statsContainer}>
+                {categoryLabel ? (
+                  <span className={styles.categoryBadge}>{categoryLabel}</span>
+                ) : null}
                 <div className={styles.iconText}>
                   <Calendar className="h-4 w-4" />
                   <time dateTime={post.date}>
@@ -305,7 +316,7 @@ export function BlogPost() {
                 dangerouslySetInnerHTML={{ __html: contentHtml }}
               />
 
-              <Copyright url={postUrl} />
+              <Copyright />
               <PostNavigation prev={adjacentPosts.prev} next={adjacentPosts.next} />
             </article>
           </>
@@ -344,6 +355,10 @@ const styles = {
   iconText: 'flex items-center gap-1',
   updatedText: 'flex items-center gap-1 text-slate-400',
   tagsContainer: 'flex gap-2',
+  categoryBadge: cn(
+    'rounded-md bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700',
+    'dark:bg-blue-900 dark:text-blue-300'
+  ),
   tag: cn(
     'rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium',
     'text-slate-600 dark:bg-slate-800 dark:text-slate-300'

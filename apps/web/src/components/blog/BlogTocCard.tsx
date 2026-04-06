@@ -1,5 +1,5 @@
 import { ArrowUpCircle, MessageSquareText } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Card } from '../ui/Card'
 import { cn } from '../../utils/cn'
@@ -26,17 +26,24 @@ interface BlogTocDrawerProps {
 const styles = {
   tocCard: 'p-4',
   tocHeader:
-    'mb-3 flex items-center justify-between gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300',
-  tocActions: 'flex items-center gap-2 text-slate-400 dark:text-slate-500',
+    'mb-3 flex items-center justify-between gap-2 text-sm font-semibold text-[var(--text-secondary)]',
+  tocActions: 'flex items-center gap-2 text-[var(--text-disabled)]',
   tocActionLink:
-    'transition-colors hover:text-slate-700 dark:hover:text-slate-300',
-  tocBody:
-    "relative pl-3 before:absolute before:inset-1 before:w-[3px] before:rounded-full before:bg-slate-100 before:content-[''] dark:before:bg-slate-800",
-  tocList: 'space-y-2',
+    'transition-colors hover:text-[var(--text-primary)]',
+  tocBody: 'relative',
+  tocRail: 'relative pl-4',
+  tocRailLine:
+    'absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-slate-200/80 dark:bg-slate-800/80',
+  tocRailIndicator: cn(
+    'absolute left-0 h-4 w-[3px] rounded-full bg-blue-600',
+    'transition-[top,height,opacity] duration-200 ease-out -translate-y-1/2',
+    'dark:bg-blue-400'
+  ),
+  tocList: 'space-y-1 list-none pl-0',
   tocItem: cn(
-    'relative block overflow-hidden rounded-md px-2 py-1 text-sm truncate',
-    'text-slate-700 hover:text-blue-600 cursor-pointer transition-colors',
-    'dark:text-slate-300 dark:hover:text-blue-400'
+    'relative block overflow-hidden rounded-md px-2 py-1 text-sm leading-5 truncate',
+    'text-[var(--text-secondary)] hover:text-blue-600 cursor-pointer transition-colors',
+    'dark:hover:text-blue-400'
   ),
   tocItemActive: cn(
     'relative text-blue-600 font-semibold',
@@ -63,12 +70,18 @@ function handleLinkClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
 function TocList({
   toc,
   activeId,
+  onItemClick,
   title,
 }: {
   toc: TocItem[]
   activeId: string
+  onItemClick: (id: string) => void
   title?: string
 }) {
+  const railRef = useRef<HTMLDivElement | null>(null)
+  const [indicatorTop, setIndicatorTop] = useState<number | null>(null)
+  const [indicatorHeight, setIndicatorHeight] = useState<number>(16)
+
   type Node = TocItem & { children: Node[] }
   const stack: Node[] = []
   const tree: Node[] = []
@@ -86,77 +99,118 @@ function TocList({
     stack.push(node)
   }
 
-  function hasActive(node: Node): boolean {
-    if (node.id === activeId) return true
-    for (const c of node.children) {
-      if (hasActive(c)) return true
+  useLayoutEffect(() => {
+    if (!railRef.current) return
+    const items = railRef.current.querySelectorAll(
+      '[data-toc-id]'
+    ) as NodeListOf<HTMLElement>
+    const active = railRef.current.querySelector(
+      `[data-toc-id="${activeId}"]`
+    ) as HTMLElement | null
+    if (!active || items.length === 0) return
+
+    const railRect = railRef.current.getBoundingClientRect()
+    const activeRect = active.getBoundingClientRect()
+    const activeCenter = activeRect.top - railRect.top + activeRect.height / 2
+    setIndicatorTop(activeCenter)
+
+    const baseHeight = 16
+    const first = items[0]
+    const last = items[items.length - 1]
+    const firstRect = first.getBoundingClientRect()
+    const lastRect = last.getBoundingClientRect()
+    const firstCenter =
+      firstRect.top - railRect.top + firstRect.height / 2
+    const lastCenter = lastRect.top - railRect.top + lastRect.height / 2
+
+    let nextHeight = baseHeight
+    if (activeId === first.getAttribute('data-toc-id')) {
+      nextHeight = Math.max(baseHeight, firstCenter * 2)
+    } else if (activeId === last.getAttribute('data-toc-id')) {
+      nextHeight = Math.max(baseHeight, (railRect.height - lastCenter) * 2)
     }
-    return false
-  }
+    nextHeight = Math.min(nextHeight, railRect.height)
+    setIndicatorHeight(nextHeight)
+  }, [activeId, toc, title])
 
   function render(nodes: Node[]) {
     return nodes.map((n) => (
-      <li
-        key={n.id}
-        className={cn(
-          'list-none',
-          'opacity-60 hover:opacity-95',
-          (hasActive(n) || n.id === activeId) && 'opacity-100'
-        )}
-      >
+      <li key={n.id} className="list-none">
         <a
           href={`#${n.id}`}
-          onClick={(e) => handleLinkClick(e, n.id)}
+          onClick={(e) => {
+            onItemClick(n.id)
+            handleLinkClick(e, n.id)
+          }}
+          data-toc-id={n.id}
           className={cn(
-            n.id === activeId ? styles.tocItemActive : styles.tocItem,
-            n.level > 1 && 'border-l border-slate-200 dark:border-slate-800'
+            n.id === activeId ? styles.tocItemActive : styles.tocItem
           )}
           style={{ paddingLeft: `${(n.level - 1) * 14}px` }}
         >
           {n.text}
         </a>
         {n.children.length > 0 && (
-          <ol className="mt-1 space-y-1">{render(n.children)}</ol>
+          <ol className="mt-1 space-y-1 list-none pl-0">
+            {render(n.children)}
+          </ol>
         )}
       </li>
     ))
   }
 
   return (
-    <ol className="space-y-1">
-      {title && (
-        <li
-          className={cn(
-            'list-none',
-            'opacity-60 hover:opacity-95',
-            activeId === 'page-top' && 'opacity-100'
-          )}
-        >
-          <a
-            href="#page-top"
-            onClick={(e) => handleLinkClick(e, 'page-top')}
-            className={cn(
-              activeId === 'page-top' ? styles.tocItemActive : styles.tocItem,
-              'font-semibold'
-            )}
-          >
-            {title}
-          </a>
-        </li>
-      )}
-      {render(tree)}
-    </ol>
+    <div ref={railRef} className={styles.tocRail}>
+      <span className={styles.tocRailLine} aria-hidden="true" />
+      <span
+        className={styles.tocRailIndicator}
+        aria-hidden="true"
+        style={
+          indicatorTop == null
+            ? { opacity: 0 }
+            : { top: indicatorTop, height: indicatorHeight }
+        }
+      />
+      <ol className="space-y-1 list-none pl-0">
+        {title && (
+          <li className="list-none">
+            <a
+              href="#page-top"
+              onClick={(e) => {
+                onItemClick('page-top')
+                handleLinkClick(e, 'page-top')
+              }}
+              data-toc-id="page-top"
+              className={cn(
+                activeId === 'page-top' ? styles.tocItemActive : styles.tocItem,
+                'font-semibold'
+              )}
+            >
+              {title}
+            </a>
+          </li>
+        )}
+        {render(tree)}
+      </ol>
+    </div>
   )
 }
 
 function useActiveTocId(toc: TocItem[]) {
   const [activeId, setActiveId] = useState<string>('page-top')
+  const manualUntilRef = useRef<number>(0)
+
+  const setActiveIdManual = (id: string) => {
+    manualUntilRef.current = Date.now() + 800
+    setActiveId(id)
+  }
 
   useEffect(() => {
     if (typeof window === 'undefined') return
 
     const observer = new IntersectionObserver(
       (entries) => {
+        if (Date.now() < manualUntilRef.current) return
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setActiveId(entry.target.id)
@@ -185,12 +239,12 @@ function useActiveTocId(toc: TocItem[]) {
     return () => observer.disconnect()
   }, [toc])
 
-  return activeId
+  return { activeId, setActiveIdManual }
 }
 
 export function BlogTocCard({ toc = [], title }: BlogTocCardProps) {
   const { t } = useTranslation()
-  const activeId = useActiveTocId(toc)
+  const { activeId, setActiveIdManual } = useActiveTocId(toc)
 
   return (
     <Card className={styles.tocCard}>
@@ -217,11 +271,16 @@ export function BlogTocCard({ toc = [], title }: BlogTocCardProps) {
       <div className={styles.tocBody}>
         <div className={styles.tocList}>
           {toc.length === 0 && !title ? (
-            <div className="text-sm text-slate-500 italic">
+            <div className="text-sm text-[var(--text-secondary)]">
               {t('blog.toc.empty')}
             </div>
           ) : (
-            <TocList toc={toc} activeId={activeId} title={title} />
+            <TocList
+              toc={toc}
+              activeId={activeId}
+              onItemClick={setActiveIdManual}
+              title={title}
+            />
           )}
         </div>
       </div>
@@ -236,7 +295,7 @@ export function BlogTocDrawer({
   onClose,
 }: BlogTocDrawerProps) {
   const { t } = useTranslation()
-  const activeId = useActiveTocId(toc)
+  const { activeId, setActiveIdManual } = useActiveTocId(toc)
 
   return (
     <>
@@ -258,12 +317,12 @@ export function BlogTocDrawer({
             : 'pointer-events-none translate-x-4 opacity-0'
         )}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 dark:border-slate-800 dark:text-slate-200">
+        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 text-sm font-semibold text-[var(--text-secondary)] dark:border-slate-800">
           <span>{t('blog.toc.title')}</span>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[var(--text-disabled)] transition hover:bg-slate-100 hover:text-[var(--text-primary)] dark:hover:bg-slate-800"
             aria-label={t('blog.toc.close', 'Close')}
           >
             <X size={14} />
@@ -271,14 +330,21 @@ export function BlogTocDrawer({
         </div>
         <div className="max-h-[60vh] overflow-y-auto px-4 py-3">
           {toc.length === 0 && !title ? (
-            <div className="text-sm text-slate-500 italic">
+            <div className="text-sm text-[var(--text-secondary)]">
               {t('blog.toc.empty')}
             </div>
           ) : (
-            <TocList toc={toc} activeId={activeId} title={title} />
+            <TocList
+              toc={toc}
+              activeId={activeId}
+              onItemClick={setActiveIdManual}
+              title={title}
+            />
           )}
         </div>
       </div>
     </>
   )
 }
+
+

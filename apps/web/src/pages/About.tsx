@@ -72,7 +72,7 @@ export function About() {
             </section>
 
             {/* Future */}
-            <p className="border-l-4 border-slate-200 pl-4 leading-relaxed text-slate-600 italic dark:border-slate-700 dark:text-slate-400">
+            <p className="border-l-4 border-slate-200 pl-4 leading-relaxed text-slate-600 dark:border-slate-700 dark:text-slate-400">
               {t('about.futureContent')}
             </p>
           </div>

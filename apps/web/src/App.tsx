@@ -9,9 +9,19 @@ const LightboxProvider = lazy(() =>
     default: module.LightboxProvider,
   }))
 )
-const BlogLayout = lazy(() =>
-  import('./layouts/BlogLayout').then((module) => ({
-    default: module.BlogLayout,
+const ArchiveLayout = lazy(() =>
+  import('./layouts/ArchiveLayout').then((module) => ({
+    default: module.ArchiveLayout,
+  }))
+)
+const BlogListLayout = lazy(() =>
+  import('./layouts/BlogListLayout').then((module) => ({
+    default: module.BlogListLayout,
+  }))
+)
+const BlogPostLayout = lazy(() =>
+  import('./layouts/BlogPostLayout').then((module) => ({
+    default: module.BlogPostLayout,
   }))
 )
 const Home = lazy(() =>
@@ -93,11 +103,11 @@ function App() {
               />
             </Route>
 
-            {/* Blog Layout - Three columns with fixed sidebars */}
+            {/* Blog List Layout */}
             <Route
               element={
                 <LazyRoute>
-                  <BlogLayout />
+                  <BlogListLayout />
                 </LazyRoute>
               }
             >
@@ -109,6 +119,16 @@ function App() {
                   </LazyRoute>
                 }
               />
+            </Route>
+
+            {/* Blog Post Layout */}
+            <Route
+              element={
+                <LazyRoute>
+                  <BlogPostLayout />
+                </LazyRoute>
+              }
+            >
               <Route
                 path="blog/:slug"
                 element={
@@ -119,6 +139,16 @@ function App() {
                   </LazyRoute>
                 }
               />
+            </Route>
+
+            {/* Archive Layout */}
+            <Route
+              element={
+                <LazyRoute>
+                  <ArchiveLayout />
+                </LazyRoute>
+              }
+            >
               <Route
                 path="archive"
                 element={
