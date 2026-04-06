@@ -78,6 +78,9 @@
       "comments": "Comments",
       "empty": "No Headings"
     },
+    "recommend": {
+      "title": "Recommended"
+    },
     "filter": {
       "allTags": "All Tags",
       "allCategories": "All Categories"

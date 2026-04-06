@@ -150,15 +150,7 @@ export function Comments({
               或者在 <code className="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-xs">src/components/Comments.tsx</code> 中直接填入您的 Twikoo 环境 ID。
             </p>
           </div>
-        ) : !shouldLoadTwikoo ? (
-          <div className="flex justify-center py-8 text-slate-400 text-sm">
-            向下滚动到评论区后自动加载...
-          </div>
-        ) : (
-          <div className="flex justify-center py-8 text-slate-400 text-sm">
-            评论加载中...
-          </div>
-        )}
+        ) : null}
       </div>
 
       <style>{`

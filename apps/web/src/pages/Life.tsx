@@ -134,6 +134,21 @@ export function Life() {
   const failedImagesRef = useRef<Set<string>>(new Set())
   const [, forceRerender] = useState(0)
 
+  const handleCardMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const target = event.currentTarget
+    const rect = target.getBoundingClientRect()
+    const x = (event.clientX - rect.left) / rect.width - 0.5
+    const y = (event.clientY - rect.top) / rect.height - 0.5
+    target.style.setProperty('--x-rotate', `${y * -8}deg`)
+    target.style.setProperty('--y-rotate', `${x * 8}deg`)
+  }
+
+  const handleCardMouseLeave = (event: React.MouseEvent<HTMLDivElement>) => {
+    const target = event.currentTarget
+    target.style.setProperty('--x-rotate', '0deg')
+    target.style.setProperty('--y-rotate', '0deg')
+  }
+
   const refreshCommentCounts = async (postIds?: string[]) => {
     if (typeof window === 'undefined') return
     if (!twikooEnvId) return
@@ -411,10 +426,17 @@ export function Life() {
               key={post.id}
               className={cn(
                 'group relative mb-4 inline-block w-full overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-sm',
-                'text-left transition-colors hover:border-slate-300 dark:border-[#2b2f36] dark:bg-[#17191c] dark:hover:border-[#3a3f48]',
+                'text-left transition-[transform,box-shadow,border-color] duration-200 ease-out',
+                'hover:border-slate-300 dark:border-[#2b2f36] dark:bg-[#17191c] dark:hover:border-[#3a3f48]',
+                '[transform:perspective(1200px)_rotateX(var(--x-rotate,0deg))_rotateY(var(--y-rotate,0deg))]',
+                'hover:shadow-[0_20px_32px_-24px_rgba(15,23,42,0.3)]',
+                'dark:hover:shadow-[0_24px_36px_-26px_rgba(0,0,0,0.55)]',
+                'will-change-transform',
                 'focus-within:ring-2 focus-within:ring-blue-500/60',
                 'break-inside-avoid'
               )}
+              onMouseMove={handleCardMouseMove}
+              onMouseLeave={handleCardMouseLeave}
             >
                 <button
                   type="button"

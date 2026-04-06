@@ -78,6 +78,9 @@
       "comments": "评论区",
       "empty": "暂无标题"
     },
+    "recommend": {
+      "title": "相关文章"
+    },
     "filter": {
       "allTags": "全部标签",
       "allCategories": "全部分类"
