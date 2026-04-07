@@ -8,6 +8,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const projectRoot = path.resolve(__dirname, '..')
 const repoRoot = path.resolve(projectRoot, '..', '..')
+const userHome = process.env.HOME || process.env.USERPROFILE || repoRoot
 
 const textExtensions = new Set([
   '.css',
@@ -23,12 +24,19 @@ const textExtensions = new Set([
   '.csv',
 ])
 
+const bundledHeadingFontSource = path.join(
+  projectRoot,
+  'src/assets/fonts/纳米丰宋_纳挼字库/NanoFullSong-Regular.ttf'
+)
+const legacyHeadingFontSource = path.join(
+  projectRoot,
+  'src/assets/纳米丰宋_纳挼字库/NanoFullSong-Regular.ttf'
+)
 const headingFontSource =
   process.env.HEADING_FONT_SOURCE ||
-  path.join(
-    projectRoot,
-    'src/assets/纳米丰宋_纳挼字库/NanoFullSong-Regular.ttf'
-  )
+  (fs.existsSync(bundledHeadingFontSource)
+    ? bundledHeadingFontSource
+    : legacyHeadingFontSource)
 const headingFontOutput = path.join(
   projectRoot,
   'src/assets/fonts/NanoFullSong-Subset.woff2'
@@ -40,9 +48,23 @@ const pixelFontOutput = path.join(
   projectRoot,
   'src/assets/fonts/UranusPixel-Subset.woff2'
 )
+const bundledNerdFontSource = path.join(
+  projectRoot,
+  'src/assets/fonts/JetBrainsMonoNerdFont-Regular.ttf'
+)
+const nerdFontSource =
+  process.env.NERD_FONT_SOURCE ||
+  (fs.existsSync(bundledNerdFontSource)
+    ? bundledNerdFontSource
+    : path.join(userHome, 'Library/Fonts/JetBrainsMonoNerdFontMono-Regular.ttf'))
+const nerdFontOutput = path.join(
+  projectRoot,
+  'src/assets/fonts/JetBrainsMonoNerd-Subset.woff2'
+)
 const generatedDir = path.join(projectRoot, '.generated')
 const headingTextPath = path.join(generatedDir, 'font-heading-chars.txt')
 const pixelTextPath = path.join(generatedDir, 'font-pixel-chars.txt')
+const nerdFontTextPath = path.join(generatedDir, 'font-nerd-chars.txt')
 
 const pixelFontText = [
   'BLOG · LIFE · MOVIES · GAMES',
@@ -57,6 +79,16 @@ const safeHeadingExtras = [
   'abcdefghijklmnopqrstuvwxyz',
   ` '",.:;!?()[]{}+-=*/&_@#%<>~|^$`,
   '，。！？；：、“”‘’（）《》【】—…·',
+].join('')
+
+const safeCodeExtras = [
+  ` !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\`abcdefghijklmnopqrstuvwxyz{|}~`,
+  '，。！？；：、“”‘’（）《》【】—…·',
+  '←↑→↓↔↕│└┘├┤┬┴┼─',
+  '❮❯…',
+  '',
+  '',
+  '󰀵󰕈󰐿󰣭󰌽󰣨󰣛󰣇󰣚󱄛',
 ].join('')
 
 function collectTextFiles(dirPath, files = []) {
@@ -95,12 +127,16 @@ function uniqueGlyphText(input) {
   return output
 }
 
-function buildHeadingText() {
-  const files = [
+function getProjectTextFiles() {
+  return [
     ...collectTextFiles(path.join(repoRoot, 'content')),
     ...collectTextFiles(path.join(projectRoot, 'src')),
     path.join(projectRoot, 'index.html'),
   ]
+}
+
+function readProjectText() {
+  const files = getProjectTextFiles()
 
   let combined = ''
 
@@ -110,7 +146,16 @@ function buildHeadingText() {
     combined += '\n'
   }
 
-  combined += safeHeadingExtras
+  return combined
+}
+
+function buildHeadingText() {
+  const combined = readProjectText() + safeHeadingExtras
+  return uniqueGlyphText(combined)
+}
+
+function buildNerdFontText() {
+  const combined = readProjectText() + safeCodeExtras
   return uniqueGlyphText(combined)
 }
 
@@ -151,12 +196,27 @@ function canEncodeWoff2(candidate, inputFont) {
   return succeeded
 }
 
+function resolveCommandPath(command) {
+  const result = spawnSync(process.env.SHELL || '/bin/sh', ['-lc', `command -v ${command}`], {
+    encoding: 'utf8',
+    shell: false,
+  })
+
+  if (result.error || result.status !== 0) {
+    return null
+  }
+
+  const resolvedPath = result.stdout?.trim()
+  return resolvedPath || null
+}
+
 function findPyftsubset() {
-  const probeFontSource = [headingFontSource, pixelFontSource].find((filePath) =>
-    fs.existsSync(filePath)
+  const probeFontSource = [headingFontSource, pixelFontSource, nerdFontSource].find(
+    (filePath) => fs.existsSync(filePath)
   )
   const candidates = [
     process.env.PYFTSUBSET,
+    resolveCommandPath('pyftsubset'),
     '/Users/markxu/anaconda3/envs/pelvis_seg/bin/pyftsubset',
     'pyftsubset',
   ].filter(Boolean)
@@ -247,13 +307,16 @@ async function main() {
 
   const headingText = buildHeadingText()
   const pixelText = uniqueGlyphText(pixelFontText)
+  const nerdFontText = buildNerdFontText()
 
   fs.writeFileSync(headingTextPath, headingText)
   fs.writeFileSync(pixelTextPath, pixelText)
+  fs.writeFileSync(nerdFontTextPath, nerdFontText)
 
   const pyftsubsetPath = findPyftsubset()
   const hasHeadingSource = fs.existsSync(headingFontSource)
   const hasPixelSource = fs.existsSync(pixelFontSource)
+  const hasNerdSource = fs.existsSync(nerdFontSource)
   const canGenerate = Boolean(pyftsubsetPath)
 
   if (canGenerate) {
@@ -294,14 +357,33 @@ async function main() {
     verifyOutputExists(pixelFontOutput)
   }
 
+  if (canGenerate && hasNerdSource) {
+    runSubset(pyftsubsetPath, {
+      input: nerdFontSource,
+      textFile: nerdFontTextPath,
+      output: nerdFontOutput,
+    })
+  } else {
+    if (!hasNerdSource) {
+      console.warn(
+        `Nerd font source not found, reusing committed subset: ${nerdFontSource}`
+      )
+    }
+    verifyOutputExists(nerdFontOutput)
+  }
+
   const headingSize = fs.statSync(headingFontOutput).size
   const pixelSize = fs.statSync(pixelFontOutput).size
+  const nerdFontSize = fs.statSync(nerdFontOutput).size
 
   console.log(
     `Generated ${path.basename(headingFontOutput)} (${formatBytes(headingSize)})`
   )
   console.log(
     `Generated ${path.basename(pixelFontOutput)} (${formatBytes(pixelSize)})`
+  )
+  console.log(
+    `Generated ${path.basename(nerdFontOutput)} (${formatBytes(nerdFontSize)})`
   )
 }
 

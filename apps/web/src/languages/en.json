@@ -35,6 +35,11 @@
       "timeline": "Timeline"
     }
   },
+  "codeBlock": {
+    "copy": "Copy",
+    "copied": "Copied",
+    "plainText": "Plain Text"
+  },
   "home": {
     "title": "Welcome to <0>Mark</0>'s Backyard",
     "intro": "This is my personal corner for tech notes, life bits, and small projects.",
