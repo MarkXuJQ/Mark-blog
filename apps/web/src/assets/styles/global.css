@@ -124,6 +124,53 @@ i {
   font-style: normal !important;
 }
 
+.markdown-body :not(pre) > code,
+.prose :not(pre) > code {
+  border-radius: 0.5rem;
+  padding: 0.16rem 0.4rem;
+  background: color-mix(in srgb, var(--surface-0) 84%, #0f172a 16%);
+  color: color-mix(in srgb, var(--text-primary) 82%, #2563eb 18%);
+  font-size: 0.92em;
+  font-weight: 600;
+}
+
+.dark .markdown-body :not(pre) > code,
+.dark .prose :not(pre) > code {
+  background: color-mix(in srgb, var(--surface-card) 76%, #0f172a 24%);
+  color: #dbeafe;
+}
+
+.markdown-body pre,
+.prose pre {
+  overflow: auto;
+  max-height: calc(35 * 1.75em + 2.4rem);
+  overscroll-behavior: contain;
+  border-radius: 1rem;
+}
+
+.markdown-body pre code,
+.prose pre code {
+  display: block;
+  min-width: max-content;
+  font-size: 0.92rem;
+  line-height: 1.75;
+  font-family:
+    "JetBrains Mono",
+    "SFMono-Regular",
+    "SF Mono",
+    Consolas,
+    "Liberation Mono",
+    Menlo,
+    monospace;
+}
+
+@media (max-width: 640px) {
+  .markdown-body pre,
+  .prose pre {
+    font-size: 0.88rem;
+  }
+}
+
 .btn-secondary {
   display: inline-flex;
   align-items: center;

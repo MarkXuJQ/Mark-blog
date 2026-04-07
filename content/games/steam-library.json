@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-19T04:25:47.966Z",
+  "generatedAt": "2026-04-07T15:11:44.802Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -9,13 +9,13 @@
     "reviewsUrl": "https://steamcommunity.com/id/markxu269/recommended/"
   },
   "summary": {
-    "gameCount": 223,
-    "playedCount": 147,
+    "gameCount": 224,
+    "playedCount": 148,
     "unplayedCount": 76,
-    "totalMinutes": 163787,
-    "totalRecentMinutes": 565,
-    "totalUnlockedAchievements": 1845,
-    "totalAvailableAchievements": 7151,
+    "totalMinutes": 167148,
+    "totalRecentMinutes": 2532,
+    "totalUnlockedAchievements": 1880,
+    "totalAvailableAchievements": 7206,
     "featuredAppId": 2246340
   },
   "featured": [
@@ -33,9 +33,9 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 150426,
-        "totalNegative": 163557,
-        "totalReviews": 313983,
+        "totalPositive": 151925,
+        "totalNegative": 163779,
+        "totalReviews": 315704,
         "positivePercent": 48
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1771382452",
@@ -64,9 +64,9 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 447099,
-        "totalNegative": 56790,
-        "totalReviews": 503889,
+        "totalPositive": 448189,
+        "totalNegative": 56876,
+        "totalReviews": 505065,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
@@ -93,9 +93,9 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 803348,
-        "totalNegative": 26486,
-        "totalReviews": 829834,
+        "totalPositive": 806853,
+        "totalNegative": 26603,
+        "totalReviews": 833456,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1773079016",
@@ -124,9 +124,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 834857,
-        "totalNegative": 27731,
-        "totalReviews": 862588,
+        "totalPositive": 837062,
+        "totalNegative": 27805,
+        "totalReviews": 864867,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991",
@@ -153,9 +153,9 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 318622,
-        "totalNegative": 52003,
-        "totalReviews": 370625,
+        "totalPositive": 319689,
+        "totalNegative": 52087,
+        "totalReviews": 371776,
         "positivePercent": 86
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1740607040",
@@ -184,9 +184,9 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 161688,
-        "totalNegative": 20403,
-        "totalReviews": 182091,
+        "totalPositive": 162242,
+        "totalNegative": 20459,
+        "totalReviews": 182701,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1758656673",
@@ -362,8 +362,8 @@
     {
       "appid": 431960,
       "name": "Wallpaper Engine",
-      "playtimeMinutes": 3072,
-      "recentPlaytimeMinutes": 0,
+      "playtimeMinutes": 3074,
+      "recentPlaytimeMinutes": 1,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/431960/72edaed9d748c6cf7397ffb1c83f0b837b9ebd9d.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/431960",
@@ -469,6 +469,20 @@
       "achievementStats": {
         "unlockedCount": 14,
         "totalCount": 77
+      }
+    },
+    {
+      "appid": 1903340,
+      "name": "Clair Obscur: Expedition 33",
+      "playtimeMinutes": 2531,
+      "recentPlaytimeMinutes": 2531,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1903340/d48fb3ed033a08bad9bf0a2e1ceb145e58ffe0aa.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/1903340",
+      "communityUrl": "https://steamcommunity.com/app/1903340",
+      "achievementStats": {
+        "unlockedCount": 35,
+        "totalCount": 55
       }
     },
     {
@@ -635,6 +649,17 @@
         "unlockedCount": 23,
         "totalCount": 60
       }
+    },
+    {
+      "appid": 2868840,
+      "name": "Slay the Spire 2",
+      "playtimeMinutes": 1347,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2868840/f92b09dab91f1d1738f72fe0dd9be18dcc2901f9.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2868840",
+      "communityUrl": "https://steamcommunity.com/app/2868840",
+      "achievementStats": null
     },
     {
       "appid": 3167020,
@@ -911,17 +936,6 @@
       }
     },
     {
-      "appid": 2868840,
-      "name": "Slay the Spire 2",
-      "playtimeMinutes": 519,
-      "recentPlaytimeMinutes": 519,
-      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2868840/f92b09dab91f1d1738f72fe0dd9be18dcc2901f9.jpg",
-      "logoUrl": "",
-      "storeUrl": "https://store.steampowered.com/app/2868840",
-      "communityUrl": "https://steamcommunity.com/app/2868840",
-      "achievementStats": null
-    },
-    {
       "appid": 1172380,
       "name": "STAR WARS Jedi: Fallen Order™ ",
       "playtimeMinutes": 511,
@@ -1104,7 +1118,7 @@
       "appid": 670290,
       "name": "Real Pool 3D - Poolians",
       "playtimeMinutes": 299,
-      "recentPlaytimeMinutes": 34,
+      "recentPlaytimeMinutes": 0,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/670290/b74acc3e1996c8cb9ce9e2933c190575fa0be457.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/670290",
@@ -2096,7 +2110,7 @@
       "appid": 684410,
       "name": "Bridge Constructor Portal",
       "playtimeMinutes": 12,
-      "recentPlaytimeMinutes": 12,
+      "recentPlaytimeMinutes": 0,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/684410/8bb9f59fa001f71795d88d2288243ba4e21fabda.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/684410",

@@ -32,10 +32,10 @@ export function BlogPost() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const post = slug
-    ? getPostBySlug(slug, i18n.language, { fallback: false })
+    ? getPostBySlug(slug, i18n.language)
     : undefined
   const adjacentPosts = slug
-    ? getAdjacentPosts(slug, i18n.language, { fallback: false })
+    ? getAdjacentPosts(slug, i18n.language)
     : { prev: undefined, next: undefined }
 
   const contentHtml = post ? rewriteHtmlImageSrc(post.content) : ''
