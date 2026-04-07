@@ -151,7 +151,7 @@ nano ~/.config/starship.toml
 
 我的配置：
 
-```toml
+```Bash
 "$schema" = 'https://starship.rs/config-schema.json'
 
 format = """
@@ -453,7 +453,7 @@ starship preset tokyo-night > ~/.config/starship.toml
 nano ~/.zshrc
 ```
 
-```zsh
+```Bash
 # ===== Homebrew: macOS 包管理器=====
 export PATH="/opt/homebrew/bin:$PATH"
 
@@ -511,4 +511,4 @@ exec zsh
 > - Ghostty 1.3.1 (stable)
 > - Starship 1.24.2
 > - Yazi 0.3.0
->   不同版本配置语法可能有差异，如遇问题请先 `ghostty --version` 确认版本。
+>   不同版本配置语法可能有差异，如遇问题请先查看官网确认版本。

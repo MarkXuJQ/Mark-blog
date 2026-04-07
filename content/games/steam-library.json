@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-07T15:45:31.064Z",
+  "generatedAt": "2026-04-07T16:05:13.193Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -64,9 +64,9 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 448189,
-        "totalNegative": 56876,
-        "totalReviews": 505065,
+        "totalPositive": 448193,
+        "totalNegative": 56879,
+        "totalReviews": 505072,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
@@ -124,9 +124,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 837062,
-        "totalNegative": 27805,
-        "totalReviews": 864867,
+        "totalPositive": 837069,
+        "totalNegative": 27806,
+        "totalReviews": 864875,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991",

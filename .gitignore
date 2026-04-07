@@ -155,3 +155,6 @@ PROJECT_CONTEXT_PROMPT.txt
 
 # Local generated font manifests
 apps/web/.generated/
+
+# Local source fonts used only for subset generation
+apps/web/src/assets/fonts/纳米丰宋_纳挼字库/

@@ -112,15 +112,6 @@ function getLanguageLabel(language: string, plainTextLabel: string) {
   return LANGUAGE_LABELS[language] || language.toUpperCase()
 }
 
-function countCodeLines(source: string) {
-  const normalized = source.replace(/\r\n/g, '\n')
-  const trimmed =
-    normalized.endsWith('\n') && normalized.length > 1
-      ? normalized.slice(0, -1)
-      : normalized
-  return Math.max(1, trimmed.split('\n').length)
-}
-
 export interface CodeBlockEnhancementLabels {
   copy: string
   copied: string
@@ -165,7 +156,6 @@ export function useCodeBlockEnhancements(
       const rawCode = code.textContent || ''
       const language = extractLanguage(code)
       const languageLabel = getLanguageLabel(language, labels.plainText)
-      const lineCount = countCodeLines(rawCode)
 
       if (language && hljs.getLanguage(language)) {
         code.innerHTML = hljs.highlight(rawCode, { language }).value
@@ -213,22 +203,11 @@ export function useCodeBlockEnhancements(
       const body = document.createElement('div')
       body.className = 'md-code-body'
 
-      const gutter = document.createElement('div')
-      gutter.className = 'md-code-gutter'
-      gutter.setAttribute('aria-hidden', 'true')
-
-      for (let index = 1; index <= lineCount; index += 1) {
-        const lineNumber = document.createElement('span')
-        lineNumber.className = 'md-code-gutter-line'
-        lineNumber.textContent = String(index)
-        gutter.appendChild(lineNumber)
-      }
-
       pre.classList.add('md-code-pre')
       code.classList.add('md-code-content')
 
       pre.replaceWith(frame)
-      body.append(gutter, pre)
+      body.append(pre)
       frame.append(header, body)
 
       const handleCopy = async () => {
