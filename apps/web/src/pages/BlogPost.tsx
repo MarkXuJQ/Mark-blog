@@ -11,6 +11,7 @@ import { Seo } from '../components/seo/Seo'
 import { Copyright } from '../components/blog/Copyright'
 import { PostNavigation } from '../components/blog/PostNavigation'
 import { useImageLightbox } from '../hooks/useImageLightbox'
+import { useCodeBlockEnhancements } from '../hooks/useCodeBlockEnhancements'
 import { DeferredComments } from '../components/comments/DeferredComments'
 import {
   applySearchHighlights,
@@ -40,6 +41,15 @@ export function BlogPost() {
 
   const contentHtml = post ? rewriteHtmlImageSrc(post.content) : ''
   const contentRef = useImageLightbox([contentHtml])
+  useCodeBlockEnhancements(
+    contentRef,
+    {
+      copy: t('codeBlock.copy'),
+      copied: t('codeBlock.copied'),
+      plainText: t('codeBlock.plainText'),
+    },
+    contentHtml
+  )
   const highlightQuery = searchParams.get('q') || ''
   const highlightIndexRaw = searchParams.get('i') || '0'
 

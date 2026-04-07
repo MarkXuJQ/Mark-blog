@@ -11,6 +11,7 @@ export function MovieReviewPost() {
   const { slug } = useParams()
   const { t } = useTranslation()
   const review = slug ? getMovieReviewBySlug(slug) : undefined
+  const contentHtml = review ? rewriteHtmlImageSrc(review.content) : ''
 
   if (!review) {
     return (
@@ -29,8 +30,6 @@ export function MovieReviewPost() {
       </div>
     )
   }
-
-  const contentHtml = rewriteHtmlImageSrc(review.content)
   const pageTitle = `${review.title} | ${t('movies.reviews.pageTitle')}`
 
   return (
