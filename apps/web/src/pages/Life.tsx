@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, MessageCircle, X, ListFilter, ChevronDown, ArrowDown } from 'lucide-react'
 import { Seo } from '../components/seo/Seo'
 import { DeferredComments } from '../components/comments/DeferredComments'
+import { getTwikooApi, loadTwikooScript } from '../components/comments/twikooLoader'
 import { Dropdown, DropdownContent, DropdownTrigger } from '../components/ui/Dropdown'
 import { useLightbox } from '../components/ui/Lightbox'
 import { getImageUrl } from '../utils/image'
@@ -42,28 +43,6 @@ function parseCityFromMeta(meta: string): string | undefined {
   const parts = meta.split('·').map((p) => p.trim()).filter(Boolean)
   const maybe = parts[1]
   return maybe ? maybe : undefined
-}
-
-async function ensureTwikooLoaded(): Promise<void> {
-  if (typeof window === 'undefined') return
-  if (window.twikoo) return
-
-  await new Promise<void>((resolve) => {
-    const existing = document.getElementById('twikoo-script') as HTMLScriptElement | null
-    if (existing) {
-      if (window.twikoo) resolve()
-      else existing.addEventListener('load', () => resolve(), { once: true })
-      return
-    }
-
-    const cdnScript = document.createElement('script')
-    cdnScript.src = 'https://registry.npmmirror.com/twikoo/1.7.0/files/dist/twikoo.min.js'
-    cdnScript.async = true
-    cdnScript.id = 'twikoo-script'
-    cdnScript.crossOrigin = 'anonymous'
-    cdnScript.addEventListener('load', () => resolve(), { once: true })
-    document.body.appendChild(cdnScript)
-  })
 }
 
 export function Life() {
@@ -155,11 +134,12 @@ export function Life() {
     if (window.__PRERENDER__) return
     if (posts.length === 0) return
     try {
-      await ensureTwikooLoaded()
-      if (!window.twikoo?.getCommentsCount) return
+      await loadTwikooScript()
+      const twikooApi = getTwikooApi()
+      if (!twikooApi?.getCommentsCount) return
       const ids = postIds && postIds.length > 0 ? postIds : posts.map((p) => p.id)
       const urls = ids.map((id) => `/life/${id}`)
-      const res = await window.twikoo.getCommentsCount({
+      const res = await twikooApi.getCommentsCount({
         envId: twikooEnvId,
         urls,
         includeReply: false,

@@ -62,6 +62,15 @@ export function Timeline() {
     hasSwiped: false,
   })
 
+  const isInteractiveTarget = (target: EventTarget | null) => {
+    if (!(target instanceof HTMLElement)) return false
+    return Boolean(
+      target.closest(
+        'button, a, input, textarea, select, summary, [role="button"], [role="tab"]'
+      )
+    )
+  }
+
   const toggleExpand = (date: string) => {
     setExpandedDates((prev) =>
       prev.includes(date) ? prev.filter((d) => d !== date) : [...prev, date]
@@ -95,7 +104,11 @@ export function Timeline() {
       }}
       onPointerDown={(event) => {
         if (event.pointerType === 'mouse' && event.button !== 0) return
-        event.currentTarget.setPointerCapture?.(event.pointerId)
+        if (isInteractiveTarget(event.target)) {
+          pointerState.current.isDown = false
+          pointerState.current.hasSwiped = false
+          return
+        }
         pointerState.current.isDown = true
         pointerState.current.startX = event.clientX
         pointerState.current.startY = event.clientY

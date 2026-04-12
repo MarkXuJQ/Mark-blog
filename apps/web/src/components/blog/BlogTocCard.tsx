@@ -263,6 +263,7 @@ export function BlogTocCard({ toc = [], title }: BlogTocCardProps) {
             href="#twikoo"
             aria-label={t('blog.toc.comments')}
             className={styles.tocActionLink}
+            onClick={(e) => handleLinkClick(e, 'twikoo')}
           >
             <MessageSquareText size={18} />
           </a>
@@ -346,5 +347,3 @@ export function BlogTocDrawer({
     </>
   )
 }
-
-

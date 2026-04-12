@@ -138,20 +138,20 @@ keybind = cmd+`=toggle_quick_terminal
 
 创建配置文件：
 
-```bash
+```Bash
 mkdir -p ~/.config && touch ~/.config/starship.toml
 ```
 
 打开配置文件：
 （如果不熟悉nano或者vim的话，可以安装vscode使用code + 地址进行打开，这样有图形化界面）
 
-```bash
+```Bash
 nano ~/.config/starship.toml
 ```
 
 我的配置：
 
-```Bash
+```toml
 "$schema" = 'https://starship.rs/config-schema.json'
 
 format = """
@@ -435,7 +435,7 @@ crust = "#181926"
 
 如果你想要别的主题，可以用下这个命令查看其支持的主题，如果你想要别的可以问下ai怎么办
 
-```bash
+```Bash
 starship preset --list
 ```
 
@@ -443,13 +443,13 @@ starship preset --list
 
 选中安装
 
-```bash
+```Bash
 starship preset tokyo-night > ~/.config/starship.toml
 ```
 
 最后就是配置一下Zsh了，建议直接复制到后面，不要覆盖（因为里面包含了conda环境，node环境等等，可以考虑先问下ai）
 
-```bash
+```Bash
 nano ~/.zshrc
 ```
 
@@ -486,7 +486,7 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 ### 验证阶段
 
-```bash
+```Bash
 exec zsh
 ```
 

@@ -158,3 +158,7 @@ apps/web/.generated/
 
 # Local source fonts used only for subset generation
 apps/web/src/assets/fonts/纳米丰宋_纳挼字库/
+
+# macOS Finder metadata
+.DS_Store
+**/.DS_Store
