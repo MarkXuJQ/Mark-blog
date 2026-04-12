@@ -1,4 +1,5 @@
-import { useEffect, type RefObject } from 'react'
+import { createElement, useEffect, type RefObject } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import hljs from 'highlight.js/lib/core'
 import bash from 'highlight.js/lib/languages/bash'
 import c from 'highlight.js/lib/languages/c'
@@ -19,6 +20,7 @@ import sql from 'highlight.js/lib/languages/sql'
 import typescript from 'highlight.js/lib/languages/typescript'
 import xml from 'highlight.js/lib/languages/xml'
 import yaml from 'highlight.js/lib/languages/yaml'
+import { MdContentCopy } from 'react-icons/md'
 
 hljs.registerLanguage('bash', bash)
 hljs.registerLanguage('shell', bash)
@@ -56,43 +58,12 @@ hljs.registerLanguage('xml', xml)
 hljs.registerLanguage('yaml', yaml)
 hljs.registerLanguage('yml', yaml)
 
-const LANGUAGE_LABELS: Record<string, string> = {
-  bash: 'Bash',
-  shell: 'Shell',
-  sh: 'Shell',
-  zsh: 'Zsh',
-  c: 'C',
-  cpp: 'C++',
-  'c++': 'C++',
-  css: 'CSS',
-  diff: 'Diff',
-  go: 'Go',
-  ini: 'INI',
-  toml: 'TOML',
-  java: 'Java',
-  javascript: 'JavaScript',
-  js: 'JavaScript',
-  jsx: 'JSX',
-  json: 'JSON',
-  kotlin: 'Kotlin',
-  markdown: 'Markdown',
-  md: 'Markdown',
-  plaintext: 'Text',
-  text: 'Text',
-  txt: 'Text',
-  python: 'Python',
-  py: 'Python',
-  rust: 'Rust',
-  rs: 'Rust',
-  sql: 'SQL',
-  typescript: 'TypeScript',
-  ts: 'TypeScript',
-  tsx: 'TSX',
-  html: 'HTML',
-  xml: 'XML',
-  yaml: 'YAML',
-  yml: 'YAML',
-}
+const COPY_ICON_MARKUP = renderToStaticMarkup(
+  createElement(MdContentCopy, {
+    'aria-hidden': 'true',
+    focusable: 'false',
+  })
+)
 
 function escapeHtml(value: string) {
   return value
@@ -104,12 +75,15 @@ function escapeHtml(value: string) {
 function extractLanguage(code: HTMLElement) {
   const className = code.className || ''
   const match = className.match(/language-([a-z0-9#+-]+)/i)
-  return match?.[1]?.toLowerCase() || ''
+  return match?.[1] || ''
+}
+
+function normalizeLanguage(language: string) {
+  return language.toLowerCase()
 }
 
 function getLanguageLabel(language: string, plainTextLabel: string) {
-  if (!language) return plainTextLabel
-  return LANGUAGE_LABELS[language] || language.toUpperCase()
+  return language || plainTextLabel
 }
 
 export interface CodeBlockEnhancementLabels {
@@ -155,10 +129,11 @@ export function useCodeBlockEnhancements(
 
       const rawCode = code.textContent || ''
       const language = extractLanguage(code)
+      const normalizedLanguage = normalizeLanguage(language)
       const languageLabel = getLanguageLabel(language, labels.plainText)
 
-      if (language && hljs.getLanguage(language)) {
-        code.innerHTML = hljs.highlight(rawCode, { language }).value
+      if (normalizedLanguage && hljs.getLanguage(normalizedLanguage)) {
+        code.innerHTML = hljs.highlight(rawCode, { language: normalizedLanguage }).value
         code.classList.add('hljs')
       } else {
         code.innerHTML = escapeHtml(rawCode)
@@ -166,7 +141,7 @@ export function useCodeBlockEnhancements(
 
       const frame = document.createElement('div')
       frame.className = 'md-code-frame not-prose'
-      frame.setAttribute('data-code-language', language || 'text')
+      frame.setAttribute('data-code-language', normalizedLanguage || 'text')
 
       const header = document.createElement('div')
       header.className = 'md-code-header'
@@ -192,7 +167,23 @@ export function useCodeBlockEnhancements(
       const copyButton = document.createElement('button')
       copyButton.type = 'button'
       copyButton.className = 'md-code-copy'
-      copyButton.textContent = labels.copy
+      copyButton.setAttribute('aria-label', labels.copy)
+      copyButton.setAttribute('data-copy-state', 'idle')
+      copyButton.innerHTML = COPY_ICON_MARKUP
+
+      const copyTooltip = document.createElement('span')
+      copyTooltip.className = 'md-code-copy-tooltip'
+      copyTooltip.textContent = labels.copy
+
+      const copyTooltipArrowWrap = document.createElement('span')
+      copyTooltipArrowWrap.className = 'md-code-copy-tooltip-arrow-wrap'
+
+      const copyTooltipArrow = document.createElement('span')
+      copyTooltipArrow.className = 'md-code-copy-tooltip-arrow'
+
+      copyTooltipArrowWrap.append(copyTooltipArrow)
+      copyTooltip.append(copyTooltipArrowWrap)
+      copyButton.append(copyTooltip)
 
       const headerLeft = document.createElement('div')
       headerLeft.className = 'md-code-header-left'
@@ -213,10 +204,18 @@ export function useCodeBlockEnhancements(
       const handleCopy = async () => {
         try {
           await copyToClipboard(rawCode)
-          copyButton.textContent = labels.copied
+          copyButton.setAttribute('aria-label', labels.copied)
+          copyButton.setAttribute('data-copy-state', 'copied')
+          copyTooltip.firstChild?.remove()
+          copyTooltip.textContent = labels.copied
+          copyTooltip.append(copyTooltipArrowWrap)
           copyButton.disabled = true
           window.setTimeout(() => {
-            copyButton.textContent = labels.copy
+            copyButton.setAttribute('aria-label', labels.copy)
+            copyButton.setAttribute('data-copy-state', 'idle')
+            copyTooltip.firstChild?.remove()
+            copyTooltip.textContent = labels.copy
+            copyTooltip.append(copyTooltipArrowWrap)
             copyButton.disabled = false
           }, 1500)
         } catch (error) {

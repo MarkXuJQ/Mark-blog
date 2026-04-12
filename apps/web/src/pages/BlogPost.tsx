@@ -334,7 +334,11 @@ export function BlogPost() {
       </Card>
 
       <Card className="p-6">
-        <DeferredComments key={slug} />
+        <DeferredComments
+          key={slug}
+          containerId="twikoo-container"
+          eager
+        />
       </Card>
     </div>
   )

@@ -1,15 +1,15 @@
 {
   "url": "https://markxu.icu",
-  "generatedAt": "2026-03-05T10:45:05.322Z",
+  "generatedAt": "2026-04-12T11:14:40.757Z",
   "desktop": {
-    "performance": 69,
-    "accessibility": 96,
+    "performance": 56,
+    "accessibility": 100,
     "bestPractices": 77,
     "seo": 100
   },
   "mobile": {
-    "performance": 47,
-    "accessibility": 95,
+    "performance": 60,
+    "accessibility": 100,
     "bestPractices": 77,
     "seo": 100
   }

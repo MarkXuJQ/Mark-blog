@@ -293,7 +293,8 @@
   },
   "comments": {
     "title": "Leave a Comment!",
-    "loading": "Loading comments..."
+    "loading": "Loading comments...",
+    "unavailable": "Comments failed to load. Please try again shortly."
   },
   "footer": {
     "copyright": "© {{year}} Mark Xu. All rights reserved.",

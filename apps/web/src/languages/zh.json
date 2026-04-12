@@ -293,7 +293,8 @@
   },
   "comments": {
     "title": "欢迎评论呀！",
-    "loading": "评论加载中..."
+    "loading": "评论加载中...",
+    "unavailable": "评论区加载失败，请稍后重试。"
   },
   "footer": {
     "copyright": "© {{year}} Mark Xu. 保留所有权利。",

@@ -1,31 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LinkGuard } from './LinkGuard'
-
-interface TwikooStatic {
-  init: (options: {
-    envId: string
-    el: string
-    path?: string
-    onCommentLoaded?: () => void
-  }) => void
-  getCommentsCount: (options: {
-    envId: string
-    urls: string[]
-    includeReply?: boolean
-  }) => Promise<Array<{ url: string; count: number }>>
-}
+import { getTwikooApi, loadTwikooScript } from './twikooLoader'
 
 // Declare Twikoo on window
 declare global {
   interface Window {
-    twikoo?: TwikooStatic
     __PRERENDER__?: boolean
   }
 }
 
 export function Comments({
-  containerId = 'twikoo',
+  containerId = 'twikoo-container',
   path,
   eager = false,
   layout = 'auto',
@@ -39,98 +25,126 @@ export function Comments({
 } = {}) {
   const { t } = useTranslation()
   const commentRef = useRef<HTMLElement>(null)
-  const [shouldLoadTwikoo, setShouldLoadTwikoo] = useState(false)
+  const mountHostRef = useRef<HTMLDivElement>(null)
+  const onCommentLoadedRef = useRef(onCommentLoaded)
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
 
   const TWIKOO_ENV_ID =
     import.meta.env.VITE_TWIKOO_ENV_ID || 'https://comments.markxu.icu/api/twikoo'
 
-  useEffect(() => {
-    if (eager) {
-      setShouldLoadTwikoo(true)
-      return
+  const hasRenderedTwikooContent = (target: HTMLElement | null) => {
+    if (!target) return false
+    if (target.querySelector('.tk-comments, .tk-comments-container, .tk-submit, .tk-login')) {
+      return true
     }
-    if (window.__PRERENDER__) return
-    const target = commentRef.current
-    if (!target) return
-
-    if (!('IntersectionObserver' in window)) {
-      setShouldLoadTwikoo(true)
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          setShouldLoadTwikoo(true)
-          observer.disconnect()
-        }
-      },
-      { rootMargin: '300px 0px' }
-    )
-
-    observer.observe(target)
-    return () => observer.disconnect()
-  }, [eager])
+    return false
+  }
 
   useEffect(() => {
-    if (!TWIKOO_ENV_ID || !shouldLoadTwikoo || window.__PRERENDER__) return
+    onCommentLoadedRef.current = onCommentLoaded
+  }, [onCommentLoaded])
 
-    const loadSecondScript = () => {
+  useEffect(() => {
+    if (!TWIKOO_ENV_ID || window.__PRERENDER__) return
+
+    let cancelled = false
+    let fallbackTimer: number | null = null
+    let pollTimer: number | null = null
+    let observer: MutationObserver | null = null
+    const host = mountHostRef.current
+
+    if (!host) return
+
+    const markReady = () => {
+      if (cancelled) return
+      setStatus('ready')
+    }
+
+    const initTwikoo = async () => {
       try {
-        if (window.twikoo && typeof window.twikoo.init === 'function') {
-          window.twikoo.init({
-            envId: TWIKOO_ENV_ID,
-            el: `#${containerId}`,
-            path,
-            onCommentLoaded,
+        setStatus('loading')
+        await loadTwikooScript()
+        const twikooApi = getTwikooApi()
+        if (cancelled || !twikooApi) return
+
+        host.replaceChildren()
+
+        const target = document.createElement('div')
+        target.id = containerId
+        target.className = 'min-h-[120px]'
+        host.appendChild(target)
+
+        if (hasRenderedTwikooContent(host)) {
+          markReady()
+          return
+        }
+
+        if (host) {
+          observer = new MutationObserver(() => {
+            if (hasRenderedTwikooContent(host)) {
+              markReady()
+            }
           })
-        } else {
-          setTimeout(loadSecondScript, 500)
+          observer.observe(host, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+          })
+
+          pollTimer = window.setInterval(() => {
+            if (hasRenderedTwikooContent(host)) {
+              markReady()
+            }
+          }, 250)
         }
-      } catch (e) {
-        console.error('Twikoo init error:', e)
+
+        twikooApi.init({
+          envId: TWIKOO_ENV_ID,
+          el: `#${containerId}`,
+          path,
+          onCommentLoaded: () => {
+            markReady()
+            onCommentLoadedRef.current?.()
+          },
+        })
+
+        fallbackTimer = window.setTimeout(markReady, eager ? 1200 : 2200)
+      } catch (error) {
+        console.error('Twikoo init error:', error)
+        if (!cancelled) {
+          setStatus('error')
+        }
       }
     }
 
-    const existingScript = document.getElementById('twikoo-script') as HTMLScriptElement
+    void initTwikoo()
 
-    if (existingScript) {
-      if (window.twikoo) {
-        loadSecondScript()
-      } else {
-        existingScript.addEventListener('load', loadSecondScript)
-
-        const intervalId = setInterval(() => {
-          if (window.twikoo) {
-            loadSecondScript()
-            clearInterval(intervalId)
-          }
-        }, 500)
-
-        return () => {
-          existingScript.removeEventListener('load', loadSecondScript)
-          clearInterval(intervalId)
-        }
+    return () => {
+      cancelled = true
+      observer?.disconnect()
+      if (pollTimer !== null) {
+        window.clearInterval(pollTimer)
       }
-    } else {
-      const cdnScript = document.createElement('script')
-      cdnScript.src =
-        'https://registry.npmmirror.com/twikoo/1.7.0/files/dist/twikoo.min.js'
-      cdnScript.async = true
-      cdnScript.id = 'twikoo-script'
-      cdnScript.crossOrigin = 'anonymous'
-
-      cdnScript.addEventListener('load', loadSecondScript)
-      document.body.appendChild(cdnScript)
-
-      return () => {
-        cdnScript.removeEventListener('load', loadSecondScript)
+      if (fallbackTimer !== null) {
+        window.clearTimeout(fallbackTimer)
       }
+      host.replaceChildren()
     }
-  }, [TWIKOO_ENV_ID, shouldLoadTwikoo, containerId, path, onCommentLoaded])
+  }, [TWIKOO_ENV_ID, containerId, eager, path])
+
+  const statusMessage = !TWIKOO_ENV_ID
+    ? null
+    : status === 'error'
+      ? t('comments.unavailable', '评论区加载失败，请稍后重试。')
+      : t('comments.loading', '正在加载评论...')
+  const shouldShowStatus = Boolean(TWIKOO_ENV_ID) && status !== 'ready'
 
   return (
-    <section ref={commentRef} className="mt-12 mb-8">
+    <section
+      ref={commentRef}
+      id={containerId === 'twikoo-container' ? 'twikoo' : undefined}
+      className="mt-12 mb-8"
+    >
       <div className="flex items-center gap-2 mb-6">
         <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
           {t('comments.title', '评论区')}
@@ -140,8 +154,23 @@ export function Comments({
 
       <LinkGuard containerRef={commentRef} />
 
-      <div className="twikoo-wrap" data-layout={layout}>
-        <div id={containerId} />
+      <div
+        className="twikoo-wrap"
+        data-layout={layout}
+        data-status={TWIKOO_ENV_ID ? status : 'unconfigured'}
+      >
+        <p
+          aria-live="polite"
+          aria-hidden={!shouldShowStatus}
+          className={
+            shouldShowStatus
+              ? 'mx-4 mb-3 text-sm text-slate-500 transition-opacity dark:text-slate-400'
+              : 'pointer-events-none mx-4 mb-0 h-0 overflow-hidden text-sm opacity-0'
+          }
+        >
+          {statusMessage}
+        </p>
+        <div ref={mountHostRef} />
         {!TWIKOO_ENV_ID ? (
           <div className="flex flex-col items-center justify-center py-12 text-slate-500 bg-slate-50 dark:bg-[#17191c] rounded-lg border border-dashed border-slate-300 dark:border-[#2b2f36] mx-4">
             <p className="mb-2 font-medium">评论区未配置</p>
@@ -156,6 +185,27 @@ export function Comments({
       <style>{`
         .twikoo-wrap .tk-admin-container {
             z-index: 100;
+        }
+        .twikoo-wrap[data-status="loading"] {
+            opacity: 0.98;
+        }
+        .twikoo-wrap[data-status="loading"] > div {
+            border-radius: 0.75rem;
+            background:
+              linear-gradient(90deg, rgba(148, 163, 184, 0.08), rgba(148, 163, 184, 0.14), rgba(148, 163, 184, 0.08));
+            background-size: 200% 100%;
+            animation: twikoo-loading-shimmer 1.2s linear infinite;
+        }
+        .dark .twikoo-wrap[data-status="loading"] > div {
+            background:
+              linear-gradient(90deg, rgba(51, 65, 85, 0.24), rgba(71, 85, 105, 0.34), rgba(51, 65, 85, 0.24));
+            background-size: 200% 100%;
+        }
+        .twikoo-wrap[data-status="ready"] > div,
+        .twikoo-wrap[data-status="error"] > div,
+        .twikoo-wrap[data-status="unconfigured"] > div {
+            background: transparent;
+            animation: none;
         }
         .twikoo-wrap .tk-input {
             background-color: transparent !important;
@@ -227,6 +277,15 @@ export function Comments({
         }
         .twikoo-wrap[data-layout="stacked"] .tk-footer {
           display: none !important;
+        }
+
+        @keyframes twikoo-loading-shimmer {
+          0% {
+            background-position: 200% 0;
+          }
+          100% {
+            background-position: -200% 0;
+          }
         }
 
         @media (max-width: 520px) {
