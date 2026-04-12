@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, MessageCircle, X, ListFilter, ChevronDown, ArrowDown } from 'lucide-react'
@@ -106,12 +106,16 @@ export function Life() {
     [activeId, posts]
   )
   const [activeImageIndex, setActiveImageIndex] = useState(0)
+  const [isImageSwitching, setIsImageSwitching] = useState(false)
   const activeImages = useMemo(() => activePost?.images ?? [], [activePost])
   const contentRef = useRef<HTMLDivElement | null>(null)
   const modalRef = useRef<HTMLDivElement | null>(null)
   const lastFocusedRef = useRef<HTMLElement | null>(null)
   const failedImagesRef = useRef<Set<string>>(new Set())
+  const loadedImagesRef = useRef<Set<string>>(new Set())
+  const imageSwitchRequestRef = useRef(0)
   const [, forceRerender] = useState(0)
+  const currentImageSrc = activeImages[activeImageIndex] ?? activeImages[0] ?? ''
 
   const handleCardMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     const target = event.currentTarget
@@ -128,7 +132,7 @@ export function Life() {
     target.style.setProperty('--y-rotate', '0deg')
   }
 
-  const refreshCommentCounts = async (postIds?: string[]) => {
+  const refreshCommentCounts = useEffectEvent(async (postIds?: string[]) => {
     if (typeof window === 'undefined') return
     if (!twikooEnvId) return
     if (window.__PRERENDER__) return
@@ -154,15 +158,19 @@ export function Life() {
     } catch {
       return
     }
-  }
+  })
 
   useEffect(() => {
-    refreshCommentCounts()
-  }, [posts, twikooEnvId])
+    void refreshCommentCounts()
+  }, [posts, refreshCommentCounts, twikooEnvId])
 
   useEffect(() => {
     if (!activeId) return
     setActiveImageIndex(0)
+    setIsImageSwitching(false)
+    failedImagesRef.current = new Set()
+    loadedImagesRef.current = new Set()
+    imageSwitchRequestRef.current += 1
   }, [activeId])
 
   useEffect(() => {
@@ -173,39 +181,101 @@ export function Life() {
     for (const src of [next, prev]) {
       if (!src) continue
       const img = new Image()
+      img.onload = () => {
+        loadedImagesRef.current.add(src)
+      }
+      img.onerror = () => {
+        failedImagesRef.current.add(src)
+      }
       img.src = src
     }
   }, [activePost, activeImages, activeImageIndex])
 
+  useEffect(() => {
+    return () => {
+      if (commentCountsRefreshTimerRef.current) {
+        window.clearTimeout(commentCountsRefreshTimerRef.current)
+      }
+    }
+  }, [])
+
+  const switchToImage = (nextIndex: number, options?: { force?: boolean }) => {
+    if (activeImages.length === 0) return
+    if (!options?.force && nextIndex === activeImageIndex) return
+
+    const nextSrc = activeImages[nextIndex]
+    if (!nextSrc) return
+
+    if (loadedImagesRef.current.has(nextSrc)) {
+      setActiveImageIndex(nextIndex)
+      setIsImageSwitching(false)
+      return
+    }
+
+    const requestId = imageSwitchRequestRef.current + 1
+    imageSwitchRequestRef.current = requestId
+    setIsImageSwitching(true)
+
+    const img = new Image()
+    img.onload = () => {
+      loadedImagesRef.current.add(nextSrc)
+      if (imageSwitchRequestRef.current !== requestId) return
+      setActiveImageIndex(nextIndex)
+      setIsImageSwitching(false)
+    }
+    img.onerror = () => {
+      failedImagesRef.current.add(nextSrc)
+      if (imageSwitchRequestRef.current !== requestId) return
+      setActiveImageIndex(nextIndex)
+      setIsImageSwitching(false)
+      forceRerender((x) => x + 1)
+    }
+    img.src = nextSrc
+  }
+
   const goPrevImage = () => {
     if (activeImages.length <= 1) return
-    setActiveImageIndex((prev) => (prev === 0 ? activeImages.length - 1 : prev - 1))
+    const nextIndex = activeImageIndex === 0 ? activeImages.length - 1 : activeImageIndex - 1
+    switchToImage(nextIndex)
   }
 
   const goNextImage = () => {
     if (activeImages.length <= 1) return
-    setActiveImageIndex((prev) => (prev === activeImages.length - 1 ? 0 : prev + 1))
+    const nextIndex = activeImageIndex === activeImages.length - 1 ? 0 : activeImageIndex + 1
+    switchToImage(nextIndex)
   }
+
+  const handleDialogKeyDown = useEffectEvent((e: KeyboardEvent) => {
+    const target = e.target as HTMLElement | null
+    const tag = target?.tagName?.toLowerCase()
+    if (tag === 'input' || tag === 'textarea') return
+    if (e.key === 'Escape') setActiveId(null)
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault()
+      goPrevImage()
+    }
+    if (e.key === 'ArrowRight') {
+      e.preventDefault()
+      goNextImage()
+    }
+  })
+
+  const handleLifeCommentLoaded = useEffectEvent(() => {
+    const postId = activePost?.id
+    if (!postId) return
+    if (commentCountsRefreshTimerRef.current) {
+      window.clearTimeout(commentCountsRefreshTimerRef.current)
+    }
+    commentCountsRefreshTimerRef.current = window.setTimeout(() => {
+      void refreshCommentCounts([postId])
+    }, 250)
+  })
 
   useEffect(() => {
     if (!activeId) return
-    const onKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement | null
-      const tag = target?.tagName?.toLowerCase()
-      if (tag === 'input' || tag === 'textarea') return
-      if (e.key === 'Escape') setActiveId(null)
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault()
-        goPrevImage()
-      }
-      if (e.key === 'ArrowRight') {
-        e.preventDefault()
-        goNextImage()
-      }
-    }
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
-  }, [activeId])
+    document.addEventListener('keydown', handleDialogKeyDown)
+    return () => document.removeEventListener('keydown', handleDialogKeyDown)
+  }, [activeId, handleDialogKeyDown])
 
   useEffect(() => {
     if (!activeId) return
@@ -513,11 +583,9 @@ export function Life() {
                     layoutId={`life-image-${activePost.id}`}
                     className="relative group isolate overflow-hidden rounded-2xl"
                   >
-                    {!failedImagesRef.current.has(
-                      activeImages[activeImageIndex] ?? activeImages[0]
-                    ) && (
+                    {!failedImagesRef.current.has(currentImageSrc) && currentImageSrc && (
                       <img
-                        src={activeImages[activeImageIndex] ?? activeImages[0]}
+                        src={currentImageSrc}
                         alt=""
                         aria-hidden="true"
                         className="pointer-events-none absolute inset-0 h-full w-full scale-[1.2] object-cover opacity-30 blur-2xl brightness-90"
@@ -527,17 +595,18 @@ export function Life() {
                       />
                     )}
                     <div className="relative z-10">
-                      {failedImagesRef.current.has(
-                        activeImages[activeImageIndex] ?? activeImages[0]
-                      ) ? (
+                      {failedImagesRef.current.has(currentImageSrc) ? (
                         <div className="flex h-[42vh] w-full flex-col items-center justify-center gap-3 text-slate-200 md:h-[85vh]">
                           <div className="text-sm">图片加载失败</div>
                           <button
                             type="button"
                             onClick={() => {
-                              const src = activeImages[activeImageIndex] ?? activeImages[0]
+                              const src = currentImageSrc
                               if (src) failedImagesRef.current.delete(src)
                               forceRerender((x) => x + 1)
+                              if (activeImageIndex >= 0) {
+                                switchToImage(activeImageIndex, { force: true })
+                              }
                             }}
                             className="rounded-full bg-white/10 px-4 py-2 text-sm text-white backdrop-blur hover:bg-white/15"
                           >
@@ -546,19 +615,33 @@ export function Life() {
                         </div>
                       ) : (
                         <img
-                          src={activeImages[activeImageIndex] ?? activeImages[0]}
+                          src={currentImageSrc}
                           alt={activePost.title}
                           className="h-[42vh] w-full select-none object-contain md:h-[85vh]"
                           loading="eager"
                           decoding="async"
                           draggable={false}
+                          onLoad={() => {
+                            if (!currentImageSrc) return
+                            loadedImagesRef.current.add(currentImageSrc)
+                            setIsImageSwitching(false)
+                          }}
                           onError={() => {
-                            const src = activeImages[activeImageIndex] ?? activeImages[0]
+                            const src = currentImageSrc
                             if (!src) return
                             failedImagesRef.current.add(src)
+                            setIsImageSwitching(false)
                             forceRerender((x) => x + 1)
                           }}
                         />
+                      )}
+
+                      {isImageSwitching && (
+                        <div className="pointer-events-none absolute inset-0 z-[15] flex items-end justify-center bg-black/15">
+                          <div className="mb-4 rounded-full bg-black/50 px-3 py-1.5 text-xs text-white/90 backdrop-blur">
+                            图片切换中...
+                          </div>
+                        </div>
                       )}
 
                       {activeImages.length > 1 && (
@@ -630,7 +713,7 @@ export function Life() {
                         <button
                           key={`${src}-${idx}`}
                           type="button"
-                          onClick={() => setActiveImageIndex(idx)}
+                          onClick={() => switchToImage(idx)}
                           className={cn(
                             'relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border',
                             idx === activeImageIndex
@@ -691,16 +774,10 @@ export function Life() {
                     key={activePost.id}
                     containerId={`twikoo-life-${activePost.id}`}
                     path={`/life/${activePost.id}`}
-                    rootMargin="400px 0px"
+                    observerRootRef={contentRef}
+                    rootMargin="0px"
                     layout="stacked"
-                    onCommentLoaded={() => {
-                      if (commentCountsRefreshTimerRef.current) {
-                        window.clearTimeout(commentCountsRefreshTimerRef.current)
-                      }
-                      commentCountsRefreshTimerRef.current = window.setTimeout(() => {
-                        refreshCommentCounts([activePost.id])
-                      }, 250)
-                    }}
+                    onCommentLoaded={handleLifeCommentLoaded}
                   />
                 </div>
               </div>

@@ -22,12 +22,12 @@
 
   
         <g>
-          <rect x="20" y="68" width="172" height="32" rx="16" fill="#ef4444" />
+          <rect x="20" y="68" width="172" height="32" rx="16" fill="#f59e0b" />
           <text x="34" y="89" fill="rgba(255,255,255,0.92)" font-size="13" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial">
             Performance
           </text>
           <text x="178" y="89" fill="rgba(255,255,255,0.95)" font-size="14" font-weight="700" text-anchor="end" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial">
-            47
+            60
           </text>
         </g>
       
@@ -38,7 +38,7 @@
             Accessibility
           </text>
           <text x="360" y="89" fill="rgba(255,255,255,0.95)" font-size="14" font-weight="700" text-anchor="end" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial">
-            95
+            100
           </text>
         </g>
       

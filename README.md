@@ -15,17 +15,17 @@
 
 ## Roadmap
 
-- [x] 评论系统（Twikoo 1.7.0，支持图片上传）
-- [x] 博客发布（列表 / 详情 / 搜索 / TOC）
-- [x] RSS 订阅（仅博客，自动生成）
-- [x] 订阅源美化（RSS 使用 HTML 代替 XSL 美化方法（部分浏览器已不支持））
-- [x] SEO 优化：预渲染、元数据（OG/Twitter/Canonical）、结构化数据、Sitemap/Robots、资源提示、hreflang
-- [x] 关于页面
-- [x] 时间线页面
-- [x] 图床接入（img.markxu.icu）
-- [x] 生活页面（随笔/相册）
-- [x] 影视页面（CSV 默认 + TMDB 增强切换）
-- [ ] 游戏页面（游玩记录，当前路由为施工页）
+- [X] 评论系统（Twikoo 1.7.0，支持图片上传）
+- [X] 博客发布（列表 / 详情 / 搜索 / TOC）
+- [X] RSS 订阅（仅博客，自动生成）
+- [X] 订阅源美化（RSS 使用 HTML 代替 XSL 美化方法（部分浏览器已不支持））
+- [X] SEO 优化：预渲染、元数据（OG/Twitter/Canonical）、结构化数据、Sitemap/Robots、资源提示、hreflang
+- [X] 关于页面
+- [X] 时间线页面
+- [X] 图床接入（img.markxu.icu）
+- [X] 生活页面（随笔/相册）
+- [X] 影视页面（CSV 默认 + TMDB 增强切换）
+- [X] 游戏页面（游玩记录，当前路由为施工页）
 
 ## 快速开始
 

@@ -25,6 +25,8 @@ export function Comments({
 } = {}) {
   const { t } = useTranslation()
   const commentRef = useRef<HTMLElement>(null)
+  const mountHostRef = useRef<HTMLDivElement>(null)
+  const onCommentLoadedRef = useRef(onCommentLoaded)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
 
   const TWIKOO_ENV_ID =
@@ -32,11 +34,15 @@ export function Comments({
 
   const hasRenderedTwikooContent = (target: HTMLElement | null) => {
     if (!target) return false
-    if (target.querySelector('.tk-comments-container, .tk-submit, .tk-login')) {
+    if (target.querySelector('.tk-comments, .tk-comments-container, .tk-submit, .tk-login')) {
       return true
     }
-    return target.childElementCount > 0 || Boolean(target.textContent?.trim())
+    return false
   }
+
+  useEffect(() => {
+    onCommentLoadedRef.current = onCommentLoaded
+  }, [onCommentLoaded])
 
   useEffect(() => {
     if (!TWIKOO_ENV_ID || window.__PRERENDER__) return
@@ -45,6 +51,9 @@ export function Comments({
     let fallbackTimer: number | null = null
     let pollTimer: number | null = null
     let observer: MutationObserver | null = null
+    const host = mountHostRef.current
+
+    if (!host) return
 
     const markReady = () => {
       if (cancelled) return
@@ -58,26 +67,32 @@ export function Comments({
         const twikooApi = getTwikooApi()
         if (cancelled || !twikooApi) return
 
-        const target = document.getElementById(containerId)
-        if (hasRenderedTwikooContent(target)) {
+        host.replaceChildren()
+
+        const target = document.createElement('div')
+        target.id = containerId
+        target.className = 'min-h-[120px]'
+        host.appendChild(target)
+
+        if (hasRenderedTwikooContent(host)) {
           markReady()
           return
         }
 
-        if (target) {
+        if (host) {
           observer = new MutationObserver(() => {
-            if (hasRenderedTwikooContent(target)) {
+            if (hasRenderedTwikooContent(host)) {
               markReady()
             }
           })
-          observer.observe(target, {
+          observer.observe(host, {
             childList: true,
             subtree: true,
             characterData: true,
           })
 
           pollTimer = window.setInterval(() => {
-            if (hasRenderedTwikooContent(target)) {
+            if (hasRenderedTwikooContent(host)) {
               markReady()
             }
           }, 250)
@@ -89,7 +104,7 @@ export function Comments({
           path,
           onCommentLoaded: () => {
             markReady()
-            onCommentLoaded?.()
+            onCommentLoadedRef.current?.()
           },
         })
 
@@ -113,8 +128,16 @@ export function Comments({
       if (fallbackTimer !== null) {
         window.clearTimeout(fallbackTimer)
       }
+      host.replaceChildren()
     }
-  }, [TWIKOO_ENV_ID, containerId, eager, path, onCommentLoaded])
+  }, [TWIKOO_ENV_ID, containerId, eager, path])
+
+  const statusMessage = !TWIKOO_ENV_ID
+    ? null
+    : status === 'error'
+      ? t('comments.unavailable', '评论区加载失败，请稍后重试。')
+      : t('comments.loading', '正在加载评论...')
+  const shouldShowStatus = Boolean(TWIKOO_ENV_ID) && status !== 'ready'
 
   return (
     <section
@@ -136,14 +159,18 @@ export function Comments({
         data-layout={layout}
         data-status={TWIKOO_ENV_ID ? status : 'unconfigured'}
       >
-        {TWIKOO_ENV_ID && status !== 'ready' ? (
-          <p className="mx-4 mb-3 text-sm text-slate-500 dark:text-slate-400">
-            {status === 'error'
-              ? t('comments.unavailable', '评论区加载失败，请稍后重试。')
-              : t('comments.loading', '正在加载评论...')}
-          </p>
-        ) : null}
-        <div id={containerId} className="min-h-[120px]" />
+        <p
+          aria-live="polite"
+          aria-hidden={!shouldShowStatus}
+          className={
+            shouldShowStatus
+              ? 'mx-4 mb-3 text-sm text-slate-500 transition-opacity dark:text-slate-400'
+              : 'pointer-events-none mx-4 mb-0 h-0 overflow-hidden text-sm opacity-0'
+          }
+        >
+          {statusMessage}
+        </p>
+        <div ref={mountHostRef} />
         {!TWIKOO_ENV_ID ? (
           <div className="flex flex-col items-center justify-center py-12 text-slate-500 bg-slate-50 dark:bg-[#17191c] rounded-lg border border-dashed border-slate-300 dark:border-[#2b2f36] mx-4">
             <p className="mb-2 font-medium">评论区未配置</p>
@@ -162,21 +189,21 @@ export function Comments({
         .twikoo-wrap[data-status="loading"] {
             opacity: 0.98;
         }
-        .twikoo-wrap[data-status="loading"] > div[id] {
+        .twikoo-wrap[data-status="loading"] > div {
             border-radius: 0.75rem;
             background:
               linear-gradient(90deg, rgba(148, 163, 184, 0.08), rgba(148, 163, 184, 0.14), rgba(148, 163, 184, 0.08));
             background-size: 200% 100%;
             animation: twikoo-loading-shimmer 1.2s linear infinite;
         }
-        .dark .twikoo-wrap[data-status="loading"] > div[id] {
+        .dark .twikoo-wrap[data-status="loading"] > div {
             background:
               linear-gradient(90deg, rgba(51, 65, 85, 0.24), rgba(71, 85, 105, 0.34), rgba(51, 65, 85, 0.24));
             background-size: 200% 100%;
         }
-        .twikoo-wrap[data-status="ready"] > div[id],
-        .twikoo-wrap[data-status="error"] > div[id],
-        .twikoo-wrap[data-status="unconfigured"] > div[id] {
+        .twikoo-wrap[data-status="ready"] > div,
+        .twikoo-wrap[data-status="error"] > div,
+        .twikoo-wrap[data-status="unconfigured"] > div {
             background: transparent;
             animation: none;
         }
