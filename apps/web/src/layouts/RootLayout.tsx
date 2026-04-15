@@ -16,6 +16,7 @@ export function RootLayout() {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false)
   const [isTransitionActive, setIsTransitionActive] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const isHome = pathname === '/'
   const hideBackToTop = pathname === '/'
 
   useEffect(() => {
@@ -41,7 +42,11 @@ export function RootLayout() {
       </div>
       {/* Sticky NavBar Container - Floating Effect */}
       <div
-        className={`pointer-events-none sticky top-6 z-50 mb-8 w-full transition-transform duration-300 ${
+        className={`z-50 w-full transition-transform duration-300 ${
+          isHome
+            ? 'pointer-events-none fixed inset-x-0 top-6'
+            : 'pointer-events-none sticky top-6 mb-8'
+        } ${
           isNavBarVisible && !isOverlayOpen && !isTransitionActive && !isSearchOpen
             ? 'translate-y-0'
             : '-translate-y-32'
@@ -60,7 +65,7 @@ export function RootLayout() {
         </div>
 
         {/* Footer Container - Pushed to bottom naturally */}
-        {!isOverlayOpen && !isTransitionActive && !isSearchOpen && (
+        {!isHome && !isOverlayOpen && !isTransitionActive && !isSearchOpen && (
           <div className="relative z-20 mx-auto mt-auto w-full max-w-3xl px-4 pt-8 pb-8">
             <Footer />
           </div>
