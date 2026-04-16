@@ -1,5 +1,52 @@
 [
   {
+    "date": "2026-04-16",
+    "title": "Homepage Content Locked for This Phase",
+    "description": "The homepage now settles into a four-part structure: hero cover, blog rail, widget stack, and inspiration radar, with the interaction rhythm tuned for this stage.",
+    "categories": [
+      {
+        "title": "Content Structure",
+        "items": [
+          {
+            "id": "home-20260416-1",
+            "content": "The hero section establishes the opening narrative through portrait, title, and scroll-driven transitions",
+            "date": "2026-04-16"
+          },
+          {
+            "id": "home-20260416-2",
+            "content": "The blog rail brings recent writing forward as the main reading entry on the homepage",
+            "date": "2026-04-16"
+          },
+          {
+            "id": "home-20260416-3",
+            "content": "The widget stack combines personal modules such as the travel footprint map and life clock",
+            "date": "2026-04-16"
+          },
+          {
+            "id": "home-20260416-4",
+            "content": "The radar section collects frequently visited sites and inspirations, revealing them through a scanning sequence",
+            "date": "2026-04-16"
+          }
+        ]
+      },
+      {
+        "title": "Interaction Polish",
+        "items": [
+          {
+            "id": "home-20260416-5",
+            "content": "Added scroll-based acceleration to the radar scan so users are not held too long by the automatic animation",
+            "date": "2026-04-16"
+          },
+          {
+            "id": "home-20260416-6",
+            "content": "Changed radar site nodes into favicon dots that morph in place into intro cards on hover",
+            "date": "2026-04-16"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-03-24",
     "title": "Website v1.0 Completed",
     "description": "Shipped website v1.0 and published the first post.",
