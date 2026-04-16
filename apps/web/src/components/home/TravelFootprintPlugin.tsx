@@ -1,6 +1,7 @@
 import { useState, type PointerEvent as ReactPointerEvent } from 'react'
 import {
   motion,
+  type MotionStyle,
   useMotionValue,
   useReducedMotion,
   useSpring,
@@ -120,76 +121,22 @@ export function TravelFootprintPlugin({ avatarSrc }: { avatarSrc?: string }) {
       onPointerLeave={resetPointer}
     >
       <div className={styles.grid}>
-        <motion.section
-          {...hoverLift}
-          className={cn(styles.panel, styles.mapPanel)}
+        <TravelWorldMapPanel
+          isZh={isZh}
           style={{ x: mapX, y: mapY, rotate: mapRotate }}
-        >
-          <div className={styles.mapHeader}>
-            <div className={cn(styles.cardIconWrap, 'mt-0')}>
-              <Globe2 className="h-4 w-4" />
-            </div>
-            <div className={styles.cardCopy}>
-              <p className={styles.cardEyebrow}>
-                {isZh ? '世界地图' : 'World map'}
-              </p>
-            </div>
-          </div>
+        />
 
-          <div className={styles.mapViewport}>
-            <div className={styles.mapGlow} />
-            <img
-              alt=""
-              aria-hidden="true"
-              src={worldFootprintBaseSvg}
-              className={styles.mapBase}
-            />
-            <img
-              alt={
-                isZh
-                  ? '已去过国家高亮世界地图'
-                  : 'Highlighted visited countries map'
-              }
-              src={worldFootprintHighlightSvg}
-              className={styles.mapHighlight}
-            />
-          </div>
-        </motion.section>
-
-        <motion.section
-          {...hoverLift}
-          className={cn(styles.panel, styles.embedPanel)}
+        <TravelFootprintMapPanel
+          isZh={isZh}
           style={{ x: embedX, y: embedY, rotate: embedRotate }}
-        >
-          <div className={styles.cardHeader}>
-            <div className={styles.cardIconWrap}>
-              <MapPinned className="h-4 w-4" />
-            </div>
-            <div className={styles.cardCopy}>
-              <p className={styles.cardEyebrow}>
-                {isZh ? '足迹地图' : 'Live map'}
-              </p>
-              <p className={styles.cardTitle}>
-                {isZh
-                  ? '一个缩小版的实时旅行地图窗口'
-                  : 'A smaller live travel-map window'}
-              </p>
-            </div>
-          </div>
-
-          <div className={styles.embedViewport}>
-            <iframe
-              title={isZh ? '旅行地图交互窗口' : 'Interactive travel map'}
-              src={EMBED_MAP_URL}
-              loading="lazy"
-              referrerPolicy="strict-origin-when-cross-origin"
-              className={styles.embedFrame}
-            />
-          </div>
-        </motion.section>
+        />
 
         <motion.div
           {...hoverLift}
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.16 }}
           className={styles.clockCell}
           style={{ x: clockX, y: clockY, rotate: clockRotate }}
         >
@@ -198,6 +145,10 @@ export function TravelFootprintPlugin({ avatarSrc }: { avatarSrc?: string }) {
 
         <motion.section
           {...hoverLift}
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.24 }}
           className={cn(styles.panel, styles.radarPanel)}
           style={{ x: radarX, y: radarY, rotate: radarRotate }}
         >
@@ -260,22 +211,113 @@ export function TravelFootprintPlugin({ avatarSrc }: { avatarSrc?: string }) {
   )
 }
 
+function TravelWorldMapPanel({
+  isZh,
+  style,
+}: {
+  isZh: boolean
+  style?: MotionStyle
+}) {
+  return (
+    <motion.section
+      {...hoverLift}
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className={cn(styles.panel, styles.mapPanel)}
+      style={style}
+    >
+      <div className={styles.mapHeader}>
+        <div className={cn(styles.cardIconWrap, 'mt-0')}>
+          <Globe2 className="h-4 w-4" />
+        </div>
+        <div className={styles.cardCopy}>
+          <p className={styles.cardEyebrow}>
+            {isZh ? '世界地图' : 'World map'}
+          </p>
+        </div>
+      </div>
+
+      <div className={styles.mapViewport}>
+        <div className={styles.mapGlow} />
+        <img
+          alt=""
+          aria-hidden="true"
+          src={worldFootprintBaseSvg}
+          className={styles.mapBase}
+        />
+        <img
+          alt={
+            isZh
+              ? '已去过国家高亮世界地图'
+              : 'Highlighted visited countries map'
+          }
+          src={worldFootprintHighlightSvg}
+          className={styles.mapHighlight}
+        />
+      </div>
+    </motion.section>
+  )
+}
+
+function TravelFootprintMapPanel({
+  isZh,
+  style,
+}: {
+  isZh: boolean
+  style?: MotionStyle
+}) {
+  return (
+    <motion.section
+      {...hoverLift}
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.08 }}
+      className={cn(styles.panel, styles.embedPanel)}
+      style={style}
+    >
+      <div className={styles.cardHeader}>
+        <div className={styles.cardIconWrap}>
+          <MapPinned className="h-4 w-4" />
+        </div>
+        <div className={styles.cardCopy}>
+          <p className={styles.cardEyebrow}>{isZh ? '足迹地图' : 'Live map'}</p>
+          <p className={styles.cardTitle}>
+            {isZh ? '我去过的地方' : 'Where I have been to'}
+          </p>
+        </div>
+      </div>
+
+      <div className={styles.embedViewport}>
+        <iframe
+          title={isZh ? '旅行地图交互窗口' : 'Interactive travel map'}
+          src={EMBED_MAP_URL}
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+          className={styles.embedFrame}
+        />
+      </div>
+    </motion.section>
+  )
+}
+
 const styles = {
-  shell: 'relative w-full',
+  shell: 'relative w-full max-w-[76rem] mx-auto',
   shellReady: 'cursor-grab',
   shellDragging: 'cursor-grabbing',
   shellStatic: 'cursor-default',
-  grid: 'grid min-w-0 items-start gap-3 sm:gap-3.5 lg:grid-cols-[minmax(0,1.06fr)_minmax(0,0.94fr)] lg:gap-x-3 lg:gap-y-3',
+  grid: 'grid gap-10 justify-center items-start lg:grid-cols-[28rem_28rem] lg:gap-x-12 lg:gap-y-16',
   panel:
-    'relative min-w-0 overflow-hidden rounded-[26px] border border-white/10 bg-[#10161a] p-3.5 text-white shadow-[0_24px_70px_-38px_rgba(15,23,42,0.62)] will-change-transform sm:p-4',
+    'relative min-w-0 w-full max-w-[28rem] overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/95 p-4 text-white shadow-[0_28px_90px_-48px_rgba(15,23,42,0.6)] will-change-transform sm:p-5',
   mapPanel: 'z-[2] self-start lg:col-start-1 lg:row-start-1',
   embedPanel:
-    'z-[3] self-start lg:col-start-2 lg:row-start-1 lg:w-[75%] lg:justify-self-start',
+    'z-[3] self-start lg:col-start-2 lg:row-start-1 lg:w-[28rem] lg:mt-12',
   clockCell:
-    'relative z-[4] self-start will-change-transform lg:col-start-1 lg:row-start-2',
+    'relative z-[4] self-start will-change-transform lg:col-start-1 lg:row-start-2 lg:-mt-10',
   clockPanel: 'h-full',
-  radarPanel:
-    'z-[2] self-start bg-[linear-gradient(180deg,#10161c_0%,#0c1217_100%)] lg:col-start-2 lg:row-start-2',
+  radarPanel: 'z-[2] self-start lg:col-start-2 lg:row-start-2 lg:mt-10',
   cardHeader: 'flex items-start gap-2.5',
   mapHeader: 'flex items-center gap-2.5',
   cardIconWrap:

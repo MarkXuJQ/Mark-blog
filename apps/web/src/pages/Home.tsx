@@ -153,10 +153,8 @@ export function Home() {
   const travelOpacity = useTransform(sceneProgress, [0, 1], [1, 1])
   const travelFilter = useTransform(
     sceneProgress,
-    [0.06, 0.46],
-    prefersReducedMotion
-      ? ['blur(0px)', 'blur(0px)']
-      : ['blur(18px)', 'blur(0px)']
+    [0, 1],
+    ['blur(0px)', 'blur(0px)']
   )
   const travelPointerEvents = useTransform(sceneProgress, (value) =>
     value > 0.24 ? 'auto' : 'none'
