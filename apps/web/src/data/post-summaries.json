@@ -1,0 +1,124 @@
+[
+  {
+    "id": "配置Mac终端日记",
+    "slug": "配置Mac终端日记",
+    "language": "zh",
+    "title": "配置Mac终端日记",
+    "date": "2026-04-07",
+    "summary": "我以前的终端被 oh-my-zsh 和各类插件塞的满满的，界面还丑到自己都不愿意用。所以这次我打算从0开始，完整的重新构建一下我的终端。",
+    "image": "https://img.markxu.icu/img4d29eab0f1dc8.jpeg",
+    "tags": [
+      "MacOS",
+      "Terminal",
+      "Tools",
+      "Beautify"
+    ],
+    "category": "tech"
+  },
+  {
+    "id": "当开源只剩下一段 Prompt：我发现了一种“离谱”的开源方式",
+    "slug": "当开源只剩下一段 Prompt：我发现了一种“离谱”的开源方式",
+    "language": "zh",
+    "title": "当开源只剩下一段 Prompt：我发现了一种“离谱”的开源方式",
+    "date": "2026-04-05",
+    "updated": "2026-04-06",
+    "summary": "最近在 GitHub 上看到了一个项目：voice-input-src。一个为mac写的语音输入软件。震惊的是打开仓库你会发现只有一段写给AI的Prompt。",
+    "image": "https://img.markxu.icu/imgvoiceinput.jpeg",
+    "tags": [
+      "Github",
+      "Swift",
+      "MacOS",
+      "AI",
+      "Prompt"
+    ],
+    "category": "tech"
+  },
+  {
+    "id": "第一篇博客",
+    "slug": "第一篇博客",
+    "language": "zh",
+    "title": "第一篇博客",
+    "date": "2026-03-24",
+    "updated": "2026-03-26",
+    "summary": "个人网站字面意义上的第一篇博客，分享下个人感受和经历。",
+    "tags": [
+      "Life",
+      "Website"
+    ],
+    "category": "essay"
+  },
+  {
+    "id": "My-first-blog",
+    "slug": "My-first-blog",
+    "language": "en",
+    "title": "My First Blog",
+    "date": "2026-03-24",
+    "updated": "2026-03-26",
+    "summary": "This is the literal first blog post on my personal site, sharing my thoughts and experiences.",
+    "tags": [
+      "Life",
+      "Website"
+    ],
+    "category": "essay"
+  },
+  {
+    "id": "广州游记",
+    "slug": "广州游记",
+    "language": "zh",
+    "title": "广州游记",
+    "date": "2024-03-22",
+    "updated": "2026-03-03",
+    "summary": "这是我在广州的游记，主要是流水账，但也记录了我和好兄弟在旅程中经历的小故事。",
+    "image": "https://img.markxu.icu/imgIMG_20240323_广州tower.png",
+    "tags": [
+      "Life",
+      "Travel"
+    ],
+    "category": "essay"
+  },
+  {
+    "id": "guangzhou-travel-notes",
+    "slug": "guangzhou-travel-notes",
+    "language": "en",
+    "title": "Guangzhou Travel Notes",
+    "date": "2024-03-22",
+    "updated": "2026-03-03",
+    "summary": "This is my travel note in Guangzhou. (translated by ai)",
+    "image": "https://img.markxu.icu/imgIMG_20240323_广州tower.png",
+    "tags": [
+      "Life",
+      "Travel"
+    ],
+    "category": "essay"
+  },
+  {
+    "id": "潮汕游记",
+    "slug": "潮汕游记",
+    "language": "zh",
+    "title": "潮汕游记",
+    "date": "2023-09-27",
+    "updated": "2026-02-25",
+    "summary": "这是我在潮汕的游记，记录了大二第一次独自出去玩的经历。",
+    "image": "https://img.markxu.icu/imgIMG_20230922_汕头.png",
+    "tags": [
+      "Life",
+      "Travel"
+    ],
+    "category": "essay"
+  },
+  {
+    "id": "chaoshan-travel-notes",
+    "slug": "chaoshan-travel-notes",
+    "language": "en",
+    "title": "Chaoshan Travel Notes",
+    "date": "2023-09-27",
+    "updated": "2026-02-25",
+    "summary": "This is my travel note in Chaoshan. Tracked my first experience of travelling by myself. (translated by ai)",
+    "image": "https://img.markxu.icu/imgIMG_20230922_汕头.png",
+    "tags": [
+      "Life",
+      "Travel"
+    ],
+    "category": "essay"
+  }
+]

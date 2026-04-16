@@ -3,6 +3,7 @@ import { createRoot, hydrateRoot } from 'react-dom/client'
 import { HelmetProvider } from 'react-helmet-async'
 import './i18n'
 import './assets/styles/global.css'
+import 'lenis/dist/lenis.css'
 import App from './App.tsx'
 
 const container = document.getElementById('root')!

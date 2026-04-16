@@ -1,9 +1,28 @@
-import { useTranslation, Trans } from 'react-i18next'
-import { useRef } from 'react'
-import { cn } from '../utils/cn'
+import {
+  useEffect,
+  lazy,
+  useRef,
+  Suspense,
+  useState,
+  type RefObject,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from 'react'
+import {
+  type MotionValue,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from 'framer-motion'
+import { useLenis } from 'lenis/react'
+import { useTranslation } from 'react-i18next'
 import { getImageUrl } from '../utils/image'
 import { Seo } from '../components/seo/Seo'
+import { Footer } from '../components/layout/Footer'
 import { requestPageTransition } from '../components/transitions/pageTransitionBus'
+import { HomeHeroSection } from '../components/home/HomeHeroSection'
+import { HomeBlogRailSection } from '../components/home/HomeBlogRailSection'
+import { useDeferredRender } from '../hooks/useDeferredRender'
 import {
   DEFAULT_DESCRIPTION,
   getSiteUrl,
@@ -11,12 +30,122 @@ import {
   type JsonLd,
 } from '../components/seo/shared'
 
+const LazyHomeRadarSection = lazy(() =>
+  import('../components/home/HomeRadarSection').then((module) => ({
+    default: module.HomeRadarSection,
+  }))
+)
+
+const LazyHomeWidgetStackSection = lazy(() =>
+  import('../components/home/HomeWidgetStackSection').then((module) => ({
+    default: module.HomeWidgetStackSection,
+  }))
+)
+
+function HomeWidgetStackPlaceholder({
+  placeholderRef,
+}: {
+  placeholderRef?: RefObject<HTMLElement | null>
+}) {
+  return (
+    <section
+      ref={placeholderRef}
+      aria-hidden="true"
+      className="relative z-20 isolate"
+      style={{ minHeight: '320svh', marginTop: '-160svh' }}
+    >
+      <div className="sticky top-0 h-[100svh] overflow-hidden">
+        <div className="relative h-full">
+          <div className="absolute inset-[-14px] z-0 overflow-hidden bg-[linear-gradient(180deg,#050913_0%,#060c17_24%,#07101c_56%,#091522_100%)]">
+            <div className="pointer-events-none absolute left-[-10rem] top-[8rem] h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.18)_0%,rgba(56,189,248,0.05)_34%,rgba(56,189,248,0)_72%)] blur-3xl" />
+            <div className="pointer-events-none absolute bottom-[4rem] right-[-8rem] h-[26rem] w-[26rem] rounded-full bg-[radial-gradient(circle,rgba(251,191,36,0.14)_0%,rgba(251,191,36,0.04)_30%,rgba(251,191,36,0)_74%)] blur-3xl" />
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.03)_0px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_0px,transparent_1px)] [background-size:22px_22px] opacity-30" />
+          </div>
+
+          <div className="relative z-10 h-full">
+            <div className="mx-auto h-full w-full max-w-[96rem] overflow-hidden px-4 sm:px-6 lg:px-8">
+              <div className="relative min-h-full pt-[14svh] pb-[20svh] sm:pt-[16svh] sm:pb-[22svh] lg:pt-[18svh] lg:pb-[24svh]">
+                <div className="relative w-full">
+                  <div className="pointer-events-none absolute left-1/2 top-1/2 h-[38rem] w-[38rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.12)_0%,rgba(56,189,248,0.05)_34%,rgba(56,189,248,0)_72%)] blur-3xl" />
+                  <div className="pointer-events-none absolute left-1/2 top-1/2 h-[min(88vw,48rem)] w-[min(88vw,48rem)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/7" />
+                  <div className="pointer-events-none absolute left-1/2 top-1/2 h-[min(68vw,36rem)] w-[min(68vw,36rem)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/5" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function HomeRadarPlaceholder({
+  placeholderRef,
+}: {
+  placeholderRef?: RefObject<HTMLDivElement | null>
+}) {
+  return (
+    <div
+      ref={placeholderRef}
+      aria-hidden="true"
+      className="relative isolate z-[30] min-h-[100svh] overflow-hidden"
+      style={{ backgroundColor: 'var(--page-background)' }}
+    >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_24%,rgba(6,182,212,0.1)_0%,rgba(6,182,212,0.04)_26%,rgba(6,182,212,0)_58%),radial-gradient(circle_at_80%_72%,rgba(249,115,22,0.08)_0%,rgba(249,115,22,0.03)_28%,rgba(249,115,22,0)_56%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(148,163,184,0.05)_0px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.04)_0px,transparent_1px)] [background-size:24px_24px]" />
+    </div>
+  )
+}
+
+function getInitialIsDarkMode() {
+  if (typeof document === 'undefined') return false
+  return document.documentElement.classList.contains('dark')
+}
+
+function useIsDarkMode() {
+  const [isDarkMode, setIsDarkMode] = useState(getInitialIsDarkMode)
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+
+    const root = document.documentElement
+    const syncTheme = () => {
+      setIsDarkMode(root.classList.contains('dark'))
+    }
+
+    syncTheme()
+    const observer = new MutationObserver(syncTheme)
+    observer.observe(root, { attributes: true, attributeFilter: ['class'] })
+
+    return () => observer.disconnect()
+  }, [])
+
+  return isDarkMode
+}
+
 export function Home() {
   const { t, i18n } = useTranslation()
   const nameClickCountRef = useRef<number>(0)
   const lastNameClickMsRef = useRef<number>(0)
+  const pageRef = useRef<HTMLDivElement | null>(null)
+  const isDarkMode = useIsDarkMode()
+  const prefersReducedMotion = useReducedMotion()
+  const lenis = useLenis()
+  const avatarSrc = getImageUrl('/images/IMG_1766.JPG')
   const siteUrl = getSiteUrl()
   const isZh = i18n.language?.startsWith('zh')
+  const {
+    targetRef: widgetStackPlaceholderRef,
+    shouldRender: shouldRenderWidgetStack,
+  } = useDeferredRender<HTMLElement>({
+    rootMargin: '1600px 0px',
+  })
+  const {
+    targetRef: radarPlaceholderRef,
+    shouldRender: shouldRenderRadar,
+  } = useDeferredRender<HTMLDivElement>({
+    rootMargin: '1400px 0px',
+  })
   const language = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const webSiteSchema: JsonLd = {
     '@context': 'https://schema.org',
@@ -38,6 +167,141 @@ export function Home() {
     },
   }
 
+  const { scrollY } = useScroll()
+
+  const sceneProgressSource = useTransform(
+    scrollY,
+    [0, prefersReducedMotion ? 960 : 1320],
+    [0, 1]
+  )
+
+  const sceneProgress = useSpring(sceneProgressSource, {
+    stiffness: prefersReducedMotion ? 240 : 160,
+    damping: prefersReducedMotion ? 36 : 24,
+    mass: 0.3,
+  })
+
+  const heroScale = useTransform(
+    sceneProgress,
+    [0, 0.12, 0.34, 0.58],
+    prefersReducedMotion ? [1, 0.997, 0.992, 0.988] : [1, 0.988, 0.9, 0.78]
+  )
+  const heroOpacity = useTransform(
+    sceneProgress,
+    [0, 0.24, 0.44, 0.6],
+    prefersReducedMotion ? [1, 1, 0.96, 0.9] : [1, 1, 0.54, 0.12]
+  )
+  const heroY = useTransform(
+    sceneProgress,
+    [0, 0.14, 0.38, 0.62],
+    prefersReducedMotion ? [0, -3, -10, -18] : [0, -18, -132, -228]
+  )
+  const heroRadius = useTransform(sceneProgress, [0, 1], [0, 0])
+  const heroClipPath = useTransform(
+    sceneProgress,
+    [0, 1],
+    ['inset(0% 0% 0% 0% round 0px)', 'inset(0% 0% 0% 0% round 0px)']
+  )
+  const heroPointerEvents = useTransform(sceneProgress, (value) =>
+    value > 0.44 ? 'none' : 'auto'
+  ) as MotionValue<string>
+  const heroShadow = useTransform(
+    sceneProgress,
+    [0, 0.2, 0.42, 0.6],
+    [
+      '0 24px 70px -34px rgba(15,23,42,0.56)',
+      '0 52px 128px -56px rgba(15,23,42,0.66)',
+      '0 46px 96px -62px rgba(15,23,42,0.14)',
+      '0 20px 42px -34px rgba(15,23,42,0.04)',
+    ]
+  )
+  const heroFilter = useTransform(
+    sceneProgress,
+    [0, 0.18, 0.36, 0.56],
+    prefersReducedMotion
+      ? ['blur(0px)', 'blur(0px)', 'blur(1px)', 'blur(2px)']
+      : ['blur(0px)', 'blur(0px)', 'blur(6px)', 'blur(14px)']
+  )
+  const heroContentOpacity = useTransform(
+    sceneProgress,
+    [0, 0.18, 0.38, 0.54],
+    prefersReducedMotion ? [1, 1, 0.96, 0.9] : [1, 1, 0.44, 0]
+  )
+  const heroContentY = useTransform(
+    sceneProgress,
+    [0, 0.18, 0.46],
+    prefersReducedMotion ? [0, -6, -10] : [0, -14, -58]
+  )
+  const heroMediaScale = useTransform(
+    sceneProgress,
+    [0, 0.22, 0.5],
+    prefersReducedMotion ? [1.02, 1.03, 1.04] : [1.02, 1.08, 1.18]
+  )
+  const heroMediaY = useTransform(
+    sceneProgress,
+    [0, 0.22, 0.5],
+    prefersReducedMotion ? [0, -4, -8] : [0, -16, -42]
+  )
+
+  const widgetScale = useTransform(
+    sceneProgress,
+    [0.04, 0.18, 0.42, 0.66],
+    prefersReducedMotion ? [1.003, 1.002, 1.001, 1] : [1.06, 1.03, 1.008, 1]
+  )
+  const widgetY = useTransform(
+    sceneProgress,
+    [0.02, 0.22, 0.46, 0.66],
+    prefersReducedMotion ? [8, 3, 0, -2] : [72, 26, 0, -6]
+  )
+  const widgetOpacity = useTransform(
+    sceneProgress,
+    [0.02, 0.16, 0.38, 0.56],
+    prefersReducedMotion ? [0.92, 0.96, 0.99, 1] : [0.18, 0.4, 0.82, 1]
+  )
+  const widgetFilter = useTransform(
+    sceneProgress,
+    [0.02, 0.22, 0.44, 0.6],
+    prefersReducedMotion
+      ? ['blur(0px)', 'blur(0px)', 'blur(0px)', 'blur(0px)']
+      : ['blur(0px)', 'blur(0px)', 'blur(0px)', 'blur(0px)']
+  )
+  const widgetPointerEvents = useTransform(sceneProgress, (value) =>
+    value > 0.18 ? 'auto' : 'none'
+  ) as MotionValue<string>
+
+  useEffect(() => {
+    if (!lenis) return
+
+    const pageNode = pageRef.current
+    let frameId = 0
+
+    const scheduleResize = () => {
+      cancelAnimationFrame(frameId)
+      frameId = requestAnimationFrame(() => {
+        lenis.resize()
+      })
+    }
+
+    scheduleResize()
+    window.addEventListener('load', scheduleResize)
+
+    if (!pageNode || typeof ResizeObserver === 'undefined') {
+      return () => {
+        cancelAnimationFrame(frameId)
+        window.removeEventListener('load', scheduleResize)
+      }
+    }
+
+    const observer = new ResizeObserver(scheduleResize)
+    observer.observe(pageNode)
+
+    return () => {
+      cancelAnimationFrame(frameId)
+      observer.disconnect()
+      window.removeEventListener('load', scheduleResize)
+    }
+  }, [lenis])
+
   const handleNameClick = () => {
     const now = Date.now()
     const isWithinWindow = now - lastNameClickMsRef.current <= 600
@@ -54,7 +318,7 @@ export function Home() {
     }
   }
 
-  const handleNameKeyDown = (event: React.KeyboardEvent<HTMLSpanElement>) => {
+  const handleNameKeyDown = (event: ReactKeyboardEvent<HTMLSpanElement>) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
       requestPageTransition('/about')
@@ -62,105 +326,59 @@ export function Home() {
   }
 
   return (
-    <div className={styles.container}>
+    <>
       <Seo jsonLd={webSiteSchema} />
-      <div className={styles.avatarContainer}>
-        <img
-          src={getImageUrl('/images/IMG_1766.JPG')}
-          alt="Mark's Blog Logo"
-          width={160}
-          height={160}
-          decoding="async"
-          fetchPriority="high"
-          className={styles.avatar}
+
+      <div ref={pageRef}>
+        <HomeHeroSection
+          avatarSrc={avatarSrc}
+          sceneProgress={sceneProgress}
+          isDarkMode={isDarkMode}
+          prefersReducedMotion={Boolean(prefersReducedMotion)}
+          isZh={isZh}
+          heroScale={heroScale}
+          heroOpacity={heroOpacity}
+          heroY={heroY}
+          heroRadius={heroRadius}
+          heroClipPath={heroClipPath}
+          heroShadow={heroShadow}
+          heroFilter={heroFilter}
+          heroPointerEvents={heroPointerEvents}
+          heroMediaScale={heroMediaScale}
+          heroMediaY={heroMediaY}
+          heroContentOpacity={heroContentOpacity}
+          heroContentY={heroContentY}
+          handleNameClick={handleNameClick}
+          handleNameKeyDown={handleNameKeyDown}
         />
-      </div>
 
-      <h1 className={cn(styles.title, 'no-heading-letter-spacing')}>
-        {isZh ? (
-          <>
-            <span className="block sm:hidden">欢迎来到</span>
-            <span className="block sm:hidden">
-              <span
-                className={styles.highlightText}
-                role="link"
-                tabIndex={0}
-                onClick={handleNameClick}
-                onKeyDown={handleNameKeyDown}
-              >
-                Mark
-              </span>
-              的自留地
-            </span>
-            <span className="hidden sm:inline">
-              <Trans
-                i18nKey="home.title"
-                components={[
-                  <span
-                    key="0"
-                    className={styles.highlightText}
-                    role="link"
-                    tabIndex={0}
-                    onClick={handleNameClick}
-                    onKeyDown={handleNameKeyDown}
-                  />,
-                ]}
-              />
-            </span>
-          </>
+        <HomeBlogRailSection
+          avatarSrc={avatarSrc}
+          sectionScale={widgetScale}
+          sectionY={widgetY}
+          sectionOpacity={widgetOpacity}
+          sectionFilter={widgetFilter}
+          sectionPointerEvents={widgetPointerEvents}
+        />
+        {shouldRenderWidgetStack ? (
+          <Suspense fallback={<HomeWidgetStackPlaceholder />}>
+            <LazyHomeWidgetStackSection />
+          </Suspense>
         ) : (
-          <Trans
-            i18nKey="home.title"
-            components={[
-              <span
-                key="0"
-                className={styles.highlightText}
-                role="link"
-                tabIndex={0}
-                onClick={handleNameClick}
-                onKeyDown={handleNameKeyDown}
-              />,
-            ]}
-          />
+          <HomeWidgetStackPlaceholder placeholderRef={widgetStackPlaceholderRef} />
         )}
-      </h1>
+        {shouldRenderRadar ? (
+          <Suspense fallback={<HomeRadarPlaceholder />}>
+            <LazyHomeRadarSection avatarSrc={avatarSrc} />
+          </Suspense>
+        ) : (
+          <HomeRadarPlaceholder placeholderRef={radarPlaceholderRef} />
+        )}
 
-      <div className={styles.contentContainer}>
-        <p>{t('home.intro')}</p>
-        <p>{t('home.description')}</p>
+        <div className="relative z-20 mx-auto w-full max-w-3xl px-4 pb-8">
+          <Footer className="mt-0" />
+        </div>
       </div>
-
-      {/* Decorative element */}
-      <div className={styles.decorativeContainer}>
-        <div className={styles.dot} />
-        <div className={styles.dot} />
-        <div className={styles.dot} />
-      </div>
-    </div>
+    </>
   )
-}
-
-// Extract styles to constants for better readability
-const styles = {
-  container: 'animate-in fade-in zoom-in-95 duration-1000',
-  avatarContainer: 'mb-8 flex justify-center',
-  avatar: cn(
-    'h-40 w-40 rounded-full border-4 border-white/50 shadow-2xl',
-    'transition-transform duration-500 hover:scale-105 hover:rotate-3',
-    'dark:border-slate-800/50'
-  ),
-  title: cn(
-    'mb-6 text-center text-4xl font-extrabold tracking-tight',
-    'text-slate-900 drop-shadow-sm dark:text-white sm:text-6xl'
-  ),
-  highlightText: cn(
-    'inline-block cursor-pointer bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent',
-    'transition-transform duration-300 hover:-translate-y-1 hover:scale-110 hover:rotate-3'
-  ),
-  contentContainer: cn(
-    'mx-auto max-w-2xl space-y-6 text-lg font-medium leading-relaxed px-5 sm:px-10',
-    'text-slate-800 drop-shadow-md dark:text-slate-100'
-  ),
-  decorativeContainer: 'mt-12 flex justify-center gap-2 opacity-50',
-  dot: 'h-2 w-2 rounded-full bg-slate-400 dark:bg-slate-500',
 }

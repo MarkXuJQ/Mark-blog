@@ -135,9 +135,7 @@ function getProjectTextFiles() {
   ]
 }
 
-function readProjectText() {
-  const files = getProjectTextFiles()
-
+function readTextFiles(files) {
   let combined = ''
 
   for (const filePath of files) {
@@ -149,8 +147,16 @@ function readProjectText() {
   return combined
 }
 
+function readProjectText() {
+  return readTextFiles(getProjectTextFiles())
+}
+
 function buildHeadingText() {
-  const combined = readProjectText() + safeHeadingExtras
+  const combined =
+    readTextFiles([
+      ...collectTextFiles(path.join(projectRoot, 'src')),
+      path.join(projectRoot, 'index.html'),
+    ]) + safeHeadingExtras
   return uniqueGlyphText(combined)
 }
 

@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next'
 import { Card } from '../ui/Card'
 import { getImageUrl } from '../../utils/image'
 import { cn } from '../../utils/cn'
-import type { BlogPost } from '../../types'
+import type { BlogPost, BlogPostSummary } from '../../types'
 
 interface BlogRelatedPostsProps {
   currentPost: BlogPost | null
-  posts: BlogPost[]
+  posts: BlogPostSummary[]
   maxItems?: number
 }
 

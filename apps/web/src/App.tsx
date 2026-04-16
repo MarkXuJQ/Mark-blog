@@ -24,6 +24,11 @@ const BlogPostLayout = lazy(() =>
     default: module.BlogPostLayout,
   }))
 )
+const SmoothScrollProvider = lazy(() =>
+  import('./components/providers/SmoothScrollProvider').then((module) => ({
+    default: module.SmoothScrollProvider,
+  }))
+)
 const Home = lazy(() =>
   import('./pages/Home').then((module) => ({ default: module.Home }))
 )
@@ -92,7 +97,15 @@ function App() {
           {/* Main Layout Routes - Handles Home, Blog, and all other pages */}
           <Route element={<RootLayout />}>
             {/* Nested Home Layout */}
-            <Route element={<HomeLayout />}>
+            <Route
+              element={
+                <LazyRoute>
+                  <SmoothScrollProvider>
+                    <HomeLayout />
+                  </SmoothScrollProvider>
+                </LazyRoute>
+              }
+            >
               <Route
                 path="/"
                 element={

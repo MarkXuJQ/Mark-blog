@@ -1,14 +1,14 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Layers, Calendar } from 'lucide-react'
-import { getAllPosts } from '../utils/posts'
+import { getAllPostSummaries } from '../utils/postSummaries'
 import { cn } from '../utils/cn'
 import { Seo } from '../components/seo/Seo'
-import type { BlogPost } from '../types'
+import type { BlogPostSummary } from '../types'
 
 export function Archive() {
   const { t, i18n } = useTranslation()
-  const posts = getAllPosts(i18n.language)
+  const posts = getAllPostSummaries(i18n.language)
   const dateLocale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
 
   // Group posts by year
@@ -21,7 +21,7 @@ export function Archive() {
       acc[year].push(post)
       return acc
     },
-    {} as Record<number, BlogPost[]>
+    {} as Record<number, BlogPostSummary[]>
   )
 
   // Sort years descending
