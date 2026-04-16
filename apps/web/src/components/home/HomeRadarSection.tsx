@@ -8,6 +8,13 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '../../utils/cn'
+import eventuallymakingFavicon from '../../assets/home/radar/eventuallymaking.png'
+import joshwcomeauFavicon from '../../assets/home/radar/joshwcomeau.png'
+import messengerFavicon from '../../assets/home/radar/messenger.png'
+import pathosFavicon from '../../assets/home/radar/pathos.png'
+import radiogardenFavicon from '../../assets/home/radar/radiogarden.png'
+import ruanyifengFavicon from '../../assets/home/radar/ruanyifeng.png'
+import tongliaoFavicon from '../../assets/home/radar/tongliao.png'
 
 interface HomeRadarSectionProps {
   avatarSrc: string
@@ -18,66 +25,163 @@ interface RadarNode {
   href: string
   left: string
   top: string
+  faviconSrc: string
   label: {
     zh: string
     en: string
   }
+  eyebrow: {
+    zh: string
+    en: string
+  }
+  description: {
+    zh: string
+    en: string
+  }
+  cardAlignX: 'left' | 'center' | 'right'
+  cardAlignY: 'top' | 'bottom'
   color: string
   glow: string
 }
 
 const RADAR_NODES: RadarNode[] = [
   {
-    id: 'awwwards',
-    href: 'https://www.awwwards.com/',
+    id: 'ruanyifeng',
+    href: 'https://www.ruanyifeng.com/blog/',
     left: '79%',
     top: '29%',
-    label: { zh: 'Awwwards', en: 'Awwwards' },
-    color: '#ff8a5b',
-    glow: 'rgba(255,138,91,0.42)',
+    faviconSrc: ruanyifengFavicon,
+    label: { zh: '阮一峰的网络日志', en: "Ruanyifeng's Blog" },
+    eyebrow: {
+      zh: '科技写作 / 编程观察',
+      en: 'Tech essays / Programming notes',
+    },
+    description: {
+      zh: '长期更新的中文技术博客，围绕编程方法、工具趋势与科技周刊展开。',
+      en: 'A long-running Chinese tech blog about programming practice, tools, and weekly observations on the web.',
+    },
+    cardAlignX: 'right',
+    cardAlignY: 'bottom',
+    color: '#f97316',
+    glow: 'rgba(249,115,22,0.42)',
   },
   {
-    id: 'arena',
-    href: 'https://www.are.na/',
+    id: 'eventuallymaking',
+    href: 'https://eventuallymaking.io/',
     left: '23%',
     top: '33%',
-    label: { zh: 'Are.na', en: 'Are.na' },
+    faviconSrc: eventuallymakingFavicon,
+    label: { zh: 'Eventuallymaking', en: 'Eventuallymaking' },
+    eyebrow: {
+      zh: '软件工程 / 创业笔记',
+      en: 'Software engineering / Startups',
+    },
+    description: {
+      zh: '一位拥有二十多年经验的软件工程师，持续分享技术、产品和创业实践。',
+      en: 'A veteran software engineer sharing notes on technology, product building, and startups.',
+    },
+    cardAlignX: 'left',
+    cardAlignY: 'bottom',
     color: '#7c9cff',
     glow: 'rgba(124,156,255,0.4)',
   },
   {
-    id: 'radio-garden',
-    href: 'https://radio.garden/',
+    id: 'messenger',
+    href: 'https://messenger.abeto.co/',
     left: '17%',
     top: '66%',
-    label: { zh: 'Radio Garden', en: 'Radio Garden' },
+    faviconSrc: messengerFavicon,
+    label: { zh: 'Messenger', en: 'Messenger' },
+    eyebrow: {
+      zh: '独立网页游戏',
+      en: 'Indie web game',
+    },
+    description: {
+      zh: '“星球虽小，总得有人送货。”一款气质很强的太空投递小游戏。',
+      en: '"It\'s a small planet, but someone\'s gotta make the deliveries." A tiny space-delivery web game with attitude.',
+    },
+    cardAlignX: 'left',
+    cardAlignY: 'top',
     color: '#22c55e',
     glow: 'rgba(34,197,94,0.38)',
   },
   {
-    id: 'figma-community',
-    href: 'https://www.figma.com/community',
+    id: 'radiogarden',
+    href: 'https://radio.garden/visit/washington-dc/DIlWBUQt',
+    left: '34%',
+    top: '78%',
+    faviconSrc: radiogardenFavicon,
+    label: { zh: 'Radio Garden', en: 'Radio Garden' },
+    eyebrow: {
+      zh: 'Washington DC / Live radio',
+      en: 'Washington DC / Live radio',
+    },
+    description: {
+      zh: '直接落到 Washington DC 的收听页，像在地球仪上旋钮式漫游全球电台。',
+      en: 'Drops straight into the Washington DC listening view, a globe-like way to wander through live radio stations.',
+    },
+    cardAlignX: 'center',
+    cardAlignY: 'top',
+    color: '#14b8a6',
+    glow: 'rgba(20,184,166,0.38)',
+  },
+  {
+    id: 'joshwcomeau',
+    href: 'https://www.joshwcomeau.com/',
     left: '50%',
     top: '12%',
-    label: { zh: 'Figma Community', en: 'Figma Community' },
+    faviconSrc: joshwcomeauFavicon,
+    label: { zh: 'Josh W. Comeau', en: 'Josh W. Comeau' },
+    eyebrow: {
+      zh: 'React / CSS / Animation',
+      en: 'React / CSS / Animation',
+    },
+    description: {
+      zh: '面向开发者的友好教程站点，内容聚焦 React、CSS、动画与前端体验。',
+      en: 'Friendly tutorials for developers, focused on React, CSS, animation, and front-end craft.',
+    },
+    cardAlignX: 'center',
+    cardAlignY: 'bottom',
     color: '#06b6d4',
     glow: 'rgba(6,182,212,0.36)',
   },
   {
-    id: 'artvee',
-    href: 'https://artvee.com/',
+    id: 'pathos',
+    href: 'https://pathos.page/',
     left: '67%',
     top: '74%',
-    label: { zh: 'Artvee', en: 'Artvee' },
-    color: '#f97316',
-    glow: 'rgba(249,115,22,0.36)',
+    faviconSrc: pathosFavicon,
+    label: { zh: 'Pathos.page', en: 'Pathos.page' },
+    eyebrow: {
+      zh: '2750 words / 法哲学',
+      en: '2750 words / Legal philosophy',
+    },
+    description: {
+      zh: '一个法哲学研究者的博客，记录学术写作、问题意识与社会观察。',
+      en: 'A blog by a legal philosophy researcher, documenting scholarship, writing, and social observation.',
+    },
+    cardAlignX: 'right',
+    cardAlignY: 'top',
+    color: '#fb7185',
+    glow: 'rgba(251,113,133,0.36)',
   },
   {
-    id: 'behance',
-    href: 'https://www.behance.net/',
+    id: 'tongliao',
+    href: 'https://www.tongliaouniverse.cn/',
     left: '85%',
     top: '57%',
-    label: { zh: 'Behance', en: 'Behance' },
+    faviconSrc: tongliaoFavicon,
+    label: { zh: '通辽宇宙知识库', en: 'Tongliao Universe' },
+    eyebrow: {
+      zh: '小国梗 / 历史狠人',
+      en: 'Microstates / History lore',
+    },
+    description: {
+      zh: '围绕奇葩小国、硬核历史人物与通辽宇宙梗文化展开的互动知识站。',
+      en: 'An interactive knowledge base about eccentric microstates, hard-core historical figures, and Tongliao Universe lore.',
+    },
+    cardAlignX: 'right',
+    cardAlignY: 'top',
     color: '#a855f7',
     glow: 'rgba(168,85,247,0.36)',
   },
@@ -104,11 +208,84 @@ const VERTICAL_LINE_END = 0.66
 const AUTO_EXPLORATION_TRIGGER_PROGRESS = 0.72
 const AUTO_EXPLORATION_START_DELAY_MS = 180
 const AUTO_EXPLORATION_DURATION_MS = 7200
+const AUTO_EXPLORATION_SCROLL_ACCELERATION_MS_PER_PX = 4.5
+const AUTO_EXPLORATION_MAX_SCROLL_ACCELERATION_MS = 4200
 const BEAM_CONTINUOUS_ROTATION_DURATION_MS = 7200
 const FULL_ROTATION_DEGREES = 360
 const BEAM_HEAD_OFFSET = -16
+const BEAM_FOCUS_OFFSET = -20
 const NODE_REVEAL_ANGLE_WINDOW = 18
 const NODE_PULSE_ANGLE_WINDOW = 24
+const SIGNAL_CARD_EASE = [0.22, 1, 0.36, 1] as const
+const SIGNAL_DOT_SIZE_PX = 44
+const SIGNAL_CARD_SIZE_PX = 212
+
+const signalShellVariants = {
+  rest: ({ restShadow }: { restShadow: string }) => ({
+    width: SIGNAL_DOT_SIZE_PX,
+    height: SIGNAL_DOT_SIZE_PX,
+    x: 0,
+    y: 0,
+    borderRadius: 999,
+    boxShadow: restShadow,
+    transition: { duration: 0.24, ease: SIGNAL_CARD_EASE },
+  }),
+  hover: ({
+    hoverShadow,
+    shiftX,
+    shiftY,
+  }: {
+    hoverShadow: string
+    shiftX: number
+    shiftY: number
+  }) => ({
+    width: SIGNAL_CARD_SIZE_PX,
+    height: SIGNAL_CARD_SIZE_PX,
+    x: shiftX,
+    y: shiftY,
+    borderRadius: 32,
+    boxShadow: hoverShadow,
+    transition: { duration: 0.28, ease: SIGNAL_CARD_EASE },
+  }),
+}
+
+const signalIconFrameVariants = {
+  rest: {
+    top: 0,
+    left: 0,
+    width: SIGNAL_DOT_SIZE_PX,
+    height: SIGNAL_DOT_SIZE_PX,
+    borderRadius: 999,
+    transition: { duration: 0.24, ease: SIGNAL_CARD_EASE },
+  },
+  hover: {
+    top: 16,
+    left: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 18,
+    transition: { duration: 0.26, ease: SIGNAL_CARD_EASE },
+  },
+}
+
+const signalCopyVariants = {
+  rest: {
+    opacity: 0,
+    y: 10,
+    filter: 'blur(8px)',
+    transition: { duration: 0.16, ease: SIGNAL_CARD_EASE },
+  },
+  hover: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: {
+      delay: 0.08,
+      duration: 0.22,
+      ease: SIGNAL_CARD_EASE,
+    },
+  },
+}
 
 function clamp01(value: number) {
   return Math.min(Math.max(value, 0), 1)
@@ -138,21 +315,48 @@ function normalizeAngle(angle: number) {
   return normalized < 0 ? normalized + FULL_ROTATION_DEGREES : normalized
 }
 
-function getCircularAngleDistance(from: number, to: number) {
-  const directDistance = Math.abs(normalizeAngle(to - from))
-  return Math.min(directDistance, FULL_ROTATION_DEGREES - directDistance)
+function getClockwiseAngleDelta(from: number, to: number) {
+  return normalizeAngle(to - from)
+}
+
+function getSweepNodeAngle(nodeAngle: number, sweepStartAngle: number) {
+  return nodeAngle < sweepStartAngle
+    ? nodeAngle + FULL_ROTATION_DEGREES
+    : nodeAngle
 }
 
 function getBeamRevealProgress(
   sweepAngle: number,
   nodeAngle: number,
-  revealWindow: number
+  revealWindow: number,
+  sweepStartAngle: number
 ) {
+  const nodeSweepAngle = getSweepNodeAngle(nodeAngle, sweepStartAngle)
+
   return segmentProgress(
     sweepAngle,
-    Math.max(0, nodeAngle - revealWindow),
-    Math.min(FULL_ROTATION_DEGREES, nodeAngle + revealWindow)
+    nodeSweepAngle,
+    nodeSweepAngle + revealWindow
   )
+}
+
+function getTrailingBeamImpact(
+  beamAngle: number,
+  nodeAngle: number,
+  pulseWindow: number
+) {
+  const delta = getClockwiseAngleDelta(nodeAngle, beamAngle)
+  if (delta > pulseWindow) return 0
+  return 1 - delta / pulseWindow
+}
+
+function getSignalShellShift(node: RadarNode) {
+  const halfDelta = (SIGNAL_CARD_SIZE_PX - SIGNAL_DOT_SIZE_PX) / 2
+  const shiftX =
+    node.cardAlignX === 'left' ? halfDelta : node.cardAlignX === 'right' ? -halfDelta : 0
+  const shiftY = node.cardAlignY === 'top' ? -halfDelta : halfDelta
+
+  return { shiftX, shiftY }
 }
 
 function getBoundedScrollDistance(
@@ -191,6 +395,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
   const isAutoExplorationCompleteRef = useRef(reduceMotion)
   const autoExplorationFrameRef = useRef<number | null>(null)
   const autoExplorationDelayRef = useRef<number | null>(null)
+  const autoExplorationScrollBoostRef = useRef(0)
   const beamLoopFrameRef = useRef<number | null>(null)
   const [viewportHeight, setViewportHeight] = useState(0)
   const [sceneProgress, setSceneProgress] = useState(reduceMotion ? 1 : 0)
@@ -249,42 +454,73 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     }
   }, [])
 
+  const runAutoExplorationLoop = useCallback(() => {
+    if (autoExplorationFrameRef.current != null) return
+
+    const startTime = performance.now()
+
+    const advance = (timestamp: number) => {
+      const boostedElapsed =
+        timestamp -
+        startTime +
+        Math.min(
+          autoExplorationScrollBoostRef.current,
+          AUTO_EXPLORATION_MAX_SCROLL_ACCELERATION_MS
+        )
+      const nextProgress = clamp01(
+        boostedElapsed / AUTO_EXPLORATION_DURATION_MS
+      )
+
+      autoExplorationProgressRef.current = nextProgress
+      setAutoExplorationProgress(nextProgress)
+
+      if (nextProgress >= 1) {
+        isAutoExploringRef.current = false
+        isAutoExplorationCompleteRef.current = true
+        sceneProgressRef.current = 1
+        setSceneProgress(1)
+        autoExplorationFrameRef.current = null
+        return
+      }
+
+      autoExplorationFrameRef.current = requestAnimationFrame(advance)
+    }
+
+    autoExplorationFrameRef.current = requestAnimationFrame(advance)
+  }, [])
+
+  const applyAutoExplorationBoost = useCallback((deltaY: number) => {
+    if (deltaY <= 0) return
+    if (!isAutoExploringRef.current) return
+
+    autoExplorationScrollBoostRef.current = Math.min(
+      AUTO_EXPLORATION_MAX_SCROLL_ACCELERATION_MS,
+      autoExplorationScrollBoostRef.current +
+        deltaY * AUTO_EXPLORATION_SCROLL_ACCELERATION_MS_PER_PX
+    )
+
+    if (autoExplorationDelayRef.current != null) {
+      window.clearTimeout(autoExplorationDelayRef.current)
+      autoExplorationDelayRef.current = null
+      runAutoExplorationLoop()
+    }
+  }, [runAutoExplorationLoop])
+
   const startAutoExploration = useCallback(() => {
     if (reduceMotion) return
     if (isAutoExploringRef.current || isAutoExplorationCompleteRef.current) return
 
     clearAutoExplorationTimers()
+    autoExplorationScrollBoostRef.current = 0
     isAutoExploringRef.current = true
     sceneProgressRef.current = AUTO_EXPLORATION_TRIGGER_PROGRESS
     setSceneProgress(AUTO_EXPLORATION_TRIGGER_PROGRESS)
 
     autoExplorationDelayRef.current = window.setTimeout(() => {
-      const startTime = performance.now()
-
-      const advance = (timestamp: number) => {
-        const nextProgress = clamp01(
-          (timestamp - startTime) / AUTO_EXPLORATION_DURATION_MS
-        )
-
-        autoExplorationProgressRef.current = nextProgress
-        setAutoExplorationProgress(nextProgress)
-
-        if (nextProgress >= 1) {
-          isAutoExploringRef.current = false
-          isAutoExplorationCompleteRef.current = true
-          sceneProgressRef.current = 1
-          setSceneProgress(1)
-          autoExplorationFrameRef.current = null
-          return
-        }
-
-        autoExplorationFrameRef.current = requestAnimationFrame(advance)
-      }
-
-      autoExplorationFrameRef.current = requestAnimationFrame(advance)
       autoExplorationDelayRef.current = null
+      runAutoExplorationLoop()
     }, AUTO_EXPLORATION_START_DELAY_MS)
-  }, [clearAutoExplorationTimers, reduceMotion])
+  }, [clearAutoExplorationTimers, reduceMotion, runAutoExplorationLoop])
 
   const releaseScene = useCallback(
     (direction: 1 | -1) => {
@@ -314,7 +550,10 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
       if (reduceMotion) return
       if (!isLockedRef.current) return
 
-      if (isAutoExploringRef.current) return
+      if (isAutoExploringRef.current) {
+        applyAutoExplorationBoost(deltaY)
+        return
+      }
 
       if (isAutoExplorationCompleteRef.current) {
         if (deltaY > 0) {
@@ -348,6 +587,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
       reduceMotion,
       releaseScene,
       startAutoExploration,
+      applyAutoExplorationBoost,
       virtualScrollDistance,
     ]
   )
@@ -474,6 +714,9 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
   const beamAngle = beamLoopActive ? beamLoopAngle : sweepBeamAngle
   const beamOpacity = easeOutCubic(segmentProgress(explorationProgress, 0, 0.08))
   const beamRotate = beamAngle + BEAM_HEAD_OFFSET
+  const beamFocusAngle = normalizeAngle(beamAngle + BEAM_FOCUS_OFFSET)
+  const beamSweepStartAngle = normalizeAngle(BEAM_FOCUS_OFFSET)
+  const beamFocusSweepAngle = beamSweepStartAngle + sweepBeamAngle
 
   useEffect(() => {
     if (reduceMotion || !beamLoopActive) {
@@ -615,45 +858,55 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
 
             {RADAR_NODES.map((node) => {
               const nodeAngle = getRadarNodeAngle(node)
+              const nodeLabel = isZh ? node.label.zh : node.label.en
+              const nodeEyebrow = isZh ? node.eyebrow.zh : node.eyebrow.en
+              const nodeDescription = isZh
+                ? node.description.zh
+                : node.description.en
               const nodeRevealRaw =
                 explorationProgress <= 0
                   ? 0
                   : beamLoopActive
                     ? 1
                     : getBeamRevealProgress(
-                        sweepBeamAngle,
+                        beamFocusSweepAngle,
                         nodeAngle,
-                        NODE_REVEAL_ANGLE_WINDOW
+                        NODE_REVEAL_ANGLE_WINDOW,
+                        beamSweepStartAngle
                       )
               const nodeOpacity = easeOutCubic(nodeRevealRaw)
               const nodeScale = mix(0.36, 1, easeOutBack(nodeRevealRaw))
               const nodeImpact =
                 explorationProgress <= 0
                   ? 0
-                  : clamp01(
-                      1 -
-                        getCircularAngleDistance(beamAngle, nodeAngle) /
-                          NODE_PULSE_ANGLE_WINDOW
+                  : getTrailingBeamImpact(
+                      beamFocusAngle,
+                      nodeAngle,
+                      NODE_PULSE_ANGLE_WINDOW
                     )
               const signalPulseScale = mix(0.72, 2.08, nodeImpact)
               const signalPulseOpacity = nodeImpact * 0.56 * nodeOpacity
-              const dotGlowBase = `0 0 0 2px rgba(255,255,255,0.2), 0 0 10px ${node.glow}`
-              const dotGlowActive = `0 0 0 3px rgba(255,255,255,0.34), 0 0 ${mix(10, 22, nodeImpact)}px ${node.glow}`
+              const restShellShadow = `0 0 0 1px rgba(255,255,255,0.44), 0 18px 34px -22px rgba(15,23,42,0.82), 0 0 ${mix(10, 22, nodeImpact)}px ${node.glow}`
+              const hoverShellShadow = `0 34px 92px -48px rgba(15,23,42,0.82), 0 0 ${mix(18, 38, nodeImpact)}px ${node.glow}`
+              const { shiftX, shiftY } = getSignalShellShift(node)
 
               return (
                 <motion.a
                   key={node.id}
+                  initial="rest"
+                  animate="rest"
+                  whileHover="hover"
+                  whileFocus="hover"
                   href={node.href}
                   target="_blank"
                   rel="noreferrer"
-                  aria-label={isZh ? node.label.zh : node.label.en}
-                  title={isZh ? node.label.zh : node.label.en}
-                  whileHover={
-                    reduceMotion || nodeOpacity < 0.98
+                  aria-label={nodeLabel}
+                  title={nodeLabel}
+                  whileTap={
+                    nodeOpacity < 0.98
                       ? undefined
-                      : { scale: 1.12 }
+                      : { scale: 0.97, transition: { duration: 0.16 } }
                   }
-                  whileTap={nodeOpacity < 0.98 ? undefined : { scale: 0.96 }}
                   className={styles.signalLink}
                   style={{
                     left: node.left,
@@ -675,15 +928,69 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
 
                   <motion.span
                     aria-hidden="true"
-                    className={styles.signalDot}
-                    style={{
-                      background: node.color,
-                      opacity: nodeOpacity,
-                      scale: mix(0.92, 1, nodeOpacity),
-                      boxShadow:
-                        nodeImpact > 0.02 ? dotGlowActive : dotGlowBase,
+                    className={styles.signalShell}
+                    custom={{
+                      restShadow: restShellShadow,
+                      hoverShadow: hoverShellShadow,
+                      shiftX,
+                      shiftY,
                     }}
-                  />
+                    variants={signalShellVariants}
+                    style={{
+                      opacity: nodeOpacity,
+                    }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={styles.signalShellTint}
+                      style={{
+                        background: `radial-gradient(circle at 28% 24%, rgba(255,255,255,0.92) 0%, ${node.glow} 54%, rgba(255,255,255,0) 100%)`,
+                      }}
+                    />
+                    <motion.span
+                      aria-hidden="true"
+                      className={styles.signalIconFrame}
+                      variants={signalIconFrameVariants}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={styles.signalIconFrameTint}
+                        style={{
+                          background: `radial-gradient(circle at 20% 18%, ${node.glow} 0%, rgba(255,255,255,0) 72%)`,
+                        }}
+                      />
+                      <span className={styles.signalIconFrameInner}>
+                        <img
+                          src={node.faviconSrc}
+                          alt=""
+                          className={styles.signalIconImage}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </span>
+                    </motion.span>
+
+                    <motion.span
+                      aria-hidden="true"
+                      className={styles.signalCopy}
+                      variants={signalCopyVariants}
+                    >
+                      <span className={styles.signalCopyHeader}>
+                        <span className={styles.signalCopySpacer} />
+                        <span className={styles.signalCopyTitleBlock}>
+                          <span className={styles.signalCardEyebrow}>
+                            {nodeEyebrow}
+                          </span>
+                          <span className={styles.signalCardTitle}>
+                            {nodeLabel}
+                          </span>
+                        </span>
+                      </span>
+                      <span className={styles.signalCardDescription}>
+                        {nodeDescription}
+                      </span>
+                    </motion.span>
+                  </motion.span>
                 </motion.a>
               )
             })}
@@ -723,8 +1030,28 @@ const styles = {
     'relative h-[72%] w-[72%] overflow-hidden rounded-full border border-white/60 bg-transparent shadow-[0_14px_28px_-22px_rgba(15,23,42,0.24)]',
   avatarImage: 'h-full w-full object-cover',
   signalLink:
-    'absolute z-30 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center focus:outline-none',
+    'absolute z-30 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center focus-visible:z-50 focus:outline-none',
   signalPulse: 'absolute h-14 w-14 rounded-full blur-[14px]',
-  signalDot:
-    'relative h-4 w-4 rounded-full border border-white/78 sm:h-[1.125rem] sm:w-[1.125rem]',
+  signalShell:
+    'relative z-10 block overflow-hidden border border-white/72 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(241,245,249,0.9)_100%)] text-left text-slate-900 backdrop-blur-xl will-change-transform',
+  signalShellTint:
+    'pointer-events-none absolute inset-0 rounded-[inherit] opacity-90 mix-blend-screen',
+  signalIconFrame:
+    'absolute overflow-hidden border border-white/78 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.94)_100%)] shadow-[0_18px_32px_-22px_rgba(15,23,42,0.82)]',
+  signalIconFrameTint:
+    'pointer-events-none absolute inset-0 rounded-[inherit] opacity-90',
+  signalIconFrameInner:
+    'relative z-10 flex h-full w-full items-center justify-center',
+  signalIconImage: 'h-[58%] w-[58%] object-contain',
+  signalCopy:
+    'absolute inset-0 flex flex-col justify-between p-4 pointer-events-none',
+  signalCopyHeader: 'flex items-start gap-3',
+  signalCopySpacer: 'h-11 w-11 shrink-0',
+  signalCopyTitleBlock: 'flex min-w-0 flex-1 flex-col gap-1 pt-0.5',
+  signalCardEyebrow:
+    'text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-slate-500',
+  signalCardTitle:
+    'text-[1rem] font-semibold leading-5 text-slate-900',
+  signalCardDescription:
+    'relative z-10 text-[0.86rem] leading-6 text-slate-700',
 }
