@@ -1,11 +1,8 @@
-import {
-  useRef,
-  useState,
-  type PointerEvent as ReactPointerEvent,
-} from 'react'
+import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import {
   motion,
   type MotionStyle,
+  type MotionValue,
   useMotionValue,
   useReducedMotion,
   useScroll,
@@ -31,12 +28,58 @@ const hoverLift = {
   transition: { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const },
 }
 
-export function TravelFootprintPlugin() {
+function clamp01(value: number) {
+  return Math.min(Math.max(value, 0), 1)
+}
+
+function easeOutCubic(value: number) {
+  return 1 - Math.pow(1 - value, 3)
+}
+
+function usePanelReveal(
+  progress: MotionValue<number>,
+  start: number,
+  end: number,
+  prefersReducedMotion: boolean
+) {
+  const opacity = useTransform(progress, (value) => {
+    const raw = clamp01((value - start) / (end - start))
+    return prefersReducedMotion ? (raw > 0 ? 1 : 0) : easeOutCubic(raw)
+  })
+  const y = useTransform(progress, (value) => {
+    const raw = clamp01((value - start) / (end - start))
+    const eased = prefersReducedMotion ? raw : easeOutCubic(raw)
+    return prefersReducedMotion ? 0 : 44 * (1 - eased)
+  })
+  const scale = useTransform(progress, (value) => {
+    const raw = clamp01((value - start) / (end - start))
+    const eased = prefersReducedMotion ? raw : easeOutCubic(raw)
+    return prefersReducedMotion ? 1 : 0.94 + eased * 0.06
+  })
+
+  return { opacity, y, scale }
+}
+
+function useSummedTransform(
+  input: [MotionValue<number>, MotionValue<number>]
+) {
+  return useTransform<number, number>(input, ([primary, secondary]) => {
+    return primary + secondary
+  })
+}
+
+export function TravelFootprintPlugin({
+  revealProgress,
+}: {
+  revealProgress?: MotionValue<number>
+}) {
   const { i18n } = useTranslation()
   const isZh = i18n.language?.startsWith('zh')
   const prefersReducedMotion = useReducedMotion()
   const shellRef = useRef<HTMLDivElement | null>(null)
   const [isPointerDown, setIsPointerDown] = useState(false)
+  const fallbackRevealProgress = useMotionValue(1)
+  const pluginReveal = revealProgress ?? fallbackRevealProgress
   const pointerXRaw = useMotionValue(0)
   const pointerYRaw = useMotionValue(0)
   const { scrollYProgress } = useScroll({
@@ -64,25 +107,83 @@ export function TravelFootprintPlugin() {
 
   const mapX = useTransform(pointerX, (value) => value * -9 * dragStrength)
   const mapY = useTransform(pointerY, (value) => value * -7 * dragStrength)
-  const mapRotate = useTransform(pointerX, (value) => value * -0.55 * dragStrength)
+  const mapRotate = useTransform(
+    pointerX,
+    (value) => value * -0.55 * dragStrength
+  )
 
   const embedX = useTransform(pointerX, (value) => value * 9 * dragStrength)
   const embedY = useTransform(pointerY, (value) => value * -7 * dragStrength)
-  const embedRotate = useTransform(pointerX, (value) => value * 0.52 * dragStrength)
+  const embedRotate = useTransform(
+    pointerX,
+    (value) => value * 0.52 * dragStrength
+  )
 
   const clockX = useTransform(pointerX, (value) => value * -7 * dragStrength)
   const clockY = useTransform(pointerY, (value) => value * 7 * dragStrength)
-  const clockRotate = useTransform(pointerX, (value) => value * -0.48 * dragStrength)
+  const clockRotate = useTransform(
+    pointerX,
+    (value) => value * -0.48 * dragStrength
+  )
 
   const gridY = useTransform(shellProgress, [0, 0.38, 1], [42, 0, -18])
-  const ambientScale = useTransform(shellProgress, [0, 0.6, 1], [0.96, 1.02, 1.05])
-  const ambientOpacity = useTransform(shellProgress, [0, 0.18, 1], [0, 0.88, 0.42])
+  const ambientScale = useTransform(
+    shellProgress,
+    [0, 0.6, 1],
+    [0.96, 1.02, 1.05]
+  )
+  const ambientOpacity = useTransform(
+    shellProgress,
+    [0, 0.18, 1],
+    [0, 0.88, 0.42]
+  )
   const ambientY = useTransform(shellProgress, [0, 1], [32, -26])
   const ambientSecondaryOpacity = useTransform(
     shellProgress,
     [0, 0.24, 1],
     [0, 0.46, 0.22]
   )
+  const shellOpacity = useTransform(pluginReveal, (value) => {
+    const eased = prefersReducedMotion
+      ? clamp01(value)
+      : easeOutCubic(clamp01(value / 0.18))
+    return prefersReducedMotion ? 1 : 0.2 + eased * 0.8
+  })
+  const shellRevealY = useTransform(pluginReveal, (value) => {
+    const eased = prefersReducedMotion
+      ? clamp01(value)
+      : easeOutCubic(clamp01(value / 0.18))
+    return prefersReducedMotion ? 0 : 36 * (1 - eased)
+  })
+  const shellRevealScale = useTransform(pluginReveal, (value) => {
+    const eased = prefersReducedMotion
+      ? clamp01(value)
+      : easeOutCubic(clamp01(value / 0.18))
+    return prefersReducedMotion ? 1 : 0.96 + eased * 0.04
+  })
+
+  const worldReveal = usePanelReveal(
+    pluginReveal,
+    0.04,
+    0.28,
+    Boolean(prefersReducedMotion)
+  )
+  const embedReveal = usePanelReveal(
+    pluginReveal,
+    0.3,
+    0.54,
+    Boolean(prefersReducedMotion)
+  )
+  const clockReveal = usePanelReveal(
+    pluginReveal,
+    0.56,
+    0.8,
+    Boolean(prefersReducedMotion)
+  )
+
+  const mapRevealY = useSummedTransform([mapY, worldReveal.y])
+  const embedRevealY = useSummedTransform([embedY, embedReveal.y])
+  const clockRevealY = useSummedTransform([clockY, clockReveal.y])
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (prefersReducedMotion) return
@@ -102,7 +203,7 @@ export function TravelFootprintPlugin() {
   }
 
   return (
-    <div
+    <motion.div
       ref={shellRef}
       className={cn(
         styles.shell,
@@ -112,6 +213,11 @@ export function TravelFootprintPlugin() {
             ? styles.shellDragging
             : styles.shellReady
       )}
+      style={{
+        opacity: shellOpacity,
+        y: shellRevealY,
+        scale: shellRevealScale,
+      }}
       onPointerMove={handlePointerMove}
       onPointerDown={() => setIsPointerDown(true)}
       onPointerUp={() => setIsPointerDown(false)}
@@ -132,27 +238,41 @@ export function TravelFootprintPlugin() {
       <motion.div className={styles.grid} style={{ y: gridY }}>
         <TravelWorldMapPanel
           isZh={isZh}
-          style={{ x: mapX, y: mapY, rotate: mapRotate }}
+          style={{
+            x: mapX,
+            y: mapRevealY,
+            rotate: mapRotate,
+            opacity: worldReveal.opacity,
+            scale: worldReveal.scale,
+          }}
         />
 
         <TravelFootprintMapPanel
           isZh={isZh}
-          style={{ x: embedX, y: embedY, rotate: embedRotate }}
+          style={{
+            x: embedX,
+            y: embedRevealY,
+            rotate: embedRotate,
+            opacity: embedReveal.opacity,
+            scale: embedReveal.scale,
+          }}
         />
 
         <motion.div
           {...hoverLift}
-          initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.32 }}
-          transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1], delay: 0.12 }}
           className={styles.clockCell}
-          style={{ x: clockX, y: clockY, rotate: clockRotate }}
+          style={{
+            x: clockX,
+            y: clockRevealY,
+            rotate: clockRotate,
+            opacity: clockReveal.opacity,
+            scale: clockReveal.scale,
+          }}
         >
           <LifeSinceClock compact bare className={styles.clockPanel} />
         </motion.div>
       </motion.div>
-    </div>
+    </motion.div>
   )
 }
 
@@ -166,10 +286,6 @@ function TravelWorldMapPanel({
   return (
     <motion.section
       {...hoverLift}
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.24 }}
-      transition={{ duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
       className={cn(styles.panel, styles.mapPanel)}
       style={style}
     >
@@ -216,10 +332,6 @@ function TravelFootprintMapPanel({
   return (
     <motion.section
       {...hoverLift}
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1], delay: 0.06 }}
       className={cn(styles.panel, styles.embedPanel)}
       style={style}
     >
@@ -257,8 +369,7 @@ const styles = {
     'pointer-events-none absolute left-1/2 top-6 -z-10 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.18)_0%,rgba(56,189,248,0.08)_28%,rgba(56,189,248,0)_68%)] blur-3xl',
   ambientOrbitSecondary:
     'pointer-events-none absolute right-[-2rem] top-[20rem] -z-10 h-[18rem] w-[18rem] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0.04)_30%,rgba(255,255,255,0)_70%)] blur-3xl',
-  grid:
-    'grid items-start gap-6 sm:gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,24rem)] lg:grid-rows-[auto_auto] lg:gap-x-10 lg:gap-y-10',
+  grid: 'grid items-start gap-6 sm:gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,24rem)] lg:grid-rows-[auto_auto] lg:gap-x-10 lg:gap-y-10',
   panel:
     'relative min-w-0 w-full overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/90 p-4 text-white shadow-[0_28px_90px_-48px_rgba(15,23,42,0.6)] will-change-transform sm:p-5',
   mapPanel: 'z-[2] self-start lg:col-span-2 lg:row-start-1',

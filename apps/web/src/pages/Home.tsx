@@ -83,9 +83,15 @@ export function Home() {
     },
   }
 
-  const { scrollYProgress: sceneScrollProgress } = useScroll()
+  const { scrollY } = useScroll()
 
-  const sceneProgress = useSpring(sceneScrollProgress, {
+  const sceneProgressSource = useTransform(
+    scrollY,
+    [0, prefersReducedMotion ? 960 : 1320],
+    [0, 1]
+  )
+
+  const sceneProgress = useSpring(sceneProgressSource, {
     stiffness: prefersReducedMotion ? 240 : 160,
     damping: prefersReducedMotion ? 36 : 24,
     mass: 0.3,
@@ -93,14 +99,18 @@ export function Home() {
 
   const heroScale = useTransform(
     sceneProgress,
-    [0, 0.18, 0.42, 0.58],
-    prefersReducedMotion ? [1, 0.998, 0.996, 0.994] : [1, 0.992, 0.92, 0.88]
+    [0, 0.12, 0.34, 0.58],
+    prefersReducedMotion ? [1, 0.997, 0.992, 0.988] : [1, 0.988, 0.9, 0.78]
   )
-  const heroOpacity = useTransform(sceneProgress, [0, 1], [1, 1])
+  const heroOpacity = useTransform(
+    sceneProgress,
+    [0, 0.24, 0.44, 0.6],
+    prefersReducedMotion ? [1, 1, 0.96, 0.9] : [1, 1, 0.54, 0.12]
+  )
   const heroY = useTransform(
     sceneProgress,
-    [0, 0.2, 0.48, 0.62],
-    prefersReducedMotion ? [0, -2, -8, -14] : [0, -12, -96, -142]
+    [0, 0.14, 0.38, 0.62],
+    prefersReducedMotion ? [0, -3, -10, -18] : [0, -18, -132, -228]
   )
   const heroRadius = useTransform(sceneProgress, [0, 1], [0, 0])
   const heroClipPath = useTransform(
@@ -109,52 +119,70 @@ export function Home() {
     ['inset(0% 0% 0% 0% round 0px)', 'inset(0% 0% 0% 0% round 0px)']
   )
   const heroPointerEvents = useTransform(sceneProgress, (value) =>
-    value > 0.52 ? 'none' : 'auto'
+    value > 0.44 ? 'none' : 'auto'
   ) as MotionValue<string>
   const heroShadow = useTransform(
     sceneProgress,
-    [0, 0.24, 0.5],
+    [0, 0.2, 0.42, 0.6],
     [
       '0 24px 70px -34px rgba(15,23,42,0.56)',
-      '0 44px 110px -52px rgba(15,23,42,0.64)',
-      '0 66px 120px -76px rgba(15,23,42,0.16)',
+      '0 52px 128px -56px rgba(15,23,42,0.66)',
+      '0 46px 96px -62px rgba(15,23,42,0.14)',
+      '0 20px 42px -34px rgba(15,23,42,0.04)',
     ]
   )
-  const heroContentOpacity = useTransform(sceneProgress, [0, 1], [1, 1])
+  const heroFilter = useTransform(
+    sceneProgress,
+    [0, 0.18, 0.36, 0.56],
+    prefersReducedMotion
+      ? ['blur(0px)', 'blur(0px)', 'blur(1px)', 'blur(2px)']
+      : ['blur(0px)', 'blur(0px)', 'blur(6px)', 'blur(14px)']
+  )
+  const heroContentOpacity = useTransform(
+    sceneProgress,
+    [0, 0.18, 0.38, 0.54],
+    prefersReducedMotion ? [1, 1, 0.96, 0.9] : [1, 1, 0.44, 0]
+  )
   const heroContentY = useTransform(
     sceneProgress,
-    [0, 0.46],
-    prefersReducedMotion ? [0, -6] : [0, -22]
+    [0, 0.18, 0.46],
+    prefersReducedMotion ? [0, -6, -10] : [0, -14, -58]
   )
   const heroMediaScale = useTransform(
     sceneProgress,
-    [0, 0.46],
-    prefersReducedMotion ? [1.02, 1.03] : [1.02, 1.08]
+    [0, 0.22, 0.5],
+    prefersReducedMotion ? [1.02, 1.03, 1.04] : [1.02, 1.08, 1.18]
   )
   const heroMediaY = useTransform(
     sceneProgress,
-    [0, 0.46],
-    prefersReducedMotion ? [0, -4] : [0, -18]
+    [0, 0.22, 0.5],
+    prefersReducedMotion ? [0, -4, -8] : [0, -16, -42]
   )
 
   const widgetScale = useTransform(
     sceneProgress,
-    [0.04, 0.28, 0.52, 0.7],
-    prefersReducedMotion ? [1.003, 1.0015, 1.001, 1] : [1.022, 1.012, 1.004, 1]
+    [0.04, 0.18, 0.42, 0.66],
+    prefersReducedMotion ? [1.003, 1.002, 1.001, 1] : [1.06, 1.03, 1.008, 1]
   )
   const widgetY = useTransform(
     sceneProgress,
-    [0.02, 0.42, 0.62],
-    prefersReducedMotion ? [4, 0, -2] : [34, 0, -6]
+    [0.02, 0.22, 0.46, 0.66],
+    prefersReducedMotion ? [8, 3, 0, -2] : [72, 26, 0, -6]
   )
-  const widgetOpacity = useTransform(sceneProgress, [0, 1], [1, 1])
+  const widgetOpacity = useTransform(
+    sceneProgress,
+    [0.02, 0.16, 0.38, 0.56],
+    prefersReducedMotion ? [0.92, 0.96, 0.99, 1] : [0.18, 0.4, 0.82, 1]
+  )
   const widgetFilter = useTransform(
     sceneProgress,
-    [0, 1],
-    ['blur(0px)', 'blur(0px)']
+    [0.02, 0.22, 0.44, 0.6],
+    prefersReducedMotion
+      ? ['blur(0px)', 'blur(0px)', 'blur(0px)', 'blur(0px)']
+      : ['blur(0px)', 'blur(0px)', 'blur(0px)', 'blur(0px)']
   )
   const widgetPointerEvents = useTransform(sceneProgress, (value) =>
-    value > 0.24 ? 'auto' : 'none'
+    value > 0.18 ? 'auto' : 'none'
   ) as MotionValue<string>
 
   const handleNameClick = () => {
@@ -196,6 +224,7 @@ export function Home() {
         heroRadius={heroRadius}
         heroClipPath={heroClipPath}
         heroShadow={heroShadow}
+        heroFilter={heroFilter}
         heroPointerEvents={heroPointerEvents}
         heroMediaScale={heroMediaScale}
         heroMediaY={heroMediaY}

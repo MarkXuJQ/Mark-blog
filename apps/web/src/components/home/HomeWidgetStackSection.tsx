@@ -1,4 +1,12 @@
-import { motion, type MotionValue } from 'framer-motion'
+import { useRef } from 'react'
+import {
+  motion,
+  type MotionValue,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { TravelFootprintPlugin } from './TravelFootprintPlugin'
 
@@ -10,6 +18,10 @@ interface HomeWidgetStackSectionProps {
   sectionPointerEvents?: MotionValue<string>
 }
 
+function clamp01(value: number) {
+  return Math.min(Math.max(value, 0), 1)
+}
+
 export function HomeWidgetStackSection({
   sectionScale,
   sectionY,
@@ -18,45 +30,97 @@ export function HomeWidgetStackSection({
   sectionPointerEvents,
 }: HomeWidgetStackSectionProps) {
   const { i18n } = useTranslation()
+  const prefersReducedMotion = useReducedMotion()
   const isZh = i18n.language?.startsWith('zh')
+  const sectionRef = useRef<HTMLElement | null>(null)
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  })
+
+  const sceneProgress = useSpring(scrollYProgress, {
+    stiffness: prefersReducedMotion ? 260 : 110,
+    damping: prefersReducedMotion ? 34 : 22,
+    mass: 0.42,
+  })
+
+  const backdropProgress = useTransform(sceneProgress, (value) =>
+    prefersReducedMotion ? 1 : clamp01(value / 0.22)
+  )
+  const widgetRevealProgress = useTransform(sceneProgress, (value) =>
+    prefersReducedMotion ? 1 : clamp01((value - 0.26) / 0.6)
+  )
+
+  const backdropY = useTransform(backdropProgress, [0, 1], ['18%', '0%'])
+  const backdropScale = useTransform(backdropProgress, [0, 1], [0.94, 1])
+  const backdropRadius = useTransform(backdropProgress, [0, 1], [40, 0])
+  const backdropOpacity = useTransform(backdropProgress, [0, 1], [0.72, 1])
+  const contentOpacity = useTransform(sceneProgress, (value) => {
+    if (prefersReducedMotion) return 1
+    if (value <= 0.22) return 0
+    if (value <= 0.32) return ((value - 0.22) / 0.1) * 0.62
+    if (value <= 0.42) return 0.62 + ((value - 0.32) / 0.1) * 0.38
+    return 1
+  })
+  const contentY = useTransform(sceneProgress, (value) => {
+    if (prefersReducedMotion) return 0
+    if (value <= 0.22) return 42
+    if (value <= 0.42) return 42 + ((0 - 42) * (value - 0.22)) / 0.2
+    return 0
+  })
 
   return (
-    <motion.section
+    <section
+      ref={sectionRef}
       aria-label={isZh ? '主页小组件堆叠区' : 'Homepage widget stack'}
-      className="relative w-full overflow-hidden"
-      style={{
-        scale: sectionScale,
-        y: sectionY,
-        opacity: sectionOpacity,
-        filter: sectionFilter,
-        pointerEvents: sectionPointerEvents,
-      }}
+      className={
+        prefersReducedMotion
+          ? 'relative min-h-[100svh]'
+          : 'relative min-h-[320svh]'
+      }
     >
-      <div className="relative overflow-hidden bg-[linear-gradient(180deg,#050913_0%,#060c17_24%,#07101c_56%,#091522_100%)]">
-        <div aria-hidden="true" className={styles.topBlend} />
-        <div aria-hidden="true" className={styles.leftGlow} />
-        <div aria-hidden="true" className={styles.rightGlow} />
-        <div aria-hidden="true" className={styles.gridField} />
+      <motion.div
+        className="sticky top-0 h-[100svh] overflow-hidden"
+        style={{
+          scale: sectionScale,
+          y: sectionY,
+          opacity: sectionOpacity,
+          filter: sectionFilter,
+          pointerEvents: sectionPointerEvents,
+        }}
+      >
+        <motion.div
+          className="absolute inset-0 overflow-hidden bg-[linear-gradient(180deg,#050913_0%,#060c17_24%,#07101c_56%,#091522_100%)]"
+          style={{
+            y: backdropY,
+            scale: backdropScale,
+            borderRadius: backdropRadius,
+            opacity: backdropOpacity,
+          }}
+        >
+          <div aria-hidden="true" className={styles.topBlend} />
+          <div aria-hidden="true" className={styles.leftGlow} />
+          <div aria-hidden="true" className={styles.rightGlow} />
+          <div aria-hidden="true" className={styles.gridField} />
+        </motion.div>
 
-        <div className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-[96rem] items-center px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+        <motion.div
+          className="relative z-10 mx-auto flex h-full w-full max-w-[96rem] items-center px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20"
+          style={{ opacity: contentOpacity, y: contentY }}
+        >
           <div className="relative w-full">
             <div aria-hidden="true" className={styles.stageHalo} />
             <div aria-hidden="true" className={styles.stageRing} />
             <div aria-hidden="true" className={styles.stageRingSecondary} />
 
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.18 }}
-              transition={{ duration: 0.68, ease: [0.22, 1, 0.36, 1] }}
-              className={styles.pluginWrap}
-            >
-              <TravelFootprintPlugin />
-            </motion.div>
+            <div className={styles.pluginWrap}>
+              <TravelFootprintPlugin revealProgress={widgetRevealProgress} />
+            </div>
           </div>
-        </div>
-      </div>
-    </motion.section>
+        </motion.div>
+      </motion.div>
+    </section>
   )
 }
 

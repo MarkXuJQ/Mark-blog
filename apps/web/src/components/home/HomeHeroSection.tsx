@@ -16,6 +16,7 @@ interface HomeHeroSectionProps {
   heroRadius: MotionValue<number>
   heroClipPath: MotionValue<string>
   heroShadow: MotionValue<string>
+  heroFilter: MotionValue<string>
   heroPointerEvents: MotionValue<string>
   heroMediaScale: MotionValue<number>
   heroMediaY: MotionValue<number>
@@ -110,6 +111,7 @@ export function HomeHeroSection({
   heroRadius,
   heroClipPath,
   heroShadow,
+  heroFilter,
   heroPointerEvents,
   heroMediaScale,
   heroMediaY,
@@ -119,10 +121,6 @@ export function HomeHeroSection({
   handleNameKeyDown,
 }: HomeHeroSectionProps) {
   const { t } = useTranslation()
-  const sectionToneClass = isDarkMode
-    ? styles.heroSectionDark
-    : styles.heroSectionLight
-  const scrimClass = isDarkMode ? styles.heroScrimNight : styles.heroScrimLight
   const frameClass = isDarkMode ? styles.heroFrameNight : styles.heroFrameLight
   const auraClass = isDarkMode ? styles.heroAuraNight : styles.heroAuraLight
   const contentToneClass = isDarkMode
@@ -145,10 +143,11 @@ export function HomeHeroSection({
         borderRadius: heroRadius,
         clipPath: heroClipPath,
         boxShadow: heroShadow,
+        filter: heroFilter,
         pointerEvents: heroPointerEvents,
       }}
     >
-      <div className={cn(styles.heroSection, sectionToneClass)}>
+      <div className={styles.heroSection}>
         <motion.div
           aria-hidden="true"
           className={styles.heroMedia}
@@ -156,7 +155,6 @@ export function HomeHeroSection({
         >
           <HomeHeroBackground isDarkMode={isDarkMode} />
         </motion.div>
-        <div aria-hidden="true" className={cn(styles.heroScrim, scrimClass)} />
         {isDarkMode ? (
           <>
             <div
@@ -264,18 +262,12 @@ export function HomeHeroSection({
 const styles = {
   heroLayer:
     'relative overflow-hidden origin-top will-change-transform [transform:translateZ(0)]',
-  heroSection: 'relative min-h-[100vh] w-full overflow-hidden',
-  heroSectionLight: 'bg-[#edf3f6]',
-  heroSectionDark: 'bg-slate-950',
+  heroSection:
+    'relative min-h-[100vh] w-full overflow-hidden bg-[var(--page-background)] transition-colors duration-300',
   heroMedia: 'absolute inset-0',
   heroImage: 'h-full w-full object-cover blur-[10px] scale-[1.08]',
   heroImageDay: 'brightness-[1.02] saturate-[1.01]',
   heroImageNight: 'brightness-[0.84] saturate-[1.04]',
-  heroScrim: 'absolute inset-0',
-  heroScrimLight:
-    'bg-[linear-gradient(180deg,rgba(255,252,247,0.14)_0%,rgba(249,242,235,0.22)_42%,rgba(243,235,227,0.32)_100%)]',
-  heroScrimNight:
-    'bg-[linear-gradient(180deg,rgba(2,6,23,0.22)_0%,rgba(2,6,23,0.38)_46%,rgba(2,6,23,0.54)_100%)]',
   heroFrame: 'pointer-events-none absolute inset-0 ring-1 ring-inset',
   heroFrameLight: 'hidden',
   heroFrameNight: 'ring-white/12',

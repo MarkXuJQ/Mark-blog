@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-15T11:45:48.928Z",
+  "generatedAt": "2026-04-16T06:26:14.992Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -13,7 +13,7 @@
     "playedCount": 148,
     "unplayedCount": 76,
     "totalMinutes": 167150,
-    "totalRecentMinutes": 1306,
+    "totalRecentMinutes": 1020,
     "totalUnlockedAchievements": 1880,
     "totalAvailableAchievements": 7206,
     "featuredAppId": 2246340
@@ -33,9 +33,9 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 152478,
-        "totalNegative": 163957,
-        "totalReviews": 316435,
+        "totalPositive": 152535,
+        "totalNegative": 163971,
+        "totalReviews": 316506,
         "positivePercent": 48
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1771382452",
@@ -64,9 +64,9 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 449015,
-        "totalNegative": 56965,
-        "totalReviews": 505980,
+        "totalPositive": 449076,
+        "totalNegative": 56979,
+        "totalReviews": 506055,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
@@ -93,9 +93,9 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 807922,
-        "totalNegative": 26618,
-        "totalReviews": 834540,
+        "totalPositive": 808015,
+        "totalNegative": 26624,
+        "totalReviews": 834639,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1773079016",
@@ -124,9 +124,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 837708,
-        "totalNegative": 27822,
-        "totalReviews": 865530,
+        "totalPositive": 837753,
+        "totalNegative": 27826,
+        "totalReviews": 865579,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991",
@@ -153,9 +153,9 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 319994,
-        "totalNegative": 52115,
-        "totalReviews": 372109,
+        "totalPositive": 320024,
+        "totalNegative": 52116,
+        "totalReviews": 372140,
         "positivePercent": 86
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1740607040",
@@ -184,9 +184,9 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 162387,
-        "totalNegative": 20478,
-        "totalReviews": 182865,
+        "totalPositive": 162394,
+        "totalNegative": 20480,
+        "totalReviews": 182874,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1758656673",
@@ -475,7 +475,7 @@
       "appid": 1903340,
       "name": "Clair Obscur: Expedition 33",
       "playtimeMinutes": 2531,
-      "recentPlaytimeMinutes": 1303,
+      "recentPlaytimeMinutes": 1017,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1903340/d48fb3ed033a08bad9bf0a2e1ceb145e58ffe0aa.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1903340",
