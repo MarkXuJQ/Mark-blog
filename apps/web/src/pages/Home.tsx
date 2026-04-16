@@ -11,6 +11,7 @@ import {
   useSpring,
   useTransform,
 } from 'framer-motion'
+import { useLenis } from 'lenis/react'
 import { useTranslation } from 'react-i18next'
 import { getImageUrl } from '../utils/image'
 import { Seo } from '../components/seo/Seo'
@@ -57,8 +58,10 @@ export function Home() {
   const { t, i18n } = useTranslation()
   const nameClickCountRef = useRef<number>(0)
   const lastNameClickMsRef = useRef<number>(0)
+  const pageRef = useRef<HTMLDivElement | null>(null)
   const isDarkMode = useIsDarkMode()
   const prefersReducedMotion = useReducedMotion()
+  const lenis = useLenis()
   const avatarSrc = getImageUrl('/images/IMG_1766.JPG')
   const siteUrl = getSiteUrl()
   const isZh = i18n.language?.startsWith('zh')
@@ -185,6 +188,39 @@ export function Home() {
     value > 0.18 ? 'auto' : 'none'
   ) as MotionValue<string>
 
+  useEffect(() => {
+    if (!lenis) return
+
+    const pageNode = pageRef.current
+    let frameId = 0
+
+    const scheduleResize = () => {
+      cancelAnimationFrame(frameId)
+      frameId = requestAnimationFrame(() => {
+        lenis.resize()
+      })
+    }
+
+    scheduleResize()
+    window.addEventListener('load', scheduleResize)
+
+    if (!pageNode || typeof ResizeObserver === 'undefined') {
+      return () => {
+        cancelAnimationFrame(frameId)
+        window.removeEventListener('load', scheduleResize)
+      }
+    }
+
+    const observer = new ResizeObserver(scheduleResize)
+    observer.observe(pageNode)
+
+    return () => {
+      cancelAnimationFrame(frameId)
+      observer.disconnect()
+      window.removeEventListener('load', scheduleResize)
+    }
+  }, [lenis])
+
   const handleNameClick = () => {
     const now = Date.now()
     const isWithinWindow = now - lastNameClickMsRef.current <= 600
@@ -212,41 +248,43 @@ export function Home() {
     <>
       <Seo jsonLd={webSiteSchema} />
 
-      <HomeHeroSection
-        avatarSrc={avatarSrc}
-        sceneProgress={sceneProgress}
-        isDarkMode={isDarkMode}
-        prefersReducedMotion={Boolean(prefersReducedMotion)}
-        isZh={isZh}
-        heroScale={heroScale}
-        heroOpacity={heroOpacity}
-        heroY={heroY}
-        heroRadius={heroRadius}
-        heroClipPath={heroClipPath}
-        heroShadow={heroShadow}
-        heroFilter={heroFilter}
-        heroPointerEvents={heroPointerEvents}
-        heroMediaScale={heroMediaScale}
-        heroMediaY={heroMediaY}
-        heroContentOpacity={heroContentOpacity}
-        heroContentY={heroContentY}
-        handleNameClick={handleNameClick}
-        handleNameKeyDown={handleNameKeyDown}
-      />
+      <div ref={pageRef}>
+        <HomeHeroSection
+          avatarSrc={avatarSrc}
+          sceneProgress={sceneProgress}
+          isDarkMode={isDarkMode}
+          prefersReducedMotion={Boolean(prefersReducedMotion)}
+          isZh={isZh}
+          heroScale={heroScale}
+          heroOpacity={heroOpacity}
+          heroY={heroY}
+          heroRadius={heroRadius}
+          heroClipPath={heroClipPath}
+          heroShadow={heroShadow}
+          heroFilter={heroFilter}
+          heroPointerEvents={heroPointerEvents}
+          heroMediaScale={heroMediaScale}
+          heroMediaY={heroMediaY}
+          heroContentOpacity={heroContentOpacity}
+          heroContentY={heroContentY}
+          handleNameClick={handleNameClick}
+          handleNameKeyDown={handleNameKeyDown}
+        />
 
-      <HomeBlogRailSection
-        avatarSrc={avatarSrc}
-        sectionScale={widgetScale}
-        sectionY={widgetY}
-        sectionOpacity={widgetOpacity}
-        sectionFilter={widgetFilter}
-        sectionPointerEvents={widgetPointerEvents}
-      />
-      <HomeWidgetStackSection />
-      <HomeRadarSection avatarSrc={avatarSrc} />
+        <HomeBlogRailSection
+          avatarSrc={avatarSrc}
+          sectionScale={widgetScale}
+          sectionY={widgetY}
+          sectionOpacity={widgetOpacity}
+          sectionFilter={widgetFilter}
+          sectionPointerEvents={widgetPointerEvents}
+        />
+        <HomeWidgetStackSection />
+        <HomeRadarSection avatarSrc={avatarSrc} />
 
-      <div className="relative z-20 mx-auto w-full max-w-3xl px-4 pt-2 pb-10">
-        <Footer className="mt-8" />
+        <div className="relative z-20 mx-auto w-full max-w-3xl px-4 pb-8">
+          <Footer className="mt-0" />
+        </div>
       </div>
     </>
   )

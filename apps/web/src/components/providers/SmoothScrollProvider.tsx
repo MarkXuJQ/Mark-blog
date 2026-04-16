@@ -25,7 +25,7 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
         duration: prefersReducedMotion ? 0.9 : 1.15,
         wheelMultiplier: 0.92,
         touchMultiplier: 1.04,
-        overscroll: true,
+        overscroll: false,
         allowNestedScroll: true,
         anchors: { offset: -96 },
         stopInertiaOnNavigate: true,
