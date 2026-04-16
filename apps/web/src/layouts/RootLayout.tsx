@@ -8,6 +8,7 @@ import { GlobalSearchHost } from '../components/search/GlobalSearchHost'
 import { DraggableBackToTop } from '../components/ui/DraggableBackToTop'
 import { useTheme } from '../hooks/useTheme'
 import { useScrollVisibility } from '../hooks/useScrollVisibility'
+import { cn } from '../utils/cn'
 
 export function RootLayout() {
   const { mode, setMode } = useTheme()
@@ -31,14 +32,25 @@ export function RootLayout() {
   }, [])
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-slate-50 text-[var(--text-primary)] transition-colors duration-300 dark:bg-[var(--surface-0)]">
+    <div
+      className={cn(
+        'relative flex min-h-screen w-full flex-col text-[var(--text-primary)]',
+        isHome
+          ? 'bg-[#050810]'
+          : 'bg-[var(--page-background)] transition-colors duration-300'
+      )}
+    >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_92%_0%,rgba(252,211,77,0.10),rgba(251,191,36,0.04)_24%,rgba(255,255,255,0)_50%)] dark:bg-[radial-gradient(ellipse_at_92%_0%,rgba(168,104,106,0.16),rgba(98,60,62,0.07)_26%,rgba(0,0,0,0)_56%)]" />
-        <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(252,211,77,0.16)_0%,rgba(251,191,36,0.08)_34%,rgba(255,255,255,0)_68%)] dark:bg-[radial-gradient(circle,rgba(96,154,120,0.16)_0%,rgba(60,96,76,0.08)_36%,rgba(0,0,0,0)_72%)]" />
-        <div className="absolute -left-40 -bottom-40 h-[34rem] w-[34rem] rounded-full bg-transparent dark:bg-transparent" />
+        {isHome ? (
+          <>
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.08),rgba(56,189,248,0.03)_22%,rgba(0,0,0,0)_54%)]" />
+            <div className="absolute -right-28 top-[36rem] h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(148,163,184,0.12)_0%,rgba(148,163,184,0.04)_34%,rgba(0,0,0,0)_70%)]" />
+            <div className="absolute -left-44 bottom-0 h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.08)_0%,rgba(56,189,248,0.03)_30%,rgba(0,0,0,0)_72%)]" />
+          </>
+        ) : null}
       </div>
       {/* Sticky NavBar Container - Floating Effect */}
       <div

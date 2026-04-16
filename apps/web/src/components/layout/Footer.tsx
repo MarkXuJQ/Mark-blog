@@ -4,15 +4,24 @@ import { LuGithub } from 'react-icons/lu'
 import { RiBilibiliLine, RiTwitterXFill, RiInstagramLine } from 'react-icons/ri'
 import { RiRssLine } from 'react-icons/ri'
 
-export function Footer({ className }: { className?: string }) {
+export function Footer({
+  className,
+  variant = 'default',
+}: {
+  className?: string
+  variant?: 'default' | 'home'
+}) {
   const { t, i18n } = useTranslation()
   const year = new Date().getFullYear()
   const feedPath = i18n.language?.startsWith('zh') ? '/feeds/zh/' : '/feeds/en/'
+  const isHomeVariant = variant === 'home'
 
   return (
     <footer
       className={cn(
-        'mt-20 border-t border-slate-200 py-8 text-center text-sm text-[var(--text-secondary)] transition-colors dark:border-slate-800',
+        isHomeVariant
+          ? 'mt-20 border-t border-white/10 py-8 text-center text-sm text-white/58'
+          : 'mt-20 border-t border-slate-200 py-8 text-center text-sm text-[var(--text-secondary)] transition-colors dark:border-[var(--border-color)]',
         className
       )}
     >
@@ -22,7 +31,12 @@ export function Footer({ className }: { className?: string }) {
             href="https://github.com/MarkXuJQ"
             target="_blank"
             rel="noopener noreferrer"
-            className="transition-colors hover:text-[var(--text-primary)]"
+            className={cn(
+              'transition-colors',
+              isHomeVariant
+                ? 'hover:text-white'
+                : 'hover:text-[var(--text-primary)]'
+            )}
             aria-label="GitHub"
           >
             <LuGithub size={20} />
@@ -31,7 +45,12 @@ export function Footer({ className }: { className?: string }) {
             href="https://space.bilibili.com/351772037"
             target="_blank"
             rel="noopener noreferrer"
-            className="transition-colors hover:text-[var(--text-primary)]"
+            className={cn(
+              'transition-colors',
+              isHomeVariant
+                ? 'hover:text-white'
+                : 'hover:text-[var(--text-primary)]'
+            )}
             aria-label="Bilibili"
           >
             <RiBilibiliLine size={20} />
@@ -40,7 +59,12 @@ export function Footer({ className }: { className?: string }) {
             href="https://x.com/MXu269/articles"
             target="_blank"
             rel="noopener noreferrer"
-            className="transition-colors hover:text-[var(--text-primary)]"
+            className={cn(
+              'transition-colors',
+              isHomeVariant
+                ? 'hover:text-white'
+                : 'hover:text-[var(--text-primary)]'
+            )}
             aria-label="X (Twitter)"
           >
             <RiTwitterXFill size={20} />
@@ -49,7 +73,12 @@ export function Footer({ className }: { className?: string }) {
             href="https://www.instagram.com/mark_xu269/"
             target="_blank"
             rel="noopener noreferrer"
-            className="transition-colors hover:text-[var(--text-primary)]"
+            className={cn(
+              'transition-colors',
+              isHomeVariant
+                ? 'hover:text-white'
+                : 'hover:text-[var(--text-primary)]'
+            )}
             aria-label="Instagram"
           >
             <RiInstagramLine size={20} />
@@ -58,7 +87,12 @@ export function Footer({ className }: { className?: string }) {
             href={feedPath}
             target="_blank"
             rel="noopener noreferrer"
-            className="transition-colors hover:text-[var(--text-primary)]"
+            className={cn(
+              'transition-colors',
+              isHomeVariant
+                ? 'hover:text-white'
+                : 'hover:text-[var(--text-primary)]'
+            )}
             aria-label="Atom"
           >
             <RiRssLine size={20} />
@@ -86,14 +120,28 @@ export function Footer({ className }: { className?: string }) {
                   href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline hover:text-[var(--text-primary)]"
+                  className={cn(
+                    'underline',
+                    isHomeVariant
+                      ? 'hover:text-white'
+                      : 'hover:text-[var(--text-primary)]'
+                  )}
                 >
                   CC BY-NC-SA 4.0
                 </a>,
               ]}
             />
           </p>
-          <p className="text-xs text-[var(--text-disabled)]">{t('footer.builtWith')}</p>
+          <p
+            className={cn(
+              'text-xs',
+              isHomeVariant
+                ? 'text-white/34'
+                : 'text-[var(--text-disabled)]'
+            )}
+          >
+            {t('footer.builtWith')}
+          </p>
         </div>
       </div>
     </footer>

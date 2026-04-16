@@ -138,17 +138,12 @@ export function Home() {
   const travelScale = useTransform(
     sceneProgress,
     [0.04, 0.28, 0.52, 0.7],
-    prefersReducedMotion ? [1.006, 1.002, 1.001, 1] : [1.06, 1.03, 1.01, 1]
+    prefersReducedMotion ? [1.003, 1.0015, 1.001, 1] : [1.022, 1.012, 1.004, 1]
   )
   const travelY = useTransform(
     sceneProgress,
     [0.02, 0.42, 0.62],
-    prefersReducedMotion ? [6, 0, -2] : [58, 0, -8]
-  )
-  const travelRotate = useTransform(
-    sceneProgress,
-    [0.08, 0.48],
-    prefersReducedMotion ? [0.2, 0] : [2.1, 0]
+    prefersReducedMotion ? [4, 0, -2] : [34, 0, -6]
   )
   const travelOpacity = useTransform(sceneProgress, [0, 1], [1, 1])
   const travelFilter = useTransform(
@@ -159,7 +154,7 @@ export function Home() {
   const travelPointerEvents = useTransform(sceneProgress, (value) =>
     value > 0.24 ? 'auto' : 'none'
   ) as MotionValue<string>
-  const travelCardY = useTransform(sceneProgress, [0.2, 0.5], [48, 0])
+  const travelCardY = useTransform(sceneProgress, [0.2, 0.5], [24, 0])
   const travelCardOpacity = useTransform(sceneProgress, [0, 1], [1, 1])
 
   const handleNameClick = () => {
@@ -213,17 +208,15 @@ export function Home() {
       <HomeTravelSection
         travelScale={travelScale}
         travelY={travelY}
-        travelRotate={travelRotate}
         travelOpacity={travelOpacity}
         travelFilter={travelFilter}
         travelPointerEvents={travelPointerEvents}
         travelCardY={travelCardY}
         travelCardOpacity={travelCardOpacity}
-        avatarSrc={avatarSrc}
       />
 
       <div className="relative z-20 mx-auto w-full max-w-3xl px-4 pt-8 pb-8">
-        <Footer />
+        <Footer variant="home" />
       </div>
     </>
   )
