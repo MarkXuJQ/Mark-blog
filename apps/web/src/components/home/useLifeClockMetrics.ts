@@ -13,6 +13,22 @@ const HOUR = 60 * 60 * SECOND
 const DAY = 24 * HOUR
 const YEAR = 365.2425 * DAY
 
+function areMetricsEqual(
+  left: LifeClockMetrics,
+  right: LifeClockMetrics
+) {
+  return (
+    left.years === right.years &&
+    left.days === right.days &&
+    left.hours === right.hours
+  )
+}
+
+function getDelayUntilNextHour(now = Date.now()) {
+  const hourRemainder = now % HOUR
+  return Math.max(SECOND, HOUR - hourRemainder + 50)
+}
+
 export function getLifeClockMetrics(now = Date.now()): LifeClockMetrics {
   const diff = Math.max(0, now - BIRTH_TIMESTAMP)
 
@@ -24,15 +40,47 @@ export function getLifeClockMetrics(now = Date.now()): LifeClockMetrics {
 }
 
 export function useLifeClockMetrics(): LifeClockMetrics {
-  const [now, setNow] = useState(() => Date.now())
+  const [metrics, setMetrics] = useState(() => getLifeClockMetrics())
 
   useEffect(() => {
-    const timer = window.setInterval(() => {
-      setNow(Date.now())
-    }, SECOND)
+    let timeoutId: number | null = null
 
-    return () => window.clearInterval(timer)
+    const refreshMetrics = () => {
+      const nextMetrics = getLifeClockMetrics()
+      setMetrics((currentMetrics) =>
+        areMetricsEqual(currentMetrics, nextMetrics)
+          ? currentMetrics
+          : nextMetrics
+      )
+    }
+
+    const scheduleNextRefresh = () => {
+      timeoutId = window.setTimeout(() => {
+        refreshMetrics()
+        scheduleNextRefresh()
+      }, getDelayUntilNextHour())
+    }
+
+    const handleFocus = () => {
+      refreshMetrics()
+    }
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) refreshMetrics()
+    }
+
+    scheduleNextRefresh()
+    window.addEventListener('focus', handleFocus)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      if (timeoutId != null) {
+        window.clearTimeout(timeoutId)
+      }
+      window.removeEventListener('focus', handleFocus)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
   }, [])
 
-  return getLifeClockMetrics(now)
+  return metrics
 }

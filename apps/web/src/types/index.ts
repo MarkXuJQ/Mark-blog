@@ -1,4 +1,4 @@
-export interface BlogPost {
+export interface BlogPostSummary {
   id: string
   title: string
   slug: string
@@ -6,22 +6,27 @@ export interface BlogPost {
   updated?: string
   summary: string
   image?: string
-  content: string
   tags?: string[]
   category?: string
 }
 
+export interface BlogPost extends BlogPostSummary {
+  content: string
+}
+
+export interface MarkdownPostAttributes {
+  title: string
+  date: string
+  updated?: string
+  summary: string
+  image?: string
+  tags?: string[]
+  category?: string
+  [key: string]: unknown
+}
+
 export interface MarkdownPost {
-  attributes: {
-    title: string
-    date: string
-    updated?: string
-    summary: string
-    image?: string
-    tags?: string[]
-    category?: string
-    [key: string]: unknown
-  }
+  attributes: MarkdownPostAttributes
   html: string
   toc: { level: string; content: string }[]
 }

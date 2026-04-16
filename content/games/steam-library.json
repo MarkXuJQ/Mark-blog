@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-16T08:12:04.634Z",
+  "generatedAt": "2026-04-16T15:47:59.385Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -12,9 +12,9 @@
     "gameCount": 224,
     "playedCount": 148,
     "unplayedCount": 76,
-    "totalMinutes": 167150,
-    "totalRecentMinutes": 1020,
-    "totalUnlockedAchievements": 1880,
+    "totalMinutes": 167197,
+    "totalRecentMinutes": 994,
+    "totalUnlockedAchievements": 1884,
     "totalAvailableAchievements": 7206,
     "featuredAppId": 2246340
   },
@@ -33,9 +33,9 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 152536,
-        "totalNegative": 163975,
-        "totalReviews": 316511,
+        "totalPositive": 152551,
+        "totalNegative": 163984,
+        "totalReviews": 316535,
         "positivePercent": 48
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1771382452",
@@ -64,14 +64,14 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 449085,
-        "totalNegative": 56981,
-        "totalReviews": 506066,
+        "totalPositive": 449110,
+        "totalNegative": 56984,
+        "totalReviews": 506094,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
       "shortDescription": "Welcome to a new world! In Monster Hunter: World, the latest installment in the series, you can enjoy the ultimate hunting experience, using everything at your disposal to hunt monsters in a new world teeming with surprises and excitement.",
-      "releaseDate": "8 Aug, 2018",
+      "releaseDate": "9 Aug, 2018",
       "developers": [
         "CAPCOM Co., Ltd."
       ],
@@ -93,9 +93,9 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 808016,
-        "totalNegative": 26624,
-        "totalReviews": 834640,
+        "totalPositive": 808052,
+        "totalNegative": 26625,
+        "totalReviews": 834677,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1773079016",
@@ -124,9 +124,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 837756,
-        "totalNegative": 27826,
-        "totalReviews": 865582,
+        "totalPositive": 837777,
+        "totalNegative": 27828,
+        "totalReviews": 865605,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991",
@@ -153,9 +153,9 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 320028,
+        "totalPositive": 320040,
         "totalNegative": 52116,
-        "totalReviews": 372144,
+        "totalReviews": 372156,
         "positivePercent": 86
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1740607040",
@@ -184,9 +184,9 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 162396,
-        "totalNegative": 20480,
-        "totalReviews": 182876,
+        "totalPositive": 162407,
+        "totalNegative": 20479,
+        "totalReviews": 182886,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1758656673",
@@ -294,7 +294,7 @@
       "name": "Cyberpunk 2077",
       "playtimeMinutes": 6804,
       "recentPlaytimeMinutes": 0,
-      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1091500/42b9b33fa0f0d997beb299c6157592a8fe7d8f68.jpg",
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1091500/6897c3848f3e0350d512f59d5bae174a1e3739f9.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1091500",
       "communityUrl": "https://steamcommunity.com/app/1091500",
@@ -475,7 +475,7 @@
       "appid": 1903340,
       "name": "Clair Obscur: Expedition 33",
       "playtimeMinutes": 2531,
-      "recentPlaytimeMinutes": 1017,
+      "recentPlaytimeMinutes": 944,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1903340/d48fb3ed033a08bad9bf0a2e1ceb145e58ffe0aa.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1903340",
@@ -1238,6 +1238,20 @@
       }
     },
     {
+      "appid": 932850,
+      "name": "Simmiland",
+      "playtimeMinutes": 241,
+      "recentPlaytimeMinutes": 47,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/932850/f756db37132f4bcd9c367d7323bd3c150fcc691a.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/932850",
+      "communityUrl": "https://steamcommunity.com/app/932850",
+      "achievementStats": {
+        "unlockedCount": 15,
+        "totalCount": 27
+      }
+    },
+    {
       "appid": 3035570,
       "name": "Assassin's Creed Mirage",
       "playtimeMinutes": 237,
@@ -1319,20 +1333,6 @@
       "achievementStats": {
         "unlockedCount": 3,
         "totalCount": 26
-      }
-    },
-    {
-      "appid": 932850,
-      "name": "Simmiland",
-      "playtimeMinutes": 194,
-      "recentPlaytimeMinutes": 0,
-      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/932850/f756db37132f4bcd9c367d7323bd3c150fcc691a.jpg",
-      "logoUrl": "",
-      "storeUrl": "https://store.steampowered.com/app/932850",
-      "communityUrl": "https://steamcommunity.com/app/932850",
-      "achievementStats": {
-        "unlockedCount": 11,
-        "totalCount": 27
       }
     },
     {

@@ -13,6 +13,7 @@ import { MapPinned } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '../../utils/cn'
 import { getImageUrl } from '../../utils/image'
+import { useDeferredRender } from '../../hooks/useDeferredRender'
 import markTravelRecord from '@content/travel/records/mark.json'
 import worldFootprintBaseSvg from '../../assets/travel/world-footprint-base.svg'
 import worldFootprintHighlightSvg from '../../assets/travel/world-footprint-highlight.svg'
@@ -499,6 +500,10 @@ function TravelFootprintMapPanel({
   isZh: boolean
   style?: MotionStyle
 }) {
+  const { targetRef, shouldRender } = useDeferredRender<HTMLDivElement>({
+    rootMargin: '560px 0px',
+  })
+
   return (
     <motion.section
       {...hoverLift}
@@ -526,14 +531,27 @@ function TravelFootprintMapPanel({
         </div>
       </div>
 
-      <div className={styles.embedViewport}>
-        <iframe
-          title={isZh ? '旅行地图交互窗口' : 'Interactive travel map'}
-          src={EMBED_MAP_URL}
-          loading="lazy"
-          referrerPolicy="strict-origin-when-cross-origin"
-          className={styles.embedFrame}
-        />
+      <div ref={targetRef} className={styles.embedViewport}>
+        {shouldRender ? (
+          <iframe
+            title={isZh ? '旅行地图交互窗口' : 'Interactive travel map'}
+            src={EMBED_MAP_URL}
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+            className={styles.embedFrame}
+          />
+        ) : (
+          <div
+            aria-hidden="true"
+            className={cn(styles.embedFrame, styles.embedPlaceholder)}
+          >
+            <div className={styles.embedPlaceholderGlow} />
+            <div className={styles.embedPlaceholderGrid} />
+            <span className={styles.embedPlaceholderLabel}>
+              {isZh ? '接近视口时再加载地图' : 'Loads as you get closer'}
+            </span>
+          </div>
+        )}
       </div>
     </motion.section>
   )
@@ -687,6 +705,14 @@ const styles = {
     'relative mt-3 overflow-hidden rounded-[22px] border border-white/10 bg-[#0c1217] p-1.5',
   embedFrame:
     'relative block aspect-square w-full rounded-[18px] border-0 bg-[#10161a] shadow-[0_18px_40px_-30px_rgba(0,0,0,0.72)]',
+  embedPlaceholder:
+    'flex items-center justify-center overflow-hidden border border-white/6 bg-[linear-gradient(180deg,#0f171d_0%,#101921_52%,#0d141a_100%)] text-center',
+  embedPlaceholderGlow:
+    'pointer-events-none absolute inset-[14%] rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.16)_0%,rgba(34,211,238,0.06)_34%,rgba(34,211,238,0)_72%)] blur-3xl',
+  embedPlaceholderGrid:
+    'pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04)_0px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_0px,transparent_1px)] [background-size:20px_20px] opacity-40',
+  embedPlaceholderLabel:
+    'relative z-10 max-w-[18ch] px-6 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-cyan-100/62',
   cardFooter:
     'mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-white/8 pt-4',
   cardFootnote: 'text-xs leading-5 text-white/44',

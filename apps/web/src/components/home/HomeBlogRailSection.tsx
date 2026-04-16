@@ -12,8 +12,8 @@ import {
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { cn } from '../../utils/cn'
-import { getAllPosts } from '../../utils/posts'
-import type { BlogPost } from '../../types'
+import { getAllPostSummaries } from '../../utils/postSummaries'
+import type { BlogPostSummary } from '../../types'
 
 interface HomeBlogRailSectionProps {
   avatarSrc: string
@@ -116,7 +116,7 @@ export function HomeBlogRailSection({
 
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const posts = useMemo(
-    () => getAllPosts(i18n.language).slice(0, BLOG_POST_LIMIT),
+    () => getAllPostSummaries(i18n.language).slice(0, BLOG_POST_LIMIT),
     [i18n.language]
   )
   const dateFormatter = useMemo(
@@ -424,7 +424,7 @@ export function HomeBlogRailSection({
 }
 
 interface BlogRailSegmentProps {
-  posts: BlogPost[]
+  posts: BlogPostSummary[]
   dateFormatter: Intl.DateTimeFormat
   ariaHidden?: boolean
 }
@@ -456,7 +456,7 @@ function BlogRailItem({
   dateFormatter,
   ariaHidden,
 }: {
-  post: BlogPost
+  post: BlogPostSummary
   dateFormatter: Intl.DateTimeFormat
   ariaHidden?: boolean
 }) {

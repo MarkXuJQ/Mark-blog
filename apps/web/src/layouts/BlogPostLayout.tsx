@@ -6,7 +6,8 @@ import { LeftSidebarWidget } from '../components/blog/BlogWidgets'
 import { BlogTocCard, BlogTocDrawer } from '../components/blog/BlogTocCard'
 import { BlogRelatedPosts } from '../components/blog/BlogRelatedPosts'
 import { useToc } from '../hooks/useToc'
-import { getAllPosts, getPostBySlug } from '../utils/posts'
+import { getPostBySlug } from '../utils/posts'
+import { getAllPostSummaries } from '../utils/postSummaries'
 
 export function BlogPostLayout() {
   const { t, i18n } = useTranslation()
@@ -23,7 +24,7 @@ export function BlogPostLayout() {
       trackActive: false,
     }
   )
-  const posts = getAllPosts(i18n.language)
+  const posts = getAllPostSummaries(i18n.language)
   const currentPost = slug
     ? getPostBySlug(slug, i18n.language, { fallback: false }) ?? null
     : null
