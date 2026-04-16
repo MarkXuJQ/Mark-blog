@@ -359,7 +359,7 @@ export function HomeBlogRailSection({
         >
           <div className="relative flex h-full flex-col justify-center gap-16 py-12 sm:py-14">
             <div className="flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-              <h2 className="text-[1.95rem] leading-none font-medium tracking-[0.08em] text-[var(--text-primary)] sm:text-[2.2rem] lg:text-[2.6rem]">
+              <h2 className="heading-display text-[1.95rem] leading-none font-medium tracking-[0.08em] text-[var(--text-primary)] sm:text-[2.2rem] lg:text-[2.6rem]">
                 {locale === 'zh-CN' ? '本站博客' : 'Site Blog'}
               </h2>
               <div

@@ -1,12 +1,12 @@
 import { useEffect, useRef, type ReactNode } from 'react'
-import { useReducedMotion } from 'framer-motion'
 import { ReactLenis, type LenisRef } from 'lenis/react'
 import { useLocation } from 'react-router-dom'
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 
 export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   const location = useLocation()
   const lenisRef = useRef<LenisRef>(null)
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     lenisRef.current?.lenis?.resize()

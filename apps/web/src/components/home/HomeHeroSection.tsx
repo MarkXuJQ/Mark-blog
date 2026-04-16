@@ -178,6 +178,7 @@ export function HomeHeroSection({
                 className={cn(
                   styles.title,
                   titleClass,
+                  'heading-brand',
                   'no-heading-letter-spacing'
                 )}
               >

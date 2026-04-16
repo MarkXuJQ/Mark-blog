@@ -9,7 +9,7 @@ import {
   useSpring,
   useTransform,
 } from 'framer-motion'
-import { MapPinned } from 'lucide-react'
+import { ExternalLink, MapPinned } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '../../utils/cn'
 import { getImageUrl } from '../../utils/image'
@@ -21,6 +21,7 @@ import { LifeSinceClock } from './LifeSinceClock'
 
 const EMBED_MAP_URL =
   'https://travel.markxu.icu/?embed=1&bare=1&baseMap=liberty'
+const FULL_MAP_URL = 'https://travel.markxu.icu/'
 
 const SHELL_REVEAL_END = 0.28
 const WORLD_PANEL_REVEAL_START = 0.08
@@ -380,7 +381,7 @@ export function TravelFootprintPlugin({
             <p className={styles.introEyebrow}>
               {isZh ? '旅行足迹 / Travel footprint' : 'Travel footprint / Atlas'}
             </p>
-            <h2 className={styles.introTitle}>
+            <h2 className={cn('heading-display', styles.introTitle)}>
               {isZh
                 ? '去过的地方'
                 : "Places I've Been"}
@@ -532,6 +533,16 @@ function TravelFootprintMapPanel({
       </div>
 
       <div ref={targetRef} className={styles.embedViewport}>
+        <a
+          href={FULL_MAP_URL}
+          target="_blank"
+          rel="noreferrer"
+          className={styles.embedAction}
+        >
+          <span>{isZh ? '打开完整地图' : 'Open full map'}</span>
+          <ExternalLink className={styles.embedActionIcon} />
+        </a>
+
         {shouldRender ? (
           <iframe
             title={isZh ? '旅行地图交互窗口' : 'Interactive travel map'}
@@ -703,6 +714,10 @@ const styles = {
   avatarImage: 'h-full w-full scale-[1.04] object-cover object-center',
   embedViewport:
     'relative mt-3 overflow-hidden rounded-[22px] border border-white/10 bg-[#0c1217] p-1.5',
+  embedAction:
+    'group absolute right-4 top-4 z-20 inline-flex items-center gap-2 rounded-full border border-cyan-200/18 bg-slate-950/76 px-3.5 py-2 text-[0.72rem] font-semibold tracking-[0.08em] text-cyan-50/92 shadow-[0_20px_44px_-28px_rgba(8,145,178,0.5)] backdrop-blur-xl transition-[transform,border-color,background-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-cyan-200/32 hover:bg-slate-900/82 hover:text-white hover:shadow-[0_24px_52px_-26px_rgba(34,211,238,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/55 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
+  embedActionIcon:
+    'h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5',
   embedFrame:
     'relative block aspect-square w-full rounded-[18px] border-0 bg-[#10161a] shadow-[0_18px_40px_-30px_rgba(0,0,0,0.72)]',
   embedPlaceholder:
