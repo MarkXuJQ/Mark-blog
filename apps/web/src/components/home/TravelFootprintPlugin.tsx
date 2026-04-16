@@ -373,54 +373,64 @@ export function TravelFootprintPlugin({
         style={{ opacity: ambientSecondaryOpacity }}
       />
 
-      <div className={styles.introRow}>
-        <div className={styles.introCopy}>
-          <p className={styles.introEyebrow}>
-            {isZh ? '旅行足迹 / Travel footprint' : 'Travel footprint / Atlas'}
-          </p>
-          <h2 className={styles.introTitle}>
-            {isZh
-              ? '去过的地方'
-              : "Places I've Been"}
-          </h2>
+      <div className={styles.introStage}>
+        <div className={styles.introRow}>
+          <div className={styles.introCopy}>
+            <p className={styles.introEyebrow}>
+              {isZh ? '旅行足迹 / Travel footprint' : 'Travel footprint / Atlas'}
+            </p>
+            <h2 className={styles.introTitle}>
+              {isZh
+                ? '去过的地方'
+                : "Places I've Been"}
+            </h2>
+          </div>
         </div>
 
-        <div className={styles.introMeta}>
-          <SummaryPill
-            value={travelSummary.countryCount}
-            label={isZh ? '个国家' : 'Countries'}
+        <div className={styles.introMapStage}>
+          <TravelWorldMapPanel
+            className={styles.introMapLayer}
+            viewportClassName={styles.introMapViewport}
+            glowClassName={styles.introMapGlow}
+            baseClassName={styles.introMapBase}
+            highlightClassName={styles.introMapHighlight}
+            style={{
+              x: mapX,
+              y: mapRevealY,
+              rotate: mapRotate,
+              opacity: worldReveal.opacity,
+              scale: worldReveal.scale,
+            }}
           />
-          <SummaryPill
-            value={travelSummary.provinceCount}
-            label={isZh ? '个省份' : 'Provinces'}
+
+          <TravelAvatarPanel
+            isZh={isZh}
+            avatarSrc={HOME_AVATAR_SRC}
+            className={styles.introAvatarLayer}
+            portraitClassName={styles.introAvatarPortrait}
+            style={{
+              x: avatarX,
+              y: avatarRevealY,
+              rotate: avatarRotate,
+              opacity: avatarReveal.opacity,
+              scale: avatarReveal.scale,
+            }}
           />
+
+          <div className={styles.introMeta}>
+            <SummaryPill
+              value={travelSummary.countryCount}
+              label={isZh ? '个国家' : 'Countries'}
+            />
+            <SummaryPill
+              value={travelSummary.provinceCount}
+              label={isZh ? '个省份' : 'Provinces'}
+            />
+          </div>
         </div>
       </div>
 
       <motion.div className={styles.grid} style={{ y: gridY }}>
-        <TravelWorldMapPanel
-          isZh={isZh}
-          style={{
-            x: mapX,
-            y: mapRevealY,
-            rotate: mapRotate,
-            opacity: worldReveal.opacity,
-            scale: worldReveal.scale,
-          }}
-        />
-
-        <TravelAvatarPanel
-          isZh={isZh}
-          avatarSrc={HOME_AVATAR_SRC}
-          style={{
-            x: avatarX,
-            y: avatarRevealY,
-            rotate: avatarRotate,
-            opacity: avatarReveal.opacity,
-            scale: avatarReveal.scale,
-          }}
-        />
-
         <TravelClockPanel
           style={{
             x: clockX,
@@ -447,30 +457,35 @@ export function TravelFootprintPlugin({
 }
 
 function TravelWorldMapPanel({
-  isZh,
   style,
+  className,
+  viewportClassName,
+  glowClassName,
+  baseClassName,
+  highlightClassName,
 }: {
-  isZh: boolean
   style?: MotionStyle
+  className?: string
+  viewportClassName?: string
+  glowClassName?: string
+  baseClassName?: string
+  highlightClassName?: string
 }) {
   return (
-    <motion.div className={styles.mapPanel} style={style}>
-      <div className={styles.mapViewport}>
-        <div className={styles.mapGlow} />
+    <motion.div className={cn(styles.mapPanel, className)} style={style}>
+      <div className={cn(styles.mapViewport, viewportClassName)}>
+        <div className={cn(styles.mapGlow, glowClassName)} />
         <img
           alt=""
           aria-hidden="true"
           src={worldFootprintBaseSvg}
-          className={styles.mapBase}
+          className={cn(styles.mapBase, baseClassName)}
         />
         <img
-          alt={
-            isZh
-              ? '已去过国家高亮世界地图'
-              : 'Highlighted visited countries map'
-          }
+          alt=""
+          aria-hidden="true"
           src={worldFootprintHighlightSvg}
-          className={styles.mapHighlight}
+          className={cn(styles.mapHighlight, highlightClassName)}
         />
       </div>
     </motion.div>
@@ -498,10 +513,10 @@ function TravelFootprintMapPanel({
           <div className={styles.cardCopy}>
             <p className={styles.cardEyebrow}>{isZh ? '交互地图' : 'Live map'}</p>
             <p className={styles.cardTitle}>
-            {isZh
-              ? '这里记录了我具体去过的地方。'
-              : 'This map shows the places I have visited.'}
-          </p>
+              {isZh
+                ? '这里记录了我具体去过的地方。'
+                : 'This map shows the places I have visited.'}
+            </p>
           </div>
         </div>
         <div className={styles.metricCluster}>
@@ -528,18 +543,22 @@ function TravelAvatarPanel({
   isZh,
   avatarSrc,
   style,
+  className,
+  portraitClassName,
 }: {
   isZh: boolean
   avatarSrc: string
   style?: MotionStyle
+  className?: string
+  portraitClassName?: string
 }) {
   return (
     <motion.div
       {...hoverLift}
-      className={styles.avatarCell}
+      className={cn(styles.avatarCell, className)}
       style={style}
     >
-      <div className={styles.avatarPortrait}>
+      <div className={cn(styles.avatarPortrait, portraitClassName)}>
         <div aria-hidden="true" className={styles.avatarGlow} />
         <div className={styles.avatarFrame}>
           <div className={styles.avatarMask}>
@@ -589,17 +608,25 @@ const styles = {
   shellReady: 'cursor-grab',
   shellDragging: 'cursor-grabbing',
   shellStatic: 'cursor-default',
+  introStage: 'relative overflow-visible',
   introRow:
-    'mb-8 flex flex-col gap-5 sm:mb-10 lg:mb-12 lg:flex-row lg:items-end lg:justify-between',
-  introCopy: 'max-w-3xl',
+    'relative z-[3] pt-0 sm:pt-1 lg:pt-2',
+  introCopy:
+    'relative z-[3] max-w-3xl -translate-x-0.5 -translate-y-0.5 sm:-translate-x-1 sm:-translate-y-1 lg:-translate-x-2 lg:-translate-y-1.5',
   introEyebrow:
-    'font-[var(--font-pixel)] text-[0.72rem] uppercase tracking-[0.28em] text-cyan-100/70',
+    'font-[var(--font-pixel)] text-[0.72rem] uppercase tracking-[0.28em] text-cyan-100/70 drop-shadow-[0_10px_24px_rgba(5,9,19,0.45)]',
   introTitle:
-    'mt-3 max-w-[18ch] text-3xl font-semibold leading-[1.02] text-white text-balance sm:text-[3.35rem] lg:text-[4rem]',
+    'mt-3 max-w-[18ch] text-3xl font-semibold leading-[1.02] text-white text-balance drop-shadow-[0_18px_34px_rgba(5,9,19,0.48)] sm:text-[3.35rem] lg:text-[4rem]',
+  introMapStage:
+    'relative z-[2] mx-auto mt-3 w-full max-w-[58rem] overflow-visible sm:mt-5 lg:mt-6 lg:max-w-[62rem]',
+  introAvatarLayer:
+    'absolute bottom-[4%] left-[2%] z-[4] w-auto justify-start pt-0 lg:pt-0',
+  introAvatarPortrait:
+    'mx-0 max-w-[6.75rem] sm:max-w-[8rem] lg:max-w-[9rem]',
   introMeta:
-    'flex flex-wrap items-center gap-3 lg:justify-end lg:self-center',
+    'absolute bottom-1 right-2 z-[3] flex flex-col items-end gap-2 sm:bottom-2 sm:right-4 sm:gap-3 lg:bottom-3 lg:right-5',
   summaryPill:
-    'inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.045] px-4 py-2.5 text-white backdrop-blur-xl',
+    'inline-flex items-center gap-3 rounded-full border border-cyan-200/16 bg-slate-950/72 px-4 py-2.5 text-white shadow-[0_18px_44px_-28px_rgba(8,145,178,0.45)] backdrop-blur-xl',
   summaryPillValue: 'text-lg font-semibold leading-none text-white',
   summaryPillLabel:
     'text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white/52',
@@ -607,17 +634,24 @@ const styles = {
     'pointer-events-none absolute left-1/2 top-6 -z-10 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.18)_0%,rgba(56,189,248,0.08)_28%,rgba(56,189,248,0)_68%)] blur-3xl',
   ambientOrbitSecondary:
     'pointer-events-none absolute right-[-2rem] top-[20rem] -z-10 h-[18rem] w-[18rem] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0.04)_30%,rgba(255,255,255,0)_70%)] blur-3xl',
-  grid: 'grid items-start gap-6 sm:gap-8 lg:grid-cols-[minmax(19.5rem,24.5rem)_minmax(0,1fr)] lg:grid-rows-[auto_auto_auto] lg:gap-x-8 lg:gap-y-8',
+  introMapLayer:
+    'pointer-events-none relative z-[1] w-full opacity-100 brightness-[1.16] saturate-[1.24]',
+  introMapViewport:
+    'relative aspect-[2.34/1] w-full overflow-visible sm:aspect-[2.52/1]',
+  introMapGlow: 'hidden',
+  introMapBase: 'absolute inset-0 h-full w-full object-contain opacity-34',
+  introMapHighlight:
+    'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_56px_rgba(181,232,251,0.42)]',
+  grid: 'relative grid items-start gap-6 pt-10 sm:gap-8 sm:pt-12 lg:grid-cols-[minmax(19.5rem,24.5rem)_minmax(0,1fr)] lg:gap-x-8 lg:gap-y-8 lg:pt-16',
   panel:
     'relative min-w-0 w-full overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/90 p-4 text-white shadow-[0_28px_90px_-48px_rgba(15,23,42,0.6)] will-change-transform sm:p-5',
-  mapPanel:
-    'relative z-[2] w-full self-start lg:col-start-1 lg:row-start-1 lg:max-w-[22rem]',
+  mapPanel: 'relative z-[2] w-full self-start',
   embedPanel:
-    'z-[4] self-start lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:w-full',
+    'z-[4] self-start lg:col-start-2 lg:row-start-1 lg:w-full',
   avatarCell:
-    'relative z-[3] flex w-full justify-center self-start will-change-transform lg:col-start-1 lg:row-start-2 lg:max-w-[22rem]',
+    'relative z-[3] flex w-full justify-center self-start pt-1 will-change-transform lg:col-start-1 lg:row-start-1 lg:max-w-[22rem] lg:pt-6',
   clockCell:
-    'relative z-[3] w-full self-start will-change-transform lg:col-start-1 lg:row-start-3 lg:mt-auto lg:self-end lg:max-w-[28rem] xl:max-w-[30rem]',
+    'relative z-[3] w-full self-start will-change-transform lg:col-start-1 lg:row-start-1 lg:max-w-[28rem] xl:max-w-[30rem]',
   clockPanel: 'h-full w-full overflow-visible',
   cardHeader: 'flex items-start gap-2.5',
   panelHeaderSplit:

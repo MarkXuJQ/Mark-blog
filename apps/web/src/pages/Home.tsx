@@ -245,8 +245,8 @@ export function Home() {
       <HomeWidgetStackSection />
       <HomeRadarSection avatarSrc={avatarSrc} />
 
-      <div className="relative z-20 mx-auto w-full max-w-3xl px-4 pt-8 pb-8">
-        <Footer />
+      <div className="relative z-20 mx-auto w-full max-w-3xl px-4 pt-2 pb-10">
+        <Footer className="mt-8" />
       </div>
     </>
   )

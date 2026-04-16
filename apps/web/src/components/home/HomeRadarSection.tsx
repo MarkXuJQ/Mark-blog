@@ -84,19 +84,16 @@ const RADAR_NODES: RadarNode[] = [
 ]
 
 const RING_INSETS = ['8%', '18%', '30%', '42%', '54%']
-const RADAR_SCENE_OVERLAP = '-100svh'
-const RADAR_ENTRY_SCROLL_FACTOR = 0.16
-const RADAR_ENTRY_SCROLL_MIN = 110
-const RADAR_ENTRY_SCROLL_MAX = 160
-const RADAR_HOLD_SCROLL_FACTOR = 0.34
-const RADAR_HOLD_SCROLL_MIN = 220
-const RADAR_HOLD_SCROLL_MAX = 320
-const RADAR_EXIT_SCROLL_FACTOR = 0.18
-const RADAR_EXIT_SCROLL_MIN = 120
-const RADAR_EXIT_SCROLL_MAX = 170
-const RADAR_EXIT_LIFT = 28
-const RADAR_EXIT_SCENE_LIFT = 18
-const RADAR_EXIT_OPACITY_DELTA = 0.06
+const RADAR_ENTRY_SCROLL_FACTOR = 0.08
+const RADAR_ENTRY_SCROLL_MIN = 52
+const RADAR_ENTRY_SCROLL_MAX = 80
+const RADAR_HOLD_SCROLL_FACTOR = 0.22
+const RADAR_HOLD_SCROLL_MIN = 140
+const RADAR_HOLD_SCROLL_MAX = 190
+const RADAR_EXIT_SCROLL_FACTOR = 0.1
+const RADAR_EXIT_SCROLL_MIN = 64
+const RADAR_EXIT_SCROLL_MAX = 92
+const RADAR_CENTER_Y = '76.666%'
 
 function clamp01(value: number) {
   return Math.min(Math.max(value, 0), 1)
@@ -182,21 +179,6 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     mass: 0.42,
   })
 
-  const fieldY = useTransform(progress, (value) => {
-    if (prefersReducedMotion) return 0
-
-    if (value <= sceneEntryEnd) {
-      return 42 * (1 - clamp01(value / sceneEntryEnd))
-    }
-
-    if (value <= sceneHoldEnd) return 0
-
-    const exitProgress = clamp01(
-      (value - sceneHoldEnd) / (1 - sceneHoldEnd)
-    )
-
-    return -RADAR_EXIT_LIFT * exitProgress
-  })
   const fieldScale = useTransform(progress, (value) => {
     if (prefersReducedMotion) return 1
 
@@ -227,21 +209,6 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
 
     return 1 + exitProgress * 0.04
   })
-  const sceneY = useTransform(progress, (value) => {
-    if (prefersReducedMotion) return 0
-
-    if (value <= sceneEntryEnd) {
-      return 22 * (1 - clamp01(value / sceneEntryEnd))
-    }
-
-    if (value <= sceneHoldEnd) return 0
-
-    const exitProgress = clamp01(
-      (value - sceneHoldEnd) / (1 - sceneHoldEnd)
-    )
-
-    return -RADAR_EXIT_SCENE_LIFT * exitProgress
-  })
   const sceneOpacity = useTransform(progress, (value) => {
     if (prefersReducedMotion) return 1
 
@@ -251,43 +218,81 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
 
     if (value <= sceneHoldEnd) return 1
 
-    const exitProgress = clamp01(
-      (value - sceneHoldEnd) / (1 - sceneHoldEnd)
-    )
-
-    return 1 - exitProgress * RADAR_EXIT_OPACITY_DELTA
+    return 1
   })
 
   return (
     <section
       ref={sectionRef}
       aria-label={isZh ? '主页雷达区' : 'Homepage radar'}
-      className="relative z-10 isolate overflow-hidden bg-[linear-gradient(180deg,#eef8fb_0%,#f7fbfd_38%,#edf2f5_100%)]"
+      className="relative z-[30] isolate overflow-x-hidden overflow-y-visible bg-transparent"
       style={
         prefersReducedMotion
           ? { minHeight: '100svh' }
           : {
               minHeight: sceneMinHeight,
-              marginTop: RADAR_SCENE_OVERLAP,
             }
       }
     >
       <motion.div
-        className="sticky top-0 h-[100svh] overflow-hidden"
-        style={{ y: sceneY, opacity: sceneOpacity }}
+        className="sticky top-0 h-[100svh] overflow-x-hidden overflow-y-visible"
+        style={{ opacity: sceneOpacity }}
       >
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{ backgroundColor: 'var(--page-background)' }}
+        />
         <div aria-hidden="true" className={styles.softGlowLeft} />
         <div aria-hidden="true" className={styles.softGlowRight} />
         <div aria-hidden="true" className={styles.gridBackdrop} />
         <div aria-hidden="true" className={styles.crosshairVertical} />
-        <div aria-hidden="true" className={styles.crosshairHorizontal} />
+        <div
+          aria-hidden="true"
+          className={styles.crosshairHorizontal}
+          style={{ top: RADAR_CENTER_Y }}
+        />
 
-        <div className="relative z-10 h-full w-full overflow-hidden">
-          <motion.div
-            style={{ y: fieldY, scale: fieldScale }}
-            className="absolute inset-0"
-          >
-            <div className={styles.radarField}>
+        <div className="relative z-10 h-full w-full overflow-x-hidden overflow-y-visible">
+          <div className={styles.radarStage}>
+            <div aria-hidden="true" className={styles.radarSweepClip}>
+              <div className={styles.radarSweepStage}>
+                <motion.div
+                  className={styles.scanBeam}
+                  style={{
+                    top: RADAR_CENTER_Y,
+                    background:
+                      'conic-gradient(from 0deg, rgba(6,182,212,0) 0deg, rgba(6,182,212,0) 286deg, rgba(6,182,212,0.045) 304deg, rgba(6,182,212,0.15) 326deg, rgba(6,182,212,0.42) 336deg, rgba(6,182,212,0.08) 347deg, rgba(6,182,212,0) 360deg)',
+                  }}
+                  animate={prefersReducedMotion ? undefined : { rotate: 360 }}
+                  transition={
+                    prefersReducedMotion
+                      ? undefined
+                      : { duration: 8.6, ease: 'linear', repeat: Infinity }
+                  }
+                />
+
+                <motion.div
+                  className={styles.scanLine}
+                  style={{ top: RADAR_CENTER_Y }}
+                  animate={
+                    prefersReducedMotion
+                      ? undefined
+                      : { rotate: [0, 360], opacity: [0.26, 0.54, 0.26] }
+                  }
+                  transition={
+                    prefersReducedMotion
+                      ? undefined
+                      : { duration: 5.6, ease: 'linear', repeat: Infinity }
+                  }
+                />
+              </div>
+            </div>
+
+            <motion.div
+              style={{ top: RADAR_CENTER_Y, scale: fieldScale }}
+              className={styles.radarField}
+            >
               {RING_INSETS.map((inset, index) => (
                 <div
                   key={inset}
@@ -299,36 +304,6 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                   style={{ inset }}
                 />
               ))}
-
-              <motion.div
-                aria-hidden="true"
-                className={styles.scanBeam}
-                style={{
-                  background:
-                    'conic-gradient(from 0deg, rgba(6,182,212,0) 0deg, rgba(6,182,212,0.03) 228deg, rgba(6,182,212,0.12) 286deg, rgba(6,182,212,0.52) 316deg, rgba(6,182,212,0.08) 334deg, rgba(6,182,212,0) 360deg)',
-                }}
-                animate={prefersReducedMotion ? undefined : { rotate: 360 }}
-                transition={
-                  prefersReducedMotion
-                    ? undefined
-                    : { duration: 8.6, ease: 'linear', repeat: Infinity }
-                }
-              />
-
-              <motion.div
-                aria-hidden="true"
-                className={styles.scanLine}
-                animate={
-                  prefersReducedMotion
-                    ? undefined
-                    : { rotate: [0, 360], opacity: [0.28, 0.54, 0.28] }
-                }
-                transition={
-                  prefersReducedMotion
-                    ? undefined
-                    : { duration: 5.6, ease: 'linear', repeat: Infinity }
-                }
-              />
 
               <motion.div
                 style={{ scale: avatarScale }}
@@ -385,8 +360,8 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                   />
                 </motion.a>
               ))}
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
       </motion.div>
     </section>
@@ -403,22 +378,25 @@ const styles = {
   crosshairVertical:
     'pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-[linear-gradient(180deg,rgba(148,163,184,0)_0%,rgba(148,163,184,0.22)_18%,rgba(148,163,184,0.22)_82%,rgba(148,163,184,0)_100%)]',
   crosshairHorizontal:
-    'pointer-events-none absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-[linear-gradient(90deg,rgba(148,163,184,0)_0%,rgba(148,163,184,0.22)_18%,rgba(148,163,184,0.22)_82%,rgba(148,163,184,0)_100%)]',
+    'pointer-events-none absolute left-0 h-px w-full -translate-y-1/2 bg-[linear-gradient(90deg,rgba(148,163,184,0)_0%,rgba(148,163,184,0.22)_18%,rgba(148,163,184,0.22)_82%,rgba(148,163,184,0)_100%)]',
+  radarStage: 'absolute inset-0',
+  radarSweepClip: 'pointer-events-none absolute inset-0 overflow-hidden',
+  radarSweepStage: 'pointer-events-none absolute inset-0',
   radarField:
-    'absolute left-1/2 top-1/2 h-[min(120vw,120vh)] w-[min(120vw,120vh)] max-h-[88rem] max-w-[88rem] -translate-x-1/2 -translate-y-1/2',
+    'absolute left-1/2 h-[min(94vw,94vh)] w-[min(94vw,94vh)] max-h-[72rem] max-w-[72rem] -translate-x-1/2 -translate-y-1/2',
   ring: 'pointer-events-none absolute rounded-full border border-slate-300/62',
   outerRing:
     'border-dashed border-slate-300/80 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]',
   scanBeam:
-    'pointer-events-none absolute inset-[7%] rounded-full [mask-image:radial-gradient(circle,transparent_0%,transparent_30%,black_46%,black_78%,transparent_100%)] [-webkit-mask-image:radial-gradient(circle,transparent_0%,transparent_30%,black_46%,black_78%,transparent_100%)]',
+    'pointer-events-none absolute left-1/2 top-1/2 h-[170vmax] w-[170vmax] -translate-x-1/2 -translate-y-1/2',
   scanLine:
-    'pointer-events-none absolute inset-[11%] rounded-full border border-cyan-400/18 [mask-image:conic-gradient(from_0deg,transparent_0deg,transparent_292deg,black_324deg,transparent_360deg)] [-webkit-mask-image:conic-gradient(from_0deg,transparent_0deg,transparent_292deg,black_324deg,transparent_360deg)]',
+    'pointer-events-none absolute left-1/2 top-1/2 h-px w-[170vmax] -translate-y-1/2 origin-left bg-[linear-gradient(90deg,rgba(6,182,212,0.9)_0%,rgba(6,182,212,0.32)_20%,rgba(6,182,212,0.08)_48%,rgba(6,182,212,0)_100%)] shadow-[0_0_14px_rgba(6,182,212,0.3)]',
   avatarWrap:
-    'absolute left-1/2 top-1/2 z-20 flex h-[20%] w-[20%] min-h-[6.5rem] min-w-[6.5rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/74 bg-white/46 backdrop-blur-xl',
+    'absolute left-1/2 top-1/2 z-20 flex h-[20%] w-[20%] min-h-[6.5rem] min-w-[6.5rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-transparent backdrop-blur-2xl',
   avatarGlow:
-    'pointer-events-none absolute inset-[-18%] rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.22)_0%,rgba(56,189,248,0.08)_34%,rgba(56,189,248,0)_72%)] blur-2xl',
+    'pointer-events-none absolute inset-[-18%] rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.18)_0%,rgba(56,189,248,0.06)_34%,rgba(56,189,248,0)_72%)] blur-2xl',
   avatarCore:
-    'relative h-[72%] w-[72%] overflow-hidden rounded-full border border-white/80 bg-slate-200 shadow-[0_18px_34px_-24px_rgba(15,23,42,0.35)]',
+    'relative h-[72%] w-[72%] overflow-hidden rounded-full border border-white/60 bg-transparent shadow-[0_14px_28px_-22px_rgba(15,23,42,0.24)]',
   avatarImage: 'h-full w-full object-cover',
   signalLink:
     'absolute z-30 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center focus:outline-none',

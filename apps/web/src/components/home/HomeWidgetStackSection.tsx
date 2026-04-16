@@ -51,15 +51,6 @@ const CONTENT_SCROLL_START = 0.28
 const CONTENT_SCROLL_HOLD_END = 0.44
 const CONTENT_SCROLL_END = 0.96
 
-// Third-to-fourth handoff timing.
-// This mirrors the second-to-third takeover in reverse: the third scene lifts
-// upward near the end so the fourth page can peek through underneath.
-const SCENE_EXIT_START = 0.84
-const SCENE_EXIT_END = 1
-const SCENE_EXIT_LIFT_PERCENT = 100
-const SCENE_EXIT_SCALE_DELTA = 0.018
-const SCENE_EXIT_OPACITY_DELTA = 0.08
-
 function clamp01(value: number) {
   return Math.min(Math.max(value, 0), 1)
 }
@@ -169,26 +160,6 @@ export function HomeWidgetStackSection({
 
     return -raw * contentScrollDistance
   })
-  const sceneExitProgress = useTransform(sceneProgress, (value) =>
-    prefersReducedMotion
-      ? 0
-      : clamp01((value - SCENE_EXIT_START) / (SCENE_EXIT_END - SCENE_EXIT_START))
-  )
-  const sceneExitY = useTransform(sceneExitProgress, (value) => {
-    if (value <= 0) return '0%'
-    return `-${(value * SCENE_EXIT_LIFT_PERCENT).toFixed(3)}%`
-  })
-  const sceneExitScale = useTransform(
-    sceneExitProgress,
-    [0, 1],
-    [1, 1 - SCENE_EXIT_SCALE_DELTA]
-  )
-  const sceneExitOpacity = useTransform(
-    sceneExitProgress,
-    [0, 1],
-    [1, 1 - SCENE_EXIT_OPACITY_DELTA]
-  )
-
   useEffect(() => {
     if (prefersReducedMotion) {
       setContentScrollDistance(0)
@@ -259,14 +230,7 @@ export function HomeWidgetStackSection({
       }
     >
       <motion.div className="sticky top-0 h-[100svh] overflow-hidden">
-        <motion.div
-          className="relative h-full"
-          style={{
-            y: sceneExitY,
-            scale: sceneExitScale,
-            opacity: sceneExitOpacity,
-          }}
-        >
+        <div className="relative h-full">
           <motion.div
             className="absolute inset-[-14px] z-0 overflow-hidden bg-[linear-gradient(180deg,#050913_0%,#060c17_24%,#07101c_56%,#091522_100%)]"
             style={{
@@ -318,7 +282,7 @@ export function HomeWidgetStackSection({
               </motion.div>
             </div>
           </motion.div>
-        </motion.div>
+        </div>
       </motion.div>
     </section>
   )
