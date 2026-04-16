@@ -1,9 +1,4 @@
-import {
-  useMemo,
-  useRef,
-  useState,
-  type PointerEvent as ReactPointerEvent,
-} from 'react'
+import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import {
   motion,
   type MotionStyle,
@@ -14,9 +9,10 @@ import {
   useSpring,
   useTransform,
 } from 'framer-motion'
-import { Clock3, ExternalLink, Globe2, MapPinned } from 'lucide-react'
+import { MapPinned } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '../../utils/cn'
+import { getImageUrl } from '../../utils/image'
 import markTravelRecord from '@content/travel/records/mark.json'
 import worldFootprintBaseSvg from '../../assets/travel/world-footprint-base.svg'
 import worldFootprintHighlightSvg from '../../assets/travel/world-footprint-highlight.svg'
@@ -24,15 +20,55 @@ import { LifeSinceClock } from './LifeSinceClock'
 
 const EMBED_MAP_URL =
   'https://travel.markxu.icu/?embed=1&bare=1&baseMap=liberty'
-const FULL_MAP_URL = 'https://travel.markxu.icu/'
 
 const SHELL_REVEAL_END = 0.28
 const WORLD_PANEL_REVEAL_START = 0.08
 const WORLD_PANEL_REVEAL_END = 0.34
+const AVATAR_PANEL_REVEAL_START = 0.28
+const AVATAR_PANEL_REVEAL_END = 0.56
 const EMBED_PANEL_REVEAL_START = 0.4
 const EMBED_PANEL_REVEAL_END = 0.66
 const CLOCK_PANEL_REVEAL_START = 0.72
 const CLOCK_PANEL_REVEAL_END = 0.96
+const HOME_AVATAR_SRC = getImageUrl('/images/IMG_1766.JPG')
+
+const CHINA_CITY_TO_PROVINCE: Record<string, string> = {
+  北京: '北京',
+  北京市: '北京',
+  大连市: '辽宁',
+  天津: '天津',
+  天津市: '天津',
+  呼和浩特市: '内蒙古',
+  厦门市: '福建',
+  南京市: '江苏',
+  哈尔滨市: '黑龙江',
+  咸阳市: '陕西',
+  威海市: '山东',
+  广州市: '广东',
+  日照市: '山东',
+  杭州市: '浙江',
+  汕头市: '广东',
+  泉州市: '福建',
+  泰安市: '山东',
+  济南市: '山东',
+  淄博市: '山东',
+  深圳市: '广东',
+  潍坊市: '山东',
+  潮州市: '广东',
+  福州市: '福建',
+  西安市: '陕西',
+  长沙市: '湖南',
+  青岛市: '山东',
+  黄山市: '安徽',
+  沈阳市: '辽宁',
+}
+
+const CHINA_PROVINCE_ALIASES: Record<string, string> = {
+  上海: '上海',
+  上海市: '上海',
+  北京: '北京',
+  北京市: '北京',
+}
 
 interface TravelLocationRecord {
   type?: string
@@ -41,11 +77,11 @@ interface TravelLocationRecord {
 }
 
 interface TravelJourneyRecord {
-  date?: string
   locations?: TravelLocationRecord[]
 }
 
 interface TravelRecord {
+  birthplace?: TravelLocationRecord
   journeys?: TravelJourneyRecord[]
 }
 
@@ -66,39 +102,63 @@ function easeOutCubic(value: number) {
   return 1 - Math.pow(1 - value, 3)
 }
 
-function getUniqueLabels(locations: TravelLocationRecord[], type: string) {
-  return new Set(
-    locations
-      .filter((location) => location.type === type)
-      .map((location) => location.label ?? location.name)
-      .filter((value): value is string => Boolean(value))
-  ).size
+function getLocationKeys(location: TravelLocationRecord) {
+  return [location.label, location.name].filter(
+    (value): value is string => Boolean(value?.trim())
+  )
 }
 
-function normalizeJourneyDate(value?: string | null) {
-  if (!value) return null
-  if (/^\d{4}-\d{2}$/.test(value)) return `${value}-01`
-  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value
+function getProvinceFromLocation(location: TravelLocationRecord) {
+  for (const key of getLocationKeys(location)) {
+    const directProvince = CHINA_PROVINCE_ALIASES[key]
+    if (directProvince) return directProvince
+
+    const provinceFromCity = CHINA_CITY_TO_PROVINCE[key]
+    if (provinceFromCity) return provinceFromCity
+  }
+
   return null
 }
 
-function summarizeTravelRecord(record: TravelRecord) {
-  const journeys = record.journeys ?? []
-  const locations = journeys.flatMap((journey) => journey.locations ?? [])
-  const normalizedDates = journeys
-    .map((journey) => normalizeJourneyDate(journey.date))
-    .filter((value): value is string => Boolean(value))
-    .sort()
+function getCountryFromLocation(location: TravelLocationRecord) {
+  if (location.type !== 'country') return null
+
+  for (const key of getLocationKeys(location)) {
+    if (key === 'China' || key === '中国') return 'China'
+    if (key === 'Thailand' || key === '泰国') return 'Thailand'
+    if (key === 'United Kingdom' || key === '英国') return 'United Kingdom'
+    return key
+  }
+
+  return null
+}
+
+function summarizeTravelFootprint(record: TravelRecord) {
+  const locations = [
+    ...(record.birthplace ? [record.birthplace] : []),
+    ...(record.journeys ?? []).flatMap((journey) => journey.locations ?? []),
+  ]
+  const provinces = new Set<string>()
+  const countries = new Set<string>()
+
+  for (const location of locations) {
+    const province = getProvinceFromLocation(location)
+    if (province) {
+      provinces.add(province)
+      countries.add('China')
+    }
+
+    const country = getCountryFromLocation(location)
+    if (country) countries.add(country)
+  }
 
   return {
-    journeyCount: journeys.length,
-    cityCount: getUniqueLabels(locations, 'city'),
-    countryCount: getUniqueLabels(locations, 'country'),
-    latestDate: normalizedDates.at(-1) ?? null,
+    countryCount: countries.size,
+    provinceCount: provinces.size,
   }
 }
 
-const travelSummary = summarizeTravelRecord(markTravelRecord as TravelRecord)
+const travelSummary = summarizeTravelFootprint(markTravelRecord as TravelRecord)
 
 function usePanelReveal(
   progress: MotionValue<number>,
@@ -139,7 +199,6 @@ export function TravelFootprintPlugin({
 }) {
   const { i18n } = useTranslation()
   const isZh = i18n.language?.startsWith('zh')
-  const locale = isZh ? 'zh-CN' : 'en-US'
   const prefersReducedMotion = useReducedMotion()
   const shellRef = useRef<HTMLDivElement | null>(null)
   const [isPointerDown, setIsPointerDown] = useState(false)
@@ -182,6 +241,13 @@ export function TravelFootprintPlugin({
   const embedRotate = useTransform(
     pointerX,
     (value) => value * 0.52 * dragStrength
+  )
+
+  const avatarX = useTransform(pointerX, (value) => value * 4.5 * dragStrength)
+  const avatarY = useTransform(pointerY, (value) => value * 5.5 * dragStrength)
+  const avatarRotate = useTransform(
+    pointerX,
+    (value) => value * 0.34 * dragStrength
   )
 
   const clockX = useTransform(pointerX, (value) => value * -7 * dragStrength)
@@ -233,6 +299,12 @@ export function TravelFootprintPlugin({
     WORLD_PANEL_REVEAL_END,
     Boolean(prefersReducedMotion)
   )
+  const avatarReveal = usePanelReveal(
+    pluginReveal,
+    AVATAR_PANEL_REVEAL_START,
+    AVATAR_PANEL_REVEAL_END,
+    Boolean(prefersReducedMotion)
+  )
   const embedReveal = usePanelReveal(
     pluginReveal,
     EMBED_PANEL_REVEAL_START,
@@ -247,17 +319,9 @@ export function TravelFootprintPlugin({
   )
 
   const mapRevealY = useSummedTransform([mapY, worldReveal.y])
+  const avatarRevealY = useSummedTransform([avatarY, avatarReveal.y])
   const embedRevealY = useSummedTransform([embedY, embedReveal.y])
   const clockRevealY = useSummedTransform([clockY, clockReveal.y])
-  const latestJourneyLabel = useMemo(() => {
-    if (!travelSummary.latestDate) return null
-
-    return new Intl.DateTimeFormat(locale, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    }).format(new Date(`${travelSummary.latestDate}T00:00:00`))
-  }, [locale])
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (prefersReducedMotion) return
@@ -316,54 +380,26 @@ export function TravelFootprintPlugin({
           </p>
           <h2 className={styles.introTitle}>
             {isZh
-              ? '把去过的地方压缩成一张会发光的旅行总览'
-              : 'Compressing visited places into a luminous travel overview'}
+              ? '去过的地方'
+              : "Places I've Been"}
           </h2>
-          <p className={styles.introDescription}>
-            {isZh
-              ? '这一屏把静态国家地图、可交互足迹图和人生时钟放到同一个叙事里。先看整体，再看路径，最后落到时间本身。'
-              : 'This scene folds a static atlas, a live route map, and a life clock into one narrative: overview first, routes second, time last.'}
-          </p>
         </div>
 
-        <div className={styles.summaryRack}>
-          <SummaryChip
-            value={travelSummary.journeyCount}
-            label={isZh ? '段旅程' : 'Journeys'}
-          />
-          <SummaryChip
-            value={travelSummary.cityCount}
-            label={isZh ? '座城市' : 'Cities'}
-          />
-          <SummaryChip
+        <div className={styles.introMeta}>
+          <SummaryPill
             value={travelSummary.countryCount}
             label={isZh ? '个国家' : 'Countries'}
           />
-          {latestJourneyLabel ? (
-            <div className={styles.summaryMeta}>
-              <span className={styles.summaryMetaLabel}>
-                {isZh ? '最近更新' : 'Latest entry'}
-              </span>
-              <span className={styles.summaryMetaValue}>{latestJourneyLabel}</span>
-            </div>
-          ) : null}
-          <a
-            href={FULL_MAP_URL}
-            target="_blank"
-            rel="noreferrer"
-            className={styles.summaryLink}
-          >
-            <span>{isZh ? '打开完整地图' : 'Open full map'}</span>
-            <ExternalLink className="h-3.5 w-3.5" />
-          </a>
+          <SummaryPill
+            value={travelSummary.provinceCount}
+            label={isZh ? '个省份' : 'Provinces'}
+          />
         </div>
       </div>
 
       <motion.div className={styles.grid} style={{ y: gridY }}>
         <TravelWorldMapPanel
           isZh={isZh}
-          cityCount={travelSummary.cityCount}
-          countryCount={travelSummary.countryCount}
           style={{
             x: mapX,
             y: mapRevealY,
@@ -373,27 +409,36 @@ export function TravelFootprintPlugin({
           }}
         />
 
-        <TravelFootprintMapPanel
+        <TravelAvatarPanel
           isZh={isZh}
-          latestJourneyLabel={latestJourneyLabel}
+          avatarSrc={HOME_AVATAR_SRC}
           style={{
-            x: embedX,
-            y: embedRevealY,
-            rotate: embedRotate,
-            opacity: embedReveal.opacity,
-            scale: embedReveal.scale,
+            x: avatarX,
+            y: avatarRevealY,
+            rotate: avatarRotate,
+            opacity: avatarReveal.opacity,
+            scale: avatarReveal.scale,
           }}
         />
 
         <TravelClockPanel
-          isZh={isZh}
-          latestJourneyLabel={latestJourneyLabel}
           style={{
             x: clockX,
             y: clockRevealY,
             rotate: clockRotate,
             opacity: clockReveal.opacity,
             scale: clockReveal.scale,
+          }}
+        />
+
+        <TravelFootprintMapPanel
+          isZh={isZh}
+          style={{
+            x: embedX,
+            y: embedRevealY,
+            rotate: embedRotate,
+            opacity: embedReveal.opacity,
+            scale: embedReveal.scale,
           }}
         />
       </motion.div>
@@ -403,52 +448,13 @@ export function TravelFootprintPlugin({
 
 function TravelWorldMapPanel({
   isZh,
-  cityCount,
-  countryCount,
   style,
 }: {
   isZh: boolean
-  cityCount: number
-  countryCount: number
   style?: MotionStyle
 }) {
   return (
-    <motion.section
-      {...hoverLift}
-      className={cn(styles.panel, styles.mapPanel)}
-      style={style}
-    >
-      <div className={styles.panelHeaderSplit}>
-        <div className={styles.cardHeader}>
-          <div className={cn(styles.cardIconWrap, 'mt-0')}>
-            <Globe2 className="h-4 w-4" />
-          </div>
-          <div className={styles.cardCopy}>
-            <p className={styles.cardEyebrow}>
-              {isZh ? '静态总览' : 'Atlas view'}
-            </p>
-            <p className={styles.cardTitle}>
-              {isZh
-                ? '先用国家视角看一眼更大的移动范围'
-                : 'Start with the country-scale shape of movement'}
-            </p>
-          </div>
-        </div>
-        <div className={styles.metricCluster}>
-          <span className={styles.metricPill}>
-            {countryCount} {isZh ? '个国家' : 'countries'}
-          </span>
-          <span className={styles.metricPillMuted}>
-            {cityCount} {isZh ? '座城市' : 'cities'}
-          </span>
-        </div>
-      </div>
-      <p className={styles.cardDescription}>
-        {isZh
-          ? '这张图把去过的国家高亮出来，适合先快速抓到旅行范围，再往下看更细的足迹路径。'
-          : 'This static atlas highlights visited countries first, making it easier to read the broader footprint before diving into the denser route map.'}
-      </p>
-
+    <motion.div className={styles.mapPanel} style={style}>
       <div className={styles.mapViewport}>
         <div className={styles.mapGlow} />
         <img
@@ -467,17 +473,15 @@ function TravelWorldMapPanel({
           className={styles.mapHighlight}
         />
       </div>
-    </motion.section>
+    </motion.div>
   )
 }
 
 function TravelFootprintMapPanel({
   isZh,
-  latestJourneyLabel,
   style,
 }: {
   isZh: boolean
-  latestJourneyLabel: string | null
   style?: MotionStyle
 }) {
   return (
@@ -494,27 +498,18 @@ function TravelFootprintMapPanel({
           <div className={styles.cardCopy}>
             <p className={styles.cardEyebrow}>{isZh ? '交互地图' : 'Live map'}</p>
             <p className={styles.cardTitle}>
-              {isZh ? '把路线放回真实地理里查看' : 'Inspect routes in live geography'}
-            </p>
+            {isZh
+              ? '这里记录了我具体去过的地方。'
+              : 'This map shows the places I have visited.'}
+          </p>
           </div>
         </div>
         <div className={styles.metricCluster}>
           <span className={styles.metricPillMuted}>
-            {latestJourneyLabel
-              ? isZh
-                ? `更新于 ${latestJourneyLabel}`
-                : `Updated ${latestJourneyLabel}`
-              : isZh
-                ? '持续记录中'
-                : 'Still expanding'}
+            {isZh ? '可缩放 / 可拖拽' : 'Zoomable / draggable'}
           </span>
         </div>
       </div>
-      <p className={styles.cardDescription}>
-        {isZh
-          ? '这里保留了缩放和拖拽能力，可以更细致地看每一段路径是怎么在地图上连起来的。'
-          : 'This view keeps zoom and pan intact, so the smaller route connections remain explorable instead of becoming a static thumbnail.'}
-      </p>
 
       <div className={styles.embedViewport}>
         <iframe
@@ -525,77 +520,56 @@ function TravelFootprintMapPanel({
           className={styles.embedFrame}
         />
       </div>
-
-      <div className={styles.cardFooter}>
-        <span className={styles.cardFootnote}>
-          {isZh ? '更适合放大查看局部路线' : 'Best used for zooming into local routes'}
-        </span>
-        <a
-          href={FULL_MAP_URL}
-          target="_blank"
-          rel="noreferrer"
-          className={styles.inlineLink}
-        >
-          <span>{isZh ? '新窗口打开' : 'Open separately'}</span>
-          <ExternalLink className="h-3.5 w-3.5" />
-        </a>
-      </div>
     </motion.section>
+  )
+}
+
+function TravelAvatarPanel({
+  isZh,
+  avatarSrc,
+  style,
+}: {
+  isZh: boolean
+  avatarSrc: string
+  style?: MotionStyle
+}) {
+  return (
+    <motion.div
+      {...hoverLift}
+      className={styles.avatarCell}
+      style={style}
+    >
+      <div className={styles.avatarPortrait}>
+        <div aria-hidden="true" className={styles.avatarGlow} />
+        <div className={styles.avatarFrame}>
+          <div className={styles.avatarMask}>
+            <img
+              src={avatarSrc}
+              alt={isZh ? 'Mark Xu 的头像' : 'Portrait of Mark Xu'}
+              loading="lazy"
+              decoding="async"
+              className={styles.avatarImage}
+            />
+          </div>
+        </div>
+      </div>
+    </motion.div>
   )
 }
 
 function TravelClockPanel({
-  isZh,
-  latestJourneyLabel,
   style,
 }: {
-  isZh: boolean
-  latestJourneyLabel: string | null
   style?: MotionStyle
 }) {
   return (
-    <motion.section
-      {...hoverLift}
-      className={cn(styles.panel, styles.clockCell)}
-      style={style}
-    >
-      <div className={styles.cardHeader}>
-        <div className={styles.cardIconWrap}>
-          <Clock3 className="h-4 w-4" />
-        </div>
-        <div className={styles.cardCopy}>
-          <p className={styles.cardEyebrow}>{isZh ? '时间侧记' : 'Time layer'}</p>
-          <p className={styles.cardTitle}>
-            {isZh
-              ? '把旅途放回更长的人生计时器里'
-              : 'Set each route against a longer life timer'}
-          </p>
-        </div>
-      </div>
-      <p className={styles.cardDescription}>
-        {isZh
-          ? '旅行不是独立事件，而是不断累积在时间上的偏移。这个时钟负责把“去过哪里”变成“走到了什么阶段”。'
-          : 'Trips are not isolated moments. This clock reframes “where I have been” as part of a much longer progression through time.'}
-      </p>
-      <div className={styles.clockStage}>
-        <LifeSinceClock compact bare className={styles.clockPanel} />
-      </div>
-      <div className={styles.cardFooter}>
-        <span className={styles.cardFootnote}>
-          {latestJourneyLabel
-            ? isZh
-              ? `最近一次路线记录：${latestJourneyLabel}`
-              : `Latest route entry: ${latestJourneyLabel}`
-            : isZh
-              ? '旅行记录持续更新中'
-              : 'Travel log is still growing'}
-        </span>
-      </div>
-    </motion.section>
+    <motion.div className={styles.clockCell} style={style}>
+      <LifeSinceClock bare className={styles.clockPanel} />
+    </motion.div>
   )
 }
 
-function SummaryChip({
+function SummaryPill({
   value,
   label,
 }: {
@@ -603,9 +577,9 @@ function SummaryChip({
   label: string
 }) {
   return (
-    <div className={styles.summaryChip}>
-      <span className={styles.summaryValue}>{value}</span>
-      <span className={styles.summaryLabel}>{label}</span>
+    <div className={styles.summaryPill}>
+      <span className={styles.summaryPillValue}>{value}</span>
+      <span className={styles.summaryPillLabel}>{label}</span>
     </div>
   )
 }
@@ -622,37 +596,29 @@ const styles = {
     'font-[var(--font-pixel)] text-[0.72rem] uppercase tracking-[0.28em] text-cyan-100/70',
   introTitle:
     'mt-3 max-w-[18ch] text-3xl font-semibold leading-[1.02] text-white text-balance sm:text-[3.35rem] lg:text-[4rem]',
-  introDescription:
-    'mt-4 max-w-[42rem] text-sm leading-7 text-white/64 sm:text-[0.98rem]',
-  summaryRack:
-    'flex flex-wrap items-stretch gap-3 lg:max-w-[26rem] lg:justify-end',
-  summaryChip:
-    'inline-flex min-w-[7.2rem] flex-col rounded-[22px] border border-white/10 bg-white/[0.045] px-4 py-3 text-white backdrop-blur-xl',
-  summaryValue: 'text-[1.35rem] font-semibold leading-none text-white',
-  summaryLabel:
-    'mt-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white/48',
-  summaryMeta:
-    'inline-flex min-w-[10.5rem] flex-col rounded-[22px] border border-white/10 bg-white/[0.045] px-4 py-3 text-white backdrop-blur-xl',
-  summaryMetaLabel:
-    'text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white/48',
-  summaryMetaValue: 'mt-2 text-sm font-medium text-white/82',
-  summaryLink:
-    'inline-flex items-center gap-2 rounded-[22px] border border-cyan-300/18 bg-cyan-300/[0.08] px-4 py-3 text-sm font-medium text-cyan-50 transition-colors duration-300 hover:bg-cyan-300/[0.14]',
+  introMeta:
+    'flex flex-wrap items-center gap-3 lg:justify-end lg:self-center',
+  summaryPill:
+    'inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.045] px-4 py-2.5 text-white backdrop-blur-xl',
+  summaryPillValue: 'text-lg font-semibold leading-none text-white',
+  summaryPillLabel:
+    'text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white/52',
   ambientOrbit:
     'pointer-events-none absolute left-1/2 top-6 -z-10 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.18)_0%,rgba(56,189,248,0.08)_28%,rgba(56,189,248,0)_68%)] blur-3xl',
   ambientOrbitSecondary:
     'pointer-events-none absolute right-[-2rem] top-[20rem] -z-10 h-[18rem] w-[18rem] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0.04)_30%,rgba(255,255,255,0)_70%)] blur-3xl',
-  grid: 'grid items-start gap-6 sm:gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(19rem,24rem)] lg:grid-rows-[auto_auto] lg:gap-x-10 lg:gap-y-10',
+  grid: 'grid items-start gap-6 sm:gap-8 lg:grid-cols-[minmax(19.5rem,24.5rem)_minmax(0,1fr)] lg:grid-rows-[auto_auto_auto] lg:gap-x-8 lg:gap-y-8',
   panel:
     'relative min-w-0 w-full overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/90 p-4 text-white shadow-[0_28px_90px_-48px_rgba(15,23,42,0.6)] will-change-transform sm:p-5',
-  mapPanel: 'z-[2] self-start lg:col-span-2 lg:row-start-1',
+  mapPanel:
+    'relative z-[2] w-full self-start lg:col-start-1 lg:row-start-1 lg:max-w-[22rem]',
   embedPanel:
-    'z-[4] self-start lg:col-start-2 lg:row-start-2 lg:w-full lg:translate-y-[-1.5rem]',
+    'z-[4] self-start lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:w-full',
+  avatarCell:
+    'relative z-[3] flex w-full justify-center self-start will-change-transform lg:col-start-1 lg:row-start-2 lg:max-w-[22rem]',
   clockCell:
-    'relative z-[3] w-full max-w-[24rem] self-start will-change-transform lg:col-start-1 lg:row-start-2 lg:mt-10',
-  clockStage:
-    'mt-4 overflow-hidden rounded-[22px] border border-white/10 bg-[#05100b] px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]',
-  clockPanel: 'h-full',
+    'relative z-[3] w-full self-start will-change-transform lg:col-start-1 lg:row-start-3 lg:mt-auto lg:self-end lg:max-w-[28rem] xl:max-w-[30rem]',
+  clockPanel: 'h-full w-full overflow-visible',
   cardHeader: 'flex items-start gap-2.5',
   panelHeaderSplit:
     'flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4',
@@ -670,12 +636,19 @@ const styles = {
   metricPillMuted:
     'inline-flex items-center rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white/56',
   mapViewport:
-    'relative mt-3 aspect-[2.55/1] overflow-hidden rounded-[24px] border border-white/10 bg-[#0c1217] px-3.5 pt-3.5 pb-0 sm:aspect-[2.7/1]',
+    'relative aspect-[2.28/1] w-full overflow-visible sm:aspect-[2.42/1]',
   mapGlow:
-    'pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04)_0px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_0px,transparent_1px)] [background-size:18px_18px]',
-  mapBase: 'absolute inset-0 h-full w-full object-cover opacity-54',
+    'pointer-events-none absolute inset-[-8%_-6%_-14%] bg-[radial-gradient(circle_at_50%_52%,rgba(56,189,248,0.14)_0%,rgba(56,189,248,0.07)_32%,rgba(56,189,248,0)_72%)] blur-3xl',
+  mapBase: 'absolute inset-0 h-full w-full object-contain opacity-38',
   mapHighlight:
-    'absolute inset-0 h-full w-full object-cover opacity-100 drop-shadow-[0_0_22px_rgba(181,232,251,0.34)]',
+    'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_32px_rgba(181,232,251,0.36)]',
+  avatarPortrait: 'relative mx-auto w-full max-w-[10.5rem] sm:max-w-[11.5rem]',
+  avatarGlow:
+    'pointer-events-none absolute inset-[-22%] bg-[radial-gradient(circle_at_50%_18%,rgba(125,211,252,0.28)_0%,rgba(125,211,252,0.1)_32%,rgba(125,211,252,0)_72%)] blur-3xl',
+  avatarFrame:
+    'relative aspect-square w-full overflow-hidden rounded-[24px] border border-white/12 bg-slate-950/56 p-2 shadow-[0_22px_48px_-30px_rgba(0,0,0,0.74)] backdrop-blur-sm',
+  avatarMask: 'h-full w-full overflow-hidden rounded-[22px] bg-[#0d1319]',
+  avatarImage: 'h-full w-full scale-[1.04] object-cover object-center',
   embedViewport:
     'relative mt-3 overflow-hidden rounded-[22px] border border-white/10 bg-[#0c1217] p-1.5',
   embedFrame:

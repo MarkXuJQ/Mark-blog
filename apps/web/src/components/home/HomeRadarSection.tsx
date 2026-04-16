@@ -5,7 +5,7 @@ import {
   useSpring,
   useTransform,
 } from 'framer-motion'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '../../utils/cn'
 
@@ -84,16 +84,96 @@ const RADAR_NODES: RadarNode[] = [
 ]
 
 const RING_INSETS = ['8%', '18%', '30%', '42%', '54%']
+const RADAR_SCENE_OVERLAP = '-100svh'
+const RADAR_ENTRY_SCROLL_FACTOR = 0.16
+const RADAR_ENTRY_SCROLL_MIN = 110
+const RADAR_ENTRY_SCROLL_MAX = 160
+const RADAR_HOLD_SCROLL_FACTOR = 0.34
+const RADAR_HOLD_SCROLL_MIN = 220
+const RADAR_HOLD_SCROLL_MAX = 320
+const RADAR_EXIT_SCROLL_FACTOR = 0.18
+const RADAR_EXIT_SCROLL_MIN = 120
+const RADAR_EXIT_SCROLL_MAX = 170
+const RADAR_EXIT_LIFT = 28
+const RADAR_EXIT_SCENE_LIFT = 18
+const RADAR_EXIT_OPACITY_DELTA = 0.06
+
+function clamp01(value: number) {
+  return Math.min(Math.max(value, 0), 1)
+}
+
+function getBoundedScrollDistance(
+  viewportHeight: number,
+  factor: number,
+  min: number,
+  max: number
+) {
+  if (viewportHeight <= 0) return 0
+  return Math.min(max, Math.max(min, viewportHeight * factor))
+}
 
 export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
   const { i18n } = useTranslation()
   const prefersReducedMotion = useReducedMotion()
   const isZh = i18n.language?.startsWith('zh')
   const sectionRef = useRef<HTMLElement | null>(null)
+  const [viewportHeight, setViewportHeight] = useState(0)
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setViewportHeight(0)
+      return
+    }
+
+    const updateViewportHeight = () => {
+      const nextHeight = window.innerHeight
+      setViewportHeight((current) => (current === nextHeight ? current : nextHeight))
+    }
+
+    updateViewportHeight()
+    window.addEventListener('resize', updateViewportHeight)
+
+    return () => {
+      window.removeEventListener('resize', updateViewportHeight)
+    }
+  }, [prefersReducedMotion])
+
+  const entryScrollDistance = getBoundedScrollDistance(
+    viewportHeight,
+    RADAR_ENTRY_SCROLL_FACTOR,
+    RADAR_ENTRY_SCROLL_MIN,
+    RADAR_ENTRY_SCROLL_MAX
+  )
+  const holdScrollDistance = getBoundedScrollDistance(
+    viewportHeight,
+    RADAR_HOLD_SCROLL_FACTOR,
+    RADAR_HOLD_SCROLL_MIN,
+    RADAR_HOLD_SCROLL_MAX
+  )
+  const exitScrollDistance = getBoundedScrollDistance(
+    viewportHeight,
+    RADAR_EXIT_SCROLL_FACTOR,
+    RADAR_EXIT_SCROLL_MIN,
+    RADAR_EXIT_SCROLL_MAX
+  )
+  const totalSceneScrollDistance =
+    entryScrollDistance + holdScrollDistance + exitScrollDistance
+  const sceneEntryEnd =
+    totalSceneScrollDistance > 0
+      ? entryScrollDistance / totalSceneScrollDistance
+      : 0.2
+  const sceneHoldEnd =
+    totalSceneScrollDistance > 0
+      ? (entryScrollDistance + holdScrollDistance) / totalSceneScrollDistance
+      : 0.78
+  const sceneMinHeight =
+    totalSceneScrollDistance > 0
+      ? `calc(100svh + ${Math.round(totalSceneScrollDistance)}px)`
+      : '100svh'
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ['start end', 'end start'],
+    offset: ['start start', 'end end'],
   })
 
   const progress = useSpring(scrollYProgress, {
@@ -102,128 +182,213 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     mass: 0.42,
   })
 
-  const fieldY = useTransform(progress, [0, 0.5, 1], [42, 0, -28])
-  const fieldScale = useTransform(progress, [0, 0.5, 1], [0.96, 1, 1.03])
-  const avatarScale = useTransform(progress, [0, 0.5, 1], [0.96, 1, 1.04])
+  const fieldY = useTransform(progress, (value) => {
+    if (prefersReducedMotion) return 0
+
+    if (value <= sceneEntryEnd) {
+      return 42 * (1 - clamp01(value / sceneEntryEnd))
+    }
+
+    if (value <= sceneHoldEnd) return 0
+
+    const exitProgress = clamp01(
+      (value - sceneHoldEnd) / (1 - sceneHoldEnd)
+    )
+
+    return -RADAR_EXIT_LIFT * exitProgress
+  })
+  const fieldScale = useTransform(progress, (value) => {
+    if (prefersReducedMotion) return 1
+
+    if (value <= sceneEntryEnd) {
+      return 0.96 + clamp01(value / sceneEntryEnd) * 0.04
+    }
+
+    if (value <= sceneHoldEnd) return 1
+
+    const exitProgress = clamp01(
+      (value - sceneHoldEnd) / (1 - sceneHoldEnd)
+    )
+
+    return 1 + exitProgress * 0.03
+  })
+  const avatarScale = useTransform(progress, (value) => {
+    if (prefersReducedMotion) return 1
+
+    if (value <= sceneEntryEnd) {
+      return 0.96 + clamp01(value / sceneEntryEnd) * 0.04
+    }
+
+    if (value <= sceneHoldEnd) return 1
+
+    const exitProgress = clamp01(
+      (value - sceneHoldEnd) / (1 - sceneHoldEnd)
+    )
+
+    return 1 + exitProgress * 0.04
+  })
+  const sceneY = useTransform(progress, (value) => {
+    if (prefersReducedMotion) return 0
+
+    if (value <= sceneEntryEnd) {
+      return 22 * (1 - clamp01(value / sceneEntryEnd))
+    }
+
+    if (value <= sceneHoldEnd) return 0
+
+    const exitProgress = clamp01(
+      (value - sceneHoldEnd) / (1 - sceneHoldEnd)
+    )
+
+    return -RADAR_EXIT_SCENE_LIFT * exitProgress
+  })
+  const sceneOpacity = useTransform(progress, (value) => {
+    if (prefersReducedMotion) return 1
+
+    if (value <= sceneEntryEnd) {
+      return 0.84 + clamp01(value / sceneEntryEnd) * 0.16
+    }
+
+    if (value <= sceneHoldEnd) return 1
+
+    const exitProgress = clamp01(
+      (value - sceneHoldEnd) / (1 - sceneHoldEnd)
+    )
+
+    return 1 - exitProgress * RADAR_EXIT_OPACITY_DELTA
+  })
 
   return (
     <section
       ref={sectionRef}
       aria-label={isZh ? '主页雷达区' : 'Homepage radar'}
-      className="relative overflow-hidden bg-[linear-gradient(180deg,#eef8fb_0%,#f7fbfd_38%,#edf2f5_100%)]"
+      className="relative z-10 isolate overflow-hidden bg-[linear-gradient(180deg,#eef8fb_0%,#f7fbfd_38%,#edf2f5_100%)]"
+      style={
+        prefersReducedMotion
+          ? { minHeight: '100svh' }
+          : {
+              minHeight: sceneMinHeight,
+              marginTop: RADAR_SCENE_OVERLAP,
+            }
+      }
     >
-      <div aria-hidden="true" className={styles.softGlowLeft} />
-      <div aria-hidden="true" className={styles.softGlowRight} />
-      <div aria-hidden="true" className={styles.gridBackdrop} />
-      <div aria-hidden="true" className={styles.crosshairVertical} />
-      <div aria-hidden="true" className={styles.crosshairHorizontal} />
+      <motion.div
+        className="sticky top-0 h-[100svh] overflow-hidden"
+        style={{ y: sceneY, opacity: sceneOpacity }}
+      >
+        <div aria-hidden="true" className={styles.softGlowLeft} />
+        <div aria-hidden="true" className={styles.softGlowRight} />
+        <div aria-hidden="true" className={styles.gridBackdrop} />
+        <div aria-hidden="true" className={styles.crosshairVertical} />
+        <div aria-hidden="true" className={styles.crosshairHorizontal} />
 
-      <div className="relative z-10 min-h-[100svh] w-full overflow-hidden">
-        <motion.div
-          style={{ y: fieldY, scale: fieldScale }}
-          className="absolute inset-0"
-        >
-          <div className={styles.radarField}>
-            {RING_INSETS.map((inset, index) => (
-              <div
-                key={inset}
+        <div className="relative z-10 h-full w-full overflow-hidden">
+          <motion.div
+            style={{ y: fieldY, scale: fieldScale }}
+            className="absolute inset-0"
+          >
+            <div className={styles.radarField}>
+              {RING_INSETS.map((inset, index) => (
+                <div
+                  key={inset}
+                  aria-hidden="true"
+                  className={cn(
+                    styles.ring,
+                    index === RING_INSETS.length - 1 && styles.outerRing
+                  )}
+                  style={{ inset }}
+                />
+              ))}
+
+              <motion.div
                 aria-hidden="true"
-                className={cn(
-                  styles.ring,
-                  index === RING_INSETS.length - 1 && styles.outerRing
-                )}
-                style={{ inset }}
+                className={styles.scanBeam}
+                style={{
+                  background:
+                    'conic-gradient(from 0deg, rgba(6,182,212,0) 0deg, rgba(6,182,212,0.03) 228deg, rgba(6,182,212,0.12) 286deg, rgba(6,182,212,0.52) 316deg, rgba(6,182,212,0.08) 334deg, rgba(6,182,212,0) 360deg)',
+                }}
+                animate={prefersReducedMotion ? undefined : { rotate: 360 }}
+                transition={
+                  prefersReducedMotion
+                    ? undefined
+                    : { duration: 8.6, ease: 'linear', repeat: Infinity }
+                }
               />
-            ))}
 
-            <motion.div
-              aria-hidden="true"
-              className={styles.scanBeam}
-              style={{
-                background:
-                  'conic-gradient(from 0deg, rgba(6,182,212,0) 0deg, rgba(6,182,212,0.03) 228deg, rgba(6,182,212,0.12) 286deg, rgba(6,182,212,0.52) 316deg, rgba(6,182,212,0.08) 334deg, rgba(6,182,212,0) 360deg)',
-              }}
-              animate={prefersReducedMotion ? undefined : { rotate: 360 }}
-              transition={
-                prefersReducedMotion
-                  ? undefined
-                  : { duration: 8.6, ease: 'linear', repeat: Infinity }
-              }
-            />
+              <motion.div
+                aria-hidden="true"
+                className={styles.scanLine}
+                animate={
+                  prefersReducedMotion
+                    ? undefined
+                    : { rotate: [0, 360], opacity: [0.28, 0.54, 0.28] }
+                }
+                transition={
+                  prefersReducedMotion
+                    ? undefined
+                    : { duration: 5.6, ease: 'linear', repeat: Infinity }
+                }
+              />
 
-            <motion.div
-              aria-hidden="true"
-              className={styles.scanLine}
-              animate={
-                prefersReducedMotion
-                  ? undefined
-                  : { rotate: [0, 360], opacity: [0.28, 0.54, 0.28] }
-              }
-              transition={
-                prefersReducedMotion
-                  ? undefined
-                  : { duration: 5.6, ease: 'linear', repeat: Infinity }
-              }
-            />
-
-            <motion.div
-              style={{ scale: avatarScale }}
-              className={styles.avatarWrap}
-            >
-              <div aria-hidden="true" className={styles.avatarGlow} />
-              <div className={styles.avatarCore}>
-                <img
-                  src={avatarSrc}
-                  alt={isZh ? 'Mark 的头像' : 'Portrait of Mark'}
-                  className={styles.avatarImage}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </motion.div>
-
-            {RADAR_NODES.map((node) => (
-              <motion.a
-                key={node.id}
-                href={node.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={isZh ? node.label.zh : node.label.en}
-                title={isZh ? node.label.zh : node.label.en}
-                whileHover={prefersReducedMotion ? undefined : { scale: 1.12 }}
-                whileTap={{ scale: 0.96 }}
-                className={styles.signalLink}
-                style={{ left: node.left, top: node.top }}
+              <motion.div
+                style={{ scale: avatarScale }}
+                className={styles.avatarWrap}
               >
-                <motion.span
-                  aria-hidden="true"
-                  className={styles.signalPulse}
-                  style={{ background: node.glow }}
-                  animate={
-                    prefersReducedMotion
-                      ? undefined
-                      : { scale: [1, 1.9, 1], opacity: [0.6, 0, 0.6] }
-                  }
-                  transition={
-                    prefersReducedMotion
-                      ? undefined
-                      : { duration: 2.3, ease: 'easeOut', repeat: Infinity }
-                  }
-                />
+                <div aria-hidden="true" className={styles.avatarGlow} />
+                <div className={styles.avatarCore}>
+                  <img
+                    src={avatarSrc}
+                    alt={isZh ? 'Mark 的头像' : 'Portrait of Mark'}
+                    className={styles.avatarImage}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </motion.div>
 
-                <span
-                  aria-hidden="true"
-                  className={styles.signalDot}
-                  style={{
-                    background: node.color,
-                    boxShadow: `0 0 0 3px rgba(255,255,255,0.34), 0 0 18px ${node.glow}`,
-                  }}
-                />
-              </motion.a>
-            ))}
-          </div>
-        </motion.div>
-      </div>
+              {RADAR_NODES.map((node) => (
+                <motion.a
+                  key={node.id}
+                  href={node.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={isZh ? node.label.zh : node.label.en}
+                  title={isZh ? node.label.zh : node.label.en}
+                  whileHover={prefersReducedMotion ? undefined : { scale: 1.12 }}
+                  whileTap={{ scale: 0.96 }}
+                  className={styles.signalLink}
+                  style={{ left: node.left, top: node.top }}
+                >
+                  <motion.span
+                    aria-hidden="true"
+                    className={styles.signalPulse}
+                    style={{ background: node.glow }}
+                    animate={
+                      prefersReducedMotion
+                        ? undefined
+                        : { scale: [1, 1.9, 1], opacity: [0.6, 0, 0.6] }
+                    }
+                    transition={
+                      prefersReducedMotion
+                        ? undefined
+                        : { duration: 2.3, ease: 'easeOut', repeat: Infinity }
+                    }
+                  />
+
+                  <span
+                    aria-hidden="true"
+                    className={styles.signalDot}
+                    style={{
+                      background: node.color,
+                      boxShadow: `0 0 0 3px rgba(255,255,255,0.34), 0 0 18px ${node.glow}`,
+                    }}
+                  />
+                </motion.a>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
     </section>
   )
 }
