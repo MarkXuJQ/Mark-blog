@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { RootLayout } from './layouts/RootLayout'
 import { HomeLayout } from './layouts/HomeLayout'
 import { DeferredVercelInsights } from './components/analytics/DeferredVercelInsights'
+import { SmoothScrollProvider } from './components/providers/SmoothScrollProvider'
 
 const LightboxProvider = lazy(() =>
   import('./components/ui/Lightbox').then((module) => ({
@@ -87,153 +88,155 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <DeferredVercelInsights />
-        <Routes>
-          {/* Main Layout Routes - Handles Home, Blog, and all other pages */}
-          <Route element={<RootLayout />}>
-            {/* Nested Home Layout */}
-            <Route element={<HomeLayout />}>
+        <SmoothScrollProvider>
+          <DeferredVercelInsights />
+          <Routes>
+            {/* Main Layout Routes - Handles Home, Blog, and all other pages */}
+            <Route element={<RootLayout />}>
+              {/* Nested Home Layout */}
+              <Route element={<HomeLayout />}>
+                <Route
+                  path="/"
+                  element={
+                    <LazyRoute>
+                      <Home />
+                    </LazyRoute>
+                  }
+                />
+              </Route>
+
+              {/* Blog List Layout */}
               <Route
-                path="/"
                 element={
                   <LazyRoute>
-                    <Home />
+                    <BlogListLayout />
+                  </LazyRoute>
+                }
+              >
+                <Route
+                  path="blog"
+                  element={
+                    <LazyRoute>
+                      <Blog />
+                    </LazyRoute>
+                  }
+                />
+              </Route>
+
+              {/* Blog Post Layout */}
+              <Route
+                element={
+                  <LazyRoute>
+                    <BlogPostLayout />
+                  </LazyRoute>
+                }
+              >
+                <Route
+                  path="blog/:slug"
+                  element={
+                    <LazyRoute>
+                      <LightboxProvider>
+                        <BlogPost />
+                      </LightboxProvider>
+                    </LazyRoute>
+                  }
+                />
+              </Route>
+
+              {/* Archive Layout */}
+              <Route
+                element={
+                  <LazyRoute>
+                    <ArchiveLayout />
+                  </LazyRoute>
+                }
+              >
+                <Route
+                  path="archive"
+                  element={
+                    <LazyRoute>
+                      <Archive />
+                    </LazyRoute>
+                  }
+                />
+              </Route>
+              <Route
+                path="timeline"
+                element={
+                  <LazyRoute>
+                    <Timeline />
                   </LazyRoute>
                 }
               />
-            </Route>
-
-            {/* Blog List Layout */}
-            <Route
-              element={
-                <LazyRoute>
-                  <BlogListLayout />
-                </LazyRoute>
-              }
-            >
               <Route
-                path="blog"
+                path="search"
                 element={
                   <LazyRoute>
-                    <Blog />
+                    <Search />
                   </LazyRoute>
                 }
               />
-            </Route>
-
-            {/* Blog Post Layout */}
-            <Route
-              element={
-                <LazyRoute>
-                  <BlogPostLayout />
-                </LazyRoute>
-              }
-            >
               <Route
-                path="blog/:slug"
+                path="about"
+                element={
+                  <LazyRoute>
+                    <About />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="life"
                 element={
                   <LazyRoute>
                     <LightboxProvider>
-                      <BlogPost />
+                      <Life />
                     </LightboxProvider>
                   </LazyRoute>
                 }
               />
-            </Route>
-
-            {/* Archive Layout */}
-            <Route
-              element={
-                <LazyRoute>
-                  <ArchiveLayout />
-                </LazyRoute>
-              }
-            >
               <Route
-                path="archive"
+                path="movies"
                 element={
                   <LazyRoute>
-                    <Archive />
+                    <Movies />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="movies/reviews/:slug"
+                element={
+                  <LazyRoute>
+                    <MovieReviewPost />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="games"
+                element={
+                  <LazyRoute>
+                    <Games />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="links"
+                element={
+                  <LazyRoute>
+                    <UnderConstruction />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="*"
+                element={
+                  <LazyRoute>
+                    <NotFound />
                   </LazyRoute>
                 }
               />
             </Route>
-            <Route
-              path="timeline"
-              element={
-                <LazyRoute>
-                  <Timeline />
-                </LazyRoute>
-              }
-            />
-            <Route
-              path="search"
-              element={
-                <LazyRoute>
-                  <Search />
-                </LazyRoute>
-              }
-            />
-            <Route
-              path="about"
-              element={
-                <LazyRoute>
-                  <About />
-                </LazyRoute>
-              }
-            />
-            <Route
-              path="life"
-              element={
-                <LazyRoute>
-                  <LightboxProvider>
-                    <Life />
-                  </LightboxProvider>
-                </LazyRoute>
-              }
-            />
-            <Route
-              path="movies"
-              element={
-                <LazyRoute>
-                  <Movies />
-                </LazyRoute>
-              }
-            />
-            <Route
-              path="movies/reviews/:slug"
-              element={
-                <LazyRoute>
-                  <MovieReviewPost />
-                </LazyRoute>
-              }
-            />
-            <Route
-              path="games"
-              element={
-                <LazyRoute>
-                  <Games />
-                </LazyRoute>
-              }
-            />
-            <Route
-              path="links"
-              element={
-                <LazyRoute>
-                  <UnderConstruction />
-                </LazyRoute>
-              }
-            />
-            <Route
-              path="*"
-              element={
-                <LazyRoute>
-                  <NotFound />
-                </LazyRoute>
-              }
-            />
-          </Route>
-        </Routes>
+          </Routes>
+        </SmoothScrollProvider>
       </BrowserRouter>
     </>
   )

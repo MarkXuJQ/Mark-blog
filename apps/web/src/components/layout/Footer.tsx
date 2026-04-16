@@ -1,15 +1,21 @@
+import { cn } from '../../utils/cn'
 import { Trans, useTranslation } from 'react-i18next'
 import { LuGithub } from 'react-icons/lu'
 import { RiBilibiliLine, RiTwitterXFill, RiInstagramLine } from 'react-icons/ri'
 import { RiRssLine } from 'react-icons/ri'
 
-export function Footer() {
+export function Footer({ className }: { className?: string }) {
   const { t, i18n } = useTranslation()
   const year = new Date().getFullYear()
   const feedPath = i18n.language?.startsWith('zh') ? '/feeds/zh/' : '/feeds/en/'
 
   return (
-    <footer className="mt-20 border-t border-slate-200 py-8 text-center text-sm text-[var(--text-secondary)] transition-colors dark:border-slate-800">
+    <footer
+      className={cn(
+        'mt-20 border-t border-slate-200 py-8 text-center text-sm text-[var(--text-secondary)] transition-colors dark:border-slate-800',
+        className
+      )}
+    >
       <div className="mx-auto max-w-3xl space-y-4">
         <div className="flex justify-center gap-4">
           <a
@@ -93,4 +99,3 @@ export function Footer() {
     </footer>
   )
 }
-
