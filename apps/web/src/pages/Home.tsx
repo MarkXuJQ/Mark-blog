@@ -235,6 +235,7 @@ export function Home() {
       />
 
       <HomeBlogRailSection
+        avatarSrc={avatarSrc}
         sectionScale={widgetScale}
         sectionY={widgetY}
         sectionOpacity={widgetOpacity}

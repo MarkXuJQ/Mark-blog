@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   motion,
   type MotionValue,
@@ -18,17 +18,56 @@ interface HomeWidgetStackSectionProps {
   sectionPointerEvents?: MotionValue<string>
 }
 
-const BACKDROP_REVEAL_END = 0.0
+// Backdrop cover timing.
+// Set to 0 to keep the black background pinned immediately once this scene starts.
+// Increase it if you want the background itself to "climb up" more slowly.
+const BACKDROP_REVEAL_END = 0.3
+
+// Content fade-in timing.
+// `CONTENT_REVEAL_START`: when the third-screen content starts appearing.
+// `CONTENT_REVEAL_MID`: when the content reaches the softer half-visible stage.
+// `CONTENT_REVEAL_END`: when the content finishes fading in.
+// Keep `CONTENT_REVEAL_START < CONTENT_REVEAL_MID < CONTENT_REVEAL_END`.
 const CONTENT_REVEAL_START = 0.04
-const CONTENT_REVEAL_MID = 0.8
-const CONTENT_REVEAL_END = 0.96
+const CONTENT_REVEAL_MID = 0.2
+const CONTENT_REVEAL_END = 0.3
+
+// Content fade-out timing.
+// Move these earlier if you want the whole third-screen content to leave sooner.
+// Keep `CONTENT_REVEAL_END <= CONTENT_FADE_OUT_START < CONTENT_FADE_OUT_END`.
+// If `CONTENT_FADE_OUT_START` is earlier than `CONTENT_REVEAL_END`, the fade-out
+// branch will be visually masked by the reveal branch above.
+const CONTENT_FADE_OUT_START = 1.0
+const CONTENT_FADE_OUT_END = 1.0
+
+// Child widget/card reveal timing inside the third screen.
+// Earlier start + longer duration = calmer stagger.
+// Later start + shorter duration = snappier card entrance.
 const WIDGET_REVEAL_START = 0.12
 const WIDGET_REVEAL_DURATION = 0.64
+
+// Overall third-screen sticky scene sizing.
+// Increase `WIDGET_SCENE_HEIGHT` for a longer pinned chapter.
+// Make `WIDGET_SCENE_OVERLAP` more negative if you want this screen to start
+// covering the rail earlier.
 const WIDGET_SCENE_HEIGHT = '320svh'
 const WIDGET_SCENE_OVERLAP = '-160svh'
 
+// In-screen content travel window.
+// `CONTENT_SCROLL_START`: when the internal content starts moving upward.
+// `CONTENT_SCROLL_END`: when the internal content finishes its in-screen travel.
+// Wider gap = slower in-screen scroll. Narrower gap = faster in-screen scroll.
+const CONTENT_SCROLL_START = 0.16
+const CONTENT_SCROLL_END = 0.9
+
 function clamp01(value: number) {
   return Math.min(Math.max(value, 0), 1)
+}
+
+function easeInOutCubic(value: number) {
+  return value < 0.5
+    ? 4 * value * value * value
+    : 1 - Math.pow(-2 * value + 2, 3) / 2
 }
 
 export function HomeWidgetStackSection({
@@ -42,6 +81,10 @@ export function HomeWidgetStackSection({
   const prefersReducedMotion = useReducedMotion()
   const isZh = i18n.language?.startsWith('zh')
   const sectionRef = useRef<HTMLElement | null>(null)
+  const contentViewportRef = useRef<HTMLDivElement | null>(null)
+  const contentTrackRef = useRef<HTMLDivElement | null>(null)
+  const [contentScrollDistance, setContentScrollDistance] = useState(0)
+  const [sceneExtraScroll, setSceneExtraScroll] = useState(0)
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -55,7 +98,9 @@ export function HomeWidgetStackSection({
   })
 
   const backdropProgress = useTransform(sceneProgress, (value) =>
-    prefersReducedMotion ? 1 : clamp01(value / BACKDROP_REVEAL_END)
+    prefersReducedMotion || BACKDROP_REVEAL_END <= 0
+      ? 1
+      : clamp01(value / BACKDROP_REVEAL_END)
   )
   const widgetRevealProgress = useTransform(sceneProgress, (value) =>
     prefersReducedMotion
@@ -82,6 +127,15 @@ export function HomeWidgetStackSection({
       '0 0 0 rgba(2,6,23,0)',
     ]
   )
+  const contentScrollY = useTransform(sceneProgress, (value) => {
+    if (prefersReducedMotion || contentScrollDistance <= 0) return 0
+
+    const raw = clamp01(
+      (value - CONTENT_SCROLL_START) / (CONTENT_SCROLL_END - CONTENT_SCROLL_START)
+    )
+
+    return -easeInOutCubic(raw) * contentScrollDistance
+  })
   const contentOpacity = useTransform(sceneProgress, (value) => {
     if (prefersReducedMotion) return 1
     if (value <= CONTENT_REVEAL_START) return 0
@@ -100,7 +154,15 @@ export function HomeWidgetStackSection({
           0.32
       )
     }
-    return 1
+    if (value <= CONTENT_FADE_OUT_START) return 1
+    if (value <= CONTENT_FADE_OUT_END) {
+      return (
+        1 -
+        (value - CONTENT_FADE_OUT_START) /
+          (CONTENT_FADE_OUT_END - CONTENT_FADE_OUT_START)
+      )
+    }
+    return 0
   })
   const contentY = useTransform(sceneProgress, (value) => {
     if (prefersReducedMotion) return 0
@@ -127,6 +189,61 @@ export function HomeWidgetStackSection({
     return 1
   })
 
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setContentScrollDistance(0)
+      setSceneExtraScroll(0)
+      return
+    }
+
+    const viewportNode = contentViewportRef.current
+    const trackNode = contentTrackRef.current
+    if (!viewportNode || !trackNode) return
+
+    let frameId = 0
+
+    const updateMeasurements = () => {
+      const viewportHeight = viewportNode.clientHeight
+      const trackHeight = trackNode.scrollHeight
+      const nextScrollDistance = Math.max(0, trackHeight - viewportHeight)
+      const nextSceneExtraScroll =
+        nextScrollDistance + Math.round(viewportHeight * 0.42)
+
+      setContentScrollDistance((current) =>
+        current === nextScrollDistance ? current : nextScrollDistance
+      )
+      setSceneExtraScroll((current) =>
+        current === nextSceneExtraScroll ? current : nextSceneExtraScroll
+      )
+    }
+
+    const scheduleMeasurement = () => {
+      cancelAnimationFrame(frameId)
+      frameId = requestAnimationFrame(updateMeasurements)
+    }
+
+    updateMeasurements()
+
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', scheduleMeasurement)
+      return () => {
+        cancelAnimationFrame(frameId)
+        window.removeEventListener('resize', scheduleMeasurement)
+      }
+    }
+
+    const observer = new ResizeObserver(scheduleMeasurement)
+    observer.observe(viewportNode)
+    observer.observe(trackNode)
+    window.addEventListener('resize', scheduleMeasurement)
+
+    return () => {
+      cancelAnimationFrame(frameId)
+      observer.disconnect()
+      window.removeEventListener('resize', scheduleMeasurement)
+    }
+  }, [prefersReducedMotion])
+
   return (
     <section
       ref={sectionRef}
@@ -135,7 +252,10 @@ export function HomeWidgetStackSection({
       style={
         prefersReducedMotion
           ? { minHeight: '100svh' }
-          : { minHeight: WIDGET_SCENE_HEIGHT, marginTop: WIDGET_SCENE_OVERLAP }
+          : {
+              minHeight: `max(${WIDGET_SCENE_HEIGHT}, calc(100svh + ${sceneExtraScroll}px))`,
+              marginTop: WIDGET_SCENE_OVERLAP,
+            }
       }
     >
       <motion.div className="sticky top-0 h-[100svh] overflow-hidden">
@@ -162,20 +282,32 @@ export function HomeWidgetStackSection({
             pointerEvents: sectionPointerEvents,
           }}
         >
-          <motion.div
-            className="mx-auto flex h-full w-full max-w-[96rem] items-center px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20"
-            style={{ opacity: contentOpacity, y: contentY, scale: contentScale }}
-          >
-            <div className="relative w-full">
-              <div aria-hidden="true" className={styles.stageHalo} />
-              <div aria-hidden="true" className={styles.stageRing} />
-              <div aria-hidden="true" className={styles.stageRingSecondary} />
+          <div ref={contentViewportRef} className={styles.contentViewport}>
+            <motion.div
+              ref={contentTrackRef}
+              className={styles.contentTrack}
+              style={{ y: contentScrollY }}
+            >
+              <motion.div
+                className={styles.contentViewportInner}
+                style={{
+                  opacity: contentOpacity,
+                  y: contentY,
+                  scale: contentScale,
+                }}
+              >
+                <div className="relative w-full">
+                  <div aria-hidden="true" className={styles.stageHalo} />
+                  <div aria-hidden="true" className={styles.stageRing} />
+                  <div aria-hidden="true" className={styles.stageRingSecondary} />
 
-              <div className={styles.pluginWrap}>
-                <TravelFootprintPlugin revealProgress={widgetRevealProgress} />
-              </div>
-            </div>
-          </motion.div>
+                  <div className={styles.pluginWrap}>
+                    <TravelFootprintPlugin revealProgress={widgetRevealProgress} />
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
         </motion.div>
       </motion.div>
     </section>
@@ -195,5 +327,10 @@ const styles = {
     'pointer-events-none absolute left-1/2 top-1/2 h-[min(88vw,48rem)] w-[min(88vw,48rem)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/7',
   stageRingSecondary:
     'pointer-events-none absolute left-1/2 top-1/2 h-[min(68vw,36rem)] w-[min(68vw,36rem)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/5',
+  contentViewport:
+    'mx-auto h-full w-full max-w-[96rem] overflow-hidden px-4 sm:px-6 lg:px-8',
+  contentTrack:
+    'relative min-h-full pt-[14svh] pb-[20svh] sm:pt-[16svh] sm:pb-[22svh] lg:pt-[18svh] lg:pb-[24svh] will-change-transform',
+  contentViewportInner: 'relative',
   pluginWrap: 'relative z-10',
 }
