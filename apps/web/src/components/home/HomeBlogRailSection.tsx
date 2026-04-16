@@ -25,18 +25,19 @@ interface HomeBlogRailSectionProps {
 
 const BLOG_POST_LIMIT = 7
 const BLOG_HOLD_END = 0.24
-const BLOG_ENTRY_SPEED = 2.5
-const BLOG_IDLE_SPEED = 15.5
-const BLOG_WHEEL_BOOST_MAX = 56
+const BLOG_ENTRY_SPEED = 12.5
+const BLOG_IDLE_SPEED = 25.5
+const BLOG_WHEEL_BOOST_MAX = 76
 const BLOG_WHEEL_BOOST_DECAY_PER_MS = 0.02
 const BLOG_WHEEL_BOOST_RESPONSE_MS = 88
-const BLOG_WHEEL_BOOST_INTENSITY = 3
+const BLOG_WHEEL_BOOST_INTENSITY = 5
 const BLOG_WHEEL_IMPULSE_MULTIPLIER = 3
 const BLOG_WHEEL_CRUISE_MAX = 8.5
 const BLOG_WHEEL_CRUISE_DECAY_PER_MS = 0.0024
 const BLOG_REQUIRED_LOOP_PASSES = 2
 const BLOG_SCENE_LEAD_IN_PX = 960
 const BLOG_SCENE_MIN_EXTRA_SCROLL_PX = 3000
+const BLOG_SCROLL_DISTANCE_SCALE = 2 / 3
 
 function clamp01(value: number) {
   return Math.min(Math.max(value, 0), 1)
@@ -103,10 +104,12 @@ export function HomeBlogRailSection({
   const sceneMinHeight = useMemo(() => {
     if (prefersReducedMotion) return '100svh'
 
-    const extraScrollDistance = Math.max(
+    const baseExtraScrollDistance = Math.max(
       BLOG_SCENE_MIN_EXTRA_SCROLL_PX,
       segmentWidth * BLOG_REQUIRED_LOOP_PASSES + BLOG_SCENE_LEAD_IN_PX
     )
+    const extraScrollDistance =
+      baseExtraScrollDistance * BLOG_SCROLL_DISTANCE_SCALE
 
     return `calc(100svh + ${Math.round(extraScrollDistance)}px)`
   }, [prefersReducedMotion, segmentWidth])
@@ -241,7 +244,7 @@ export function HomeBlogRailSection({
     <section
       ref={sectionRef}
       aria-label={locale === 'zh-CN' ? '首页博客流' : 'Homepage blog rail'}
-      className="relative"
+      className="relative z-10 isolate"
       style={{ minHeight: sceneMinHeight }}
     >
       <motion.div
@@ -258,17 +261,6 @@ export function HomeBlogRailSection({
           className="relative h-full overflow-hidden"
           style={{ backgroundColor: 'var(--page-background)' }}
         >
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 top-0 h-px"
-            style={{ backgroundColor: 'var(--border-color)' }}
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 h-px"
-            style={{ backgroundColor: 'var(--border-color)' }}
-          />
-
           <div className="relative flex h-full items-center py-12 sm:py-14">
             <motion.div
               className={cn(

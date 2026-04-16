@@ -19,6 +19,14 @@ import { LifeSinceClock } from './LifeSinceClock'
 const EMBED_MAP_URL =
   'https://travel.markxu.icu/?embed=1&bare=1&baseMap=liberty'
 
+const SHELL_REVEAL_END = 0.28
+const WORLD_PANEL_REVEAL_START = 0.08
+const WORLD_PANEL_REVEAL_END = 0.34
+const EMBED_PANEL_REVEAL_START = 0.4
+const EMBED_PANEL_REVEAL_END = 0.66
+const CLOCK_PANEL_REVEAL_START = 0.72
+const CLOCK_PANEL_REVEAL_END = 0.96
+
 const hoverLift = {
   whileHover: {
     scale: 1.008,
@@ -146,38 +154,38 @@ export function TravelFootprintPlugin({
   const shellOpacity = useTransform(pluginReveal, (value) => {
     const eased = prefersReducedMotion
       ? clamp01(value)
-      : easeOutCubic(clamp01(value / 0.18))
+      : easeOutCubic(clamp01(value / SHELL_REVEAL_END))
     return prefersReducedMotion ? 1 : 0.2 + eased * 0.8
   })
   const shellRevealY = useTransform(pluginReveal, (value) => {
     const eased = prefersReducedMotion
       ? clamp01(value)
-      : easeOutCubic(clamp01(value / 0.18))
+      : easeOutCubic(clamp01(value / SHELL_REVEAL_END))
     return prefersReducedMotion ? 0 : 36 * (1 - eased)
   })
   const shellRevealScale = useTransform(pluginReveal, (value) => {
     const eased = prefersReducedMotion
       ? clamp01(value)
-      : easeOutCubic(clamp01(value / 0.18))
+      : easeOutCubic(clamp01(value / SHELL_REVEAL_END))
     return prefersReducedMotion ? 1 : 0.96 + eased * 0.04
   })
 
   const worldReveal = usePanelReveal(
     pluginReveal,
-    0.04,
-    0.28,
+    WORLD_PANEL_REVEAL_START,
+    WORLD_PANEL_REVEAL_END,
     Boolean(prefersReducedMotion)
   )
   const embedReveal = usePanelReveal(
     pluginReveal,
-    0.3,
-    0.54,
+    EMBED_PANEL_REVEAL_START,
+    EMBED_PANEL_REVEAL_END,
     Boolean(prefersReducedMotion)
   )
   const clockReveal = usePanelReveal(
     pluginReveal,
-    0.56,
-    0.8,
+    CLOCK_PANEL_REVEAL_START,
+    CLOCK_PANEL_REVEAL_END,
     Boolean(prefersReducedMotion)
   )
 
