@@ -28,7 +28,10 @@ export function RootLayout() {
 
     window.addEventListener('app:overlay', onOverlayChange as EventListener)
     return () =>
-      window.removeEventListener('app:overlay', onOverlayChange as EventListener)
+      window.removeEventListener(
+        'app:overlay',
+        onOverlayChange as EventListener
+      )
   }, [])
 
   return (
@@ -36,7 +39,7 @@ export function RootLayout() {
       className={cn(
         'relative flex min-h-screen w-full flex-col text-[var(--text-primary)]',
         isHome
-          ? 'bg-[#050810]'
+          ? 'bg-[#fdf9f0] transition-colors duration-300'
           : 'bg-[var(--page-background)] transition-colors duration-300'
       )}
     >
@@ -46,9 +49,9 @@ export function RootLayout() {
       >
         {isHome ? (
           <>
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.08),rgba(56,189,248,0.03)_22%,rgba(0,0,0,0)_54%)]" />
-            <div className="absolute -right-28 top-[36rem] h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(148,163,184,0.12)_0%,rgba(148,163,184,0.04)_34%,rgba(0,0,0,0)_70%)]" />
-            <div className="absolute -left-44 bottom-0 h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.08)_0%,rgba(56,189,248,0.03)_30%,rgba(0,0,0,0)_72%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.11),rgba(56,189,248,0.05)_24%,rgba(255,255,255,0)_56%)]" />
+            <div className="absolute top-[36rem] -right-28 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.1)_0%,rgba(249,115,22,0.04)_34%,rgba(255,255,255,0)_72%)]" />
+            <div className="absolute bottom-0 -left-44 h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.09)_0%,rgba(56,189,248,0.03)_30%,rgba(255,255,255,0)_72%)]" />
           </>
         ) : null}
       </div>
@@ -59,7 +62,10 @@ export function RootLayout() {
             ? 'pointer-events-none fixed inset-x-0 top-6'
             : 'pointer-events-none sticky top-6 mb-8'
         } ${
-          isNavBarVisible && !isOverlayOpen && !isTransitionActive && !isSearchOpen
+          isNavBarVisible &&
+          !isOverlayOpen &&
+          !isTransitionActive &&
+          !isSearchOpen
             ? 'translate-y-0'
             : '-translate-y-32'
         }`}

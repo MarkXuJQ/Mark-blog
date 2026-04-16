@@ -1,5 +1,4 @@
 import { motion, type MotionValue } from 'framer-motion'
-import { Link } from 'react-router-dom'
 import { useTranslation, Trans } from 'react-i18next'
 import { cn } from '../../utils/cn'
 import { getImageUrl } from '../../utils/image'
@@ -88,7 +87,10 @@ function HomeHeroBackground({ isDarkMode }: { isDarkMode: boolean }) {
         src={getImageUrl(sources.fallback)}
         alt=""
         aria-hidden="true"
-        className={styles.heroImage}
+        className={cn(
+          styles.heroImage,
+          isDarkMode ? styles.heroImageNight : styles.heroImageDay
+        )}
         decoding="async"
         fetchPriority="high"
       />
@@ -117,6 +119,20 @@ export function HomeHeroSection({
   handleNameKeyDown,
 }: HomeHeroSectionProps) {
   const { t } = useTranslation()
+  const sectionToneClass = isDarkMode
+    ? styles.heroSectionDark
+    : styles.heroSectionLight
+  const scrimClass = isDarkMode ? styles.heroScrimNight : styles.heroScrimLight
+  const frameClass = isDarkMode ? styles.heroFrameNight : styles.heroFrameLight
+  const auraClass = isDarkMode ? styles.heroAuraNight : styles.heroAuraLight
+  const contentToneClass = isDarkMode
+    ? styles.heroContentDark
+    : styles.heroContentLight
+  const titleClass = isDarkMode ? styles.titleDark : styles.titleLight
+  const contentClass = isDarkMode
+    ? styles.contentContainerDark
+    : styles.contentContainerLight
+  const dotClass = isDarkMode ? styles.dotDark : styles.dotLight
 
   return (
     <motion.section
@@ -132,7 +148,7 @@ export function HomeHeroSection({
         pointerEvents: heroPointerEvents,
       }}
     >
-      <div className={styles.heroSection}>
+      <div className={cn(styles.heroSection, sectionToneClass)}>
         <motion.div
           aria-hidden="true"
           className={styles.heroMedia}
@@ -140,21 +156,33 @@ export function HomeHeroSection({
         >
           <HomeHeroBackground isDarkMode={isDarkMode} />
         </motion.div>
-        <div aria-hidden="true" className={styles.heroScrim} />
-        <div aria-hidden="true" className={styles.heroFrame} />
-        <div aria-hidden="true" className={styles.heroAura} />
+        <div aria-hidden="true" className={cn(styles.heroScrim, scrimClass)} />
+        {isDarkMode ? (
+          <>
+            <div
+              aria-hidden="true"
+              className={cn(styles.heroFrame, frameClass)}
+            />
+            <div
+              aria-hidden="true"
+              className={cn(styles.heroAura, auraClass)}
+            />
+          </>
+        ) : null}
 
         <motion.div
-          className={styles.heroContent}
+          className={cn(styles.heroContent, contentToneClass)}
           style={{ opacity: heroContentOpacity, y: heroContentY }}
         >
           <div className={styles.heroContentInner}>
             <div className={styles.heroCopy}>
-              <p className={styles.heroEyebrow}>
-                {isZh ? '个人主页 / Personal Hub' : 'Personal Hub'}
-              </p>
-
-              <h1 className={cn(styles.title, 'no-heading-letter-spacing')}>
+              <h1
+                className={cn(
+                  styles.title,
+                  titleClass,
+                  'no-heading-letter-spacing'
+                )}
+              >
                 {isZh ? (
                   <>
                     <span className="block sm:hidden">欢迎来到</span>
@@ -203,25 +231,16 @@ export function HomeHeroSection({
                 )}
               </h1>
 
-              <div className={styles.contentContainer}>
+              <div className={cn(styles.contentContainer, contentClass)}>
                 <p>{t('home.intro')}</p>
                 <p>{t('home.description')}</p>
               </div>
 
-              <div className={styles.heroActions}>
-                <Link to="/blog" className={styles.primaryAction}>
-                  {isZh ? '进入 Blog' : 'Enter the Blog'}
-                </Link>
-                <Link to="/about" className={styles.secondaryAction}>
-                  {isZh ? '认识一下我' : 'Meet Mark'}
-                </Link>
-              </div>
-
               <div className={styles.heroFooter}>
                 <div className={styles.decorativeContainer}>
-                  <div className={styles.dot} />
-                  <div className={styles.dot} />
-                  <div className={styles.dot} />
+                  <div className={cn(styles.dot, dotClass)} />
+                  <div className={cn(styles.dot, dotClass)} />
+                  <div className={cn(styles.dot, dotClass)} />
                 </div>
               </div>
             </div>
@@ -245,18 +264,29 @@ export function HomeHeroSection({
 const styles = {
   heroLayer:
     'relative overflow-hidden origin-top will-change-transform [transform:translateZ(0)]',
-  heroSection: 'relative min-h-[100vh] w-full overflow-hidden bg-slate-950',
+  heroSection: 'relative min-h-[100vh] w-full overflow-hidden',
+  heroSectionLight: 'bg-[#edf3f6]',
+  heroSectionDark: 'bg-slate-950',
   heroMedia: 'absolute inset-0',
-  heroImage:
-    'h-full w-full object-cover brightness-[0.78] saturate-[1.05] blur-[10px] scale-[1.08]',
-  heroScrim:
-    'absolute inset-0 bg-[linear-gradient(180deg,rgba(7,10,17,0.22)_0%,rgba(7,10,17,0.40)_48%,rgba(5,8,16,0.72)_100%)]',
-  heroFrame:
-    'pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/12',
-  heroAura:
-    'pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_28%,rgba(56,189,248,0.18),rgba(56,189,248,0)_32%),radial-gradient(circle_at_78%_24%,rgba(251,191,36,0.16),rgba(251,191,36,0)_28%),radial-gradient(circle_at_52%_78%,rgba(255,255,255,0.1),rgba(255,255,255,0)_36%)]',
+  heroImage: 'h-full w-full object-cover blur-[10px] scale-[1.08]',
+  heroImageDay: 'brightness-[1.02] saturate-[1.01]',
+  heroImageNight: 'brightness-[0.84] saturate-[1.04]',
+  heroScrim: 'absolute inset-0',
+  heroScrimLight:
+    'bg-[linear-gradient(180deg,rgba(255,252,247,0.14)_0%,rgba(249,242,235,0.22)_42%,rgba(243,235,227,0.32)_100%)]',
+  heroScrimNight:
+    'bg-[linear-gradient(180deg,rgba(2,6,23,0.22)_0%,rgba(2,6,23,0.38)_46%,rgba(2,6,23,0.54)_100%)]',
+  heroFrame: 'pointer-events-none absolute inset-0 ring-1 ring-inset',
+  heroFrameLight: 'hidden',
+  heroFrameNight: 'ring-white/12',
+  heroAura: 'pointer-events-none absolute inset-0',
+  heroAuraLight: 'hidden',
+  heroAuraNight:
+    'bg-[radial-gradient(circle_at_18%_28%,rgba(56,189,248,0.18),rgba(56,189,248,0)_32%),radial-gradient(circle_at_78%_24%,rgba(251,191,36,0.16),rgba(251,191,36,0)_28%),radial-gradient(circle_at_52%_78%,rgba(255,255,255,0.1),rgba(255,255,255,0)_36%)]',
   heroContent:
-    'relative z-10 flex min-h-[100vh] items-center px-5 pt-28 pb-10 text-white sm:px-8 sm:pt-32 lg:px-10',
+    'relative z-10 flex min-h-[100vh] items-center px-5 pt-28 pb-10 sm:px-8 sm:pt-32 lg:px-10',
+  heroContentLight: 'text-black',
+  heroContentDark: 'text-white',
   heroContentInner:
     'mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.96fr)] lg:gap-12',
   heroCopy:
@@ -264,23 +294,36 @@ const styles = {
   heroEyebrow:
     'hidden items-center rounded-full border border-white/18 bg-white/10 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-white/78 backdrop-blur-xl lg:inline-flex',
   title: cn(
-    'mt-2 max-w-4xl text-center text-4xl font-semibold tracking-tight text-white drop-shadow-[0_10px_30px_rgba(15,23,42,0.35)] sm:text-6xl lg:mt-6 lg:text-left lg:text-7xl'
+    'mt-2 max-w-4xl text-center text-4xl font-semibold tracking-tight sm:text-6xl lg:mt-6 lg:text-left lg:text-7xl'
   ),
+  titleLight: 'text-black',
+  titleDark: 'text-white drop-shadow-[0_10px_30px_rgba(15,23,42,0.35)]',
   highlightText: cn(
-    'inline-block cursor-pointer bg-gradient-to-r from-amber-200 via-orange-200 to-amber-100 bg-clip-text text-transparent',
+    'inline-block cursor-pointer bg-gradient-to-r from-orange-500 via-orange-500 to-red-500 bg-clip-text text-transparent',
     'transition-transform duration-300 hover:-translate-y-1 hover:scale-105 hover:rotate-3'
   ),
   contentContainer:
-    'mx-auto mt-6 max-w-2xl space-y-5 px-2 text-base font-medium leading-relaxed text-white/82 sm:text-lg lg:mx-0 lg:px-0',
+    'mx-auto mt-6 max-w-2xl space-y-5 px-2 text-base font-medium leading-relaxed sm:text-lg lg:mx-0 lg:px-0',
+  contentContainerLight: 'text-black',
+  contentContainerDark: 'text-white/82',
   heroActions:
     'mt-7 flex flex-wrap items-center justify-center gap-3 lg:justify-start',
   primaryAction:
-    'inline-flex items-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition-transform duration-300 hover:-translate-y-0.5 hover:scale-[1.01]',
+    'inline-flex items-center rounded-full px-5 py-3 text-sm font-semibold transition-transform duration-300 hover:-translate-y-0.5 hover:scale-[1.01]',
+  primaryActionLight:
+    'bg-white/72 text-black shadow-[0_18px_40px_-24px_rgba(15,23,42,0.14)] ring-1 ring-white/48 backdrop-blur-xl hover:bg-white/84',
+  primaryActionDark: 'bg-white text-slate-950',
   secondaryAction:
-    'inline-flex items-center rounded-full border border-white/18 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur-xl transition-transform duration-300 hover:-translate-y-0.5 hover:bg-white/14',
+    'inline-flex items-center rounded-full border px-5 py-3 text-sm font-semibold backdrop-blur-xl transition-transform duration-300 hover:-translate-y-0.5',
+  secondaryActionLight:
+    'border-white/42 bg-white/30 text-black hover:bg-white/46',
+  secondaryActionDark:
+    'border-white/18 bg-white/10 text-white hover:bg-white/14',
   heroFooter: 'mt-10 hidden flex-col items-center gap-4 lg:flex lg:items-start',
   decorativeContainer: 'flex justify-center gap-2 opacity-70 lg:justify-start',
-  dot: 'h-2 w-2 rounded-full bg-white/55',
+  dot: 'h-2 w-2 rounded-full',
+  dotLight: 'bg-black/26',
+  dotDark: 'bg-white/55',
   heroVisualWrap:
     'order-1 relative flex w-full items-center justify-center lg:order-2 lg:justify-end',
 }

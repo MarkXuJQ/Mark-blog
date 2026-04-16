@@ -382,11 +382,11 @@ const styles = {
   glare:
     'pointer-events-none absolute left-1/2 top-1/2 hidden h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/35 blur-3xl lg:block',
   tag: 'absolute z-20 hidden max-w-[12rem] flex-col gap-1 rounded-2xl border px-4 py-3 text-left backdrop-blur-xl shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] lg:flex',
-  tagLight: 'border-white/68 bg-white/72 text-slate-900',
+  tagLight: 'border-white/68 bg-white/72 text-black',
   tagDark: 'border-white/12 bg-slate-950/48 text-white',
   tagLabel:
     'text-[0.62rem] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400',
-  tagValue: 'text-sm font-medium leading-5 text-slate-900 dark:text-white',
+  tagValue: 'text-sm font-medium leading-5 text-black dark:text-white',
   tagA: 'left-3 top-4 sm:left-5 sm:top-6',
   tagB: 'right-3 top-12 sm:right-6 sm:top-16',
   tagC: 'bottom-0 left-1/5 -translate-x-1/2',

@@ -17,7 +17,9 @@ import { Seo } from '../components/seo/Seo'
 import { Footer } from '../components/layout/Footer'
 import { requestPageTransition } from '../components/transitions/pageTransitionBus'
 import { HomeHeroSection } from '../components/home/HomeHeroSection'
-import { HomeTravelSection } from '../components/home/HomeTravelSection'
+import { HomeWidgetStackSection } from '../components/home/HomeWidgetStackSection'
+import { HomeRadarSection } from '../components/home/HomeRadarSection'
+import { HomeBlogRailSection } from '../components/home/HomeBlogRailSection'
 import {
   DEFAULT_DESCRIPTION,
   getSiteUrl,
@@ -135,27 +137,25 @@ export function Home() {
     prefersReducedMotion ? [0, -4] : [0, -18]
   )
 
-  const travelScale = useTransform(
+  const widgetScale = useTransform(
     sceneProgress,
     [0.04, 0.28, 0.52, 0.7],
     prefersReducedMotion ? [1.003, 1.0015, 1.001, 1] : [1.022, 1.012, 1.004, 1]
   )
-  const travelY = useTransform(
+  const widgetY = useTransform(
     sceneProgress,
     [0.02, 0.42, 0.62],
     prefersReducedMotion ? [4, 0, -2] : [34, 0, -6]
   )
-  const travelOpacity = useTransform(sceneProgress, [0, 1], [1, 1])
-  const travelFilter = useTransform(
+  const widgetOpacity = useTransform(sceneProgress, [0, 1], [1, 1])
+  const widgetFilter = useTransform(
     sceneProgress,
     [0, 1],
     ['blur(0px)', 'blur(0px)']
   )
-  const travelPointerEvents = useTransform(sceneProgress, (value) =>
+  const widgetPointerEvents = useTransform(sceneProgress, (value) =>
     value > 0.24 ? 'auto' : 'none'
   ) as MotionValue<string>
-  const travelCardY = useTransform(sceneProgress, [0.2, 0.5], [24, 0])
-  const travelCardOpacity = useTransform(sceneProgress, [0, 1], [1, 1])
 
   const handleNameClick = () => {
     const now = Date.now()
@@ -205,18 +205,18 @@ export function Home() {
         handleNameKeyDown={handleNameKeyDown}
       />
 
-      <HomeTravelSection
-        travelScale={travelScale}
-        travelY={travelY}
-        travelOpacity={travelOpacity}
-        travelFilter={travelFilter}
-        travelPointerEvents={travelPointerEvents}
-        travelCardY={travelCardY}
-        travelCardOpacity={travelCardOpacity}
+      <HomeBlogRailSection
+        sectionScale={widgetScale}
+        sectionY={widgetY}
+        sectionOpacity={widgetOpacity}
+        sectionFilter={widgetFilter}
+        sectionPointerEvents={widgetPointerEvents}
       />
+      <HomeWidgetStackSection />
+      <HomeRadarSection avatarSrc={avatarSrc} />
 
       <div className="relative z-20 mx-auto w-full max-w-3xl px-4 pt-8 pb-8">
-        <Footer variant="home" />
+        <Footer />
       </div>
     </>
   )
