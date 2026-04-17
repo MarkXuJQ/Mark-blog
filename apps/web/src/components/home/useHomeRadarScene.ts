@@ -105,9 +105,7 @@ export function getTrailingBeamImpact(
 export function getSignalShellShift(node: {
   cardAlignX: 'left' | 'center' | 'right'
   cardAlignY: 'top' | 'bottom'
-}) {
-  const signalCardSizePx = 212
-  const signalDotSizePx = 44
+}, signalCardSizePx = 212, signalDotSizePx = 44) {
   const halfDelta = (signalCardSizePx - signalDotSizePx) / 2
   const shiftX =
     node.cardAlignX === 'left'

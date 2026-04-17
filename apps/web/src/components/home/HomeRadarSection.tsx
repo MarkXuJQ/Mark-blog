@@ -5,8 +5,8 @@ import {
   easeOutCubic,
   getBeamRevealProgress,
   getRadarNodeAngle,
-  getSignalShellShift,
   getTrailingBeamImpact,
+  getSignalShellShift,
   HOME_RADAR_CENTER_Y,
   HOME_RADAR_RING_DURATION,
   HOME_RADAR_RING_START,
@@ -48,8 +48,13 @@ interface RadarNode {
   cardAlignX: 'left' | 'center' | 'right'
   cardAlignY: 'top' | 'bottom'
   color: string
-  glow: string
+  dotScaleSteps?: number
 }
+
+const RADAR_SIGNAL_GREEN = '#10A64B'
+const RADAR_SIGNAL_ORANGE = '#FF6F43'
+const RADAR_SIGNAL_VIOLET = '#7670E8'
+const RADAR_SIGNAL_YELLOW = '#F4C433'
 
 const RADAR_NODES: RadarNode[] = [
   {
@@ -69,8 +74,7 @@ const RADAR_NODES: RadarNode[] = [
     },
     cardAlignX: 'right',
     cardAlignY: 'bottom',
-    color: '#f97316',
-    glow: 'rgba(249,115,22,0.42)',
+    color: RADAR_SIGNAL_ORANGE,
   },
   {
     id: 'eventuallymaking',
@@ -89,8 +93,7 @@ const RADAR_NODES: RadarNode[] = [
     },
     cardAlignX: 'left',
     cardAlignY: 'bottom',
-    color: '#7c9cff',
-    glow: 'rgba(124,156,255,0.4)',
+    color: RADAR_SIGNAL_VIOLET,
   },
   {
     id: 'messenger',
@@ -109,8 +112,7 @@ const RADAR_NODES: RadarNode[] = [
     },
     cardAlignX: 'left',
     cardAlignY: 'top',
-    color: '#22c55e',
-    glow: 'rgba(34,197,94,0.38)',
+    color: RADAR_SIGNAL_GREEN,
   },
   {
     id: 'radiogarden',
@@ -129,8 +131,7 @@ const RADAR_NODES: RadarNode[] = [
     },
     cardAlignX: 'center',
     cardAlignY: 'top',
-    color: '#14b8a6',
-    glow: 'rgba(20,184,166,0.38)',
+    color: RADAR_SIGNAL_GREEN,
   },
   {
     id: 'joshwcomeau',
@@ -149,8 +150,7 @@ const RADAR_NODES: RadarNode[] = [
     },
     cardAlignX: 'center',
     cardAlignY: 'bottom',
-    color: '#06b6d4',
-    glow: 'rgba(6,182,212,0.36)',
+    color: RADAR_SIGNAL_VIOLET,
   },
   {
     id: 'pathos',
@@ -169,8 +169,7 @@ const RADAR_NODES: RadarNode[] = [
     },
     cardAlignX: 'right',
     cardAlignY: 'top',
-    color: '#fb7185',
-    glow: 'rgba(251,113,133,0.36)',
+    color: RADAR_SIGNAL_YELLOW,
   },
   {
     id: 'tongliao',
@@ -189,18 +188,82 @@ const RADAR_NODES: RadarNode[] = [
     },
     cardAlignX: 'right',
     cardAlignY: 'top',
-    color: '#a855f7',
-    glow: 'rgba(168,85,247,0.36)',
+    color: RADAR_SIGNAL_VIOLET,
   },
 ]
 
 const RING_INSETS = ['8%', '18%', '30%', '42%', '54%']
 const NODE_REVEAL_ANGLE_WINDOW = 18
-const NODE_PULSE_ANGLE_WINDOW = 24
+const NODE_SCAN_GLOW_ANGLE_WINDOW = 26
 const SIGNAL_DOT_SIZE_PX = 44
 const SIGNAL_CARD_SIZE_PX = 212
 const SIGNAL_CARD_RADIUS_PX = 32
 const SIGNAL_ICON_INSET_PX = 16
+const SIGNAL_DOT_SIZE_STEP_PX = 8
+const RADAR_AXIS_MARKERS = [
+  {
+    label: '000',
+    left: '50%',
+    top: '3.5%',
+    className: '-translate-x-1/2 -translate-y-full',
+  },
+  {
+    label: '090',
+    left: '96.4%',
+    top: '50%',
+    className: 'translate-x-full -translate-y-1/2',
+  },
+  {
+    label: '180',
+    left: '50%',
+    top: '96.4%',
+    className: '-translate-x-1/2 translate-y-full',
+  },
+  {
+    label: '270',
+    left: '3.6%',
+    top: '50%',
+    className: '-translate-x-full -translate-y-1/2',
+  },
+] as const
+
+function hexToRgb(hex: string) {
+  const normalized = hex.replace('#', '')
+  const safeHex =
+    normalized.length === 3
+      ? normalized
+          .split('')
+          .map((char) => `${char}${char}`)
+          .join('')
+      : normalized
+
+  const value = Number.parseInt(safeHex, 16)
+
+  if (!Number.isFinite(value)) {
+    return { r: 255, g: 255, b: 255 }
+  }
+
+  return {
+    r: (value >> 16) & 255,
+    g: (value >> 8) & 255,
+    b: value & 255,
+  }
+}
+
+function withAlpha(hex: string, alpha: number) {
+  const { r, g, b } = hexToRgb(hex)
+  return `rgba(${r},${g},${b},${Math.max(0, Math.min(1, alpha))})`
+}
+
+function isLightHexColor(hex: string) {
+  const { r, g, b } = hexToRgb(hex)
+  const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255
+  return luminance > 0.6
+}
+
+function getNodeDotSize(node: RadarNode) {
+  return SIGNAL_DOT_SIZE_PX + (node.dotScaleSteps ?? 0) * SIGNAL_DOT_SIZE_STEP_PX
+}
 
 function HomeRadarAvatarKeyframe({ avatarSrc }: { avatarSrc: string }) {
   return (
@@ -229,9 +292,63 @@ function HomeRadarAvatarKeyframe({ avatarSrc }: { avatarSrc: string }) {
   )
 }
 
+function RadarMetaItem({
+  value,
+  label,
+}: {
+  value: string
+  label: string
+}) {
+  return (
+    <div className={styles.metaItem}>
+      <span className={styles.metaValue}>{value}</span>
+      <span className={styles.metaLabel}>{label}</span>
+    </div>
+  )
+}
+
+function RadarAxisMarker({
+  label,
+  left,
+  top,
+  className,
+}: {
+  label: string
+  left: string
+  top: string
+  className: string
+}) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(styles.axisMarker, className)}
+      style={{ left, top }}
+    >
+      <span className={styles.axisMarkerTick} />
+      <span>{label}</span>
+    </div>
+  )
+}
+
 export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
   const { i18n } = useTranslation()
   const isZh = i18n.language?.startsWith('zh')
+  const introEyebrow = isZh
+    ? '个人雷达 / Curated orbit'
+    : 'Personal radar / Curated orbit'
+  const introDescription = isZh
+    ? '把我会反复回访的博客、实验与网络角落，整理成一张缓慢展开的私人雷达。'
+    : 'A slow personal scan of the blogs, experiments, and web corners I keep returning to.'
+  const introMetaItems = [
+    {
+      value: String(RADAR_NODES.length).padStart(2, '0'),
+      label: isZh ? '信号源' : 'Signals',
+    },
+    {
+      value: isZh ? '动态' : 'Live',
+      label: isZh ? '扫描' : 'Sweep',
+    },
+  ]
   const {
     activateSignalNode,
     activeNodeId,
@@ -258,6 +375,11 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
       className="relative isolate z-[30] h-[100svh] overflow-hidden"
       style={{ backgroundColor: 'var(--page-background)' }}
     >
+      <div
+        aria-hidden="true"
+        className={styles.softGlowLeft}
+        style={{ opacity: ambienceReveal * 0.72 }}
+      />
       <div
         aria-hidden="true"
         className={styles.softGlowRight}
@@ -312,13 +434,56 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
             transform: `translateY(${(1 - introReveal) * 18}px)`,
           }}
         >
+          <div className={styles.introEyebrowRow}>
+            <div aria-hidden="true" className={styles.introEyebrowRule} />
+            <p className={styles.introEyebrow}>{introEyebrow}</p>
+          </div>
           <h2 className={cn('heading-display', styles.introTitle)}>
             {isZh ? '发现的博客和网站' : 'Blogs and Sites I Discovered'}
           </h2>
+          <p className={styles.introDescription}>{introDescription}</p>
+          <div className={styles.metaRow}>
+            {introMetaItems.map((item) => (
+              <RadarMetaItem
+                key={item.label}
+                value={item.value}
+                label={item.label}
+              />
+            ))}
+          </div>
         </div>
 
         <div className={styles.radarStage}>
           <div style={{ top: HOME_RADAR_CENTER_Y }} className={styles.radarField}>
+            <div
+              aria-hidden="true"
+              className={styles.fieldVignette}
+              style={{ opacity: ambienceReveal * 0.82 }}
+            />
+            <div
+              aria-hidden="true"
+              className={styles.fieldPerimeter}
+              style={{ opacity: mix(0.22, 0.76, ambienceReveal) }}
+            />
+            <div
+              aria-hidden="true"
+              className={styles.fieldCenterGlow}
+              style={{ opacity: ambienceReveal * 0.58 }}
+            />
+            <div
+              aria-hidden="true"
+              className={styles.fieldCenterDisc}
+              style={{ opacity: mix(0.14, 0.62, verticalLineReveal) }}
+            />
+            {RADAR_AXIS_MARKERS.map((marker) => (
+              <RadarAxisMarker
+                key={marker.label}
+                label={marker.label}
+                left={marker.left}
+                top={marker.top}
+                className={marker.className}
+              />
+            ))}
             {RING_INSETS.map((inset, index) => {
               const ringRaw = segmentProgress(
                 progress,
@@ -370,22 +535,57 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                       )
               const nodeOpacity = easeOutCubic(nodeRevealRaw)
               const nodeScale = mix(0.36, 1, easeOutBack(nodeRevealRaw))
-              const nodeImpact =
+              const scanGlowRaw =
                 explorationProgress <= 0
                   ? 0
                   : getTrailingBeamImpact(
                       beamFocusAngle,
                       nodeAngle,
-                      NODE_PULSE_ANGLE_WINDOW
+                      NODE_SCAN_GLOW_ANGLE_WINDOW
                     )
-              const signalPulseScale = mix(0.72, 2.08, nodeImpact)
-              const signalPulseOpacity = nodeImpact * 0.56 * nodeOpacity
-              const restShellShadow = `0 0 0 1px rgba(255,255,255,0.44), 0 18px 34px -22px rgba(15,23,42,0.82), 0 0 ${mix(10, 22, nodeImpact)}px ${node.glow}`
-              const hoverShellShadow = `0 34px 92px -48px rgba(15,23,42,0.82), 0 0 ${mix(18, 38, nodeImpact)}px ${node.glow}`
-              const { shiftX, shiftY } = getSignalShellShift(node)
-              const shellOffset = (SIGNAL_DOT_SIZE_PX - SIGNAL_CARD_SIZE_PX) / 2
+              const scanGlow = easeOutCubic(scanGlowRaw)
+              const dotSize = getNodeDotSize(node)
+              const useDarkCardText = isLightHexColor(node.color)
+              const cardTextColor = useDarkCardText ? '#0F172A' : '#FFFFFF'
+              const cardMutedTextColor = useDarkCardText
+                ? 'rgba(15,23,42,0.72)'
+                : 'rgba(255,255,255,0.8)'
+              const iconInsetPercent = isNodeActive
+                ? 6
+                : Math.max(4, 10 - (node.dotScaleSteps ?? 0) * 2)
+              const faviconScale = isNodeActive
+                ? 1.08
+                : 1.12 + (node.dotScaleSteps ?? 0) * 0.08
+              const restShellShadow = 'none'
+              const hoverShellShadow =
+                '0 24px 56px -42px rgba(15,23,42,0.18)'
+              const { shiftX, shiftY } = getSignalShellShift(
+                node,
+                SIGNAL_CARD_SIZE_PX,
+                dotSize
+              )
+              const shellOffset = (dotSize - SIGNAL_CARD_SIZE_PX) / 2
               const hoverPadLeft = shellOffset + shiftX
               const hoverPadTop = shellOffset + shiftY
+              const signalShellBackground = isNodeActive
+                ? node.color
+                : 'transparent'
+              const signalShellBorderColor = isNodeActive
+                ? 'transparent'
+                : 'transparent'
+              const signalIconFrameBackground = '#FFFFFF'
+              const signalIconFrameBorderColor = isNodeActive
+                ? 'transparent'
+                : '#E2E8F0'
+              const signalScanGlowOpacity = isNodeActive ? 0 : scanGlow * 0.92
+              const signalScanGlowScale = mix(0.82, 1.18, scanGlow)
+              const signalIconFrameShadow = isNodeActive
+                ? '0 14px 26px -22px rgba(15,23,42,0.16)'
+                : scanGlow > 0.001
+                  ? `0 12px 18px -14px rgba(15,23,42,0.14), 0 0 ${
+                      14 + scanGlow * 20
+                    }px ${withAlpha(node.color, 0.3 + scanGlow * 0.18)}`
+                  : '0 12px 18px -14px rgba(15,23,42,0.14)'
 
               return (
                 <a
@@ -406,6 +606,8 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                   style={{
                     left: node.left,
                     top: node.top,
+                    width: dotSize,
+                    height: dotSize,
                     opacity: nodeOpacity,
                     scale: nodeScale,
                     pointerEvents: nodeOpacity < 0.98 ? 'none' : 'auto',
@@ -425,28 +627,20 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
 
                   <span
                     aria-hidden="true"
-                    className={styles.signalPulse}
-                    style={{
-                      background: node.glow,
-                      opacity: signalPulseOpacity,
-                      scale: signalPulseScale,
-                    }}
-                  />
-
-                  <span
-                    aria-hidden="true"
                     className={styles.signalShell}
                     style={{
                       width: isNodeActive
                         ? SIGNAL_CARD_SIZE_PX
-                        : SIGNAL_DOT_SIZE_PX,
+                        : dotSize,
                       height: isNodeActive
                         ? SIGNAL_CARD_SIZE_PX
-                        : SIGNAL_DOT_SIZE_PX,
+                        : dotSize,
                       opacity: nodeOpacity,
                       borderRadius: isNodeActive
                         ? SIGNAL_CARD_RADIUS_PX
-                        : SIGNAL_DOT_SIZE_PX,
+                        : dotSize,
+                      background: signalShellBackground,
+                      borderColor: signalShellBorderColor,
                       boxShadow: isNodeActive
                         ? hoverShellShadow
                         : restShellShadow,
@@ -457,11 +651,20 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                   >
                     <span
                       aria-hidden="true"
-                      className={styles.signalShellTint}
+                      className={styles.signalScanGlow}
                       style={{
-                        background: `radial-gradient(circle at 28% 24%, rgba(255,255,255,0.92) 0%, ${node.glow} 54%, rgba(255,255,255,0) 100%)`,
+                        opacity: signalScanGlowOpacity,
+                        scale: signalScanGlowScale,
+                        background: `radial-gradient(circle, ${withAlpha(
+                          node.color,
+                          0.48
+                        )} 0%, ${withAlpha(node.color, 0.18)} 44%, ${withAlpha(
+                          node.color,
+                          0
+                        )} 74%)`,
                       }}
                     />
+
                     <span
                       aria-hidden="true"
                       className={styles.signalIconFrame}
@@ -470,23 +673,23 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                         top: isNodeActive ? SIGNAL_ICON_INSET_PX : 0,
                         borderRadius: isNodeActive
                           ? 18
-                          : SIGNAL_DOT_SIZE_PX,
+                          : dotSize,
+                        background: signalIconFrameBackground,
+                        borderColor: signalIconFrameBorderColor,
+                        boxShadow: signalIconFrameShadow,
                       }}
                     >
                       <span
-                        aria-hidden="true"
-                        className={styles.signalIconFrameTint}
-                        style={{
-                          background: `radial-gradient(circle at 20% 18%, ${node.glow} 0%, rgba(255,255,255,0) 72%)`,
-                        }}
-                      />
-                      <span className={styles.signalIconFrameInner}>
+                        className={styles.signalIconFrameInner}
+                        style={{ padding: `${iconInsetPercent}%` }}
+                      >
                         <img
                           src={node.faviconSrc}
                           alt=""
                           className={styles.signalIconImage}
                           loading="lazy"
                           decoding="async"
+                          style={{ scale: faviconScale }}
                         />
                       </span>
                     </span>
@@ -503,15 +706,24 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                       <span className={styles.signalCopyHeader}>
                         <span className={styles.signalCopySpacer} />
                         <span className={styles.signalCopyTitleBlock}>
-                          <span className={styles.signalCardEyebrow}>
+                          <span
+                            className={styles.signalCardEyebrow}
+                            style={{ color: cardMutedTextColor }}
+                          >
                             {nodeEyebrow}
                           </span>
-                          <span className={styles.signalCardTitle}>
+                          <span
+                            className={styles.signalCardTitle}
+                            style={{ color: cardTextColor }}
+                          >
                             {nodeLabel}
                           </span>
                         </span>
                       </span>
-                      <span className={styles.signalCardDescription}>
+                      <span
+                        className={styles.signalCardDescription}
+                        style={{ color: cardMutedTextColor }}
+                      >
                         {nodeDescription}
                       </span>
                     </span>
@@ -527,14 +739,30 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
 }
 
 const styles = {
+  softGlowLeft:
+    'pointer-events-none absolute left-[-12rem] top-[7rem] h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.14)_0%,rgba(6,182,212,0.04)_34%,rgba(6,182,212,0)_74%)] blur-3xl',
   softGlowRight:
     'pointer-events-none absolute bottom-[3rem] right-[-10rem] h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.14)_0%,rgba(249,115,22,0.04)_34%,rgba(249,115,22,0)_74%)] blur-3xl',
   gridBackdrop:
     'pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(148,163,184,0.07)_0px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.06)_0px,transparent_1px)] [background-size:24px_24px]',
   introPanel:
-    'pointer-events-none absolute left-4 top-[14svh] z-20 max-w-[min(32rem,calc(100vw-2rem))] sm:left-6 sm:top-[15svh] lg:top-[16svh]',
+    'pointer-events-none absolute left-4 top-[12svh] z-20 max-w-[min(34rem,calc(100vw-2rem))] space-y-4 sm:left-6 sm:top-[13svh] sm:space-y-5 lg:top-[14svh]',
+  introEyebrowRow: 'flex items-center gap-3',
+  introEyebrowRule:
+    'h-px w-12 bg-[linear-gradient(90deg,rgba(15,23,42,0.18),rgba(15,23,42,0))] dark:bg-[linear-gradient(90deg,rgba(255,255,255,0.2),rgba(255,255,255,0))]',
+  introEyebrow:
+    'font-[var(--font-pixel)] text-[0.68rem] uppercase tracking-[0.26em] text-slate-500/74 dark:text-white/42',
   introTitle:
-    'text-[1.45rem] leading-tight text-balance text-slate-950 [text-shadow:0_10px_28px_rgba(255,255,255,0.82)] sm:text-[1.85rem] dark:text-white dark:[text-shadow:0_14px_32px_rgba(2,6,23,0.68)]',
+    'max-w-[15ch] text-[1.55rem] leading-[1.02] text-balance text-slate-950 [text-shadow:0_10px_28px_rgba(255,255,255,0.82)] sm:text-[1.95rem] dark:text-white dark:[text-shadow:0_14px_32px_rgba(2,6,23,0.68)]',
+  introDescription:
+    'max-w-[34ch] text-sm leading-6 text-slate-600/84 dark:text-white/58 sm:text-[0.95rem]',
+  metaRow: 'flex flex-wrap items-baseline gap-x-5 gap-y-3',
+  metaItem:
+    'flex items-baseline gap-2.5 border-l border-slate-300/55 pl-4 first:border-l-0 first:pl-0 dark:border-white/12',
+  metaValue:
+    'text-[1.08rem] font-semibold leading-none tracking-[0.02em] text-slate-900 dark:text-white/88',
+  metaLabel:
+    'text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-slate-500/78 dark:text-white/40',
   crosshairVertical:
     'pointer-events-none absolute left-1/2 top-0 h-full w-px origin-center bg-[linear-gradient(180deg,rgba(148,163,184,0)_0%,rgba(148,163,184,0.22)_18%,rgba(148,163,184,0.22)_82%,rgba(148,163,184,0)_100%)]',
   crosshairHorizontal:
@@ -544,6 +772,18 @@ const styles = {
   radarSweepStage: 'pointer-events-none absolute inset-0',
   radarField:
     'absolute left-1/2 h-[min(94vw,94vh)] w-[min(94vw,94vh)] max-h-[72rem] max-w-[72rem] -translate-x-1/2 -translate-y-1/2',
+  fieldVignette:
+    'pointer-events-none absolute inset-[2%] rounded-full bg-[radial-gradient(circle,rgba(15,23,42,0)_54%,rgba(15,23,42,0.12)_100%)] dark:bg-[radial-gradient(circle,rgba(2,6,23,0)_54%,rgba(2,6,23,0.3)_100%)]',
+  fieldPerimeter:
+    'pointer-events-none absolute inset-[3.5%] rounded-full border border-slate-300/42 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.28)] dark:border-white/10 dark:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]',
+  fieldCenterGlow:
+    'pointer-events-none absolute left-1/2 top-1/2 h-[28%] w-[28%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.14)_0%,rgba(6,182,212,0.05)_42%,rgba(6,182,212,0)_76%)] blur-3xl',
+  fieldCenterDisc:
+    'pointer-events-none absolute left-1/2 top-1/2 h-[15.5%] w-[15.5%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-300/55 dark:border-white/14',
+  axisMarker:
+    'absolute z-[5] flex items-center gap-2 font-[var(--font-pixel)] text-[0.6rem] uppercase tracking-[0.24em] text-slate-500/72 dark:text-white/32',
+  axisMarkerTick:
+    'h-px w-4 bg-slate-400/58 dark:bg-white/24',
   ring: 'pointer-events-none absolute rounded-full border border-slate-300/62',
   outerRing:
     'border-dashed border-slate-300/80 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]',
@@ -559,30 +799,26 @@ const styles = {
     'absolute z-30 flex h-[44px] w-[44px] -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-visible focus-visible:z-50 focus-visible:outline-none',
   signalLinkActive: 'z-50',
   signalHoverPad: 'absolute rounded-[32px] opacity-0',
-  signalPulse:
-    'pointer-events-none absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full blur-[14px]',
+  signalScanGlow:
+    'pointer-events-none absolute inset-0 rounded-full transition-[opacity,scale] duration-[180ms] ease-out',
   signalShell:
-    'relative z-10 block shrink-0 overflow-hidden border border-white/72 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(241,245,249,0.9)_100%)] text-left text-slate-900 backdrop-blur-xl [translate:var(--signal-shell-translate)] transition-[width,height,translate,border-radius,box-shadow] duration-[380ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
-  signalShellTint:
-    'pointer-events-none absolute inset-0 rounded-[inherit] opacity-90 mix-blend-screen',
+    'relative z-10 block shrink-0 overflow-hidden border border-transparent bg-white text-left text-slate-900 [translate:var(--signal-shell-translate)] transition-[width,height,translate,border-radius,box-shadow] duration-[380ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
   signalIconFrame:
-    'absolute h-[44px] w-[44px] overflow-hidden border border-white/78 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.94)_100%)] shadow-[0_18px_32px_-22px_rgba(15,23,42,0.82)] transition-[top,left,border-radius] duration-[340ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
-  signalIconFrameTint:
-    'pointer-events-none absolute inset-0 rounded-[inherit] opacity-90',
+    'absolute h-[44px] w-[44px] overflow-hidden border border-slate-200 bg-white shadow-[0_16px_28px_-20px_rgba(15,23,42,0.18)] transition-[top,left,border-radius] duration-[340ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
   signalIconFrameInner:
-    'relative z-10 grid h-full w-full place-items-center p-[21%]',
+    'relative z-10 grid h-full w-full place-items-center p-0',
   signalIconImage: 'h-full w-full object-contain object-center',
   signalCopy:
-    'pointer-events-none absolute inset-0 flex flex-col justify-between p-4 transition-[opacity,translate,filter] duration-[260ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
+    'pointer-events-none absolute inset-0 flex flex-col justify-between p-[1.05rem] transition-[opacity,translate,filter] duration-[260ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
   signalCopyInactive: 'translate-y-2.5 opacity-0 blur-[8px]',
   signalCopyActive: 'translate-y-0 opacity-100 blur-none',
   signalCopyHeader: 'flex items-start gap-3',
   signalCopySpacer: 'h-11 w-11 shrink-0',
   signalCopyTitleBlock: 'flex min-w-0 flex-1 flex-col gap-1 pt-0.5',
   signalCardEyebrow:
-    'text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-slate-500',
+    'text-[0.64rem] font-semibold uppercase tracking-[0.18em]',
   signalCardTitle:
-    'text-[1rem] font-semibold leading-5 text-slate-900',
+    'text-[0.98rem] font-semibold leading-5 tracking-[-0.01em]',
   signalCardDescription:
-    'relative z-10 text-[0.86rem] leading-6 text-slate-700',
+    'relative z-10 text-[0.84rem] leading-6',
 }
