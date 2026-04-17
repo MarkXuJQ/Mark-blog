@@ -9,11 +9,31 @@ import {
 } from 'framer-motion'
 import { cn } from '../../utils/cn'
 
-const MOTION_PATH_POINTS = [0, 0.16, 0.2, 0.58, 0.68, 0.86, 0.93, 1]
+const FIRST_LEG_START = 0.16
+const FIRST_LEG_END = 0.2
+const SECOND_LEG_START = 0.58
+const SECOND_LEG_END = 0.68
+const THIRD_LEG_START = 0.86
+const THIRD_LEG_END = 0.93
+const MOTION_PATH_POINTS = [
+  0,
+  FIRST_LEG_START,
+  FIRST_LEG_END,
+  SECOND_LEG_START,
+  SECOND_LEG_END,
+  THIRD_LEG_START,
+  THIRD_LEG_END,
+  1,
+]
 const AVATAR_KEYFRAME_IDS = ['hero', 'blog', 'travel', 'radar'] as const
-const BLOG_SPIN_START = 0.22
+const BLOG_SPIN_START = FIRST_LEG_END
 const BLOG_SPIN_END = 0.54
-const BLOG_SPIN_RESET_AT = 0.58
+const BLOG_SPIN_HOLD_END = SECOND_LEG_START
+const SECOND_LEG_SPIN_START = SECOND_LEG_START
+const SECOND_LEG_SPIN_END = SECOND_LEG_END
+const HERO_EARLY_MOVE_START = 0.18
+const HERO_EARLY_MOVE_END = 0.42
+const HARD_STOP_KEYFRAME_IDS = ['blog', 'travel'] as const
 
 type AvatarKeyframeId = (typeof AVATAR_KEYFRAME_IDS)[number]
 
@@ -62,15 +82,25 @@ type AvatarKeyframeElementMap = Record<
 
 const KEYFRAME_TIMINGS: Record<AvatarKeyframeId, AvatarKeyframeTiming> = {
   hero: { enterStart: 0.12, holdStart: 0.16, holdEnd: 0.16, exitEnd: 0.2 },
-  blog: { enterStart: 0.16, holdStart: 0.2, holdEnd: 0.58, exitEnd: 0.68 },
-  travel: { enterStart: 0.58, holdStart: 0.68, holdEnd: 0.86, exitEnd: 0.93 },
-  radar: { enterStart: 0.86, holdStart: 0.93, holdEnd: 1, exitEnd: 1 },
+  blog: {
+    enterStart: 0.16,
+    holdStart: 0.2,
+    holdEnd: SECOND_LEG_START,
+    exitEnd: SECOND_LEG_END,
+  },
+  travel: {
+    enterStart: SECOND_LEG_START,
+    holdStart: SECOND_LEG_END,
+    holdEnd: THIRD_LEG_START,
+    exitEnd: THIRD_LEG_END,
+  },
+  radar: { enterStart: THIRD_LEG_START, holdStart: THIRD_LEG_END, holdEnd: 1, exitEnd: 1 },
 }
 
 const MOTION_WINDOWS = [
-  { start: 0.16, end: 0.2 },
-  { start: 0.58, end: 0.68 },
-  { start: 0.86, end: 0.93 },
+  { start: FIRST_LEG_START, end: FIRST_LEG_END },
+  { start: SECOND_LEG_START, end: SECOND_LEG_END },
+  { start: THIRD_LEG_START, end: THIRD_LEG_END },
 ] as const
 
 function clamp(value: number, min: number, max: number) {
@@ -106,6 +136,20 @@ function easeInOutCubic(value: number) {
   return value < 0.5
     ? 4 * value * value * value
     : 1 - Math.pow(-2 * value + 2, 3) / 2
+}
+
+function normalizeAngle(angle: number) {
+  let normalized = angle % 360
+
+  if (normalized > 180) {
+    normalized -= 360
+  }
+
+  if (normalized < -180) {
+    normalized += 360
+  }
+
+  return normalized
 }
 
 function parseCssNumber(value: string, fallback: number) {
@@ -186,7 +230,7 @@ function getCurrentVisualKeyframeId(progress: number) {
   return 'radar'
 }
 
-function getBlogSpinDegrees(progress: number) {
+function getAvatarSpinDegrees(progress: number) {
   if (progress <= BLOG_SPIN_START) return 0
 
   if (progress < BLOG_SPIN_END) {
@@ -199,11 +243,98 @@ function getBlogSpinDegrees(progress: number) {
     return easeInOutCubic(spinProgress) * 360
   }
 
-  if (progress < BLOG_SPIN_RESET_AT) {
+  if (progress < BLOG_SPIN_HOLD_END) {
     return 360
   }
 
-  return 0
+  if (progress < SECOND_LEG_SPIN_END) {
+    const spinProgress = clamp(
+      (progress - SECOND_LEG_SPIN_START) /
+        Math.max(0.0001, SECOND_LEG_SPIN_END - SECOND_LEG_SPIN_START),
+      0,
+      1
+    )
+
+    return 360 + easeInOutCubic(spinProgress) * 360
+  }
+
+  return 720
+}
+
+function getHeroEarlyMoveProgress(progress: number) {
+  return clamp(
+    (progress - HERO_EARLY_MOVE_START) /
+      Math.max(0.0001, HERO_EARLY_MOVE_END - HERO_EARLY_MOVE_START),
+    0,
+    1
+  )
+}
+
+function mixValues(from: number, to: number, progress: number) {
+  return from + (to - from) * progress
+}
+
+function mixAngles(from: number, to: number, progress: number) {
+  return from + normalizeAngle(to - from) * progress
+}
+
+function getLegProgress(pageProgress: number, start: number, end: number) {
+  return clamp(
+    (pageProgress - start) / Math.max(0.0001, end - start),
+    0,
+    1
+  )
+}
+
+function getFirstLegProgress(pageProgress: number, heroEarlyMove: number) {
+  return Math.max(
+    getLegProgress(pageProgress, FIRST_LEG_START, FIRST_LEG_END),
+    heroEarlyMove
+  )
+}
+
+function isFirstLegActive(pageProgress: number, heroEarlyMove: number) {
+  return (
+    pageProgress < FIRST_LEG_END &&
+    getFirstLegProgress(pageProgress, heroEarlyMove) > 0
+  )
+}
+
+function isMotionWindowActive(progress: number, start: number, end: number) {
+  return progress >= start && progress <= end
+}
+
+function isSecondLegActive(progress: number) {
+  return isMotionWindowActive(progress, SECOND_LEG_START, SECOND_LEG_END)
+}
+
+function isDirectPathActive(progress: number, heroEarlyMove: number) {
+  return (
+    isFirstLegActive(progress, heroEarlyMove) ||
+    isSecondLegActive(progress) ||
+    isMotionWindowActive(progress, THIRD_LEG_START, THIRD_LEG_END)
+  )
+}
+
+function getSecondLegRotateValue(
+  pageProgress: number,
+  fromRotation: number,
+  toRotation: number
+) {
+  const progress = getLegProgress(pageProgress, SECOND_LEG_START, SECOND_LEG_END)
+  return mixAngles(fromRotation, toRotation, easeInOutCubic(progress))
+}
+
+function getHardStopKeyframeId(progress: number): AvatarKeyframeId | null {
+  for (const keyframeId of HARD_STOP_KEYFRAME_IDS) {
+    const timing = KEYFRAME_TIMINGS[keyframeId]
+
+    if (progress >= timing.holdStart && progress <= timing.holdEnd) {
+      return keyframeId
+    }
+  }
+
+  return null
 }
 
 function getTakeoverStrength(progress: number, keyframeId: AvatarKeyframeId) {
@@ -381,11 +512,13 @@ function useViewportSize() {
 export function HomeMeteorAvatar({
   avatarSrc,
   pageProgress,
+  heroSceneProgress,
   isDarkMode,
   prefersReducedMotion,
 }: {
   avatarSrc: string
   pageProgress: MotionValue<number>
+  heroSceneProgress?: MotionValue<number>
   isDarkMode: boolean
   prefersReducedMotion: boolean
 }) {
@@ -430,6 +563,9 @@ export function HomeMeteorAvatar({
     const viewportCenterX = width / 2
     const viewportCenterY = height / 2
     const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
     const nextMeasurements = { ...fallbackMeasurements }
 
     for (const keyframeId of AVATAR_KEYFRAME_IDS) {
@@ -533,7 +669,10 @@ export function HomeMeteorAvatar({
         imageScale,
       }
 
-      const takeoverStrength = getTakeoverStrength(progress, keyframeId)
+      const takeoverStrength =
+        keyframeId === 'hero'
+          ? Math.max(getTakeoverStrength(progress, keyframeId), heroEarlyMove)
+          : getTakeoverStrength(progress, keyframeId)
       shell.style.opacity = String(clamp(1 - takeoverStrength, 0, 1))
     }
 
@@ -543,7 +682,16 @@ export function HomeMeteorAvatar({
   const shellXRaw = useTransform(() => {
     frameTicker.get()
     const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
     const { hero, blog, travel, radar } = keyframeMeasurementsRef.current
+
+    if (progress < FIRST_LEG_END) {
+      const firstLegProgress = getFirstLegProgress(progress, heroEarlyMove)
+
+      return mixValues(hero.x, blog.x, firstLegProgress)
+    }
 
     return interpolateKeyframes(progress, MOTION_PATH_POINTS, [
       hero.x,
@@ -560,7 +708,16 @@ export function HomeMeteorAvatar({
   const shellYRaw = useTransform(() => {
     frameTicker.get()
     const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
     const { hero, blog, travel, radar } = keyframeMeasurementsRef.current
+
+    if (progress < FIRST_LEG_END) {
+      const firstLegProgress = getFirstLegProgress(progress, heroEarlyMove)
+
+      return mixValues(hero.y, blog.y, firstLegProgress)
+    }
 
     return interpolateKeyframes(progress, MOTION_PATH_POINTS, [
       hero.y,
@@ -577,7 +734,16 @@ export function HomeMeteorAvatar({
   const shellWidthRaw = useTransform(() => {
     frameTicker.get()
     const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
     const { hero, blog, travel, radar } = keyframeMeasurementsRef.current
+
+    if (progress < FIRST_LEG_END) {
+      const morphProgress = getFirstLegProgress(progress, heroEarlyMove)
+
+      return mixValues(hero.width, blog.width, morphProgress)
+    }
 
     return interpolateKeyframes(progress, MOTION_PATH_POINTS, [
       hero.width,
@@ -594,7 +760,16 @@ export function HomeMeteorAvatar({
   const shellHeightRaw = useTransform(() => {
     frameTicker.get()
     const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
     const { hero, blog, travel, radar } = keyframeMeasurementsRef.current
+
+    if (progress < FIRST_LEG_END) {
+      const morphProgress = getFirstLegProgress(progress, heroEarlyMove)
+
+      return mixValues(hero.height, blog.height, morphProgress)
+    }
 
     return interpolateKeyframes(progress, MOTION_PATH_POINTS, [
       hero.height,
@@ -611,7 +786,16 @@ export function HomeMeteorAvatar({
   const shellRadiusRatioRaw = useTransform(() => {
     frameTicker.get()
     const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
     const { hero, blog, travel, radar } = keyframeMeasurementsRef.current
+
+    if (progress < FIRST_LEG_END) {
+      const morphProgress = getFirstLegProgress(progress, heroEarlyMove)
+
+      return mixValues(hero.shellRadiusRatio, blog.shellRadiusRatio, morphProgress)
+    }
 
     return interpolateKeyframes(progress, MOTION_PATH_POINTS, [
       hero.shellRadiusRatio,
@@ -628,7 +812,16 @@ export function HomeMeteorAvatar({
   const coreScaleXRaw = useTransform(() => {
     frameTicker.get()
     const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
     const { hero, blog, travel, radar } = keyframeMeasurementsRef.current
+
+    if (progress < FIRST_LEG_END) {
+      const morphProgress = getFirstLegProgress(progress, heroEarlyMove)
+
+      return mixValues(hero.coreScaleX, blog.coreScaleX, morphProgress)
+    }
 
     return interpolateKeyframes(progress, MOTION_PATH_POINTS, [
       hero.coreScaleX,
@@ -645,7 +838,16 @@ export function HomeMeteorAvatar({
   const coreScaleYRaw = useTransform(() => {
     frameTicker.get()
     const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
     const { hero, blog, travel, radar } = keyframeMeasurementsRef.current
+
+    if (progress < FIRST_LEG_END) {
+      const morphProgress = getFirstLegProgress(progress, heroEarlyMove)
+
+      return mixValues(hero.coreScaleY, blog.coreScaleY, morphProgress)
+    }
 
     return interpolateKeyframes(progress, MOTION_PATH_POINTS, [
       hero.coreScaleY,
@@ -662,7 +864,16 @@ export function HomeMeteorAvatar({
   const coreRadiusRatioRaw = useTransform(() => {
     frameTicker.get()
     const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
     const { hero, blog, travel, radar } = keyframeMeasurementsRef.current
+
+    if (progress < FIRST_LEG_END) {
+      const morphProgress = getFirstLegProgress(progress, heroEarlyMove)
+
+      return mixValues(hero.coreRadiusRatio, blog.coreRadiusRatio, morphProgress)
+    }
 
     return interpolateKeyframes(progress, MOTION_PATH_POINTS, [
       hero.coreRadiusRatio,
@@ -679,7 +890,16 @@ export function HomeMeteorAvatar({
   const shellBorderWidthRaw = useTransform(() => {
     frameTicker.get()
     const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
     const { hero, blog, travel, radar } = keyframeMeasurementsRef.current
+
+    if (progress < FIRST_LEG_END) {
+      const morphProgress = getFirstLegProgress(progress, heroEarlyMove)
+
+      return mixValues(hero.borderWidth, blog.borderWidth, morphProgress)
+    }
 
     return interpolateKeyframes(progress, MOTION_PATH_POINTS, [
       hero.borderWidth,
@@ -696,12 +916,29 @@ export function HomeMeteorAvatar({
   const shellRotateRaw = useTransform(() => {
     frameTicker.get()
     const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
     const { hero, blog, travel, radar } = keyframeMeasurementsRef.current
     const heroToBlogAngle = (Math.atan2(blog.y - hero.y, blog.x - hero.x) * 180) / Math.PI
     const blogToTravelAngle =
       (Math.atan2(travel.y - blog.y, travel.x - blog.x) * 180) / Math.PI
     const travelToRadarAngle =
       (Math.atan2(radar.y - travel.y, radar.x - travel.x) * 180) / Math.PI
+
+    if (progress < FIRST_LEG_END) {
+      const firstLegProgress = getFirstLegProgress(progress, heroEarlyMove)
+
+      return mixValues(hero.rotation, blog.rotation, firstLegProgress)
+    }
+
+    if (isSecondLegActive(progress)) {
+      return getSecondLegRotateValue(
+        progress,
+        blog.rotation,
+        travel.rotation
+      )
+    }
 
     return interpolateKeyframes(progress, MOTION_PATH_POINTS, [
       hero.rotation,
@@ -753,13 +990,37 @@ export function HomeMeteorAvatar({
   const currentImageScale = useTransform(() => {
     frameTicker.get()
     const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
+    const { hero, blog, travel } = keyframeMeasurementsRef.current
+
+    if (progress < FIRST_LEG_END) {
+      const morphProgress = getFirstLegProgress(progress, heroEarlyMove)
+
+      return mixValues(hero.imageScale, blog.imageScale, morphProgress)
+    }
+
+    if (isSecondLegActive(progress)) {
+      const secondLegProgress = easeInOutCubic(
+        getLegProgress(progress, SECOND_LEG_START, SECOND_LEG_END)
+      )
+
+      return mixValues(blog.imageScale, travel.imageScale, secondLegProgress)
+    }
+
     const visualId = getCurrentVisualKeyframeId(progress)
     return keyframeMeasurementsRef.current[visualId].imageScale
   })
 
   const takeoverStrength = useTransform(() => {
     frameTicker.get()
-    return getMaxTakeoverStrength(pageProgress.get())
+    const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
+
+    return Math.max(getMaxTakeoverStrength(progress), heroEarlyMove)
   })
   const movementStrengthRaw = useTransform(() => {
     frameTicker.get()
@@ -773,7 +1034,11 @@ export function HomeMeteorAvatar({
   })
   const avatarSpin = useTransform(() => {
     frameTicker.get()
-    return getBlogSpinDegrees(pageProgress.get())
+    return getAvatarSpinDegrees(pageProgress.get())
+  })
+  const secondLegHaloEnabled = useTransform(() => {
+    frameTicker.get()
+    return isSecondLegActive(pageProgress.get()) ? 0 : 1
   })
   const movementStrength = useSpring(movementStrengthRaw, {
     stiffness: 360,
@@ -832,8 +1097,199 @@ export function HomeMeteorAvatar({
     mass: 0.24,
   })
 
+  const shellXValue = useTransform(() => {
+    frameTicker.get()
+    const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
+
+    if (isDirectPathActive(progress, heroEarlyMove)) {
+      return shellXRaw.get()
+    }
+
+    const lockedKeyframeId = getHardStopKeyframeId(progress)
+
+    if (lockedKeyframeId) {
+      return keyframeMeasurementsRef.current[lockedKeyframeId].x
+    }
+
+    return shellX.get()
+  })
+  const shellYValue = useTransform(() => {
+    frameTicker.get()
+    const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
+
+    if (isDirectPathActive(progress, heroEarlyMove)) {
+      return shellYRaw.get()
+    }
+
+    const lockedKeyframeId = getHardStopKeyframeId(progress)
+
+    if (lockedKeyframeId) {
+      return keyframeMeasurementsRef.current[lockedKeyframeId].y
+    }
+
+    return shellY.get()
+  })
+  const shellWidthValue = useTransform(() => {
+    frameTicker.get()
+    const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
+
+    if (isDirectPathActive(progress, heroEarlyMove)) {
+      return shellWidthRaw.get()
+    }
+
+    const lockedKeyframeId = getHardStopKeyframeId(progress)
+
+    if (lockedKeyframeId) {
+      return keyframeMeasurementsRef.current[lockedKeyframeId].width
+    }
+
+    return shellWidth.get()
+  })
+  const shellHeightValue = useTransform(() => {
+    frameTicker.get()
+    const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
+
+    if (isDirectPathActive(progress, heroEarlyMove)) {
+      return shellHeightRaw.get()
+    }
+
+    const lockedKeyframeId = getHardStopKeyframeId(progress)
+
+    if (lockedKeyframeId) {
+      return keyframeMeasurementsRef.current[lockedKeyframeId].height
+    }
+
+    return shellHeight.get()
+  })
+  const shellRadiusRatioValue = useTransform(() => {
+    frameTicker.get()
+    const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
+
+    if (isDirectPathActive(progress, heroEarlyMove)) {
+      return shellRadiusRatioRaw.get()
+    }
+
+    const lockedKeyframeId = getHardStopKeyframeId(progress)
+
+    if (lockedKeyframeId) {
+      return keyframeMeasurementsRef.current[lockedKeyframeId].shellRadiusRatio
+    }
+
+    return shellRadiusRatio.get()
+  })
+  const coreScaleXValue = useTransform(() => {
+    frameTicker.get()
+    const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
+
+    if (isDirectPathActive(progress, heroEarlyMove)) {
+      return coreScaleXRaw.get()
+    }
+
+    const lockedKeyframeId = getHardStopKeyframeId(progress)
+
+    if (lockedKeyframeId) {
+      return keyframeMeasurementsRef.current[lockedKeyframeId].coreScaleX
+    }
+
+    return coreScaleX.get()
+  })
+  const coreScaleYValue = useTransform(() => {
+    frameTicker.get()
+    const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
+
+    if (isDirectPathActive(progress, heroEarlyMove)) {
+      return coreScaleYRaw.get()
+    }
+
+    const lockedKeyframeId = getHardStopKeyframeId(progress)
+
+    if (lockedKeyframeId) {
+      return keyframeMeasurementsRef.current[lockedKeyframeId].coreScaleY
+    }
+
+    return coreScaleY.get()
+  })
+  const coreRadiusRatioValue = useTransform(() => {
+    frameTicker.get()
+    const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
+
+    if (isDirectPathActive(progress, heroEarlyMove)) {
+      return coreRadiusRatioRaw.get()
+    }
+
+    const lockedKeyframeId = getHardStopKeyframeId(progress)
+
+    if (lockedKeyframeId) {
+      return keyframeMeasurementsRef.current[lockedKeyframeId].coreRadiusRatio
+    }
+
+    return coreRadiusRatio.get()
+  })
+  const shellBorderWidthValue = useTransform(() => {
+    frameTicker.get()
+    const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
+
+    if (isDirectPathActive(progress, heroEarlyMove)) {
+      return shellBorderWidthRaw.get()
+    }
+
+    const lockedKeyframeId = getHardStopKeyframeId(progress)
+
+    if (lockedKeyframeId) {
+      return keyframeMeasurementsRef.current[lockedKeyframeId].borderWidth
+    }
+
+    return shellBorderWidth.get()
+  })
+  const shellRotateValue = useTransform(() => {
+    frameTicker.get()
+    const progress = pageProgress.get()
+    const heroEarlyMove = heroSceneProgress
+      ? getHeroEarlyMoveProgress(heroSceneProgress.get())
+      : 0
+
+    if (isDirectPathActive(progress, heroEarlyMove)) {
+      return shellRotateRaw.get()
+    }
+
+    const lockedKeyframeId = getHardStopKeyframeId(progress)
+
+    if (lockedKeyframeId) {
+      return keyframeMeasurementsRef.current[lockedKeyframeId].rotation
+    }
+
+    return shellRotate.get()
+  })
+
   const shellRadius = useTransform(
-    [shellWidth, shellHeight, shellRadiusRatio],
+    [shellWidthValue, shellHeightValue, shellRadiusRatioValue],
     (values) => {
       const currentWidth = Number(values[0] ?? 0)
       const currentHeight = Number(values[1] ?? 0)
@@ -843,7 +1299,7 @@ export function HomeMeteorAvatar({
     }
   )
   const coreWidth = useTransform(
-    [shellWidth, coreScaleX],
+    [shellWidthValue, coreScaleXValue],
     (values) => {
       const currentWidth = Number(values[0] ?? 0)
       const ratio = Number(values[1] ?? 0)
@@ -852,7 +1308,7 @@ export function HomeMeteorAvatar({
     }
   )
   const coreHeight = useTransform(
-    [shellHeight, coreScaleY],
+    [shellHeightValue, coreScaleYValue],
     (values) => {
       const currentHeight = Number(values[0] ?? 0)
       const ratio = Number(values[1] ?? 0)
@@ -861,7 +1317,7 @@ export function HomeMeteorAvatar({
     }
   )
   const coreRadius = useTransform(
-    [coreWidth, coreHeight, coreRadiusRatio],
+    [coreWidth, coreHeight, coreRadiusRatioValue],
     (values) => {
       const currentWidth = Number(values[0] ?? 0)
       const currentHeight = Number(values[1] ?? 0)
@@ -871,7 +1327,7 @@ export function HomeMeteorAvatar({
     }
   )
   const sceneSize = useTransform(
-    [shellWidth, shellHeight],
+    [shellWidthValue, shellHeightValue],
     (values) => {
       const currentWidth = Number(values[0] ?? 0)
       const currentHeight = Number(values[1] ?? 0)
@@ -898,7 +1354,7 @@ export function HomeMeteorAvatar({
     }
   )
   const trailOffsetX = useTransform(
-    [trailWidth, shellWidth],
+    [trailWidth, shellWidthValue],
     (values) => {
       const currentTrailWidth = Number(values[0] ?? 0)
       const currentShellWidth = Number(values[1] ?? 0)
@@ -924,15 +1380,14 @@ export function HomeMeteorAvatar({
       return currentMovement * 0.42 * (1 - currentTakeover * 0.18)
     }
   )
-  const haloOpacity = useTransform(
-    [movementStrength, takeoverStrength],
-    (values) => {
-      const currentMovement = Number(values[0] ?? 0)
-      const currentTakeover = Number(values[1] ?? 0)
+  const haloOpacity = useTransform(() => {
+    frameTicker.get()
+    const currentMovement = movementStrength.get()
+    const currentTakeover = takeoverStrength.get()
+    const haloEnabled = secondLegHaloEnabled.get()
 
-      return currentMovement * 0.28 * (1 - currentTakeover * 0.12)
-    }
-  )
+    return currentMovement * 0.28 * (1 - currentTakeover * 0.12) * haloEnabled
+  })
 
   if (prefersReducedMotion) {
     return null
@@ -943,9 +1398,9 @@ export function HomeMeteorAvatar({
       <motion.div
         className={styles.meteor}
         style={{
-          x: shellX,
-          y: shellY,
-          rotate: shellRotate,
+          x: shellXValue,
+          y: shellYValue,
+          rotate: shellRotateValue,
           opacity: overlayOpacity,
         }}
       >
@@ -977,10 +1432,10 @@ export function HomeMeteorAvatar({
           className={styles.avatarShell}
           style={{
             rotate: avatarSpin,
-            width: shellWidth,
-            height: shellHeight,
+            width: shellWidthValue,
+            height: shellHeightValue,
             borderRadius: shellRadius,
-            borderWidth: shellBorderWidth,
+            borderWidth: shellBorderWidthValue,
             backgroundColor: currentShellBackground,
             borderColor: currentShellBorderColor,
             boxShadow: currentShellShadow,

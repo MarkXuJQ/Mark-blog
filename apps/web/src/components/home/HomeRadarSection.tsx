@@ -720,11 +720,6 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     >
       <div
         aria-hidden="true"
-        className={styles.softGlowLeft}
-        style={{ opacity: ambienceReveal * 0.9 }}
-      />
-      <div
-        aria-hidden="true"
         className={styles.softGlowRight}
         style={{ opacity: ambienceReveal * 0.9 }}
       />
@@ -1013,14 +1008,12 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
 }
 
 const styles = {
-  softGlowLeft:
-    'pointer-events-none absolute left-[-12rem] top-[10rem] h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.16)_0%,rgba(6,182,212,0.05)_34%,rgba(6,182,212,0)_74%)] blur-3xl',
   softGlowRight:
     'pointer-events-none absolute bottom-[3rem] right-[-10rem] h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.14)_0%,rgba(249,115,22,0.04)_34%,rgba(249,115,22,0)_74%)] blur-3xl',
   gridBackdrop:
     'pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(148,163,184,0.07)_0px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.06)_0px,transparent_1px)] [background-size:24px_24px]',
   introPanel:
-    'pointer-events-none absolute left-4 top-6 z-20 max-w-[min(32rem,calc(100vw-2rem))] sm:left-6 sm:top-8',
+    'pointer-events-none absolute left-4 top-[14svh] z-20 max-w-[min(32rem,calc(100vw-2rem))] sm:left-6 sm:top-[15svh] lg:top-[16svh]',
   introTitle:
     'text-[1.45rem] leading-tight text-balance text-slate-950 [text-shadow:0_10px_28px_rgba(255,255,255,0.82)] sm:text-[1.85rem] dark:text-white dark:[text-shadow:0_14px_32px_rgba(2,6,23,0.68)]',
   crosshairVertical:

@@ -344,6 +344,7 @@ export function Home() {
         <HomeMeteorAvatar
           avatarSrc={avatarSrc}
           pageProgress={pageProgress}
+          heroSceneProgress={sceneProgress}
           isDarkMode={isDarkMode}
           prefersReducedMotion={Boolean(prefersReducedMotion)}
         />
