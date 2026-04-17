@@ -4,16 +4,9 @@ import {
   useRef,
   Suspense,
   useState,
-  type RefObject,
   type KeyboardEvent as ReactKeyboardEvent,
+  type RefObject,
 } from 'react'
-import {
-  type MotionValue,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from 'framer-motion'
 import { useLenis } from 'lenis/react'
 import { useTranslation } from 'react-i18next'
 import { getImageUrl } from '../utils/image'
@@ -22,6 +15,8 @@ import { Footer } from '../components/layout/Footer'
 import { requestPageTransition } from '../components/transitions/pageTransitionBus'
 import { HomeHeroSection } from '../components/home/HomeHeroSection'
 import { HomeBlogRailSection } from '../components/home/HomeBlogRailSection'
+import { HomeMeteorAvatar } from '../components/home/HomeMeteorAvatar'
+import { useHomePageSceneMotion } from '../components/home/useHomePageSceneMotion'
 import { useDeferredRender } from '../hooks/useDeferredRender'
 import {
   DEFAULT_DESCRIPTION,
@@ -42,6 +37,9 @@ const LazyHomeWidgetStackSection = lazy(() =>
   }))
 )
 
+const HOME_WIDGET_STACK_PLACEHOLDER_MIN_HEIGHT = '320svh'
+const HOME_WIDGET_STACK_PLACEHOLDER_MARGIN_TOP = '-160svh'
+
 function HomeWidgetStackPlaceholder({
   placeholderRef,
 }: {
@@ -52,7 +50,10 @@ function HomeWidgetStackPlaceholder({
       ref={placeholderRef}
       aria-hidden="true"
       className="relative z-20 isolate"
-      style={{ minHeight: '320svh', marginTop: '-160svh' }}
+      style={{
+        minHeight: HOME_WIDGET_STACK_PLACEHOLDER_MIN_HEIGHT,
+        marginTop: HOME_WIDGET_STACK_PLACEHOLDER_MARGIN_TOP,
+      }}
     >
       <div className="sticky top-0 h-[100svh] overflow-hidden">
         <div className="relative h-full">
@@ -97,6 +98,40 @@ function HomeRadarPlaceholder({
   )
 }
 
+function HomeDeferredScenes({ avatarSrc }: { avatarSrc: string }) {
+  const {
+    targetRef: widgetStackPlaceholderRef,
+    shouldRender: shouldRenderWidgetStack,
+  } = useDeferredRender<HTMLElement>({
+    rootMargin: '1600px 0px',
+  })
+  const {
+    targetRef: radarPlaceholderRef,
+    shouldRender: shouldRenderRadar,
+  } = useDeferredRender<HTMLDivElement>({
+    rootMargin: '1400px 0px',
+  })
+
+  return (
+    <>
+      {shouldRenderWidgetStack ? (
+        <Suspense fallback={<HomeWidgetStackPlaceholder />}>
+          <LazyHomeWidgetStackSection avatarSrc={avatarSrc} />
+        </Suspense>
+      ) : (
+        <HomeWidgetStackPlaceholder placeholderRef={widgetStackPlaceholderRef} />
+      )}
+      {shouldRenderRadar ? (
+        <Suspense fallback={<HomeRadarPlaceholder />}>
+          <LazyHomeRadarSection avatarSrc={avatarSrc} />
+        </Suspense>
+      ) : (
+        <HomeRadarPlaceholder placeholderRef={radarPlaceholderRef} />
+      )}
+    </>
+  )
+}
+
 function getInitialIsDarkMode() {
   if (typeof document === 'undefined') return false
   return document.documentElement.classList.contains('dark')
@@ -123,151 +158,8 @@ function useIsDarkMode() {
   return isDarkMode
 }
 
-export function Home() {
-  const { t, i18n } = useTranslation()
-  const nameClickCountRef = useRef<number>(0)
-  const lastNameClickMsRef = useRef<number>(0)
-  const pageRef = useRef<HTMLDivElement | null>(null)
-  const isDarkMode = useIsDarkMode()
-  const prefersReducedMotion = useReducedMotion()
+function useLenisPageResize(pageRef: RefObject<HTMLDivElement | null>) {
   const lenis = useLenis()
-  const avatarSrc = getImageUrl('/images/IMG_1766.JPG')
-  const siteUrl = getSiteUrl()
-  const isZh = i18n.language?.startsWith('zh')
-  const {
-    targetRef: widgetStackPlaceholderRef,
-    shouldRender: shouldRenderWidgetStack,
-  } = useDeferredRender<HTMLElement>({
-    rootMargin: '1600px 0px',
-  })
-  const {
-    targetRef: radarPlaceholderRef,
-    shouldRender: shouldRenderRadar,
-  } = useDeferredRender<HTMLDivElement>({
-    rootMargin: '1400px 0px',
-  })
-  const language = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
-  const webSiteSchema: JsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: t('siteTitle'),
-    alternateName: "Mark's Backyard",
-    url: siteUrl,
-    description: DEFAULT_DESCRIPTION,
-    inLanguage: language,
-    publisher: {
-      '@type': 'Person',
-      name: 'Mark Xu',
-      url: siteUrl,
-    },
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: toAbsoluteUrl('/blog?q={search_term_string}', siteUrl),
-      'query-input': 'required name=search_term_string',
-    },
-  }
-
-  const { scrollY } = useScroll()
-
-  const sceneProgressSource = useTransform(
-    scrollY,
-    [0, prefersReducedMotion ? 960 : 1320],
-    [0, 1]
-  )
-
-  const sceneProgress = useSpring(sceneProgressSource, {
-    stiffness: prefersReducedMotion ? 240 : 160,
-    damping: prefersReducedMotion ? 36 : 24,
-    mass: 0.3,
-  })
-
-  const heroScale = useTransform(
-    sceneProgress,
-    [0, 0.12, 0.34, 0.58],
-    prefersReducedMotion ? [1, 0.997, 0.992, 0.988] : [1, 0.988, 0.9, 0.78]
-  )
-  const heroOpacity = useTransform(
-    sceneProgress,
-    [0, 0.24, 0.44, 0.6],
-    prefersReducedMotion ? [1, 1, 0.96, 0.9] : [1, 1, 0.54, 0.12]
-  )
-  const heroY = useTransform(
-    sceneProgress,
-    [0, 0.14, 0.38, 0.62],
-    prefersReducedMotion ? [0, -3, -10, -18] : [0, -18, -132, -228]
-  )
-  const heroRadius = useTransform(sceneProgress, [0, 1], [0, 0])
-  const heroClipPath = useTransform(
-    sceneProgress,
-    [0, 1],
-    ['inset(0% 0% 0% 0% round 0px)', 'inset(0% 0% 0% 0% round 0px)']
-  )
-  const heroPointerEvents = useTransform(sceneProgress, (value) =>
-    value > 0.44 ? 'none' : 'auto'
-  ) as MotionValue<string>
-  const heroShadow = useTransform(
-    sceneProgress,
-    [0, 0.2, 0.42, 0.6],
-    [
-      '0 24px 70px -34px rgba(15,23,42,0.56)',
-      '0 52px 128px -56px rgba(15,23,42,0.66)',
-      '0 46px 96px -62px rgba(15,23,42,0.14)',
-      '0 20px 42px -34px rgba(15,23,42,0.04)',
-    ]
-  )
-  const heroFilter = useTransform(
-    sceneProgress,
-    [0, 0.18, 0.36, 0.56],
-    prefersReducedMotion
-      ? ['blur(0px)', 'blur(0px)', 'blur(1px)', 'blur(2px)']
-      : ['blur(0px)', 'blur(0px)', 'blur(6px)', 'blur(14px)']
-  )
-  const heroContentOpacity = useTransform(
-    sceneProgress,
-    [0, 0.18, 0.38, 0.54],
-    prefersReducedMotion ? [1, 1, 0.96, 0.9] : [1, 1, 0.44, 0]
-  )
-  const heroContentY = useTransform(
-    sceneProgress,
-    [0, 0.18, 0.46],
-    prefersReducedMotion ? [0, -6, -10] : [0, -14, -58]
-  )
-  const heroMediaScale = useTransform(
-    sceneProgress,
-    [0, 0.22, 0.5],
-    prefersReducedMotion ? [1.02, 1.03, 1.04] : [1.02, 1.08, 1.18]
-  )
-  const heroMediaY = useTransform(
-    sceneProgress,
-    [0, 0.22, 0.5],
-    prefersReducedMotion ? [0, -4, -8] : [0, -16, -42]
-  )
-
-  const widgetScale = useTransform(
-    sceneProgress,
-    [0.04, 0.18, 0.42, 0.66],
-    prefersReducedMotion ? [1.003, 1.002, 1.001, 1] : [1.06, 1.03, 1.008, 1]
-  )
-  const widgetY = useTransform(
-    sceneProgress,
-    [0.02, 0.22, 0.46, 0.66],
-    prefersReducedMotion ? [8, 3, 0, -2] : [72, 26, 0, -6]
-  )
-  const widgetOpacity = useTransform(
-    sceneProgress,
-    [0.02, 0.16, 0.38, 0.56],
-    prefersReducedMotion ? [0.92, 0.96, 0.99, 1] : [0.18, 0.4, 0.82, 1]
-  )
-  const widgetFilter = useTransform(
-    sceneProgress,
-    [0.02, 0.22, 0.44, 0.6],
-    prefersReducedMotion
-      ? ['blur(0px)', 'blur(0px)', 'blur(0px)', 'blur(0px)']
-      : ['blur(0px)', 'blur(0px)', 'blur(0px)', 'blur(0px)']
-  )
-  const widgetPointerEvents = useTransform(sceneProgress, (value) =>
-    value > 0.18 ? 'auto' : 'none'
-  ) as MotionValue<string>
 
   useEffect(() => {
     if (!lenis) return
@@ -300,14 +192,24 @@ export function Home() {
       observer.disconnect()
       window.removeEventListener('load', scheduleResize)
     }
-  }, [lenis])
+  }, [lenis, pageRef])
+}
+
+function useHomePageRuntime(pageRef: RefObject<HTMLDivElement | null>) {
+  const isDarkMode = useIsDarkMode()
+  const nameClickCountRef = useRef(0)
+  const lastNameClickMsRef = useRef(0)
+
+  useLenisPageResize(pageRef)
 
   const handleNameClick = () => {
     const now = Date.now()
     const isWithinWindow = now - lastNameClickMsRef.current <= 600
+
     if (!isWithinWindow) {
       nameClickCountRef.current = 0
     }
+
     lastNameClickMsRef.current = now
     nameClickCountRef.current += 1
 
@@ -325,16 +227,83 @@ export function Home() {
     }
   }
 
+  return {
+    handleNameClick,
+    handleNameKeyDown,
+    isDarkMode,
+  }
+}
+
+export function Home() {
+  const { t, i18n } = useTranslation()
+  const pageRef = useRef<HTMLDivElement | null>(null)
+  const avatarSrc = getImageUrl('/images/IMG_1766.JPG')
+  const siteUrl = getSiteUrl()
+  const isZh = i18n.language?.startsWith('zh')
+  const { handleNameClick, handleNameKeyDown, isDarkMode } =
+    useHomePageRuntime(pageRef)
+  const language = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
+  const webSiteSchema: JsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: t('siteTitle'),
+    alternateName: "Mark's Backyard",
+    url: siteUrl,
+    description: DEFAULT_DESCRIPTION,
+    inLanguage: language,
+    publisher: {
+      '@type': 'Person',
+      name: 'Mark Xu',
+      url: siteUrl,
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: toAbsoluteUrl('/blog?q={search_term_string}', siteUrl),
+      'query-input': 'required name=search_term_string',
+    },
+  }
+
+  const {
+    heroClipPath,
+    heroContentOpacity,
+    heroContentY,
+    heroFilter,
+    heroMediaScale,
+    heroMediaY,
+    heroOpacity,
+    heroPointerEvents,
+    heroRadius,
+    heroScale,
+    heroSceneProgress,
+    heroShadow,
+    heroY,
+    pageProgress,
+    prefersReducedMotion,
+    widgetFilter,
+    widgetOpacity,
+    widgetPointerEvents,
+    widgetScale,
+    widgetY,
+  } = useHomePageSceneMotion({ pageRef })
+
   return (
     <>
       <Seo jsonLd={webSiteSchema} />
 
       <div ref={pageRef}>
+        <HomeMeteorAvatar
+          avatarSrc={avatarSrc}
+          pageProgress={pageProgress}
+          heroSceneProgress={heroSceneProgress}
+          isDarkMode={isDarkMode}
+          prefersReducedMotion={prefersReducedMotion}
+        />
+
         <HomeHeroSection
           avatarSrc={avatarSrc}
-          sceneProgress={sceneProgress}
+          sceneProgress={heroSceneProgress}
           isDarkMode={isDarkMode}
-          prefersReducedMotion={Boolean(prefersReducedMotion)}
+          prefersReducedMotion={prefersReducedMotion}
           isZh={isZh}
           heroScale={heroScale}
           heroOpacity={heroOpacity}
@@ -360,20 +329,8 @@ export function Home() {
           sectionFilter={widgetFilter}
           sectionPointerEvents={widgetPointerEvents}
         />
-        {shouldRenderWidgetStack ? (
-          <Suspense fallback={<HomeWidgetStackPlaceholder />}>
-            <LazyHomeWidgetStackSection />
-          </Suspense>
-        ) : (
-          <HomeWidgetStackPlaceholder placeholderRef={widgetStackPlaceholderRef} />
-        )}
-        {shouldRenderRadar ? (
-          <Suspense fallback={<HomeRadarPlaceholder />}>
-            <LazyHomeRadarSection avatarSrc={avatarSrc} />
-          </Suspense>
-        ) : (
-          <HomeRadarPlaceholder placeholderRef={radarPlaceholderRef} />
-        )}
+
+        <HomeDeferredScenes avatarSrc={avatarSrc} />
 
         <div className="relative z-20 mx-auto w-full max-w-3xl px-4 pb-8">
           <Footer className="mt-0" />

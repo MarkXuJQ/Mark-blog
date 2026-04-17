@@ -6,6 +6,7 @@ import { ThemeToggle } from '../components/ui/ThemeToggle'
 import { PageTransitionHost } from '../components/transitions/PageTransitionHost'
 import { GlobalSearchHost } from '../components/search/GlobalSearchHost'
 import { DraggableBackToTop } from '../components/ui/DraggableBackToTop'
+import { GlobalLinkPreview } from '../components/ui/GlobalLinkPreview'
 import { useTheme } from '../hooks/useTheme'
 import { useScrollVisibility } from '../hooks/useScrollVisibility'
 
@@ -76,6 +77,7 @@ export function RootLayout() {
       {!hideBackToTop && <DraggableBackToTop />}
       <PageTransitionHost onActiveChange={setIsTransitionActive} />
       <GlobalSearchHost onOpenChange={setIsSearchOpen} />
+      <GlobalLinkPreview />
     </div>
   )
 }

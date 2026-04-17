@@ -1,13 +1,20 @@
-import { useLenis } from 'lenis/react'
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
 import { useTranslation } from 'react-i18next'
-import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import { cn } from '../../utils/cn'
+import {
+  easeOutBack,
+  easeOutCubic,
+  getBeamRevealProgress,
+  getRadarNodeAngle,
+  getTrailingBeamImpact,
+  getSignalShellShift,
+  HOME_RADAR_CENTER_Y,
+  HOME_RADAR_RING_DURATION,
+  HOME_RADAR_RING_START,
+  HOME_RADAR_RING_STAGGER,
+  mix,
+  segmentProgress,
+  useHomeRadarScene,
+} from './useHomeRadarScene'
 import eventuallymakingFavicon from '../../assets/home/radar/eventuallymaking.png'
 import joshwcomeauFavicon from '../../assets/home/radar/joshwcomeau.png'
 import messengerFavicon from '../../assets/home/radar/messenger.png'
@@ -41,8 +48,13 @@ interface RadarNode {
   cardAlignX: 'left' | 'center' | 'right'
   cardAlignY: 'top' | 'bottom'
   color: string
-  glow: string
+  dotScaleSteps?: number
 }
+
+const RADAR_SIGNAL_GREEN = '#10A64B'
+const RADAR_SIGNAL_ORANGE = '#FF6F43'
+const RADAR_SIGNAL_VIOLET = '#7670E8'
+const RADAR_SIGNAL_YELLOW = '#F4C433'
 
 const RADAR_NODES: RadarNode[] = [
   {
@@ -62,8 +74,7 @@ const RADAR_NODES: RadarNode[] = [
     },
     cardAlignX: 'right',
     cardAlignY: 'bottom',
-    color: '#f97316',
-    glow: 'rgba(249,115,22,0.42)',
+    color: RADAR_SIGNAL_ORANGE,
   },
   {
     id: 'eventuallymaking',
@@ -82,8 +93,7 @@ const RADAR_NODES: RadarNode[] = [
     },
     cardAlignX: 'left',
     cardAlignY: 'bottom',
-    color: '#7c9cff',
-    glow: 'rgba(124,156,255,0.4)',
+    color: RADAR_SIGNAL_VIOLET,
   },
   {
     id: 'messenger',
@@ -102,8 +112,7 @@ const RADAR_NODES: RadarNode[] = [
     },
     cardAlignX: 'left',
     cardAlignY: 'top',
-    color: '#22c55e',
-    glow: 'rgba(34,197,94,0.38)',
+    color: RADAR_SIGNAL_GREEN,
   },
   {
     id: 'radiogarden',
@@ -122,8 +131,7 @@ const RADAR_NODES: RadarNode[] = [
     },
     cardAlignX: 'center',
     cardAlignY: 'top',
-    color: '#14b8a6',
-    glow: 'rgba(20,184,166,0.38)',
+    color: RADAR_SIGNAL_GREEN,
   },
   {
     id: 'joshwcomeau',
@@ -142,8 +150,7 @@ const RADAR_NODES: RadarNode[] = [
     },
     cardAlignX: 'center',
     cardAlignY: 'bottom',
-    color: '#06b6d4',
-    glow: 'rgba(6,182,212,0.36)',
+    color: RADAR_SIGNAL_VIOLET,
   },
   {
     id: 'pathos',
@@ -162,8 +169,7 @@ const RADAR_NODES: RadarNode[] = [
     },
     cardAlignX: 'right',
     cardAlignY: 'top',
-    color: '#fb7185',
-    glow: 'rgba(251,113,133,0.36)',
+    color: RADAR_SIGNAL_YELLOW,
   },
   {
     id: 'tongliao',
@@ -182,534 +188,185 @@ const RADAR_NODES: RadarNode[] = [
     },
     cardAlignX: 'right',
     cardAlignY: 'top',
-    color: '#a855f7',
-    glow: 'rgba(168,85,247,0.36)',
+    color: RADAR_SIGNAL_VIOLET,
   },
 ]
 
 const RING_INSETS = ['8%', '18%', '30%', '42%', '54%']
-const RADAR_CENTER_Y = '50%'
-const RADAR_VIRTUAL_SCROLL_FACTOR = 0.96
-const RADAR_VIRTUAL_SCROLL_MIN = 760
-const RADAR_VIRTUAL_SCROLL_MAX = 1040
-const RADAR_LOCK_TOLERANCE_PX = 36
-const RADAR_RELEASE_NUDGE_PX = 28
-
-const AVATAR_SETTLE_END = 0.1
-const HORIZONTAL_LINE_START = 0.12
-const HORIZONTAL_LINE_END = 0.25
-const AMBIENCE_START = 0.16
-const AMBIENCE_END = 0.34
-const RINGS_START = 0.26
-const RING_STAGGER = 0.065
-const RING_DURATION = 0.11
-const VERTICAL_LINE_START = 0.54
-const VERTICAL_LINE_END = 0.66
-const AUTO_EXPLORATION_TRIGGER_PROGRESS = 0.72
-const AUTO_EXPLORATION_START_DELAY_MS = 180
-const AUTO_EXPLORATION_DURATION_MS = 7200
-const AUTO_EXPLORATION_SCROLL_ACCELERATION_MS_PER_PX = 4.5
-const AUTO_EXPLORATION_MAX_SCROLL_ACCELERATION_MS = 4200
-const BEAM_CONTINUOUS_ROTATION_DURATION_MS = 7200
-const FULL_ROTATION_DEGREES = 360
-const BEAM_HEAD_OFFSET = -16
-const BEAM_FOCUS_OFFSET = -20
 const NODE_REVEAL_ANGLE_WINDOW = 18
-const NODE_PULSE_ANGLE_WINDOW = 24
+const NODE_SCAN_GLOW_ANGLE_WINDOW = 26
 const SIGNAL_DOT_SIZE_PX = 44
 const SIGNAL_CARD_SIZE_PX = 212
 const SIGNAL_CARD_RADIUS_PX = 32
 const SIGNAL_ICON_INSET_PX = 16
-const SIGNAL_HOVER_EXIT_DELAY_MS = 96
+const SIGNAL_DOT_SIZE_STEP_PX = 8
+const RADAR_AXIS_MARKERS = [
+  {
+    label: '000',
+    left: '50%',
+    top: '3.5%',
+    className: '-translate-x-1/2 -translate-y-full',
+  },
+  {
+    label: '090',
+    left: '96.4%',
+    top: '50%',
+    className: 'translate-x-full -translate-y-1/2',
+  },
+  {
+    label: '180',
+    left: '50%',
+    top: '96.4%',
+    className: '-translate-x-1/2 translate-y-full',
+  },
+  {
+    label: '270',
+    left: '3.6%',
+    top: '50%',
+    className: '-translate-x-full -translate-y-1/2',
+  },
+] as const
 
-function clamp01(value: number) {
-  return Math.min(Math.max(value, 0), 1)
+function hexToRgb(hex: string) {
+  const normalized = hex.replace('#', '')
+  const safeHex =
+    normalized.length === 3
+      ? normalized
+          .split('')
+          .map((char) => `${char}${char}`)
+          .join('')
+      : normalized
+
+  const value = Number.parseInt(safeHex, 16)
+
+  if (!Number.isFinite(value)) {
+    return { r: 255, g: 255, b: 255 }
+  }
+
+  return {
+    r: (value >> 16) & 255,
+    g: (value >> 8) & 255,
+    b: value & 255,
+  }
 }
 
-function mix(from: number, to: number, progress: number) {
-  return from + (to - from) * progress
+function withAlpha(hex: string, alpha: number) {
+  const { r, g, b } = hexToRgb(hex)
+  return `rgba(${r},${g},${b},${Math.max(0, Math.min(1, alpha))})`
 }
 
-function segmentProgress(value: number, start: number, end: number) {
-  if (end <= start) return value >= end ? 1 : 0
-  return clamp01((value - start) / (end - start))
+function isLightHexColor(hex: string) {
+  const { r, g, b } = hexToRgb(hex)
+  const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255
+  return luminance > 0.6
 }
 
-function easeOutCubic(value: number) {
-  return 1 - Math.pow(1 - value, 3)
+function getNodeDotSize(node: RadarNode) {
+  return SIGNAL_DOT_SIZE_PX + (node.dotScaleSteps ?? 0) * SIGNAL_DOT_SIZE_STEP_PX
 }
 
-function easeOutBack(value: number) {
-  const c1 = 1.70158
-  const c3 = c1 + 1
-  return 1 + c3 * Math.pow(value - 1, 3) + c1 * Math.pow(value - 1, 2)
-}
-
-function normalizeAngle(angle: number) {
-  const normalized = angle % FULL_ROTATION_DEGREES
-  return normalized < 0 ? normalized + FULL_ROTATION_DEGREES : normalized
-}
-
-function getClockwiseAngleDelta(from: number, to: number) {
-  return normalizeAngle(to - from)
-}
-
-function getSweepNodeAngle(nodeAngle: number, sweepStartAngle: number) {
-  return nodeAngle < sweepStartAngle
-    ? nodeAngle + FULL_ROTATION_DEGREES
-    : nodeAngle
-}
-
-function getBeamRevealProgress(
-  sweepAngle: number,
-  nodeAngle: number,
-  revealWindow: number,
-  sweepStartAngle: number
-) {
-  const nodeSweepAngle = getSweepNodeAngle(nodeAngle, sweepStartAngle)
-
-  return segmentProgress(
-    sweepAngle,
-    nodeSweepAngle,
-    nodeSweepAngle + revealWindow
+function HomeRadarAvatarKeyframe({ avatarSrc }: { avatarSrc: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      data-home-avatar-keyframe="radar"
+      className={cn(
+        styles.avatarKeyframeWrap,
+        styles.avatarKeyframeHidden
+      )}
+    >
+      <div
+        data-home-avatar-keyframe-core="radar"
+        className={styles.avatarKeyframeCore}
+      >
+        <img
+          src={avatarSrc}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          data-home-avatar-keyframe-image="radar"
+          className={styles.avatarKeyframeImage}
+        />
+      </div>
+    </div>
   )
 }
 
-function getTrailingBeamImpact(
-  beamAngle: number,
-  nodeAngle: number,
-  pulseWindow: number
-) {
-  const delta = getClockwiseAngleDelta(nodeAngle, beamAngle)
-  if (delta > pulseWindow) return 0
-  return 1 - delta / pulseWindow
+function RadarMetaItem({
+  value,
+  label,
+}: {
+  value: string
+  label: string
+}) {
+  return (
+    <div className={styles.metaItem}>
+      <span className={styles.metaValue}>{value}</span>
+      <span className={styles.metaLabel}>{label}</span>
+    </div>
+  )
 }
 
-function getSignalShellShift(node: RadarNode) {
-  const halfDelta = (SIGNAL_CARD_SIZE_PX - SIGNAL_DOT_SIZE_PX) / 2
-  const shiftX =
-    node.cardAlignX === 'left' ? halfDelta : node.cardAlignX === 'right' ? -halfDelta : 0
-  const shiftY = node.cardAlignY === 'top' ? -halfDelta : halfDelta
-
-  return { shiftX, shiftY }
-}
-
-function getBoundedScrollDistance(
-  viewportHeight: number,
-  factor: number,
-  min: number,
-  max: number
-) {
-  if (viewportHeight <= 0) return 0
-  return Math.min(max, Math.max(min, viewportHeight * factor))
-}
-
-function parsePercent(value: string) {
-  return Number.parseFloat(value)
-}
-
-function getRadarNodeAngle(node: RadarNode) {
-  const x = parsePercent(node.left) - 50
-  const y = parsePercent(node.top) - 50
-  return ((Math.atan2(y, x) * 180) / Math.PI + 90 + 360) % 360
+function RadarAxisMarker({
+  label,
+  left,
+  top,
+  className,
+}: {
+  label: string
+  left: string
+  top: string
+  className: string
+}) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(styles.axisMarker, className)}
+      style={{ left, top }}
+    >
+      <span className={styles.axisMarkerTick} />
+      <span>{label}</span>
+    </div>
+  )
 }
 
 export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
   const { i18n } = useTranslation()
-  const prefersReducedMotion = usePrefersReducedMotion()
-  const reduceMotion = prefersReducedMotion
-  const lenis = useLenis()
   const isZh = i18n.language?.startsWith('zh')
-  const sectionRef = useRef<HTMLElement | null>(null)
-  const sceneProgressRef = useRef(reduceMotion ? 1 : 0)
-  const isLockedRef = useRef(false)
-  const unlockDirectionRef = useRef<1 | -1 | 0>(0)
-  const touchYRef = useRef<number | null>(null)
-  const autoExplorationProgressRef = useRef(reduceMotion ? 1 : 0)
-  const isAutoExploringRef = useRef(false)
-  const isAutoExplorationCompleteRef = useRef(reduceMotion)
-  const autoExplorationFrameRef = useRef<number | null>(null)
-  const autoExplorationDelayRef = useRef<number | null>(null)
-  const autoExplorationScrollBoostRef = useRef(0)
-  const beamLoopFrameRef = useRef<number | null>(null)
-  const signalHoverExitTimeoutRef = useRef<number | null>(null)
-  const [viewportHeight, setViewportHeight] = useState(0)
-  const [sceneProgress, setSceneProgress] = useState(reduceMotion ? 1 : 0)
-  const [autoExplorationProgress, setAutoExplorationProgress] = useState(
-    reduceMotion ? 1 : 0
-  )
-  const [beamLoopAngle, setBeamLoopAngle] = useState(0)
-  const [activeNodeId, setActiveNodeId] = useState<string | null>(null)
-
-  useEffect(() => {
-    sceneProgressRef.current = sceneProgress
-  }, [sceneProgress])
-
-  useEffect(() => {
-    autoExplorationProgressRef.current = autoExplorationProgress
-  }, [autoExplorationProgress])
-
-  useEffect(() => {
-    const updateViewportHeight = () => {
-      const nextHeight = window.innerHeight
-      setViewportHeight((current) =>
-        current === nextHeight ? current : nextHeight
-      )
-    }
-
-    updateViewportHeight()
-    window.addEventListener('resize', updateViewportHeight)
-
-    return () => {
-      window.removeEventListener('resize', updateViewportHeight)
-    }
-  }, [])
-
-  const virtualScrollDistance = getBoundedScrollDistance(
-    viewportHeight,
-    RADAR_VIRTUAL_SCROLL_FACTOR,
-    RADAR_VIRTUAL_SCROLL_MIN,
-    RADAR_VIRTUAL_SCROLL_MAX
-  )
-
-  const clearAutoExplorationTimers = useCallback(() => {
-    if (autoExplorationDelayRef.current != null) {
-      window.clearTimeout(autoExplorationDelayRef.current)
-      autoExplorationDelayRef.current = null
-    }
-
-    if (autoExplorationFrameRef.current != null) {
-      cancelAnimationFrame(autoExplorationFrameRef.current)
-      autoExplorationFrameRef.current = null
-    }
-  }, [])
-
-  const clearBeamLoopFrame = useCallback(() => {
-    if (beamLoopFrameRef.current != null) {
-      cancelAnimationFrame(beamLoopFrameRef.current)
-      beamLoopFrameRef.current = null
-    }
-  }, [])
-
-  const clearSignalHoverExitTimer = useCallback(() => {
-    if (signalHoverExitTimeoutRef.current != null) {
-      window.clearTimeout(signalHoverExitTimeoutRef.current)
-      signalHoverExitTimeoutRef.current = null
-    }
-  }, [])
-
-  const activateSignalNode = useCallback((nodeId: string) => {
-    clearSignalHoverExitTimer()
-    setActiveNodeId((current) => (current === nodeId ? current : nodeId))
-  }, [clearSignalHoverExitTimer])
-
-  const scheduleSignalNodeDeactivate = useCallback((nodeId: string) => {
-    clearSignalHoverExitTimer()
-    signalHoverExitTimeoutRef.current = window.setTimeout(() => {
-      signalHoverExitTimeoutRef.current = null
-      setActiveNodeId((current) => (current === nodeId ? null : current))
-    }, SIGNAL_HOVER_EXIT_DELAY_MS)
-  }, [clearSignalHoverExitTimer])
-
-  const runAutoExplorationLoop = useCallback(() => {
-    if (autoExplorationFrameRef.current != null) return
-
-    const startTime = performance.now()
-
-    const advance = (timestamp: number) => {
-      const boostedElapsed =
-        timestamp -
-        startTime +
-        Math.min(
-          autoExplorationScrollBoostRef.current,
-          AUTO_EXPLORATION_MAX_SCROLL_ACCELERATION_MS
-        )
-      const nextProgress = clamp01(
-        boostedElapsed / AUTO_EXPLORATION_DURATION_MS
-      )
-
-      autoExplorationProgressRef.current = nextProgress
-      setAutoExplorationProgress(nextProgress)
-
-      if (nextProgress >= 1) {
-        isAutoExploringRef.current = false
-        isAutoExplorationCompleteRef.current = true
-        sceneProgressRef.current = 1
-        setSceneProgress(1)
-        autoExplorationFrameRef.current = null
-        return
-      }
-
-      autoExplorationFrameRef.current = requestAnimationFrame(advance)
-    }
-
-    autoExplorationFrameRef.current = requestAnimationFrame(advance)
-  }, [])
-
-  const applyAutoExplorationBoost = useCallback((deltaY: number) => {
-    if (deltaY <= 0) return
-    if (!isAutoExploringRef.current) return
-
-    autoExplorationScrollBoostRef.current = Math.min(
-      AUTO_EXPLORATION_MAX_SCROLL_ACCELERATION_MS,
-      autoExplorationScrollBoostRef.current +
-        deltaY * AUTO_EXPLORATION_SCROLL_ACCELERATION_MS_PER_PX
-    )
-
-    if (autoExplorationDelayRef.current != null) {
-      window.clearTimeout(autoExplorationDelayRef.current)
-      autoExplorationDelayRef.current = null
-      runAutoExplorationLoop()
-    }
-  }, [runAutoExplorationLoop])
-
-  const startAutoExploration = useCallback(() => {
-    if (reduceMotion) return
-    if (isAutoExploringRef.current || isAutoExplorationCompleteRef.current) return
-
-    clearAutoExplorationTimers()
-    autoExplorationScrollBoostRef.current = 0
-    isAutoExploringRef.current = true
-    sceneProgressRef.current = AUTO_EXPLORATION_TRIGGER_PROGRESS
-    setSceneProgress(AUTO_EXPLORATION_TRIGGER_PROGRESS)
-
-    autoExplorationDelayRef.current = window.setTimeout(() => {
-      autoExplorationDelayRef.current = null
-      runAutoExplorationLoop()
-    }, AUTO_EXPLORATION_START_DELAY_MS)
-  }, [clearAutoExplorationTimers, reduceMotion, runAutoExplorationLoop])
-
-  const releaseScene = useCallback(
-    (direction: 1 | -1) => {
-      if (!lenis || !isLockedRef.current) return
-
-      isLockedRef.current = false
-      unlockDirectionRef.current = direction
-      lenis.start()
-
-      const sectionNode = sectionRef.current
-      if (!sectionNode) return
-
-      const sectionTop = sectionNode.offsetTop
-      requestAnimationFrame(() => {
-        lenis.scrollTo(
-          sectionTop + direction * RADAR_RELEASE_NUDGE_PX,
-          { immediate: true, force: true }
-        )
-        unlockDirectionRef.current = 0
-      })
+  const introEyebrow = isZh
+    ? '个人雷达 / Curated orbit'
+    : 'Personal radar / Curated orbit'
+  const introDescription = isZh
+    ? '把我会反复回访的博客、实验与网络角落，整理成一张缓慢展开的私人雷达。'
+    : 'A slow personal scan of the blogs, experiments, and web corners I keep returning to.'
+  const introMetaItems = [
+    {
+      value: String(RADAR_NODES.length).padStart(2, '0'),
+      label: isZh ? '信号源' : 'Signals',
     },
-    [lenis]
-  )
-
-  const applyVirtualScrollDelta = useCallback(
-    (deltaY: number) => {
-      if (reduceMotion) return
-      if (!isLockedRef.current) return
-
-      if (isAutoExploringRef.current) {
-        applyAutoExplorationBoost(deltaY)
-        return
-      }
-
-      if (isAutoExplorationCompleteRef.current) {
-        if (deltaY > 0) {
-          releaseScene(1)
-        } else if (deltaY < 0) {
-          releaseScene(-1)
-        }
-        return
-      }
-
-      const distance = Math.max(virtualScrollDistance, 1)
-      const current = sceneProgressRef.current
-      const rawNext = clamp01(current + deltaY / distance)
-      const next = Math.min(rawNext, AUTO_EXPLORATION_TRIGGER_PROGRESS)
-
-      if (Math.abs(next - current) > 0.0005) {
-        sceneProgressRef.current = next
-        setSceneProgress(next)
-      }
-
-      if (
-        deltaY > 0 &&
-        next >= AUTO_EXPLORATION_TRIGGER_PROGRESS - 0.0005
-      ) {
-        startAutoExploration()
-      } else if (deltaY < 0 && next <= 0.001) {
-        releaseScene(-1)
-      }
+    {
+      value: isZh ? '动态' : 'Live',
+      label: isZh ? '扫描' : 'Sweep',
     },
-    [
-      reduceMotion,
-      releaseScene,
-      startAutoExploration,
-      applyAutoExplorationBoost,
-      virtualScrollDistance,
-    ]
-  )
-
-  const lockScene = useCallback(() => {
-    if (!lenis || isLockedRef.current || reduceMotion) return
-
-    const sectionNode = sectionRef.current
-    if (!sectionNode) return
-
-    isLockedRef.current = true
-    lenis.scrollTo(sectionNode.offsetTop, { immediate: true, force: true })
-
-    requestAnimationFrame(() => {
-      if (isLockedRef.current) lenis.stop()
-    })
-  }, [lenis, reduceMotion])
-
-  useEffect(() => {
-    if (reduceMotion) return
-
-    const onWheel = (event: WheelEvent) => {
-      if (!isLockedRef.current) return
-      event.preventDefault()
-      applyVirtualScrollDelta(event.deltaY)
-    }
-
-    const onTouchStart = (event: TouchEvent) => {
-      if (!isLockedRef.current) return
-      touchYRef.current = event.touches[0]?.clientY ?? null
-    }
-
-    const onTouchMove = (event: TouchEvent) => {
-      if (!isLockedRef.current) return
-
-      const nextTouchY = event.touches[0]?.clientY
-      const previousTouchY = touchYRef.current
-      if (nextTouchY == null || previousTouchY == null) return
-
-      event.preventDefault()
-      touchYRef.current = nextTouchY
-      applyVirtualScrollDelta(previousTouchY - nextTouchY)
-    }
-
-    const onTouchEnd = () => {
-      touchYRef.current = null
-    }
-
-    window.addEventListener('wheel', onWheel, { passive: false })
-    window.addEventListener('touchstart', onTouchStart, { passive: false })
-    window.addEventListener('touchmove', onTouchMove, { passive: false })
-    window.addEventListener('touchend', onTouchEnd)
-
-    return () => {
-      window.removeEventListener('wheel', onWheel)
-      window.removeEventListener('touchstart', onTouchStart)
-      window.removeEventListener('touchmove', onTouchMove)
-      window.removeEventListener('touchend', onTouchEnd)
-    }
-  }, [applyVirtualScrollDelta, reduceMotion])
-
-  useEffect(() => {
-    return () => {
-      clearAutoExplorationTimers()
-      clearBeamLoopFrame()
-      clearSignalHoverExitTimer()
-      if (isLockedRef.current) {
-        isLockedRef.current = false
-        lenis?.start()
-      }
-    }
-  }, [clearAutoExplorationTimers, clearBeamLoopFrame, clearSignalHoverExitTimer, lenis])
-
-  useLenis(
-    (instance) => {
-      if (reduceMotion) return
-      if (unlockDirectionRef.current !== 0) return
-      if (isLockedRef.current) return
-      if (isAutoExplorationCompleteRef.current) return
-
-      const sectionNode = sectionRef.current
-      if (!sectionNode) return
-
-      const rect = sectionNode.getBoundingClientRect()
-      const nearTop =
-        rect.top <= RADAR_LOCK_TOLERANCE_PX &&
-        rect.top >= -RADAR_LOCK_TOLERANCE_PX
-
-      if (!nearTop) return
-
-      if (
-        instance.direction > 0 &&
-        sceneProgressRef.current < AUTO_EXPLORATION_TRIGGER_PROGRESS
-      ) {
-        lockScene()
-      } else if (instance.direction < 0 && sceneProgressRef.current > 0.001) {
-        lockScene()
-      }
-    },
-    [lockScene, reduceMotion],
-    0
-  )
-
-  const progress = reduceMotion ? 1 : sceneProgress
-
-  const avatarSettle = easeOutCubic(
-    segmentProgress(progress, 0, AVATAR_SETTLE_END)
-  )
-  const avatarScale = mix(0.9, 1, avatarSettle)
-  const avatarGlowOpacity = mix(0.28, 1, avatarSettle)
-
-  const horizontalLineReveal = easeOutCubic(
-    segmentProgress(progress, HORIZONTAL_LINE_START, HORIZONTAL_LINE_END)
-  )
-  const ambienceReveal = easeOutCubic(
-    segmentProgress(progress, AMBIENCE_START, AMBIENCE_END)
-  )
-  const verticalLineReveal = easeOutCubic(
-    segmentProgress(progress, VERTICAL_LINE_START, VERTICAL_LINE_END)
-  )
-  const introReveal = easeOutCubic(segmentProgress(progress, 0.08, 0.24))
-
-  const explorationProgress = reduceMotion ? 1 : autoExplorationProgress
-  const sweepBeamAngle = explorationProgress * FULL_ROTATION_DEGREES
-  const beamLoopActive = !reduceMotion && explorationProgress >= 1
-  const beamAngle = beamLoopActive ? beamLoopAngle : sweepBeamAngle
-  const beamOpacity = easeOutCubic(segmentProgress(explorationProgress, 0, 0.08))
-  const beamRotate = beamAngle + BEAM_HEAD_OFFSET
-  const beamFocusAngle = normalizeAngle(beamAngle + BEAM_FOCUS_OFFSET)
-  const beamSweepStartAngle = normalizeAngle(BEAM_FOCUS_OFFSET)
-  const beamFocusSweepAngle = beamSweepStartAngle + sweepBeamAngle
-
-  useEffect(() => {
-    if (reduceMotion || !beamLoopActive) {
-      clearBeamLoopFrame()
-      return
-    }
-
-    const startAngle = normalizeAngle(
-      autoExplorationProgressRef.current * FULL_ROTATION_DEGREES
-    )
-    let startTime: number | null = null
-
-    setBeamLoopAngle(startAngle)
-
-    const advance = (timestamp: number) => {
-      if (startTime == null) {
-        startTime = timestamp
-      }
-
-      const elapsed = timestamp - startTime
-      const nextAngle = normalizeAngle(
-        startAngle +
-          (elapsed / BEAM_CONTINUOUS_ROTATION_DURATION_MS) *
-            FULL_ROTATION_DEGREES
-      )
-
-      setBeamLoopAngle(nextAngle)
-      beamLoopFrameRef.current = requestAnimationFrame(advance)
-    }
-
-    beamLoopFrameRef.current = requestAnimationFrame(advance)
-
-    return clearBeamLoopFrame
-  }, [beamLoopActive, clearBeamLoopFrame, reduceMotion])
+  ]
+  const {
+    activateSignalNode,
+    activeNodeId,
+    ambienceReveal,
+    beamFocusAngle,
+    beamFocusSweepAngle,
+    beamLoopActive,
+    beamOpacity,
+    beamRotate,
+    beamSweepStartAngle,
+    explorationProgress,
+    horizontalLineReveal,
+    introReveal,
+    progress,
+    scheduleSignalNodeDeactivate,
+    sectionRef,
+    verticalLineReveal,
+  } = useHomeRadarScene()
 
   return (
     <section
@@ -721,7 +378,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
       <div
         aria-hidden="true"
         className={styles.softGlowLeft}
-        style={{ opacity: ambienceReveal * 0.9 }}
+        style={{ opacity: ambienceReveal * 0.72 }}
       />
       <div
         aria-hidden="true"
@@ -745,7 +402,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
         aria-hidden="true"
         className={styles.crosshairHorizontal}
         style={{
-          top: RADAR_CENTER_Y,
+          top: HOME_RADAR_CENTER_Y,
           opacity: horizontalLineReveal,
           transform: `translateY(-50%) scaleX(${Math.max(0.001, horizontalLineReveal)})`,
         }}
@@ -760,7 +417,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
           <div
             className={styles.scanBeam}
             style={{
-              top: RADAR_CENTER_Y,
+              top: HOME_RADAR_CENTER_Y,
               rotate: `${beamRotate}deg`,
               background:
                 'conic-gradient(from 0deg, rgba(6,182,212,0) 0deg, rgba(6,182,212,0) 324deg, rgba(6,182,212,0.05) 338deg, rgba(6,182,212,0.12) 348deg, rgba(6,182,212,0.34) 356deg, rgba(6,182,212,0.08) 360deg)',
@@ -777,18 +434,63 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
             transform: `translateY(${(1 - introReveal) * 18}px)`,
           }}
         >
+          <div className={styles.introEyebrowRow}>
+            <div aria-hidden="true" className={styles.introEyebrowRule} />
+            <p className={styles.introEyebrow}>{introEyebrow}</p>
+          </div>
           <h2 className={cn('heading-display', styles.introTitle)}>
             {isZh ? '发现的博客和网站' : 'Blogs and Sites I Discovered'}
           </h2>
+          <p className={styles.introDescription}>{introDescription}</p>
+          <div className={styles.metaRow}>
+            {introMetaItems.map((item) => (
+              <RadarMetaItem
+                key={item.label}
+                value={item.value}
+                label={item.label}
+              />
+            ))}
+          </div>
         </div>
 
         <div className={styles.radarStage}>
-          <div style={{ top: RADAR_CENTER_Y }} className={styles.radarField}>
+          <div style={{ top: HOME_RADAR_CENTER_Y }} className={styles.radarField}>
+            <div
+              aria-hidden="true"
+              className={styles.fieldVignette}
+              style={{ opacity: ambienceReveal * 0.82 }}
+            />
+            <div
+              aria-hidden="true"
+              className={styles.fieldPerimeter}
+              style={{ opacity: mix(0.22, 0.76, ambienceReveal) }}
+            />
+            <div
+              aria-hidden="true"
+              className={styles.fieldCenterGlow}
+              style={{ opacity: ambienceReveal * 0.58 }}
+            />
+            <div
+              aria-hidden="true"
+              className={styles.fieldCenterDisc}
+              style={{ opacity: mix(0.14, 0.62, verticalLineReveal) }}
+            />
+            {RADAR_AXIS_MARKERS.map((marker) => (
+              <RadarAxisMarker
+                key={marker.label}
+                label={marker.label}
+                left={marker.left}
+                top={marker.top}
+                className={marker.className}
+              />
+            ))}
             {RING_INSETS.map((inset, index) => {
               const ringRaw = segmentProgress(
                 progress,
-                RINGS_START + index * RING_STAGGER,
-                RINGS_START + index * RING_STAGGER + RING_DURATION
+                HOME_RADAR_RING_START + index * HOME_RADAR_RING_STAGGER,
+                HOME_RADAR_RING_START +
+                  index * HOME_RADAR_RING_STAGGER +
+                  HOME_RADAR_RING_DURATION
               )
               const ringOpacity = easeOutCubic(ringRaw)
               const ringScale = mix(0.34, 1, easeOutBack(ringRaw))
@@ -810,22 +512,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
               )
             })}
 
-            <div className={styles.avatarWrap} style={{ scale: avatarScale }}>
-              <div
-                aria-hidden="true"
-                className={styles.avatarGlow}
-                style={{ opacity: avatarGlowOpacity }}
-              />
-              <div className={styles.avatarCore}>
-                <img
-                  src={avatarSrc}
-                  alt={isZh ? 'Mark 的头像' : 'Portrait of Mark'}
-                  className={styles.avatarImage}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </div>
+            <HomeRadarAvatarKeyframe avatarSrc={avatarSrc} />
 
             {RADAR_NODES.map((node) => {
               const nodeAngle = getRadarNodeAngle(node)
@@ -848,22 +535,91 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                       )
               const nodeOpacity = easeOutCubic(nodeRevealRaw)
               const nodeScale = mix(0.36, 1, easeOutBack(nodeRevealRaw))
-              const nodeImpact =
+              const scanGlowRaw =
                 explorationProgress <= 0
                   ? 0
                   : getTrailingBeamImpact(
                       beamFocusAngle,
                       nodeAngle,
-                      NODE_PULSE_ANGLE_WINDOW
+                      NODE_SCAN_GLOW_ANGLE_WINDOW
                     )
-              const signalPulseScale = mix(0.72, 2.08, nodeImpact)
-              const signalPulseOpacity = nodeImpact * 0.56 * nodeOpacity
-              const restShellShadow = `0 0 0 1px rgba(255,255,255,0.44), 0 18px 34px -22px rgba(15,23,42,0.82), 0 0 ${mix(10, 22, nodeImpact)}px ${node.glow}`
-              const hoverShellShadow = `0 34px 92px -48px rgba(15,23,42,0.82), 0 0 ${mix(18, 38, nodeImpact)}px ${node.glow}`
-              const { shiftX, shiftY } = getSignalShellShift(node)
-              const shellOffset = (SIGNAL_DOT_SIZE_PX - SIGNAL_CARD_SIZE_PX) / 2
+              const scanGlow = easeOutCubic(scanGlowRaw)
+              const scanPulseProgress = 1 - scanGlowRaw
+              const scanPulseTravel = easeOutCubic(scanPulseProgress)
+              const dotSize = getNodeDotSize(node)
+              const pulseFieldSize = dotSize + 46
+              const pulseStartScale = dotSize / pulseFieldSize
+              const useDarkCardText = isLightHexColor(node.color)
+              const cardTextColor = useDarkCardText ? '#0F172A' : '#FFFFFF'
+              const cardMutedTextColor = useDarkCardText
+                ? 'rgba(15,23,42,0.72)'
+                : 'rgba(255,255,255,0.8)'
+              const iconInsetPercent = isNodeActive
+                ? 6
+                : Math.max(4, 10 - (node.dotScaleSteps ?? 0) * 2)
+              const faviconScale = isNodeActive
+                ? 1.08
+                : 1.12 + (node.dotScaleSteps ?? 0) * 0.08
+              const restShellShadow = 'none'
+              const hoverShellShadow =
+                '0 24px 56px -42px rgba(15,23,42,0.18)'
+              const { shiftX, shiftY } = getSignalShellShift(
+                node,
+                SIGNAL_CARD_SIZE_PX,
+                dotSize
+              )
+              const shellOffset = (dotSize - SIGNAL_CARD_SIZE_PX) / 2
               const hoverPadLeft = shellOffset + shiftX
               const hoverPadTop = shellOffset + shiftY
+              const signalShellBackground = isNodeActive
+                ? node.color
+                : 'transparent'
+              const signalShellBorderColor = isNodeActive
+                ? 'transparent'
+                : 'transparent'
+              const signalIconFrameBackground = '#FFFFFF'
+              const signalIconFrameBorderColor = isNodeActive
+                ? 'transparent'
+                : '#E2E8F0'
+              const signalScanGlowOpacity = isNodeActive ? 0 : scanGlow * 0.92
+              const signalScanGlowScale = mix(0.92, 1.14, scanGlow)
+              const signalPulseFieldOpacity = isNodeActive
+                ? 0
+                : Math.min(1, scanGlow * 0.82)
+              const signalPulseHaloOpacity = isNodeActive
+                ? 0
+                : Math.min(1, scanGlow * 0.9)
+              const signalPulseHaloScale = mix(
+                pulseStartScale * 0.96,
+                1.18,
+                scanPulseTravel
+              )
+              const signalPulseRingOpacity = isNodeActive
+                ? 0
+                : Math.min(1, scanGlow * 0.96)
+              const signalPulseRingScale = mix(
+                pulseStartScale,
+                1.38,
+                scanPulseTravel
+              )
+              const signalPulseEchoOpacity = isNodeActive
+                ? 0
+                : Math.min(1, scanGlow * 0.56)
+              const signalPulseEchoScale = mix(
+                pulseStartScale,
+                1.58,
+                scanPulseTravel
+              )
+              const signalIconFrameScale = isNodeActive
+                ? 1
+                : 1
+              const signalIconFrameShadow = isNodeActive
+                ? '0 14px 26px -22px rgba(15,23,42,0.16)'
+                : scanGlow > 0.001
+                  ? `0 12px 18px -14px rgba(15,23,42,0.14), 0 0 ${
+                      14 + scanGlow * 20
+                    }px ${withAlpha(node.color, 0.26 + scanGlow * 0.18)}`
+                  : '0 12px 18px -14px rgba(15,23,42,0.14)'
 
               return (
                 <a
@@ -884,6 +640,8 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                   style={{
                     left: node.left,
                     top: node.top,
+                    width: dotSize,
+                    height: dotSize,
                     opacity: nodeOpacity,
                     scale: nodeScale,
                     pointerEvents: nodeOpacity < 0.98 ? 'none' : 'auto',
@@ -903,13 +661,54 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
 
                   <span
                     aria-hidden="true"
-                    className={styles.signalPulse}
+                    className={styles.signalPulseField}
                     style={{
-                      background: node.glow,
-                      opacity: signalPulseOpacity,
-                      scale: signalPulseScale,
+                      width: pulseFieldSize,
+                      height: pulseFieldSize,
+                      opacity: signalPulseFieldOpacity,
                     }}
-                  />
+                  >
+                    <span
+                      className={styles.signalPulseHalo}
+                      style={{
+                        opacity: signalPulseHaloOpacity,
+                        scale: signalPulseHaloScale,
+                        background: `radial-gradient(circle, ${withAlpha(
+                          node.color,
+                          0.32 + scanGlow * 0.16
+                        )} 0%, ${withAlpha(node.color, 0.12 + scanGlow * 0.08)} 34%, ${withAlpha(
+                          node.color,
+                          0
+                        )} 60%)`,
+                      }}
+                    />
+                    <span
+                      className={styles.signalPulseRing}
+                      style={{
+                        opacity: signalPulseRingOpacity,
+                        scale: signalPulseRingScale,
+                        borderColor: withAlpha(
+                          node.color,
+                          0.28 + scanGlow * 0.24
+                        ),
+                        boxShadow: `0 0 ${16 + scanGlow * 18}px ${withAlpha(
+                          node.color,
+                          0.18 + scanGlow * 0.12
+                        )}`,
+                      }}
+                    />
+                    <span
+                      className={styles.signalPulseEcho}
+                      style={{
+                        opacity: signalPulseEchoOpacity,
+                        scale: signalPulseEchoScale,
+                        borderColor: withAlpha(
+                          node.color,
+                          0.12 + scanGlow * 0.1
+                        ),
+                      }}
+                    />
+                  </span>
 
                   <span
                     aria-hidden="true"
@@ -917,14 +716,16 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                     style={{
                       width: isNodeActive
                         ? SIGNAL_CARD_SIZE_PX
-                        : SIGNAL_DOT_SIZE_PX,
+                        : dotSize,
                       height: isNodeActive
                         ? SIGNAL_CARD_SIZE_PX
-                        : SIGNAL_DOT_SIZE_PX,
+                        : dotSize,
                       opacity: nodeOpacity,
                       borderRadius: isNodeActive
                         ? SIGNAL_CARD_RADIUS_PX
-                        : SIGNAL_DOT_SIZE_PX,
+                        : dotSize,
+                      background: signalShellBackground,
+                      borderColor: signalShellBorderColor,
                       boxShadow: isNodeActive
                         ? hoverShellShadow
                         : restShellShadow,
@@ -935,11 +736,20 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                   >
                     <span
                       aria-hidden="true"
-                      className={styles.signalShellTint}
+                      className={styles.signalScanGlow}
                       style={{
-                        background: `radial-gradient(circle at 28% 24%, rgba(255,255,255,0.92) 0%, ${node.glow} 54%, rgba(255,255,255,0) 100%)`,
+                        opacity: signalScanGlowOpacity,
+                        scale: signalScanGlowScale,
+                        background: `radial-gradient(circle, ${withAlpha(
+                          node.color,
+                          0.48
+                        )} 0%, ${withAlpha(node.color, 0.18)} 44%, ${withAlpha(
+                          node.color,
+                          0
+                        )} 74%)`,
                       }}
                     />
+
                     <span
                       aria-hidden="true"
                       className={styles.signalIconFrame}
@@ -948,23 +758,24 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                         top: isNodeActive ? SIGNAL_ICON_INSET_PX : 0,
                         borderRadius: isNodeActive
                           ? 18
-                          : SIGNAL_DOT_SIZE_PX,
+                          : dotSize,
+                        background: signalIconFrameBackground,
+                        borderColor: signalIconFrameBorderColor,
+                        boxShadow: signalIconFrameShadow,
+                        scale: signalIconFrameScale,
                       }}
                     >
                       <span
-                        aria-hidden="true"
-                        className={styles.signalIconFrameTint}
-                        style={{
-                          background: `radial-gradient(circle at 20% 18%, ${node.glow} 0%, rgba(255,255,255,0) 72%)`,
-                        }}
-                      />
-                      <span className={styles.signalIconFrameInner}>
+                        className={styles.signalIconFrameInner}
+                        style={{ padding: `${iconInsetPercent}%` }}
+                      >
                         <img
                           src={node.faviconSrc}
                           alt=""
                           className={styles.signalIconImage}
                           loading="lazy"
                           decoding="async"
+                          style={{ scale: faviconScale }}
                         />
                       </span>
                     </span>
@@ -981,15 +792,24 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                       <span className={styles.signalCopyHeader}>
                         <span className={styles.signalCopySpacer} />
                         <span className={styles.signalCopyTitleBlock}>
-                          <span className={styles.signalCardEyebrow}>
+                          <span
+                            className={styles.signalCardEyebrow}
+                            style={{ color: cardMutedTextColor }}
+                          >
                             {nodeEyebrow}
                           </span>
-                          <span className={styles.signalCardTitle}>
+                          <span
+                            className={styles.signalCardTitle}
+                            style={{ color: cardTextColor }}
+                          >
                             {nodeLabel}
                           </span>
                         </span>
                       </span>
-                      <span className={styles.signalCardDescription}>
+                      <span
+                        className={styles.signalCardDescription}
+                        style={{ color: cardMutedTextColor }}
+                      >
                         {nodeDescription}
                       </span>
                     </span>
@@ -1006,15 +826,29 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
 
 const styles = {
   softGlowLeft:
-    'pointer-events-none absolute left-[-12rem] top-[10rem] h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.16)_0%,rgba(6,182,212,0.05)_34%,rgba(6,182,212,0)_74%)] blur-3xl',
+    'pointer-events-none absolute left-[-12rem] top-[7rem] h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.14)_0%,rgba(6,182,212,0.04)_34%,rgba(6,182,212,0)_74%)] blur-3xl',
   softGlowRight:
     'pointer-events-none absolute bottom-[3rem] right-[-10rem] h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.14)_0%,rgba(249,115,22,0.04)_34%,rgba(249,115,22,0)_74%)] blur-3xl',
   gridBackdrop:
     'pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(148,163,184,0.07)_0px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.06)_0px,transparent_1px)] [background-size:24px_24px]',
   introPanel:
-    'pointer-events-none absolute left-4 top-6 z-20 max-w-[min(32rem,calc(100vw-2rem))] sm:left-6 sm:top-8',
+    'pointer-events-none absolute left-4 top-[12svh] z-20 max-w-[min(34rem,calc(100vw-2rem))] space-y-4 sm:left-6 sm:top-[13svh] sm:space-y-5 lg:top-[14svh]',
+  introEyebrowRow: 'flex items-center gap-3',
+  introEyebrowRule:
+    'h-px w-12 bg-[linear-gradient(90deg,rgba(15,23,42,0.18),rgba(15,23,42,0))] dark:bg-[linear-gradient(90deg,rgba(255,255,255,0.2),rgba(255,255,255,0))]',
+  introEyebrow:
+    'font-[var(--font-pixel)] text-[0.68rem] uppercase tracking-[0.26em] text-slate-500/74 dark:text-white/42',
   introTitle:
-    'text-[1.45rem] leading-tight text-balance text-slate-950 [text-shadow:0_10px_28px_rgba(255,255,255,0.82)] sm:text-[1.85rem] dark:text-white dark:[text-shadow:0_14px_32px_rgba(2,6,23,0.68)]',
+    'max-w-[15ch] text-[1.55rem] leading-[1.02] text-balance text-slate-950 [text-shadow:0_10px_28px_rgba(255,255,255,0.82)] sm:text-[1.95rem] dark:text-white dark:[text-shadow:0_14px_32px_rgba(2,6,23,0.68)]',
+  introDescription:
+    'max-w-[34ch] text-sm leading-6 text-slate-600/84 dark:text-white/58 sm:text-[0.95rem]',
+  metaRow: 'flex flex-wrap items-baseline gap-x-5 gap-y-3',
+  metaItem:
+    'flex items-baseline gap-2.5 border-l border-slate-300/55 pl-4 first:border-l-0 first:pl-0 dark:border-white/12',
+  metaValue:
+    'text-[1.08rem] font-semibold leading-none tracking-[0.02em] text-slate-900 dark:text-white/88',
+  metaLabel:
+    'text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-slate-500/78 dark:text-white/40',
   crosshairVertical:
     'pointer-events-none absolute left-1/2 top-0 h-full w-px origin-center bg-[linear-gradient(180deg,rgba(148,163,184,0)_0%,rgba(148,163,184,0.22)_18%,rgba(148,163,184,0.22)_82%,rgba(148,163,184,0)_100%)]',
   crosshairHorizontal:
@@ -1024,46 +858,61 @@ const styles = {
   radarSweepStage: 'pointer-events-none absolute inset-0',
   radarField:
     'absolute left-1/2 h-[min(94vw,94vh)] w-[min(94vw,94vh)] max-h-[72rem] max-w-[72rem] -translate-x-1/2 -translate-y-1/2',
+  fieldVignette:
+    'pointer-events-none absolute inset-[2%] rounded-full bg-[radial-gradient(circle,rgba(15,23,42,0)_54%,rgba(15,23,42,0.12)_100%)] dark:bg-[radial-gradient(circle,rgba(2,6,23,0)_54%,rgba(2,6,23,0.3)_100%)]',
+  fieldPerimeter:
+    'pointer-events-none absolute inset-[3.5%] rounded-full border border-slate-300/42 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.28)] dark:border-white/10 dark:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]',
+  fieldCenterGlow:
+    'pointer-events-none absolute left-1/2 top-1/2 h-[28%] w-[28%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.14)_0%,rgba(6,182,212,0.05)_42%,rgba(6,182,212,0)_76%)] blur-3xl',
+  fieldCenterDisc:
+    'pointer-events-none absolute left-1/2 top-1/2 h-[15.5%] w-[15.5%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-300/55 dark:border-white/14',
+  axisMarker:
+    'absolute z-[5] flex items-center gap-2 font-[var(--font-pixel)] text-[0.6rem] uppercase tracking-[0.24em] text-slate-500/72 dark:text-white/32',
+  axisMarkerTick:
+    'h-px w-4 bg-slate-400/58 dark:bg-white/24',
   ring: 'pointer-events-none absolute rounded-full border border-slate-300/62',
   outerRing:
     'border-dashed border-slate-300/80 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]',
   scanBeam:
     'pointer-events-none absolute left-1/2 top-1/2 h-[170vmax] w-[170vmax] -translate-x-1/2 -translate-y-1/2',
-  avatarWrap:
+  avatarKeyframeWrap:
     'absolute left-1/2 top-1/2 z-20 flex h-[20%] w-[20%] min-h-[6.5rem] min-w-[6.5rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-transparent backdrop-blur-2xl',
-  avatarGlow:
-    'pointer-events-none absolute inset-[-18%] rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.18)_0%,rgba(56,189,248,0.06)_34%,rgba(56,189,248,0)_72%)] blur-2xl',
-  avatarCore:
+  avatarKeyframeHidden: 'pointer-events-none invisible select-none',
+  avatarKeyframeCore:
     'relative h-[72%] w-[72%] overflow-hidden rounded-full border border-white/60 bg-transparent shadow-[0_14px_28px_-22px_rgba(15,23,42,0.24)]',
-  avatarImage: 'h-full w-full object-cover',
+  avatarKeyframeImage: 'h-full w-full object-cover',
   signalLink:
     'absolute z-30 flex h-[44px] w-[44px] -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-visible focus-visible:z-50 focus-visible:outline-none',
   signalLinkActive: 'z-50',
   signalHoverPad: 'absolute rounded-[32px] opacity-0',
-  signalPulse:
-    'pointer-events-none absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full blur-[14px]',
+  signalPulseField:
+    'pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2',
+  signalPulseHalo:
+    'absolute inset-0 rounded-full blur-[10px] transition-[opacity,scale] duration-[120ms] ease-out',
+  signalPulseRing:
+    'absolute inset-0 rounded-full border transition-[opacity,scale,border-color,box-shadow] duration-[120ms] ease-out',
+  signalPulseEcho:
+    'absolute inset-0 rounded-full border transition-[opacity,scale,border-color] duration-[160ms] ease-out',
+  signalScanGlow:
+    'pointer-events-none absolute inset-0 rounded-full transition-[opacity,scale] duration-[180ms] ease-out',
   signalShell:
-    'relative z-10 block shrink-0 overflow-hidden border border-white/72 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(241,245,249,0.9)_100%)] text-left text-slate-900 backdrop-blur-xl [translate:var(--signal-shell-translate)] transition-[width,height,translate,border-radius,box-shadow] duration-[380ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
-  signalShellTint:
-    'pointer-events-none absolute inset-0 rounded-[inherit] opacity-90 mix-blend-screen',
+    'relative z-10 block shrink-0 overflow-hidden border border-transparent bg-white text-left text-slate-900 [translate:var(--signal-shell-translate)] transition-[width,height,translate,border-radius,box-shadow] duration-[380ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
   signalIconFrame:
-    'absolute h-[44px] w-[44px] overflow-hidden border border-white/78 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.94)_100%)] shadow-[0_18px_32px_-22px_rgba(15,23,42,0.82)] transition-[top,left,border-radius] duration-[340ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
-  signalIconFrameTint:
-    'pointer-events-none absolute inset-0 rounded-[inherit] opacity-90',
+    'absolute h-[44px] w-[44px] overflow-hidden border border-slate-200 bg-white shadow-[0_16px_28px_-20px_rgba(15,23,42,0.18)] transition-[top,left,border-radius,scale] duration-[340ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
   signalIconFrameInner:
-    'relative z-10 grid h-full w-full place-items-center p-[21%]',
+    'relative z-10 grid h-full w-full place-items-center p-0',
   signalIconImage: 'h-full w-full object-contain object-center',
   signalCopy:
-    'pointer-events-none absolute inset-0 flex flex-col justify-between p-4 transition-[opacity,translate,filter] duration-[260ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
+    'pointer-events-none absolute inset-0 flex flex-col justify-between p-[1.05rem] transition-[opacity,translate,filter] duration-[260ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
   signalCopyInactive: 'translate-y-2.5 opacity-0 blur-[8px]',
   signalCopyActive: 'translate-y-0 opacity-100 blur-none',
   signalCopyHeader: 'flex items-start gap-3',
   signalCopySpacer: 'h-11 w-11 shrink-0',
   signalCopyTitleBlock: 'flex min-w-0 flex-1 flex-col gap-1 pt-0.5',
   signalCardEyebrow:
-    'text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-slate-500',
+    'text-[0.64rem] font-semibold uppercase tracking-[0.18em]',
   signalCardTitle:
-    'text-[1rem] font-semibold leading-5 text-slate-900',
+    'text-[0.98rem] font-semibold leading-5 tracking-[-0.01em]',
   signalCardDescription:
-    'relative z-10 text-[0.86rem] leading-6 text-slate-700',
+    'relative z-10 text-[0.84rem] leading-6',
 }

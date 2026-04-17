@@ -1,52 +1,27 @@
-import { useEffect, useRef, useState } from 'react'
 import {
-  useAnimationFrame,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type RefObject,
+} from 'react'
+import {
   motion,
-  type MotionValue,
-  useReducedMotion,
+  useAnimationFrame,
   useMotionValue,
+  useReducedMotion,
   useScroll,
   useTransform,
 } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { TravelFootprintPlugin } from './TravelFootprintPlugin'
 
-interface HomeWidgetStackSectionProps {
-  sectionScale?: MotionValue<number>
-  sectionY?: MotionValue<number>
-  sectionOpacity?: MotionValue<number>
-  sectionFilter?: MotionValue<string>
-  sectionPointerEvents?: MotionValue<string>
-}
-
-// Backdrop cover timing.
-// Set to 0 to keep the black background pinned immediately once this scene starts.
-// Increase it if you want the background itself to "climb up" more slowly.
 const BACKDROP_REVEAL_END = 0
-
-// Cap how quickly the third scene can chase a large wheel burst.
-// This keeps the motion visually steadier when the user scrolls aggressively.
 const SCENE_PROGRESS_MAX_STEP_PER_MS = 0.00105
-
-// Child widget/card reveal timing inside the third screen.
-// `WIDGET_REVEAL_BASELINE` keeps the scene visibly "open" even when the third
-// page just reaches the top, so it doesn't feel like the content gets tucked away.
-const WIDGET_REVEAL_BASELINE = 0.68
-const WIDGET_REVEAL_DURATION = 0.56
-
-// Overall third-screen sticky scene sizing.
-// Increase `WIDGET_SCENE_HEIGHT` for a longer pinned chapter.
-// Make `WIDGET_SCENE_OVERLAP` more negative if you want this screen to start
-// covering the rail earlier.
+const WIDGET_REVEAL_START = 0.2
+const WIDGET_REVEAL_DURATION = 0.42
 const WIDGET_SCENE_HEIGHT = '320svh'
 const WIDGET_SCENE_OVERLAP = '-160svh'
-
-// In-screen content travel window.
-// `CONTENT_SCROLL_START`: when the third screen is considered fully "opened".
-// `CONTENT_SCROLL_HOLD_END`: how long the content stays almost still for reading.
-// `CONTENT_SCROLL_END`: when the internal content finishes its in-screen travel.
-// Move `CONTENT_SCROLL_HOLD_END` later if you want a stronger pause before scrolling.
-// Wider gap between hold/end = slower in-screen scroll. Narrower gap = faster.
 const CONTENT_SCROLL_START = 0.28
 const CONTENT_SCROLL_HOLD_END = 0.44
 const CONTENT_SCROLL_END = 0.96
@@ -61,22 +36,20 @@ function approachValue(value: number, target: number, maxDelta: number) {
   return value
 }
 
-export function HomeWidgetStackSection({
-  sectionScale,
-  sectionY,
-  sectionOpacity,
-  sectionFilter,
-  sectionPointerEvents,
-}: HomeWidgetStackSectionProps) {
-  const { i18n } = useTranslation()
-  const prefersReducedMotion = useReducedMotion()
-  const isZh = i18n.language?.startsWith('zh')
-  const sectionRef = useRef<HTMLElement | null>(null)
-  const contentViewportRef = useRef<HTMLDivElement | null>(null)
-  const contentTrackRef = useRef<HTMLDivElement | null>(null)
-  const sceneTargetProgressRef = useRef(0)
+function useHomeWidgetStackScene({
+  sectionRef,
+  contentViewportRef,
+  contentTrackRef,
+  prefersReducedMotion,
+}: {
+  sectionRef: RefObject<HTMLElement | null>
+  contentViewportRef: RefObject<HTMLDivElement | null>
+  contentTrackRef: RefObject<HTMLDivElement | null>
+  prefersReducedMotion: boolean
+}) {
   const [contentScrollDistance, setContentScrollDistance] = useState(0)
   const [sceneExtraScroll, setSceneExtraScroll] = useState(0)
+  const sceneTargetProgressRef = useRef(0)
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -116,50 +89,6 @@ export function HomeWidgetStackSection({
     sceneProgress.set(approachValue(current, target, maxStep))
   })
 
-  const backdropProgress = useTransform(sceneProgress, (value) =>
-    prefersReducedMotion || BACKDROP_REVEAL_END <= 0
-      ? 1
-      : clamp01(value / BACKDROP_REVEAL_END)
-  )
-  const widgetRevealProgress = useTransform(sceneProgress, (value) =>
-    prefersReducedMotion
-      ? 1
-      : WIDGET_REVEAL_BASELINE +
-          clamp01(value / WIDGET_REVEAL_DURATION) *
-            (1 - WIDGET_REVEAL_BASELINE)
-  )
-
-  const backdropY = useTransform(
-    backdropProgress,
-    [0, 0.68, 0.88, 1],
-    ['104%', '20%', '-0.8%', '0%']
-  )
-  const backdropScale = useTransform(
-    backdropProgress,
-    [0, 0.76, 1],
-    [1.014, 1.006, 1]
-  )
-  const backdropShadow = useTransform(
-    backdropProgress,
-    [0, 0.64, 1],
-    [
-      '0 0 0 rgba(2,6,23,0)',
-      '0 -12px 28px rgba(2,6,23,0.12)',
-      '0 0 0 rgba(2,6,23,0)',
-    ]
-  )
-  const contentScrollY = useTransform(sceneProgress, (value) => {
-    if (prefersReducedMotion || contentScrollDistance <= 0) return 0
-    if (value <= CONTENT_SCROLL_START) return 0
-    if (value <= CONTENT_SCROLL_HOLD_END) return 0
-
-    const raw = clamp01(
-      (value - CONTENT_SCROLL_HOLD_END) /
-        (CONTENT_SCROLL_END - CONTENT_SCROLL_HOLD_END)
-    )
-
-    return -raw * contentScrollDistance
-  })
   useEffect(() => {
     if (prefersReducedMotion) {
       setContentScrollDistance(0)
@@ -213,21 +142,164 @@ export function HomeWidgetStackSection({
       observer.disconnect()
       window.removeEventListener('resize', scheduleMeasurement)
     }
-  }, [prefersReducedMotion])
+  }, [contentTrackRef, contentViewportRef, prefersReducedMotion])
+
+  const sectionStyle: CSSProperties = prefersReducedMotion
+    ? { minHeight: '100svh' }
+    : {
+        minHeight: `max(${WIDGET_SCENE_HEIGHT}, calc(100svh + ${sceneExtraScroll}px))`,
+        marginTop: WIDGET_SCENE_OVERLAP,
+      }
+
+  const backdropProgress = useTransform(sceneProgress, (value) =>
+    prefersReducedMotion || BACKDROP_REVEAL_END <= 0
+      ? 1
+      : clamp01(value / BACKDROP_REVEAL_END)
+  )
+  const widgetRevealProgress = useTransform(sceneProgress, (value) =>
+    prefersReducedMotion
+      ? 1
+      : clamp01((value - WIDGET_REVEAL_START) / WIDGET_REVEAL_DURATION)
+  )
+  const backdropY = useTransform(
+    backdropProgress,
+    [0, 0.68, 0.88, 1],
+    ['104%', '20%', '-0.8%', '0%']
+  )
+  const backdropScale = useTransform(
+    backdropProgress,
+    [0, 0.76, 1],
+    [1.014, 1.006, 1]
+  )
+  const backdropShadow = useTransform(
+    backdropProgress,
+    [0, 0.64, 1],
+    [
+      '0 0 0 rgba(2,6,23,0)',
+      '0 -12px 28px rgba(2,6,23,0.12)',
+      '0 0 0 rgba(2,6,23,0)',
+    ]
+  )
+  const contentScrollY = useTransform(sceneProgress, (value) => {
+    if (prefersReducedMotion || contentScrollDistance <= 0) return 0
+    if (value <= CONTENT_SCROLL_START) return 0
+    if (value <= CONTENT_SCROLL_HOLD_END) return 0
+
+    const raw = clamp01(
+      (value - CONTENT_SCROLL_HOLD_END) /
+        (CONTENT_SCROLL_END - CONTENT_SCROLL_HOLD_END)
+    )
+
+    return -raw * contentScrollDistance
+  })
+
+  return {
+    backdropScale,
+    backdropShadow,
+    backdropY,
+    contentScrollY,
+    sectionStyle,
+    widgetRevealProgress,
+  }
+}
+
+function HomeTravelAvatarKeyframe({
+  avatarSrc,
+  isZh,
+}: {
+  avatarSrc: string
+  isZh: boolean
+}) {
+  return (
+    <div aria-hidden="true" className={styles.keyframeScene}>
+      <div className={styles.keyframeShell}>
+        <div className={styles.keyframeStage}>
+          <div className={styles.keyframeHeaderRow}>
+            <div className={styles.keyframeCopy}>
+              <p className={styles.keyframeEyebrow}>
+                {isZh
+                  ? '旅行足迹 / Travel footprint'
+                  : 'Travel footprint / Atlas'}
+              </p>
+              <h2 className={styles.keyframeTitle}>
+                {isZh ? '去过的地方' : "Places I've Been"}
+              </h2>
+            </div>
+          </div>
+          <div className={styles.keyframeMapStage}>
+            <div className={styles.keyframeMapViewport}>
+              <div
+                data-home-avatar-keyframe-rotate="travel"
+                className={styles.keyframeAnchorLayer}
+              >
+                <div className={styles.keyframeAnchorCell}>
+                  <div className={styles.keyframeAnchorPortrait}>
+                    <div
+                      aria-hidden="true"
+                      className={styles.keyframeAnchorGlow}
+                    />
+                    <div
+                      data-home-avatar-keyframe="travel"
+                      className={styles.keyframeAnchorFrame}
+                    >
+                      <div
+                        data-home-avatar-keyframe-core="travel"
+                        className={styles.keyframeAnchorMask}
+                      >
+                        <img
+                          src={avatarSrc}
+                          alt=""
+                          loading="eager"
+                          decoding="async"
+                          data-home-avatar-keyframe-image="travel"
+                          className={styles.keyframeAnchorImage}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+interface HomeWidgetStackSectionProps {
+  avatarSrc: string
+}
+
+export function HomeWidgetStackSection({
+  avatarSrc,
+}: HomeWidgetStackSectionProps) {
+  const { i18n } = useTranslation()
+  const isZh = i18n.language?.startsWith('zh')
+  const prefersReducedMotion = Boolean(useReducedMotion())
+  const sectionRef = useRef<HTMLElement | null>(null)
+  const contentViewportRef = useRef<HTMLDivElement | null>(null)
+  const contentTrackRef = useRef<HTMLDivElement | null>(null)
+  const {
+    backdropScale,
+    backdropShadow,
+    backdropY,
+    contentScrollY,
+    sectionStyle,
+    widgetRevealProgress,
+  } = useHomeWidgetStackScene({
+    sectionRef,
+    contentViewportRef,
+    contentTrackRef,
+    prefersReducedMotion,
+  })
 
   return (
     <section
       ref={sectionRef}
-      aria-label={isZh ? '主页小组件堆叠区' : 'Homepage widget stack'}
+      aria-label={isZh ? '首页小组件堆叠区' : 'Homepage widget stack'}
       className="relative z-20 isolate"
-      style={
-        prefersReducedMotion
-          ? { minHeight: '100svh' }
-          : {
-              minHeight: `max(${WIDGET_SCENE_HEIGHT}, calc(100svh + ${sceneExtraScroll}px))`,
-              marginTop: WIDGET_SCENE_OVERLAP,
-            }
-      }
+      style={sectionStyle}
     >
       <motion.div className="sticky top-0 h-[100svh] overflow-hidden">
         <div className="relative h-full">
@@ -244,32 +316,24 @@ export function HomeWidgetStackSection({
             <div aria-hidden="true" className={styles.gridField} />
           </motion.div>
 
-          <motion.div
-            className="relative z-10 h-full"
-            style={{
-              scale: sectionScale,
-              y: sectionY,
-              opacity: sectionOpacity,
-              filter: sectionFilter,
-              pointerEvents: sectionPointerEvents,
-            }}
-          >
+          <div className="relative z-10 h-full">
             <div ref={contentViewportRef} className={styles.contentViewport}>
               <motion.div
                 ref={contentTrackRef}
                 className={styles.contentTrack}
                 style={{ y: contentScrollY }}
               >
-                <motion.div
-                  className={styles.contentViewportInner}
-                  style={{ opacity: 1, y: 0, scale: 1 }}
-                >
+                <div className={styles.contentViewportInner}>
                   <div className="relative w-full">
                     <div aria-hidden="true" className={styles.stageHalo} />
                     <div aria-hidden="true" className={styles.stageRing} />
                     <div
                       aria-hidden="true"
                       className={styles.stageRingSecondary}
+                    />
+                    <HomeTravelAvatarKeyframe
+                      avatarSrc={avatarSrc}
+                      isZh={Boolean(isZh)}
                     />
 
                     <div className={styles.pluginWrap}>
@@ -278,10 +342,10 @@ export function HomeWidgetStackSection({
                       />
                     </div>
                   </div>
-                </motion.div>
+                </div>
               </motion.div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </motion.div>
     </section>
@@ -307,4 +371,31 @@ const styles = {
     'relative min-h-full pt-[14svh] pb-[20svh] sm:pt-[16svh] sm:pb-[22svh] lg:pt-[18svh] lg:pb-[24svh] will-change-transform',
   contentViewportInner: 'relative',
   pluginWrap: 'relative z-10',
+  keyframeScene: 'pointer-events-none invisible absolute inset-0 z-0 select-none',
+  keyframeShell: 'mx-auto w-full max-w-[78rem] overflow-visible',
+  keyframeStage: 'relative overflow-visible',
+  keyframeHeaderRow: 'relative z-[3] pt-0 sm:pt-1 lg:pt-2',
+  keyframeCopy:
+    'relative z-[3] max-w-3xl -translate-x-0.5 -translate-y-0.5 sm:-translate-x-1 sm:-translate-y-1 lg:-translate-x-2 lg:-translate-y-1.5',
+  keyframeEyebrow:
+    'font-[var(--font-pixel)] text-[0.72rem] uppercase tracking-[0.28em] text-cyan-100/70 drop-shadow-[0_10px_24px_rgba(5,9,19,0.45)]',
+  keyframeTitle:
+    'mt-3 max-w-[18ch] text-3xl font-semibold leading-[1.02] text-white text-balance drop-shadow-[0_18px_34px_rgba(5,9,19,0.48)] sm:text-[3.35rem] lg:text-[4rem]',
+  keyframeMapStage:
+    'relative z-[2] mx-auto mt-3 w-full max-w-[58rem] overflow-visible sm:mt-5 lg:mt-6 lg:max-w-[62rem]',
+  keyframeMapViewport:
+    'relative aspect-[2.34/1] w-full overflow-visible sm:aspect-[2.52/1]',
+  keyframeAnchorLayer:
+    'absolute bottom-[5.5%] left-[1.5%] z-[4] w-auto justify-start pt-0 lg:pt-0',
+  keyframeAnchorCell:
+    'relative z-[3] flex w-full justify-center self-start pt-1 will-change-transform lg:max-w-[22rem] lg:pt-6',
+  keyframeAnchorPortrait:
+    'relative mx-0 w-full max-w-[6.75rem] sm:max-w-[8rem] lg:max-w-[9rem]',
+  keyframeAnchorGlow:
+    'pointer-events-none absolute inset-[-22%] bg-[radial-gradient(circle_at_50%_18%,rgba(125,211,252,0.28)_0%,rgba(125,211,252,0.1)_32%,rgba(125,211,252,0)_72%)] blur-3xl',
+  keyframeAnchorFrame:
+    'relative aspect-square w-full overflow-hidden rounded-[24px] border border-white/12 bg-slate-950/56 p-2 shadow-[0_22px_48px_-30px_rgba(0,0,0,0.74)] backdrop-blur-sm',
+  keyframeAnchorMask:
+    'h-full w-full overflow-hidden rounded-[22px] bg-[#0d1319]',
+  keyframeAnchorImage: 'h-full w-full scale-[1.04] object-cover object-center',
 }
