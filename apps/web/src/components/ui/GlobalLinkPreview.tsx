@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { getSiteUrl, toAbsoluteUrl } from '../seo/shared'
-import { LinkPreviewCard } from './link-preview'
+import { LinkPreviewCard, LinkPreviewMetadataCard } from './link-preview'
 
 const PREVIEW_WIDTH = 220
 const PREVIEW_HEIGHT = 138
@@ -16,8 +16,14 @@ const CLOSE_DELAY_MS = 120
 type ActiveLinkState = {
   key: string
   rect: DOMRect
-  previewUrl: string
-  isStatic: boolean
+  href: string
+  previewUrl?: string
+  mode: 'metadata' | 'screenshot'
+  title?: string
+  description?: string
+  badge?: string
+  urlLabel?: string
+  isStatic?: boolean
   imageSrc?: string
 }
 
@@ -187,7 +193,14 @@ export function GlobalLinkPreview() {
       const staticImageSrc = anchor.dataset.linkPreviewImage
       const overrideUrl = anchor.dataset.linkPreviewUrl
       const previewUrl = resolvePreviewUrl(overrideUrl || rawHref, siteUrl)
-      if (!previewUrl && !staticImageSrc) {
+      const previewTitle = anchor.dataset.linkPreviewTitle?.trim()
+      const previewDescription =
+        anchor.dataset.linkPreviewDescription?.trim() || undefined
+      const previewBadge = anchor.dataset.linkPreviewBadge?.trim() || undefined
+      const previewUrlLabel =
+        anchor.dataset.linkPreviewUrlLabel?.trim() || undefined
+      const hasMetadata = Boolean(previewTitle)
+      if (!previewUrl && !staticImageSrc && !hasMetadata) {
         return
       }
 
@@ -205,9 +218,15 @@ export function GlobalLinkPreview() {
 
       activeAnchorRef.current = anchor
       setActiveLink({
-        key: `${previewUrl || staticImageSrc}-${Math.round(rect.left)}-${Math.round(rect.top)}`,
+        key: `${previewUrl || staticImageSrc || previewTitle}-${Math.round(rect.left)}-${Math.round(rect.top)}`,
         rect,
+        href: previewUrl || rawHref,
         previewUrl: previewUrl || rawHref,
+        mode: hasMetadata ? 'metadata' : 'screenshot',
+        title: previewTitle || undefined,
+        description: previewDescription,
+        badge: previewBadge,
+        urlLabel: previewUrlLabel,
         isStatic: Boolean(staticImageSrc),
         imageSrc: staticImageSrc,
       })
@@ -258,7 +277,7 @@ export function GlobalLinkPreview() {
         current
           ? {
               ...current,
-              key: `${current.previewUrl}-${Math.round(rect.left)}-${Math.round(rect.top)}`,
+              key: `${current.previewUrl || current.title || current.href}-${Math.round(rect.left)}-${Math.round(rect.top)}`,
               rect,
             }
           : current
@@ -316,18 +335,31 @@ export function GlobalLinkPreview() {
               }, CLOSE_DELAY_MS)
             }}
           >
-            <LinkPreviewCard
-              key={activeLink.key}
-              url={activeLink.previewUrl}
-              previewUrl={activeLink.previewUrl}
-              peekWidth={PREVIEW_WIDTH}
-              peekHeight={PREVIEW_HEIGHT}
-              clickable={false}
-              enableLensEffect
-              isStatic={activeLink.isStatic}
-              imageSrc={activeLink.imageSrc}
-              followX={followX}
-            />
+            {activeLink.mode === 'metadata' && activeLink.title ? (
+              <LinkPreviewMetadataCard
+                key={activeLink.key}
+                title={activeLink.title}
+                description={activeLink.description}
+                badge={activeLink.badge}
+                imageSrc={activeLink.imageSrc}
+                urlLabel={activeLink.urlLabel}
+                href={activeLink.href}
+                followX={followX}
+              />
+            ) : (
+              <LinkPreviewCard
+                key={activeLink.key}
+                url={activeLink.href}
+                previewUrl={activeLink.previewUrl}
+                peekWidth={PREVIEW_WIDTH}
+                peekHeight={PREVIEW_HEIGHT}
+                clickable={false}
+                enableLensEffect
+                isStatic={Boolean(activeLink.isStatic)}
+                imageSrc={activeLink.imageSrc}
+                followX={followX}
+              />
+            )}
           </div>
         ) : null}
       </AnimatePresence>
