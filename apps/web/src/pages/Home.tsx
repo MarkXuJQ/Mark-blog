@@ -22,6 +22,7 @@ import { Footer } from '../components/layout/Footer'
 import { requestPageTransition } from '../components/transitions/pageTransitionBus'
 import { HomeHeroSection } from '../components/home/HomeHeroSection'
 import { HomeBlogRailSection } from '../components/home/HomeBlogRailSection'
+import { HomeMeteorAvatar } from '../components/home/HomeMeteorAvatar'
 import { useDeferredRender } from '../hooks/useDeferredRender'
 import {
   DEFAULT_DESCRIPTION,
@@ -168,6 +169,16 @@ export function Home() {
   }
 
   const { scrollY } = useScroll()
+  const { scrollYProgress: pageScrollProgress } = useScroll({
+    target: pageRef,
+    offset: ['start start', 'end end'],
+  })
+
+  const pageProgress = useSpring(pageScrollProgress, {
+    stiffness: prefersReducedMotion ? 260 : 120,
+    damping: prefersReducedMotion ? 34 : 20,
+    mass: 0.36,
+  })
 
   const sceneProgressSource = useTransform(
     scrollY,
@@ -330,6 +341,13 @@ export function Home() {
       <Seo jsonLd={webSiteSchema} />
 
       <div ref={pageRef}>
+        <HomeMeteorAvatar
+          avatarSrc={avatarSrc}
+          pageProgress={pageProgress}
+          isDarkMode={isDarkMode}
+          prefersReducedMotion={Boolean(prefersReducedMotion)}
+        />
+
         <HomeHeroSection
           avatarSrc={avatarSrc}
           sceneProgress={sceneProgress}

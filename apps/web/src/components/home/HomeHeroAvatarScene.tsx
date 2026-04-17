@@ -532,21 +532,26 @@ export function HomeHeroAvatarScene({
                 style={{ x: echoX, y: echoY, rotate: avatarRotate }}
               />
               <motion.div
+                data-home-avatar-keyframe="hero"
                 className={styles.avatarShell}
                 style={{ x: avatarX, y: avatarY, rotate: avatarRotate }}
               >
-                <div className={styles.avatarHalo} />
-                <div className={styles.avatarMask}>
-                  <img
-                    src={avatarSrc}
-                    alt=""
-                    width={360}
-                    height={360}
-                    decoding="async"
-                    fetchPriority="high"
-                    className={styles.avatar}
-                  />
-                </div>
+              <div className={styles.avatarHalo} />
+              <div
+                data-home-avatar-keyframe-core="hero"
+                className={styles.avatarMask}
+              >
+                <img
+                  src={avatarSrc}
+                  alt=""
+                  width={360}
+                  height={360}
+                  decoding="async"
+                  fetchPriority="high"
+                  data-home-avatar-keyframe-image="hero"
+                  className={styles.avatar}
+                />
+              </div>
                 <div className={styles.avatarOutline} />
               </motion.div>
 

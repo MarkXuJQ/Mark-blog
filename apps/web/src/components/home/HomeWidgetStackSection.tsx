@@ -29,10 +29,10 @@ const BACKDROP_REVEAL_END = 0
 const SCENE_PROGRESS_MAX_STEP_PER_MS = 0.00105
 
 // Child widget/card reveal timing inside the third screen.
-// `WIDGET_REVEAL_BASELINE` keeps the scene visibly "open" even when the third
-// page just reaches the top, so it doesn't feel like the content gets tucked away.
-const WIDGET_REVEAL_BASELINE = 0.68
-const WIDGET_REVEAL_DURATION = 0.56
+// Keep the third screen background arriving on time, but let the actual content
+// wait for the avatar's in-place spin on the second screen to finish.
+const WIDGET_REVEAL_START = 0.2
+const WIDGET_REVEAL_DURATION = 0.42
 
 // Overall third-screen sticky scene sizing.
 // Increase `WIDGET_SCENE_HEIGHT` for a longer pinned chapter.
@@ -124,9 +124,7 @@ export function HomeWidgetStackSection({
   const widgetRevealProgress = useTransform(sceneProgress, (value) =>
     prefersReducedMotion
       ? 1
-      : WIDGET_REVEAL_BASELINE +
-          clamp01(value / WIDGET_REVEAL_DURATION) *
-            (1 - WIDGET_REVEAL_BASELINE)
+      : clamp01((value - WIDGET_REVEAL_START) / WIDGET_REVEAL_DURATION)
   )
 
   const backdropY = useTransform(

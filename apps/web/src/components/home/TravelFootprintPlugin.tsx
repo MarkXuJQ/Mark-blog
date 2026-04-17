@@ -584,18 +584,26 @@ function TravelAvatarPanel({
   return (
     <motion.div
       {...hoverLift}
+      data-home-avatar-keyframe-rotate="travel"
       className={cn(styles.avatarCell, className)}
       style={style}
     >
       <div className={cn(styles.avatarPortrait, portraitClassName)}>
         <div aria-hidden="true" className={styles.avatarGlow} />
-        <div className={styles.avatarFrame}>
-          <div className={styles.avatarMask}>
+        <div
+          data-home-avatar-keyframe="travel"
+          className={styles.avatarFrame}
+        >
+          <div
+            data-home-avatar-keyframe-core="travel"
+            className={styles.avatarMask}
+          >
             <img
               src={avatarSrc}
               alt={isZh ? 'Mark Xu 的头像' : 'Portrait of Mark Xu'}
               loading="lazy"
               decoding="async"
+              data-home-avatar-keyframe-image="travel"
               className={styles.avatarImage}
             />
           </div>

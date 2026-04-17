@@ -363,12 +363,14 @@ export function HomeBlogRailSection({
                 {locale === 'zh-CN' ? '本站博客' : 'Site Blog'}
               </h2>
               <div
+                data-home-avatar-keyframe="blog"
                 className="h-10 w-10 overflow-hidden rounded-full border shadow-[0_10px_28px_-18px_rgba(15,23,42,0.5)] sm:h-11 sm:w-11"
                 style={{ borderColor: 'var(--border-color)' }}
               >
                 <img
                   src={avatarSrc}
                   alt={locale === 'zh-CN' ? 'Mark 的头像' : 'Portrait of Mark'}
+                  data-home-avatar-keyframe-image="blog"
                   className="h-full w-full object-cover"
                   loading="lazy"
                   decoding="async"

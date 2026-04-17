@@ -810,16 +810,24 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
               )
             })}
 
-            <div className={styles.avatarWrap} style={{ scale: avatarScale }}>
+            <div
+              data-home-avatar-keyframe="radar"
+              className={styles.avatarWrap}
+              style={{ scale: avatarScale }}
+            >
               <div
                 aria-hidden="true"
                 className={styles.avatarGlow}
                 style={{ opacity: avatarGlowOpacity }}
               />
-              <div className={styles.avatarCore}>
+              <div
+                data-home-avatar-keyframe-core="radar"
+                className={styles.avatarCore}
+              >
                 <img
                   src={avatarSrc}
                   alt={isZh ? 'Mark 的头像' : 'Portrait of Mark'}
+                  data-home-avatar-keyframe-image="radar"
                   className={styles.avatarImage}
                   loading="lazy"
                   decoding="async"
