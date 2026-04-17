@@ -544,7 +544,11 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                       NODE_SCAN_GLOW_ANGLE_WINDOW
                     )
               const scanGlow = easeOutCubic(scanGlowRaw)
+              const scanPulseProgress = 1 - scanGlowRaw
+              const scanPulseTravel = easeOutCubic(scanPulseProgress)
               const dotSize = getNodeDotSize(node)
+              const pulseFieldSize = dotSize + 46
+              const pulseStartScale = dotSize / pulseFieldSize
               const useDarkCardText = isLightHexColor(node.color)
               const cardTextColor = useDarkCardText ? '#0F172A' : '#FFFFFF'
               const cardMutedTextColor = useDarkCardText
@@ -578,13 +582,43 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                 ? 'transparent'
                 : '#E2E8F0'
               const signalScanGlowOpacity = isNodeActive ? 0 : scanGlow * 0.92
-              const signalScanGlowScale = mix(0.82, 1.18, scanGlow)
+              const signalScanGlowScale = mix(0.92, 1.14, scanGlow)
+              const signalPulseFieldOpacity = isNodeActive
+                ? 0
+                : Math.min(1, scanGlow * 0.82)
+              const signalPulseHaloOpacity = isNodeActive
+                ? 0
+                : Math.min(1, scanGlow * 0.9)
+              const signalPulseHaloScale = mix(
+                pulseStartScale * 0.96,
+                1.18,
+                scanPulseTravel
+              )
+              const signalPulseRingOpacity = isNodeActive
+                ? 0
+                : Math.min(1, scanGlow * 0.96)
+              const signalPulseRingScale = mix(
+                pulseStartScale,
+                1.38,
+                scanPulseTravel
+              )
+              const signalPulseEchoOpacity = isNodeActive
+                ? 0
+                : Math.min(1, scanGlow * 0.56)
+              const signalPulseEchoScale = mix(
+                pulseStartScale,
+                1.58,
+                scanPulseTravel
+              )
+              const signalIconFrameScale = isNodeActive
+                ? 1
+                : 1
               const signalIconFrameShadow = isNodeActive
                 ? '0 14px 26px -22px rgba(15,23,42,0.16)'
                 : scanGlow > 0.001
                   ? `0 12px 18px -14px rgba(15,23,42,0.14), 0 0 ${
                       14 + scanGlow * 20
-                    }px ${withAlpha(node.color, 0.3 + scanGlow * 0.18)}`
+                    }px ${withAlpha(node.color, 0.26 + scanGlow * 0.18)}`
                   : '0 12px 18px -14px rgba(15,23,42,0.14)'
 
               return (
@@ -624,6 +658,57 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                       pointerEvents: isNodeActive ? 'auto' : 'none',
                     }}
                   />
+
+                  <span
+                    aria-hidden="true"
+                    className={styles.signalPulseField}
+                    style={{
+                      width: pulseFieldSize,
+                      height: pulseFieldSize,
+                      opacity: signalPulseFieldOpacity,
+                    }}
+                  >
+                    <span
+                      className={styles.signalPulseHalo}
+                      style={{
+                        opacity: signalPulseHaloOpacity,
+                        scale: signalPulseHaloScale,
+                        background: `radial-gradient(circle, ${withAlpha(
+                          node.color,
+                          0.32 + scanGlow * 0.16
+                        )} 0%, ${withAlpha(node.color, 0.12 + scanGlow * 0.08)} 34%, ${withAlpha(
+                          node.color,
+                          0
+                        )} 60%)`,
+                      }}
+                    />
+                    <span
+                      className={styles.signalPulseRing}
+                      style={{
+                        opacity: signalPulseRingOpacity,
+                        scale: signalPulseRingScale,
+                        borderColor: withAlpha(
+                          node.color,
+                          0.28 + scanGlow * 0.24
+                        ),
+                        boxShadow: `0 0 ${16 + scanGlow * 18}px ${withAlpha(
+                          node.color,
+                          0.18 + scanGlow * 0.12
+                        )}`,
+                      }}
+                    />
+                    <span
+                      className={styles.signalPulseEcho}
+                      style={{
+                        opacity: signalPulseEchoOpacity,
+                        scale: signalPulseEchoScale,
+                        borderColor: withAlpha(
+                          node.color,
+                          0.12 + scanGlow * 0.1
+                        ),
+                      }}
+                    />
+                  </span>
 
                   <span
                     aria-hidden="true"
@@ -677,6 +762,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                         background: signalIconFrameBackground,
                         borderColor: signalIconFrameBorderColor,
                         boxShadow: signalIconFrameShadow,
+                        scale: signalIconFrameScale,
                       }}
                     >
                       <span
@@ -799,12 +885,20 @@ const styles = {
     'absolute z-30 flex h-[44px] w-[44px] -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-visible focus-visible:z-50 focus-visible:outline-none',
   signalLinkActive: 'z-50',
   signalHoverPad: 'absolute rounded-[32px] opacity-0',
+  signalPulseField:
+    'pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2',
+  signalPulseHalo:
+    'absolute inset-0 rounded-full blur-[10px] transition-[opacity,scale] duration-[120ms] ease-out',
+  signalPulseRing:
+    'absolute inset-0 rounded-full border transition-[opacity,scale,border-color,box-shadow] duration-[120ms] ease-out',
+  signalPulseEcho:
+    'absolute inset-0 rounded-full border transition-[opacity,scale,border-color] duration-[160ms] ease-out',
   signalScanGlow:
     'pointer-events-none absolute inset-0 rounded-full transition-[opacity,scale] duration-[180ms] ease-out',
   signalShell:
     'relative z-10 block shrink-0 overflow-hidden border border-transparent bg-white text-left text-slate-900 [translate:var(--signal-shell-translate)] transition-[width,height,translate,border-radius,box-shadow] duration-[380ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
   signalIconFrame:
-    'absolute h-[44px] w-[44px] overflow-hidden border border-slate-200 bg-white shadow-[0_16px_28px_-20px_rgba(15,23,42,0.18)] transition-[top,left,border-radius] duration-[340ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
+    'absolute h-[44px] w-[44px] overflow-hidden border border-slate-200 bg-white shadow-[0_16px_28px_-20px_rgba(15,23,42,0.18)] transition-[top,left,border-radius,scale] duration-[340ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
   signalIconFrameInner:
     'relative z-10 grid h-full w-full place-items-center p-0',
   signalIconImage: 'h-full w-full object-contain object-center',
