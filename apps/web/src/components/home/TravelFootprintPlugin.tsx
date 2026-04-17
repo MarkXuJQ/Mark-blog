@@ -12,7 +12,6 @@ import {
 import { ExternalLink, MapPinned } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '../../utils/cn'
-import { getImageUrl } from '../../utils/image'
 import { useDeferredRender } from '../../hooks/useDeferredRender'
 import markTravelRecord from '@content/travel/records/mark.json'
 import worldFootprintBaseSvg from '../../assets/travel/world-footprint-base.svg'
@@ -26,13 +25,10 @@ const FULL_MAP_URL = 'https://travel.markxu.icu/'
 const SHELL_REVEAL_END = 0.28
 const WORLD_PANEL_REVEAL_START = 0.08
 const WORLD_PANEL_REVEAL_END = 0.34
-const AVATAR_PANEL_REVEAL_START = 0.28
-const AVATAR_PANEL_REVEAL_END = 0.56
 const EMBED_PANEL_REVEAL_START = 0.4
 const EMBED_PANEL_REVEAL_END = 0.66
 const CLOCK_PANEL_REVEAL_START = 0.72
 const CLOCK_PANEL_REVEAL_END = 0.96
-const HOME_AVATAR_SRC = getImageUrl('/images/IMG_1766.JPG')
 
 const CHINA_CITY_TO_PROVINCE: Record<string, string> = {
   北京: '北京',
@@ -245,13 +241,6 @@ export function TravelFootprintPlugin({
     (value) => value * 0.52 * dragStrength
   )
 
-  const avatarX = useTransform(pointerX, (value) => value * 4.5 * dragStrength)
-  const avatarY = useTransform(pointerY, (value) => value * 5.5 * dragStrength)
-  const avatarRotate = useTransform(
-    pointerX,
-    (value) => value * 0.34 * dragStrength
-  )
-
   const clockX = useTransform(pointerX, (value) => value * -7 * dragStrength)
   const clockY = useTransform(pointerY, (value) => value * 7 * dragStrength)
   const clockRotate = useTransform(
@@ -301,12 +290,6 @@ export function TravelFootprintPlugin({
     WORLD_PANEL_REVEAL_END,
     Boolean(prefersReducedMotion)
   )
-  const avatarReveal = usePanelReveal(
-    pluginReveal,
-    AVATAR_PANEL_REVEAL_START,
-    AVATAR_PANEL_REVEAL_END,
-    Boolean(prefersReducedMotion)
-  )
   const embedReveal = usePanelReveal(
     pluginReveal,
     EMBED_PANEL_REVEAL_START,
@@ -321,7 +304,6 @@ export function TravelFootprintPlugin({
   )
 
   const mapRevealY = useSummedTransform([mapY, worldReveal.y])
-  const avatarRevealY = useSummedTransform([avatarY, avatarReveal.y])
   const embedRevealY = useSummedTransform([embedY, embedReveal.y])
   const clockRevealY = useSummedTransform([clockY, clockReveal.y])
 
@@ -402,20 +384,6 @@ export function TravelFootprintPlugin({
               rotate: mapRotate,
               opacity: worldReveal.opacity,
               scale: worldReveal.scale,
-            }}
-          />
-
-          <TravelAvatarPanel
-            isZh={isZh}
-            avatarSrc={HOME_AVATAR_SRC}
-            className={styles.introAvatarLayer}
-            portraitClassName={styles.introAvatarPortrait}
-            style={{
-              x: avatarX,
-              y: avatarRevealY,
-              rotate: avatarRotate,
-              opacity: avatarReveal.opacity,
-              scale: avatarReveal.scale,
             }}
           />
 
@@ -568,51 +536,6 @@ function TravelFootprintMapPanel({
   )
 }
 
-function TravelAvatarPanel({
-  isZh,
-  avatarSrc,
-  style,
-  className,
-  portraitClassName,
-}: {
-  isZh: boolean
-  avatarSrc: string
-  style?: MotionStyle
-  className?: string
-  portraitClassName?: string
-}) {
-  return (
-    <motion.div
-      {...hoverLift}
-      data-home-avatar-keyframe-rotate="travel"
-      className={cn(styles.avatarCell, className)}
-      style={style}
-    >
-      <div className={cn(styles.avatarPortrait, portraitClassName)}>
-        <div aria-hidden="true" className={styles.avatarGlow} />
-        <div
-          data-home-avatar-keyframe="travel"
-          className={styles.avatarFrame}
-        >
-          <div
-            data-home-avatar-keyframe-core="travel"
-            className={styles.avatarMask}
-          >
-            <img
-              src={avatarSrc}
-              alt={isZh ? 'Mark Xu 的头像' : 'Portrait of Mark Xu'}
-              loading="lazy"
-              decoding="async"
-              data-home-avatar-keyframe-image="travel"
-              className={styles.avatarImage}
-            />
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
 function TravelClockPanel({
   style,
 }: {
@@ -656,10 +579,6 @@ const styles = {
     'mt-3 max-w-[18ch] text-3xl font-semibold leading-[1.02] text-white text-balance drop-shadow-[0_18px_34px_rgba(5,9,19,0.48)] sm:text-[3.35rem] lg:text-[4rem]',
   introMapStage:
     'relative z-[2] mx-auto mt-3 w-full max-w-[58rem] overflow-visible sm:mt-5 lg:mt-6 lg:max-w-[62rem]',
-  introAvatarLayer:
-    'absolute bottom-[4%] left-[2%] z-[4] w-auto justify-start pt-0 lg:pt-0',
-  introAvatarPortrait:
-    'mx-0 max-w-[6.75rem] sm:max-w-[8rem] lg:max-w-[9rem]',
   introMeta:
     'absolute bottom-1 right-2 z-[3] flex flex-col items-end gap-2 sm:bottom-2 sm:right-4 sm:gap-3 lg:bottom-3 lg:right-5',
   summaryPill:
@@ -685,8 +604,6 @@ const styles = {
   mapPanel: 'relative z-[2] w-full self-start',
   embedPanel:
     'z-[4] self-start lg:col-start-2 lg:row-start-1 lg:w-full',
-  avatarCell:
-    'relative z-[3] flex w-full justify-center self-start pt-1 will-change-transform lg:col-start-1 lg:row-start-1 lg:max-w-[22rem] lg:pt-6',
   clockCell:
     'relative z-[3] w-full self-start will-change-transform lg:col-start-1 lg:row-start-1 lg:max-w-[28rem] xl:max-w-[30rem]',
   clockPanel: 'h-full w-full overflow-visible',
@@ -713,13 +630,6 @@ const styles = {
   mapBase: 'absolute inset-0 h-full w-full object-contain opacity-38',
   mapHighlight:
     'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_32px_rgba(181,232,251,0.36)]',
-  avatarPortrait: 'relative mx-auto w-full max-w-[10.5rem] sm:max-w-[11.5rem]',
-  avatarGlow:
-    'pointer-events-none absolute inset-[-22%] bg-[radial-gradient(circle_at_50%_18%,rgba(125,211,252,0.28)_0%,rgba(125,211,252,0.1)_32%,rgba(125,211,252,0)_72%)] blur-3xl',
-  avatarFrame:
-    'relative aspect-square w-full overflow-hidden rounded-[24px] border border-white/12 bg-slate-950/56 p-2 shadow-[0_22px_48px_-30px_rgba(0,0,0,0.74)] backdrop-blur-sm',
-  avatarMask: 'h-full w-full overflow-hidden rounded-[22px] bg-[#0d1319]',
-  avatarImage: 'h-full w-full scale-[1.04] object-cover object-center',
   embedViewport:
     'relative mt-3 overflow-hidden rounded-[22px] border border-white/10 bg-[#0c1217] p-1.5',
   embedAction:
