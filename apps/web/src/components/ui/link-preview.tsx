@@ -1,0 +1,379 @@
+'use client'
+
+import * as RdxHoverCard from '@radix-ui/react-hover-card'
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useSpring,
+  type MotionValue,
+  type MotionStyle,
+} from 'framer-motion'
+import { Globe2 } from 'lucide-react'
+import { encode } from 'qss'
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react'
+import { cn } from '@/lib/utils'
+
+function usePreviewSource(
+  url: string,
+  width: number,
+  height: number,
+  quality: number,
+  isStatic: boolean,
+  staticImageSrc?: string
+) {
+  return useMemo(() => {
+    if (isStatic) {
+      return staticImageSrc || ''
+    }
+
+    const params = encode({
+      url,
+      screenshot: true,
+      meta: false,
+      embed: 'screenshot.url',
+      colorScheme: 'dark',
+      'viewport.isMobile': true,
+      'viewport.deviceScaleFactor': 1,
+      'viewport.width': width * 2.5,
+      'viewport.height': height * 2.5,
+      quality,
+    })
+
+    return `https://api.microlink.io/?${params}`
+  }, [height, isStatic, quality, staticImageSrc, url, width])
+}
+
+function useHoverState(followMouse: boolean) {
+  const [isPeeking, setPeeking] = useState(false)
+  const mouseX = useMotionValue(0)
+  const springConfig = { stiffness: 120, damping: 20 }
+  const followX = useSpring(mouseX, springConfig)
+
+  const handlePointerMove = useCallback(
+    (event: React.PointerEvent<HTMLElement>) => {
+      if (!followMouse) return
+
+      const targetRect = event.currentTarget.getBoundingClientRect()
+      const eventOffsetX = event.clientX - targetRect.left
+      const offsetFromCenter = (eventOffsetX - targetRect.width / 2) * 0.3
+      mouseX.set(offsetFromCenter)
+    },
+    [followMouse, mouseX]
+  )
+
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      setPeeking(open)
+
+      if (!open) {
+        mouseX.set(0)
+      }
+    },
+    [mouseX]
+  )
+
+  return { isPeeking, handleOpenChange, handlePointerMove, followX }
+}
+
+type HoverPeekConfig = {
+  url: string
+  previewUrl?: string
+  className?: string
+  peekWidth?: number
+  peekHeight?: number
+  imageQuality?: number
+  enableMouseFollow?: boolean
+  enableLensEffect?: boolean
+  lensZoomFactor?: number
+  lensSize?: number
+} & (
+  | { isStatic: true; imageSrc: string }
+  | { isStatic?: false; imageSrc?: never }
+)
+
+export type HoverPeekProps = HoverPeekConfig & {
+  children: ReactNode
+}
+
+type LinkPreviewCardProps = {
+  url: string
+  previewUrl?: string
+  peekWidth?: number
+  peekHeight?: number
+  imageQuality?: number
+  isStatic?: boolean
+  imageSrc?: string
+  enableLensEffect?: boolean
+  lensZoomFactor?: number
+  lensSize?: number
+  followX?: MotionValue<number> | number
+  clickable?: boolean
+  containerClassName?: string
+  containerStyle?: MotionStyle
+  className?: string
+}
+
+const cardMotionVariants = {
+  initial: { opacity: 0, rotateY: -90, transition: { duration: 0.15 } },
+  animate: {
+    opacity: 1,
+    rotateY: 0,
+    transition: { type: 'spring' as const, stiffness: 200, damping: 18 },
+  },
+  exit: { opacity: 0, rotateY: 90, transition: { duration: 0.15 } },
+}
+
+const lensMotionVariants = {
+  initial: { opacity: 0, scale: 0.7 },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.2, ease: 'easeOut' as const },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.7,
+    transition: { duration: 0.2, ease: 'easeIn' as const },
+  },
+}
+
+export function LinkPreviewCard({
+  url,
+  previewUrl,
+  peekWidth = 200,
+  peekHeight = 125,
+  imageQuality = 50,
+  isStatic = false,
+  imageSrc = '',
+  enableLensEffect = true,
+  lensZoomFactor = 1.75,
+  lensSize = 100,
+  followX = 0,
+  clickable = true,
+  containerClassName,
+  containerStyle,
+  className,
+}: LinkPreviewCardProps) {
+  const [imageLoadFailed, setImageLoadFailed] = useState(false)
+  const [isHoveringLens, setIsHoveringLens] = useState(false)
+  const [lensMousePosition, setLensMousePosition] = useState({ x: 0, y: 0 })
+
+  const finalImageSrc = usePreviewSource(
+    previewUrl || url,
+    peekWidth,
+    peekHeight,
+    imageQuality,
+    isStatic,
+    imageSrc
+  )
+
+  useEffect(() => {
+    setImageLoadFailed(false)
+  }, [finalImageSrc])
+
+  const handleLensMouseMove = (event: React.MouseEvent<HTMLElement>) => {
+    if (!enableLensEffect) return
+
+    const rect = event.currentTarget.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    setLensMousePosition({ x, y })
+  }
+
+  const handleLensMouseEnter = () => {
+    if (enableLensEffect) {
+      setIsHoveringLens(true)
+    }
+  }
+
+  const handleLensMouseLeave = () => {
+    if (enableLensEffect) {
+      setIsHoveringLens(false)
+    }
+  }
+
+  const frameClassName = cn(
+    'relative block overflow-hidden rounded-lg border border-neutral-200 bg-white p-0.5 shadow-lg transition-shadow hover:shadow-xl',
+    'dark:border-neutral-700 dark:bg-neutral-900',
+    className
+  )
+
+  const previewMedia = imageLoadFailed ? (
+    <div
+      className="flex flex-col items-center justify-center gap-2 bg-neutral-100 text-xs font-medium text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
+      style={{ width: peekWidth, height: peekHeight }}
+    >
+      <Globe2 className="h-5 w-5" />
+      <span>Preview unavailable</span>
+    </div>
+  ) : (
+    <img
+      src={finalImageSrc}
+      width={peekWidth}
+      height={peekHeight}
+      className="block rounded-[5px] bg-neutral-50 align-top pointer-events-none dark:bg-neutral-800"
+      alt={`Link preview for ${previewUrl || url}`}
+      onError={() => setImageLoadFailed(true)}
+      loading="lazy"
+      decoding="async"
+      referrerPolicy="no-referrer"
+    />
+  )
+
+  const lensLayer = (
+    <AnimatePresence>
+      {enableLensEffect && isHoveringLens && !imageLoadFailed ? (
+        <motion.div
+          className="absolute inset-0 overflow-hidden rounded-lg pointer-events-none"
+          variants={lensMotionVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          style={{
+            maskImage: `radial-gradient(circle ${lensSize / 2}px at ${lensMousePosition.x}px ${lensMousePosition.y}px, black ${lensSize / 2}px, transparent ${lensSize / 2}px)`,
+            WebkitMaskImage: `radial-gradient(circle ${lensSize / 2}px at ${lensMousePosition.x}px ${lensMousePosition.y}px, black ${lensSize / 2}px, transparent ${lensSize / 2}px)`,
+          }}
+        >
+          <div
+            className="absolute inset-0"
+            style={{
+              transform: `scale(${lensZoomFactor})`,
+              transformOrigin: `${lensMousePosition.x}px ${lensMousePosition.y}px`,
+            }}
+          >
+            <img
+              src={finalImageSrc}
+              width={peekWidth}
+              height={peekHeight}
+              className="block rounded-[5px] bg-neutral-50 align-top dark:bg-neutral-800"
+              alt=""
+              aria-hidden="true"
+            />
+          </div>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  )
+
+  return (
+    <motion.div
+      data-link-preview-content="true"
+      variants={cardMotionVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className={containerClassName}
+      style={{
+        x: followX,
+        pointerEvents: 'auto',
+        ...containerStyle,
+      }}
+    >
+      {clickable ? (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={frameClassName}
+          onMouseEnter={handleLensMouseEnter}
+          onMouseLeave={handleLensMouseLeave}
+          onMouseMove={handleLensMouseMove}
+        >
+          {previewMedia}
+          {lensLayer}
+        </a>
+      ) : (
+        <div
+          className={frameClassName}
+          onMouseEnter={handleLensMouseEnter}
+          onMouseLeave={handleLensMouseLeave}
+          onMouseMove={handleLensMouseMove}
+        >
+          {previewMedia}
+          {lensLayer}
+        </div>
+      )}
+    </motion.div>
+  )
+}
+
+export const HoverPeek = ({
+  children,
+  url,
+  previewUrl,
+  className,
+  peekWidth = 200,
+  peekHeight = 125,
+  imageQuality = 50,
+  isStatic = false,
+  imageSrc = '',
+  enableMouseFollow = true,
+  enableLensEffect = true,
+  lensZoomFactor = 1.75,
+  lensSize = 100,
+}: HoverPeekProps) => {
+  const { isPeeking, handleOpenChange, handlePointerMove, followX } =
+    useHoverState(enableMouseFollow)
+
+  const triggerChild = React.isValidElement<{
+    className?: string
+    onPointerMove?: React.PointerEventHandler<HTMLElement>
+  }>(children)
+    ? React.cloneElement(children, {
+        className: cn(children.props.className, className),
+        onPointerMove: (event: React.PointerEvent<HTMLElement>) => {
+          children.props.onPointerMove?.(event)
+          handlePointerMove(event)
+        },
+      })
+    : (
+        <span className={className} onPointerMove={handlePointerMove}>
+          {children}
+        </span>
+      )
+
+  return (
+    <RdxHoverCard.Root
+      openDelay={75}
+      closeDelay={150}
+      onOpenChange={handleOpenChange}
+    >
+      <RdxHoverCard.Trigger asChild>{triggerChild}</RdxHoverCard.Trigger>
+
+      <RdxHoverCard.Portal>
+        <RdxHoverCard.Content
+          className="[perspective:800px] [--radix-hover-card-content-transform-origin:center_center] z-[120]"
+          side="top"
+          align="center"
+          sideOffset={12}
+          style={{ pointerEvents: enableLensEffect ? 'none' : 'auto' }}
+        >
+          <AnimatePresence>
+            {isPeeking ? (
+              <LinkPreviewCard
+                url={url}
+                previewUrl={previewUrl}
+                peekWidth={peekWidth}
+                peekHeight={peekHeight}
+                imageQuality={imageQuality}
+                isStatic={isStatic}
+                imageSrc={imageSrc}
+                enableLensEffect={enableLensEffect}
+                lensZoomFactor={lensZoomFactor}
+                lensSize={lensSize}
+                followX={enableMouseFollow ? followX : 0}
+              />
+            ) : null}
+          </AnimatePresence>
+        </RdxHoverCard.Content>
+      </RdxHoverCard.Portal>
+    </RdxHoverCard.Root>
+  )
+}

@@ -26,19 +26,35 @@ interface HomeBlogRailSectionProps {
 
 const BLOG_POST_LIMIT = 7
 const BLOG_HOLD_END = 0.24
-const BLOG_AUTO_SCROLL_SPEED_MULTIPLIER = 2
+const BLOG_AUTO_SCROLL_SPEED_MULTIPLIER = 5
 const BLOG_ENTRY_SPEED = 12.5
 const BLOG_IDLE_SPEED = 25.5
-const BLOG_WHEEL_BOOST_MAX = 76
-const BLOG_WHEEL_BOOST_DECAY_PER_MS = 0.02
-const BLOG_WHEEL_BOOST_RESPONSE_MS = 88
-const BLOG_WHEEL_BOOST_INTENSITY = 5
-const BLOG_WHEEL_REVERSE_INTENSITY = 3.35
-const BLOG_WHEEL_IMPULSE_MULTIPLIER = 3
-const BLOG_WHEEL_CRUISE_MAX = 8.5
-const BLOG_WHEEL_CRUISE_DECAY_PER_MS = 0.0024
-const BLOG_WHEEL_REVERSE_IMPULSE_SCALE = 0.38
-const BLOG_WHEEL_REVERSE_CRUISE_SCALE = 0.66
+const BLOG_WHEEL_BOOST_MAX = 168
+const BLOG_WHEEL_BOOST_DECAY_PER_MS = 0.016
+const BLOG_WHEEL_BOOST_RESPONSE_MS = 72
+const BLOG_WHEEL_BOOST_INTENSITY = 7.8
+const BLOG_WHEEL_REVERSE_INTENSITY = 5.4
+const BLOG_WHEEL_IMPULSE_MULTIPLIER = 4
+const BLOG_WHEEL_CRUISE_MAX = 18
+const BLOG_WHEEL_CRUISE_DECAY_PER_MS = 0.002
+const BLOG_WHEEL_DELTA_MAX = 440
+const BLOG_WHEEL_LINE_HEIGHT_PX = 18
+const BLOG_WHEEL_PAGE_HEIGHT_FALLBACK_PX = 900
+const BLOG_WHEEL_SAMPLE_MIN_MS = 12
+const BLOG_WHEEL_SAMPLE_MAX_MS = 220
+const BLOG_WHEEL_GESTURE_RESET_MS = 220
+const BLOG_WHEEL_VELOCITY_FLOOR = 0.18
+const BLOG_WHEEL_VELOCITY_RANGE = 2.25
+const BLOG_WHEEL_ACCELERATION_RANGE = 0.92
+const BLOG_WHEEL_VELOCITY_GAIN = 0.68
+const BLOG_WHEEL_ACCELERATION_GAIN = 0.98
+const BLOG_WHEEL_CADENCE_GAIN = 0.28
+const BLOG_WHEEL_MAGNITUDE_GAIN = 0.24
+const BLOG_WHEEL_ACCELERATION_GAIN_MAX = 3.15
+const BLOG_WHEEL_DIRECTION_CHANGE_ACCELERATION_SCALE = 0.66
+const BLOG_WHEEL_REVERSE_IMPULSE_SCALE = 0.48
+const BLOG_WHEEL_REVERSE_CRUISE_SCALE = 0.78
+const BLOG_WHEEL_REVERSE_ACCELERATION_SCALE = 0.92
 const BLOG_SCROLL_DIRECTION_DECAY_PER_MS = 0.0034
 const BLOG_SCROLL_RETURN_BASE_SPEED_SCALE = 0.5
 const BLOG_SCROLL_RETURN_RAMP_MS = 520
@@ -48,6 +64,12 @@ const BLOG_REQUIRED_LOOP_PASSES = 2
 const BLOG_SCENE_LEAD_IN_PX = 960
 const BLOG_SCENE_MIN_EXTRA_SCROLL_PX = 3000
 const BLOG_SCROLL_DISTANCE_SCALE = 2 / 3
+const DOM_DELTA_LINE = 1
+const DOM_DELTA_PAGE = 2
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value))
+}
 
 function clamp01(value: number) {
   return Math.min(Math.max(value, 0), 1)
@@ -67,19 +89,82 @@ function clampMagnitude(value: number, maxMagnitude: number) {
   return Math.min(maxMagnitude, Math.max(-maxMagnitude, value))
 }
 
+function normalizeWheelDelta(deltaY: number, deltaMode: number) {
+  const scale =
+    deltaMode === DOM_DELTA_LINE
+      ? BLOG_WHEEL_LINE_HEIGHT_PX
+      : deltaMode === DOM_DELTA_PAGE
+        ? typeof window === 'undefined'
+          ? BLOG_WHEEL_PAGE_HEIGHT_FALLBACK_PX
+          : window.innerHeight || BLOG_WHEEL_PAGE_HEIGHT_FALLBACK_PX
+        : 1
+
+  return clampMagnitude(deltaY * scale, BLOG_WHEEL_DELTA_MAX)
+}
+
 function getScrollImpulse(delta: number) {
   const direction = Math.sign(delta) || 1
-  const magnitude = Math.min(240, Math.abs(delta))
+  const magnitude = Math.min(360, Math.abs(delta))
   return direction * (
-    Math.min(18.5, 2.4 + Math.pow(magnitude, 0.78) * 0.26) *
+    Math.min(24.5, 2.8 + Math.pow(magnitude, 0.8) * 0.29) *
     BLOG_WHEEL_IMPULSE_MULTIPLIER
   )
 }
 
 function getScrollCruiseBoost(delta: number) {
   const direction = Math.sign(delta) || 1
-  const magnitude = Math.min(240, Math.abs(delta))
-  return direction * Math.min(7.2, 2.6 + Math.pow(magnitude, 0.58) * 0.16)
+  const magnitude = Math.min(360, Math.abs(delta))
+  return direction * Math.min(11.8, 2.9 + Math.pow(magnitude, 0.62) * 0.22)
+}
+
+function getWheelBurstGain({
+  normalizedDelta,
+  deltaTimeMs,
+  previousVelocity,
+  sameDirection,
+}: {
+  normalizedDelta: number
+  deltaTimeMs: number
+  previousVelocity: number
+  sameDirection: boolean
+}) {
+  const sampleMs = clamp(
+    deltaTimeMs,
+    BLOG_WHEEL_SAMPLE_MIN_MS,
+    BLOG_WHEEL_SAMPLE_MAX_MS
+  )
+  const magnitude = Math.abs(normalizedDelta)
+  const velocity = magnitude / sampleMs
+  const velocityProgress = easeOutCubic(
+    clamp01((velocity - BLOG_WHEEL_VELOCITY_FLOOR) / BLOG_WHEEL_VELOCITY_RANGE)
+  )
+  const magnitudeProgress = easeOutCubic(
+    clamp01(magnitude / BLOG_WHEEL_DELTA_MAX)
+  )
+  const acceleration = sameDirection
+    ? Math.max(0, velocity - previousVelocity)
+    : velocity * BLOG_WHEEL_DIRECTION_CHANGE_ACCELERATION_SCALE
+  const accelerationProgress = easeOutCubic(
+    clamp01(acceleration / BLOG_WHEEL_ACCELERATION_RANGE)
+  )
+  const cadenceProgress = easeOutCubic(
+    clamp01(
+      (BLOG_WHEEL_GESTURE_RESET_MS - sampleMs) /
+        Math.max(1, BLOG_WHEEL_GESTURE_RESET_MS - BLOG_WHEEL_SAMPLE_MIN_MS)
+    )
+  )
+
+  return {
+    gain: Math.min(
+      BLOG_WHEEL_ACCELERATION_GAIN_MAX,
+      1 +
+        magnitudeProgress * BLOG_WHEEL_MAGNITUDE_GAIN +
+        velocityProgress * BLOG_WHEEL_VELOCITY_GAIN +
+        accelerationProgress * BLOG_WHEEL_ACCELERATION_GAIN +
+        cadenceProgress * BLOG_WHEEL_CADENCE_GAIN
+    ),
+    velocity,
+  }
 }
 
 function wrapLoopOffset(value: number, loopWidth: number) {
@@ -111,6 +196,9 @@ export function HomeBlogRailSection({
   const scrollDirectionTargetRef = useRef(0)
   const scrollDirectionCurrentRef = useRef(0)
   const returnBlendRef = useRef(0)
+  const lastWheelEventTimeRef = useRef(0)
+  const lastWheelVelocityRef = useRef(0)
+  const lastWheelDirectionRef = useRef(0)
   const [segmentWidth, setSegmentWidth] = useState(0)
   const x = useMotionValue(0)
 
@@ -162,7 +250,6 @@ export function HomeBlogRailSection({
     return () => observer.disconnect()
   }, [posts])
 
-  const { scrollY } = useScroll()
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end end'],
@@ -182,44 +269,84 @@ export function HomeBlogRailSection({
     scrollDirectionTargetRef.current = 0
     scrollDirectionCurrentRef.current = 0
     returnBlendRef.current = 0
+    lastWheelEventTimeRef.current = 0
+    lastWheelVelocityRef.current = 0
+    lastWheelDirectionRef.current = 0
   }, [posts, segmentWidth, x])
 
   useEffect(() => {
     if (prefersReducedMotion) return
 
-    let previousScrollY = scrollY.get()
+    const resetWheelGesture = () => {
+      lastWheelEventTimeRef.current = 0
+      lastWheelVelocityRef.current = 0
+      lastWheelDirectionRef.current = 0
+    }
 
-    const unsubscribe = scrollY.on('change', (latest) => {
-      const delta = latest - previousScrollY
-      previousScrollY = latest
-
-      if (delta === 0) return
+    const onWheel = (event: WheelEvent) => {
+      if (event.ctrlKey) return
+      if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return
 
       const sectionProgress = progress.get()
-      if (!isBlogSceneActive(sectionProgress)) return
+      if (!isBlogSceneActive(sectionProgress)) {
+        resetWheelGesture()
+        return
+      }
 
-      const normalizedDelta = clampMagnitude(delta, 240)
+      const normalizedDelta = normalizeWheelDelta(event.deltaY, event.deltaMode)
+      if (Math.abs(normalizedDelta) < 0.01) return
+
       const isReverseInput = normalizedDelta < 0
+      const direction = Math.sign(normalizedDelta) || 1
+      const timestamp = event.timeStamp || performance.now()
+      const previousTimestamp = lastWheelEventTimeRef.current
+      const deltaTimeMs =
+        previousTimestamp > 0
+          ? timestamp - previousTimestamp
+          : BLOG_WHEEL_GESTURE_RESET_MS
+      const sameDirection =
+        direction === lastWheelDirectionRef.current &&
+        deltaTimeMs <= BLOG_WHEEL_GESTURE_RESET_MS
+      const { gain, velocity } = getWheelBurstGain({
+        normalizedDelta,
+        deltaTimeMs,
+        previousVelocity: sameDirection ? lastWheelVelocityRef.current : 0,
+        sameDirection,
+      })
+      const effectiveGain = isReverseInput
+        ? 1 + (gain - 1) * BLOG_WHEEL_REVERSE_ACCELERATION_SCALE
+        : gain
       const impulse =
         getScrollImpulse(normalizedDelta) *
+        effectiveGain *
         (isReverseInput ? BLOG_WHEEL_REVERSE_IMPULSE_SCALE : 1)
       const cruiseBoost =
         getScrollCruiseBoost(normalizedDelta) *
+        effectiveGain *
         (isReverseInput ? BLOG_WHEEL_REVERSE_CRUISE_SCALE : 1)
+
+      lastWheelEventTimeRef.current = timestamp
+      lastWheelVelocityRef.current = velocity
+      lastWheelDirectionRef.current = direction
       scrollDirectionTargetRef.current = isReverseInput ? -1 : 1
 
-      wheelCruiseBoostRef.current = Math.min(
-        BLOG_WHEEL_CRUISE_MAX,
-        Math.max(-BLOG_WHEEL_CRUISE_MAX, wheelCruiseBoostRef.current + cruiseBoost)
+      wheelCruiseBoostRef.current = clampMagnitude(
+        wheelCruiseBoostRef.current + cruiseBoost,
+        BLOG_WHEEL_CRUISE_MAX
       )
-      wheelBoostTargetRef.current = Math.min(
-        BLOG_WHEEL_BOOST_MAX,
-        Math.max(-BLOG_WHEEL_BOOST_MAX, wheelBoostTargetRef.current + impulse)
+      wheelBoostTargetRef.current = clampMagnitude(
+        wheelBoostTargetRef.current + impulse,
+        BLOG_WHEEL_BOOST_MAX
       )
-    })
+    }
 
-    return unsubscribe
-  }, [prefersReducedMotion, progress, scrollY])
+    window.addEventListener('wheel', onWheel, { passive: true })
+
+    return () => {
+      resetWheelGesture()
+      window.removeEventListener('wheel', onWheel)
+    }
+  }, [prefersReducedMotion, progress])
 
   useAnimationFrame((_, delta) => {
     if (prefersReducedMotion || segmentWidth <= 0) return
