@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Clock, FileText } from 'lucide-react'
@@ -7,6 +7,7 @@ import { getPostBySlug, getAdjacentPosts } from '../utils/posts'
 import { countWords } from '../utils/readingTime'
 import { cn } from '../utils/cn'
 import { getImageUrl, rewriteHtmlImageSrc } from '../utils/image'
+import { decorateArticleLinkPreviews } from '../utils/articleLinkPreview'
 import { Seo } from '../components/seo/Seo'
 import { Copyright } from '../components/blog/Copyright'
 import { PostNavigation } from '../components/blog/PostNavigation'
@@ -39,7 +40,16 @@ export function BlogPost() {
     ? getAdjacentPosts(slug, i18n.language)
     : { prev: undefined, next: undefined }
 
-  const contentHtml = post ? rewriteHtmlImageSrc(post.content) : ''
+  const contentHtml = useMemo(() => {
+    if (!post) {
+      return ''
+    }
+
+    return decorateArticleLinkPreviews(
+      rewriteHtmlImageSrc(post.content),
+      i18n.language
+    )
+  }, [i18n.language, post])
   const contentRef = useImageLightbox([contentHtml])
   useCodeBlockEnhancements(
     contentRef,

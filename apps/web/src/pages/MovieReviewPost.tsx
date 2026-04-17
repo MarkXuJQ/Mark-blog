@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Star } from 'lucide-react'
@@ -6,12 +7,22 @@ import { Seo } from '../components/seo/Seo'
 import { cn } from '../utils/cn'
 import { getMovieReviewBySlug } from '../utils/movieReviews'
 import { rewriteHtmlImageSrc } from '../utils/image'
+import { decorateArticleLinkPreviews } from '../utils/articleLinkPreview'
 
 export function MovieReviewPost() {
   const { slug } = useParams()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const review = slug ? getMovieReviewBySlug(slug) : undefined
-  const contentHtml = review ? rewriteHtmlImageSrc(review.content) : ''
+  const contentHtml = useMemo(() => {
+    if (!review) {
+      return ''
+    }
+
+    return decorateArticleLinkPreviews(
+      rewriteHtmlImageSrc(review.content),
+      i18n.language
+    )
+  }, [i18n.language, review])
 
   if (!review) {
     return (
