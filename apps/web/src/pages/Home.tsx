@@ -388,7 +388,7 @@ export function Home() {
         )}
         {shouldRenderRadar ? (
           <Suspense fallback={<HomeRadarPlaceholder />}>
-            <LazyHomeRadarSection avatarSrc={avatarSrc} />
+            <LazyHomeRadarSection />
           </Suspense>
         ) : (
           <HomeRadarPlaceholder placeholderRef={radarPlaceholderRef} />

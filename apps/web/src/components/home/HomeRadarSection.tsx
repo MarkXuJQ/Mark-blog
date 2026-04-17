@@ -16,10 +16,6 @@ import radiogardenFavicon from '../../assets/home/radar/radiogarden.png'
 import ruanyifengFavicon from '../../assets/home/radar/ruanyifeng.png'
 import tongliaoFavicon from '../../assets/home/radar/tongliao.png'
 
-interface HomeRadarSectionProps {
-  avatarSrc: string
-}
-
 interface RadarNode {
   id: string
   href: string
@@ -195,7 +191,6 @@ const RADAR_VIRTUAL_SCROLL_MAX = 1040
 const RADAR_LOCK_TOLERANCE_PX = 36
 const RADAR_RELEASE_NUDGE_PX = 28
 
-const AVATAR_SETTLE_END = 0.1
 const HORIZONTAL_LINE_START = 0.12
 const HORIZONTAL_LINE_END = 0.25
 const AMBIENCE_START = 0.16
@@ -314,7 +309,7 @@ function getRadarNodeAngle(node: RadarNode) {
   return ((Math.atan2(y, x) * 180) / Math.PI + 90 + 360) % 360
 }
 
-export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
+export function HomeRadarSection() {
   const { i18n } = useTranslation()
   const prefersReducedMotion = usePrefersReducedMotion()
   const reduceMotion = prefersReducedMotion
@@ -650,12 +645,6 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
 
   const progress = reduceMotion ? 1 : sceneProgress
 
-  const avatarSettle = easeOutCubic(
-    segmentProgress(progress, 0, AVATAR_SETTLE_END)
-  )
-  const avatarScale = mix(0.9, 1, avatarSettle)
-  const avatarGlowOpacity = mix(0.28, 1, avatarSettle)
-
   const horizontalLineReveal = easeOutCubic(
     segmentProgress(progress, HORIZONTAL_LINE_START, HORIZONTAL_LINE_END)
   )
@@ -806,19 +795,15 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
             })}
 
             <div
+              aria-hidden="true"
               data-home-avatar-keyframe="radar"
-              className={styles.avatarWrap}
-              style={{ scale: avatarScale }}
+              className={cn(styles.avatarWrap, styles.avatarAnchor)}
             >
-              <div
-                aria-hidden="true"
-                className={styles.avatarGlow}
-                style={{ opacity: avatarGlowOpacity }}
-              />
               <div
                 data-home-avatar-keyframe-core="radar"
                 className={styles.avatarCore}
-              >
+              />
+              {/*
                 <img
                   src={avatarSrc}
                   alt={isZh ? 'Mark 的头像' : 'Portrait of Mark'}
@@ -827,7 +812,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                   loading="lazy"
                   decoding="async"
                 />
-              </div>
+              */}
             </div>
 
             {RADAR_NODES.map((node) => {
@@ -1032,11 +1017,9 @@ const styles = {
     'pointer-events-none absolute left-1/2 top-1/2 h-[170vmax] w-[170vmax] -translate-x-1/2 -translate-y-1/2',
   avatarWrap:
     'absolute left-1/2 top-1/2 z-20 flex h-[20%] w-[20%] min-h-[6.5rem] min-w-[6.5rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-transparent backdrop-blur-2xl',
-  avatarGlow:
-    'pointer-events-none absolute inset-[-18%] rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.18)_0%,rgba(56,189,248,0.06)_34%,rgba(56,189,248,0)_72%)] blur-2xl',
+  avatarAnchor: 'pointer-events-none invisible select-none',
   avatarCore:
     'relative h-[72%] w-[72%] overflow-hidden rounded-full border border-white/60 bg-transparent shadow-[0_14px_28px_-22px_rgba(15,23,42,0.24)]',
-  avatarImage: 'h-full w-full object-cover',
   signalLink:
     'absolute z-30 flex h-[44px] w-[44px] -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-visible focus-visible:z-50 focus-visible:outline-none',
   signalLinkActive: 'z-50',
