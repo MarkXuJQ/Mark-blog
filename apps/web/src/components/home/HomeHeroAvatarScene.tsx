@@ -1,4 +1,9 @@
-import { type PointerEvent as ReactPointerEvent } from 'react'
+import {
+  type PointerEvent as ReactPointerEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import {
   motion,
   useMotionTemplate,
@@ -11,6 +16,112 @@ import { cn } from '../../utils/cn'
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)
+}
+
+const COARSE_POINTER_QUERY = '(pointer: coarse)'
+const MAX_SENSOR_TILT = 18
+
+type MotionSensorState =
+  | 'checking'
+  | 'unsupported'
+  | 'idle'
+  | 'granted'
+  | 'denied'
+
+type DeviceOrientationPermissionResult = 'granted' | 'denied'
+
+type DeviceOrientationWithPermission = typeof DeviceOrientationEvent & {
+  requestPermission?: () => Promise<DeviceOrientationPermissionResult>
+}
+
+function getInitialCoarsePointerPreference() {
+  if (typeof window === 'undefined' || !('matchMedia' in window)) {
+    return false
+  }
+
+  return window.matchMedia(COARSE_POINTER_QUERY).matches
+}
+
+function useIsCoarsePointer() {
+  const [isCoarsePointer, setIsCoarsePointer] = useState(
+    getInitialCoarsePointerPreference
+  )
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('matchMedia' in window)) {
+      return
+    }
+
+    const mediaQuery = window.matchMedia(COARSE_POINTER_QUERY)
+    const legacyMediaQuery = mediaQuery as MediaQueryList & {
+      addListener?: (listener: () => void) => void
+      removeListener?: (listener: () => void) => void
+    }
+    const syncCoarsePointer = () => {
+      setIsCoarsePointer(mediaQuery.matches)
+    }
+
+    syncCoarsePointer()
+
+    if ('addEventListener' in mediaQuery) {
+      mediaQuery.addEventListener('change', syncCoarsePointer)
+      return () => mediaQuery.removeEventListener('change', syncCoarsePointer)
+    }
+
+    legacyMediaQuery.addListener?.(syncCoarsePointer)
+    return () => legacyMediaQuery.removeListener?.(syncCoarsePointer)
+  }, [])
+
+  return isCoarsePointer
+}
+
+function getDeviceOrientationConstructor() {
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  return (window.DeviceOrientationEvent ??
+    null) as DeviceOrientationWithPermission | null
+}
+
+function getScreenOrientationAngle() {
+  if (typeof window === 'undefined') {
+    return 0
+  }
+
+  if (typeof window.screen?.orientation?.angle === 'number') {
+    return window.screen.orientation.angle
+  }
+
+  const legacyWindow = window as Window & { orientation?: number }
+  return typeof legacyWindow.orientation === 'number'
+    ? legacyWindow.orientation
+    : 0
+}
+
+function normalizeTilt(value: number) {
+  const normalized = clamp(value / MAX_SENSOR_TILT, -1, 1)
+
+  return Math.abs(normalized) < 0.05 ? 0 : normalized
+}
+
+function projectTilt(beta: number, gamma: number) {
+  const normalizedBeta = normalizeTilt(beta)
+  const normalizedGamma = normalizeTilt(gamma)
+
+  // Remap axes so the effect keeps feeling natural after portrait/landscape rotation.
+  switch (getScreenOrientationAngle()) {
+    case 90:
+      return { x: normalizedBeta, y: -normalizedGamma }
+    case -90:
+    case 270:
+      return { x: -normalizedBeta, y: normalizedGamma }
+    case 180:
+    case -180:
+      return { x: -normalizedGamma, y: -normalizedBeta }
+    default:
+      return { x: normalizedGamma, y: normalizedBeta }
+  }
 }
 
 function SceneTag({
@@ -53,6 +164,11 @@ export function HomeHeroAvatarScene({
 }) {
   const pointerX = useMotionValue(0)
   const pointerY = useMotionValue(0)
+  const isCoarsePointer = useIsCoarsePointer()
+  const [motionSensorState, setMotionSensorState] =
+    useState<MotionSensorState>('checking')
+  const tiltBaselineRef = useRef<{ beta: number; gamma: number } | null>(null)
+  const orientationAngleRef = useRef(0)
   const springConfig = prefersReducedMotion
     ? { stiffness: 240, damping: 34, mass: 0.7 }
     : { stiffness: 130, damping: 18, mass: 0.56 }
@@ -161,6 +277,131 @@ export function HomeHeroAvatarScene({
     isDarkMode ? 'rgba(2, 6, 23, 0.88)' : 'rgba(15, 23, 42, 0.34)'
   }`
 
+  useEffect(() => {
+    if (prefersReducedMotion || !isCoarsePointer) {
+      setMotionSensorState('unsupported')
+      tiltBaselineRef.current = null
+      orientationAngleRef.current = 0
+      return
+    }
+
+    const deviceOrientation = getDeviceOrientationConstructor()
+
+    if (!deviceOrientation) {
+      setMotionSensorState('unsupported')
+      return
+    }
+
+    if (typeof deviceOrientation.requestPermission === 'function') {
+      setMotionSensorState((currentState) =>
+        currentState === 'granted' ? currentState : 'idle'
+      )
+      return
+    }
+
+    setMotionSensorState('granted')
+  }, [isCoarsePointer, prefersReducedMotion])
+
+  useEffect(() => {
+    if (
+      prefersReducedMotion ||
+      !isCoarsePointer ||
+      motionSensorState !== 'granted'
+    ) {
+      tiltBaselineRef.current = null
+      orientationAngleRef.current = 0
+      pointerX.set(0)
+      pointerY.set(0)
+      return
+    }
+
+    const handleOrientationChange = (event: DeviceOrientationEvent) => {
+      if (
+        typeof event.beta !== 'number' ||
+        typeof event.gamma !== 'number'
+      ) {
+        return
+      }
+
+      const currentAngle = getScreenOrientationAngle()
+
+      if (
+        !tiltBaselineRef.current ||
+        orientationAngleRef.current !== currentAngle
+      ) {
+        tiltBaselineRef.current = { beta: event.beta, gamma: event.gamma }
+        orientationAngleRef.current = currentAngle
+      }
+
+      const baseline = tiltBaselineRef.current
+
+      if (!baseline) {
+        return
+      }
+
+      const { x, y } = projectTilt(
+        event.beta - baseline.beta,
+        event.gamma - baseline.gamma
+      )
+
+      pointerX.set(x)
+      pointerY.set(y)
+    }
+
+    window.addEventListener('deviceorientation', handleOrientationChange)
+
+    return () => {
+      window.removeEventListener('deviceorientation', handleOrientationChange)
+      tiltBaselineRef.current = null
+      orientationAngleRef.current = 0
+      pointerX.set(0)
+      pointerY.set(0)
+    }
+  }, [isCoarsePointer, motionSensorState, pointerX, pointerY, prefersReducedMotion])
+
+  const handleEnableMotionSensor = async () => {
+    if (prefersReducedMotion) {
+      return
+    }
+
+    const deviceOrientation = getDeviceOrientationConstructor()
+
+    if (!deviceOrientation) {
+      setMotionSensorState('unsupported')
+      return
+    }
+
+    if (typeof deviceOrientation.requestPermission !== 'function') {
+      setMotionSensorState('granted')
+      return
+    }
+
+    try {
+      const permission = await deviceOrientation.requestPermission()
+      setMotionSensorState(permission === 'granted' ? 'granted' : 'denied')
+    } catch {
+      setMotionSensorState('denied')
+    }
+  }
+
+  const showMotionSensorPrompt =
+    isCoarsePointer &&
+    !prefersReducedMotion &&
+    (motionSensorState === 'idle' || motionSensorState === 'denied')
+  const showMotionSensorHint =
+    isCoarsePointer &&
+    !prefersReducedMotion &&
+    motionSensorState === 'granted'
+  const motionSensorLabel =
+    motionSensorState === 'denied'
+      ? isZh
+        ? '重新启用体感头像'
+        : 'Try tilt avatar again'
+      : isZh
+        ? '轻触启用体感头像'
+        : 'Tap to enable tilt avatar'
+  const motionSensorHint = isZh ? '倾斜手机试试' : 'Tilt your phone'
+
   const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (prefersReducedMotion || event.pointerType === 'touch') return
 
@@ -179,166 +420,196 @@ export function HomeHeroAvatarScene({
 
   return (
     <motion.div
-      aria-hidden="true"
-      className={styles.frame}
+      className={styles.frameWrap}
       style={{ y: sceneLift }}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerLeave}
     >
       <motion.div
-        className={cn(
-          styles.backGlow,
-          isDarkMode ? styles.backGlowDark : styles.backGlowLight
-        )}
-        style={{ scale: glowScale }}
-      />
-
-      <motion.div
-        className={styles.orbitLayer}
-        style={{
-          rotate: orbitRotate,
-          x: orbitX,
-          y: orbitParallaxY,
-          opacity: ringOpacity,
-        }}
+        aria-hidden="true"
+        className={styles.frame}
+        onPointerMove={handlePointerMove}
+        onPointerLeave={handlePointerLeave}
       >
-        <div
+        <motion.div
           className={cn(
-            styles.orbitRing,
-            isDarkMode ? styles.orbitRingDark : styles.orbitRingLight
+            styles.backGlow,
+            isDarkMode ? styles.backGlowDark : styles.backGlowLight
           )}
+          style={{ scale: glowScale }}
         />
-        <div
-          className={cn(
-            styles.orbitRingInner,
-            isDarkMode ? styles.orbitRingDark : styles.orbitRingLight
-          )}
-        />
-        <motion.span
-          className={cn(
-            styles.signalDot,
-            isDarkMode ? styles.signalDotDark : styles.signalDotLight
-          )}
-          style={{ y: orbitY }}
-        />
-      </motion.div>
 
-      <motion.div
-        className={styles.shellWrap}
-        style={{
-          rotateX: shellRotateX,
-          rotateY: shellRotateY,
-          x: shellX,
-          y: shellY,
-          scale: shellScale,
-          boxShadow: shellShadow,
-        }}
-      >
-        <div
-          className={cn(
-            styles.shell,
-            isDarkMode ? styles.shellDark : styles.shellLight
-          )}
+        <motion.div
+          className={styles.orbitLayer}
+          style={{
+            rotate: orbitRotate,
+            x: orbitX,
+            y: orbitParallaxY,
+            opacity: ringOpacity,
+          }}
         >
           <div
             className={cn(
-              styles.gridOverlay,
-              isDarkMode ? styles.gridOverlayDark : styles.gridOverlayLight
+              styles.orbitRing,
+              isDarkMode ? styles.orbitRingDark : styles.orbitRingLight
             )}
           />
           <div
             className={cn(
-              styles.paperNoise,
-              isDarkMode ? styles.paperNoiseDark : styles.paperNoiseLight
+              styles.orbitRingInner,
+              isDarkMode ? styles.orbitRingDark : styles.orbitRingLight
             )}
           />
-          <motion.div
-            className={styles.glare}
-            style={{ x: glareX, y: glareY }}
+          <motion.span
+            className={cn(
+              styles.signalDot,
+              isDarkMode ? styles.signalDotDark : styles.signalDotLight
+            )}
+            style={{ y: orbitY }}
           />
+        </motion.div>
 
-          <SceneTag
-            label={isZh ? '技术方向' : 'Focus'}
-            value={isZh ? '技术 / 设计 / 体验' : 'Code / Design / Motion'}
-            className={styles.tagA}
-            isDarkMode={isDarkMode}
-          />
-          <SceneTag
-            label={isZh ? '内容模块' : 'Modules'}
-            value={isZh ? 'Blog / 生活 / 影视' : 'Blog / Life / Movies'}
-            className={styles.tagB}
-            isDarkMode={isDarkMode}
-          />
-
-          <div className={styles.avatarStage}>
-            <motion.div
+        <motion.div
+          className={styles.shellWrap}
+          style={{
+            rotateX: shellRotateX,
+            rotateY: shellRotateY,
+            x: shellX,
+            y: shellY,
+            scale: shellScale,
+            boxShadow: shellShadow,
+          }}
+        >
+          <div
+            className={cn(
+              styles.shell,
+              isDarkMode ? styles.shellDark : styles.shellLight
+            )}
+          >
+            <div
               className={cn(
-                styles.avatarBackdrop,
-                isDarkMode
-                  ? styles.avatarBackdropDark
-                  : styles.avatarBackdropLight
+                styles.gridOverlay,
+                isDarkMode ? styles.gridOverlayDark : styles.gridOverlayLight
               )}
-              style={{ x: echoX, y: echoY }}
+            />
+            <div
+              className={cn(
+                styles.paperNoise,
+                isDarkMode ? styles.paperNoiseDark : styles.paperNoiseLight
+              )}
             />
             <motion.div
-              className={cn(
-                styles.avatarEcho,
-                isDarkMode ? styles.avatarEchoDark : styles.avatarEchoLight
-              )}
-              style={{ x: echoX, y: echoY, rotate: avatarRotate }}
-            />
-            <motion.div
-              className={styles.avatarShell}
-              style={{ x: avatarX, y: avatarY, rotate: avatarRotate }}
-            >
-              <div className={styles.avatarHalo} />
-              <div className={styles.avatarMask}>
-                <img
-                  src={avatarSrc}
-                  alt=""
-                  width={360}
-                  height={360}
-                  decoding="async"
-                  fetchPriority="high"
-                  className={styles.avatar}
-                />
-              </div>
-              <div className={styles.avatarOutline} />
-            </motion.div>
-
-            <motion.div
-              className={cn(
-                styles.ambientOrb,
-                styles.ambientOrbA,
-                isDarkMode ? styles.ambientOrbDark : styles.ambientOrbLight
-              )}
-              style={{ x: orbitX, y: orbitParallaxY }}
-            />
-            <motion.div
-              className={cn(
-                styles.ambientOrb,
-                styles.ambientOrbB,
-                isDarkMode ? styles.ambientOrbDark : styles.ambientOrbLight
-              )}
-              style={{ x: avatarX, y: avatarY }}
+              className={styles.glare}
+              style={{ x: glareX, y: glareY }}
             />
 
             <SceneTag
-              label={isZh ? '生活模块' : 'Modules'}
-              value={isZh ? '旅行 / 音乐 / 游戏' : 'Travel / Music / Games'}
-              className={styles.tagC}
+              label={isZh ? '技术方向' : 'Focus'}
+              value={isZh ? '技术 / 设计 / 体验' : 'Code / Design / Motion'}
+              className={styles.tagA}
               isDarkMode={isDarkMode}
             />
+            <SceneTag
+              label={isZh ? '内容模块' : 'Modules'}
+              value={isZh ? 'Blog / 生活 / 影视' : 'Blog / Life / Movies'}
+              className={styles.tagB}
+              isDarkMode={isDarkMode}
+            />
+
+            <div className={styles.avatarStage}>
+              <motion.div
+                className={cn(
+                  styles.avatarBackdrop,
+                  isDarkMode
+                    ? styles.avatarBackdropDark
+                    : styles.avatarBackdropLight
+                )}
+                style={{ x: echoX, y: echoY }}
+              />
+              <motion.div
+                className={cn(
+                  styles.avatarEcho,
+                  isDarkMode ? styles.avatarEchoDark : styles.avatarEchoLight
+                )}
+                style={{ x: echoX, y: echoY, rotate: avatarRotate }}
+              />
+              <motion.div
+                className={styles.avatarShell}
+                style={{ x: avatarX, y: avatarY, rotate: avatarRotate }}
+              >
+                <div className={styles.avatarHalo} />
+                <div className={styles.avatarMask}>
+                  <img
+                    src={avatarSrc}
+                    alt=""
+                    width={360}
+                    height={360}
+                    decoding="async"
+                    fetchPriority="high"
+                    className={styles.avatar}
+                  />
+                </div>
+                <div className={styles.avatarOutline} />
+              </motion.div>
+
+              <motion.div
+                className={cn(
+                  styles.ambientOrb,
+                  styles.ambientOrbA,
+                  isDarkMode ? styles.ambientOrbDark : styles.ambientOrbLight
+                )}
+                style={{ x: orbitX, y: orbitParallaxY }}
+              />
+              <motion.div
+                className={cn(
+                  styles.ambientOrb,
+                  styles.ambientOrbB,
+                  isDarkMode ? styles.ambientOrbDark : styles.ambientOrbLight
+                )}
+                style={{ x: avatarX, y: avatarY }}
+              />
+
+              <SceneTag
+                label={isZh ? '生活模块' : 'Modules'}
+                value={isZh ? '旅行 / 音乐 / 游戏' : 'Travel / Music / Games'}
+                className={styles.tagC}
+                isDarkMode={isDarkMode}
+              />
+            </div>
           </div>
-        </div>
+        </motion.div>
       </motion.div>
+
+      {showMotionSensorPrompt ? (
+        <button
+          type="button"
+          className={cn(
+            styles.tiltPrompt,
+            isDarkMode ? styles.tiltPromptDark : styles.tiltPromptLight
+          )}
+          onClick={handleEnableMotionSensor}
+        >
+          {motionSensorLabel}
+        </button>
+      ) : null}
+
+      {showMotionSensorHint ? (
+        <div
+          className={cn(
+            styles.tiltPrompt,
+            styles.tiltHint,
+            isDarkMode ? styles.tiltPromptDark : styles.tiltPromptLight
+          )}
+        >
+          {motionSensorHint}
+        </div>
+      ) : null}
     </motion.div>
   )
 }
 
 const styles = {
-  frame:
+  frameWrap:
     'relative mx-auto aspect-[0.94] w-full max-w-[360px] [perspective:1800px] sm:max-w-[420px] lg:max-w-[560px]',
+  frame: 'relative h-full w-full',
   backGlow:
     'absolute left-1/2 top-1/2 hidden h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl lg:block lg:h-[30rem] lg:w-[30rem]',
   backGlowLight:
@@ -419,4 +690,11 @@ const styles = {
     'bg-[radial-gradient(circle,rgba(125,211,252,0.34)_0%,rgba(125,211,252,0.08)_48%,rgba(15,23,42,0)_74%)]',
   ambientOrbA: 'right-[12%] top-[16%] h-20 w-20',
   ambientOrbB: 'bottom-[14%] right-[20%] h-28 w-28',
+  tiltPrompt:
+    'absolute bottom-3 left-1/2 z-30 flex -translate-x-1/2 items-center justify-center rounded-full border px-4 py-2 text-[0.72rem] font-semibold tracking-[0.18em] uppercase shadow-[0_20px_40px_-28px_rgba(15,23,42,0.7)] backdrop-blur-xl transition-transform duration-300 lg:hidden',
+  tiltPromptLight:
+    'border-white/70 bg-white/72 text-slate-900 hover:-translate-x-1/2 hover:-translate-y-0.5',
+  tiltPromptDark:
+    'border-white/14 bg-slate-950/48 text-white hover:-translate-x-1/2 hover:-translate-y-0.5',
+  tiltHint: 'pointer-events-none',
 }
