@@ -85,8 +85,8 @@ interface TravelRecord {
 
 const hoverLift = {
   whileHover: {
-    scale: 1.008,
-    boxShadow: '0 34px 90px -52px rgba(15,23,42,0.78)',
+    scale: 1.004,
+    boxShadow: '0 30px 84px -54px rgba(15,23,42,0.82)',
   },
   whileTap: { scale: 0.996 },
   transition: { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const },
@@ -572,35 +572,36 @@ const styles = {
   introRow:
     'relative z-[3] pt-0 sm:pt-1 lg:pt-2',
   introCopy:
-    'relative z-[3] max-w-3xl -translate-x-0.5 -translate-y-0.5 sm:-translate-x-1 sm:-translate-y-1 lg:-translate-x-2 lg:-translate-y-1.5',
+    'relative z-[3] max-w-3xl',
   introEyebrow:
-    'font-[var(--font-pixel)] text-[0.72rem] uppercase tracking-[0.28em] text-cyan-100/70 drop-shadow-[0_10px_24px_rgba(5,9,19,0.45)]',
+    'font-[var(--font-pixel)] text-[0.72rem] uppercase tracking-[0.28em] text-cyan-100/58 drop-shadow-[0_10px_24px_rgba(5,9,19,0.45)]',
   introTitle:
-    'mt-3 max-w-[18ch] text-3xl font-semibold leading-[1.02] text-white text-balance drop-shadow-[0_18px_34px_rgba(5,9,19,0.48)] sm:text-[3.35rem] lg:text-[4rem]',
+    'mt-3 max-w-[16ch] text-3xl font-semibold leading-[0.98] text-white/94 text-balance drop-shadow-[0_18px_34px_rgba(5,9,19,0.48)] sm:text-[3.35rem] lg:text-[4rem]',
   introMapStage:
     'relative z-[2] mx-auto mt-3 w-full max-w-[58rem] overflow-visible sm:mt-5 lg:mt-6 lg:max-w-[62rem]',
   introMeta:
-    'absolute bottom-1 right-2 z-[3] flex flex-col items-end gap-2 sm:bottom-2 sm:right-4 sm:gap-3 lg:bottom-3 lg:right-5',
+    'absolute bottom-[6%] right-[4%] z-[3] flex flex-wrap items-baseline justify-end gap-x-5 gap-y-2 sm:bottom-[7%] sm:right-[5%] sm:gap-x-6 lg:bottom-[8%] lg:right-[6%]',
   summaryPill:
-    'inline-flex items-center gap-3 rounded-full border border-cyan-200/16 bg-slate-950/72 px-4 py-2.5 text-white shadow-[0_18px_44px_-28px_rgba(8,145,178,0.45)] backdrop-blur-xl',
-  summaryPillValue: 'text-lg font-semibold leading-none text-white',
+    'inline-flex items-baseline gap-2.5 border-l border-white/10 pl-4 text-white first:border-l-0 first:pl-0',
+  summaryPillValue: 'text-[1.15rem] font-semibold leading-none tabular-nums text-white/86',
   summaryPillLabel:
-    'text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white/52',
+    'text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-white/40',
   ambientOrbit:
     'pointer-events-none absolute left-1/2 top-6 -z-10 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.18)_0%,rgba(56,189,248,0.08)_28%,rgba(56,189,248,0)_68%)] blur-3xl',
   ambientOrbitSecondary:
     'pointer-events-none absolute right-[-2rem] top-[20rem] -z-10 h-[18rem] w-[18rem] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0.04)_30%,rgba(255,255,255,0)_70%)] blur-3xl',
   introMapLayer:
-    'pointer-events-none relative z-[1] w-full opacity-100 brightness-[1.16] saturate-[1.24]',
+    'pointer-events-none relative z-[1] w-full opacity-100 brightness-[1.08] saturate-[1.12]',
   introMapViewport:
     'relative aspect-[2.34/1] w-full overflow-visible sm:aspect-[2.52/1]',
-  introMapGlow: 'hidden',
-  introMapBase: 'absolute inset-0 h-full w-full object-contain opacity-34',
+  introMapGlow:
+    'pointer-events-none absolute inset-[8%_10%_18%] bg-[radial-gradient(circle_at_50%_52%,rgba(125,211,252,0.18)_0%,rgba(125,211,252,0.06)_40%,rgba(125,211,252,0)_76%)] blur-3xl',
+  introMapBase: 'absolute inset-0 h-full w-full object-contain opacity-28',
   introMapHighlight:
-    'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_56px_rgba(181,232,251,0.42)]',
+    'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_62px_rgba(181,232,251,0.3)]',
   grid: 'relative grid items-start gap-6 pt-10 sm:gap-8 sm:pt-12 lg:grid-cols-[minmax(19.5rem,24.5rem)_minmax(0,1fr)] lg:gap-x-8 lg:gap-y-8 lg:pt-16',
   panel:
-    'relative min-w-0 w-full overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/90 p-4 text-white shadow-[0_28px_90px_-48px_rgba(15,23,42,0.6)] will-change-transform sm:p-5',
+    'relative min-w-0 w-full overflow-hidden rounded-[30px] border border-white/9 bg-[linear-gradient(180deg,rgba(10,16,22,0.92)_0%,rgba(7,12,18,0.97)_100%)] p-4 text-white shadow-[0_34px_110px_-56px_rgba(2,6,23,0.86)] ring-1 ring-white/[0.025] will-change-transform sm:p-5',
   mapPanel: 'relative z-[2] w-full self-start',
   embedPanel:
     'z-[4] self-start lg:col-start-2 lg:row-start-1 lg:w-full',
@@ -609,20 +610,20 @@ const styles = {
   clockPanel: 'h-full w-full overflow-visible',
   cardHeader: 'flex items-start gap-2.5',
   panelHeaderSplit:
-    'flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4',
+    'flex flex-col gap-3 border-b border-white/8 pb-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4',
   cardIconWrap:
-    'mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[18px] border border-white/12 bg-white/6 text-cyan-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]',
+    'mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[16px] border border-white/10 bg-white/[0.05] text-cyan-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]',
   cardCopy: 'min-w-0',
   cardEyebrow:
-    'text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-cyan-100/56',
+    'text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-cyan-100/44',
   cardTitle:
-    'mt-1 text-[0.83rem] font-medium leading-5 text-white/84 sm:text-[0.9rem]',
+    'mt-1 text-[0.83rem] font-medium leading-5 text-white/80 sm:text-[0.9rem]',
   cardDescription: 'mt-3 max-w-[44rem] text-sm leading-6 text-white/58',
   metricCluster: 'flex flex-wrap gap-2',
   metricPill:
     'inline-flex items-center rounded-full border border-cyan-300/16 bg-cyan-300/[0.08] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-cyan-50/88',
   metricPillMuted:
-    'inline-flex items-center rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white/56',
+    'pt-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-white/42',
   mapViewport:
     'relative aspect-[2.28/1] w-full overflow-visible sm:aspect-[2.42/1]',
   mapGlow:
@@ -631,13 +632,13 @@ const styles = {
   mapHighlight:
     'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_32px_rgba(181,232,251,0.36)]',
   embedViewport:
-    'relative mt-3 overflow-hidden rounded-[22px] border border-white/10 bg-[#0c1217] p-1.5',
+    'relative mt-4 overflow-hidden rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,#0d141a_0%,#091016_100%)] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]',
   embedAction:
-    'group absolute right-4 top-4 z-20 inline-flex items-center gap-2 rounded-full border border-cyan-200/18 bg-slate-950/76 px-3.5 py-2 text-[0.72rem] font-semibold tracking-[0.08em] text-cyan-50/92 shadow-[0_20px_44px_-28px_rgba(8,145,178,0.5)] backdrop-blur-xl transition-[transform,border-color,background-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-cyan-200/32 hover:bg-slate-900/82 hover:text-white hover:shadow-[0_24px_52px_-26px_rgba(34,211,238,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/55 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
+    'group absolute right-5 top-5 z-20 inline-flex items-center gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-cyan-50/72 transition-[transform,color] duration-300 hover:-translate-y-0.5 hover:text-cyan-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/55 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
   embedActionIcon:
     'h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5',
   embedFrame:
-    'relative block aspect-square w-full rounded-[18px] border-0 bg-[#10161a] shadow-[0_18px_40px_-30px_rgba(0,0,0,0.72)]',
+    'relative block aspect-square w-full rounded-[20px] border-0 bg-[#10161a] shadow-[0_18px_40px_-28px_rgba(0,0,0,0.78)]',
   embedPlaceholder:
     'flex items-center justify-center overflow-hidden border border-white/6 bg-[linear-gradient(180deg,#0f171d_0%,#101921_52%,#0d141a_100%)] text-center',
   embedPlaceholderGlow:

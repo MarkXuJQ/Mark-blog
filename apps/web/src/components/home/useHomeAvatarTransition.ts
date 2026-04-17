@@ -1067,7 +1067,9 @@ export function useHomeAvatarTransition({
     )
   })
   const currentShellBackground = useFrameDrivenValue(frameTicker, () => {
-    const visualId = getCurrentVisualKeyframeId(pageProgress.get())
+    const progress = pageProgress.get()
+    const visualId =
+      progress >= THIRD_LEG_START ? 'radar' : getCurrentVisualKeyframeId(progress)
     return keyframeMeasurementsRef.current[visualId].shellBackground
   })
   const currentShellBorderColor = useFrameDrivenValue(frameTicker, () => {
@@ -1083,7 +1085,9 @@ export function useHomeAvatarTransition({
     return keyframeMeasurementsRef.current[visualId].shellBackdropFilter
   })
   const currentCoreBackground = useFrameDrivenValue(frameTicker, () => {
-    const visualId = getCurrentVisualKeyframeId(pageProgress.get())
+    const progress = pageProgress.get()
+    const visualId =
+      progress >= THIRD_LEG_START ? 'radar' : getCurrentVisualKeyframeId(progress)
     return keyframeMeasurementsRef.current[visualId].coreBackground
   })
   const currentImageScale = useFrameDrivenValue(frameTicker, () => {
