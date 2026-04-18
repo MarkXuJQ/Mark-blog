@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CalendarYearWheel } from './CalendarYearWheel'
 import { cn } from '../../utils/cn'
@@ -15,6 +15,23 @@ interface WatchActivityCalendarProps {
   locale: string
   selectedDateKey: string | null
   onSelectDateKey: (value: string | null) => void
+}
+
+interface CalendarLayout {
+  chartGap: number
+  cellSize: number
+  legendSize: number
+  monthLabelHeight: number
+  monthLabelMinSpacing: number
+  monthLabelTextClassName: string
+  weekdayColumnWidth: number
+  weekdayLabelTextClassName: string
+  weekGap: number
+  weekGridWidth: number
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value))
 }
 
 function getMondayDayIndex(date: Date) {
@@ -65,6 +82,51 @@ function formatMonthLabel(date: Date, locale: string) {
   return new Intl.DateTimeFormat(locale, { month: 'short' }).format(date)
 }
 
+function getCalendarLayout(containerWidth: number, weekCount: number): CalendarLayout {
+  const safeWeekCount = Math.max(weekCount, 1)
+  const safeWidth = Math.max(containerWidth, 280)
+  const weekdayColumnWidth =
+    safeWidth < 360 ? 14 : safeWidth < 480 ? 18 : 24
+  const chartGap = safeWidth < 360 ? 4 : safeWidth < 480 ? 6 : 8
+  const preferredWeekGap =
+    safeWidth < 340 ? 0 : safeWidth < 420 ? 1 : safeWidth < 560 ? 2 : 3
+
+  let weekGap = preferredWeekGap
+  let cellSize = Math.floor(
+    (safeWidth - weekdayColumnWidth - chartGap - (safeWeekCount - 1) * weekGap) /
+      safeWeekCount
+  )
+
+  while (cellSize < 4 && weekGap > 0) {
+    weekGap -= 1
+    cellSize = Math.floor(
+      (safeWidth -
+        weekdayColumnWidth -
+        chartGap -
+        (safeWeekCount - 1) * weekGap) /
+        safeWeekCount
+    )
+  }
+
+  cellSize = clamp(cellSize, 4, 12)
+
+  return {
+    chartGap,
+    cellSize,
+    legendSize: clamp(cellSize, 4, 10),
+    monthLabelHeight: safeWidth < 360 ? 12 : 16,
+    monthLabelMinSpacing:
+      safeWidth < 360 ? 24 : safeWidth < 480 ? 30 : safeWidth < 640 ? 38 : 46,
+    monthLabelTextClassName:
+      safeWidth < 360 ? 'text-[9px]' : safeWidth < 480 ? 'text-[10px]' : 'text-[11px]',
+    weekdayColumnWidth,
+    weekdayLabelTextClassName:
+      safeWidth < 360 ? 'text-[9px]' : 'text-[10px]',
+    weekGap,
+    weekGridWidth: safeWeekCount * cellSize + (safeWeekCount - 1) * weekGap,
+  }
+}
+
 export function WatchActivityCalendar({
   watchDates,
   locale,
@@ -73,6 +135,8 @@ export function WatchActivityCalendar({
 }: WatchActivityCalendarProps) {
   const { t } = useTranslation()
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())
+  const heatmapRef = useRef<HTMLDivElement | null>(null)
+  const [heatmapWidth, setHeatmapWidth] = useState(0)
 
   const parsedWatchDates = useMemo(
     () =>
@@ -157,6 +221,32 @@ export function WatchActivityCalendar({
     })
   }, [calendarWeeks, locale])
 
+  const calendarLayout = useMemo(
+    () => getCalendarLayout(heatmapWidth, calendarWeeks.length),
+    [calendarWeeks.length, heatmapWidth]
+  )
+
+  const visibleCalendarMonthLabels = useMemo(() => {
+    let lastPlacedX = Number.NEGATIVE_INFINITY
+
+    return calendarMonthLabels.filter((item) => {
+      const currentX =
+        item.weekIndex * (calendarLayout.cellSize + calendarLayout.weekGap)
+
+      if (currentX - lastPlacedX < calendarLayout.monthLabelMinSpacing) {
+        return false
+      }
+
+      lastPlacedX = currentX
+      return true
+    })
+  }, [
+    calendarLayout.cellSize,
+    calendarLayout.monthLabelMinSpacing,
+    calendarLayout.weekGap,
+    calendarMonthLabels,
+  ])
+
   const activeWatchDays = useMemo(
     () =>
       parsedWatchDates.filter((date) => date.getFullYear() === selectedYear).reduce(
@@ -184,31 +274,35 @@ export function WatchActivityCalendar({
     return formatDateFromObject(parsed, locale)
   }, [selectedDateKey, locale])
 
-  return (
-    <section className="relative mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c]">
-      {years.length > 0 ? (
-        <div className="absolute right-4 top-4 z-10">
-          <CalendarYearWheel
-            years={years}
-            value={selectedYear}
-            onValueChange={setSelectedYear}
-            label={t('movies.calendar.year')}
-            ariaLabel={t('movies.calendar.year')}
-          />
-        </div>
-      ) : null}
+  useEffect(() => {
+    const node = heatmapRef.current
+    if (!node) return
 
-      <div
-        className={cn(
-          'mb-3',
-          years.length > 0 && 'min-h-[3.25rem] pr-24 sm:pr-28'
-        )}
-      >
-        <div>
+    const updateWidth = () => {
+      setHeatmapWidth(node.getBoundingClientRect().width)
+    }
+
+    updateWidth()
+
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', updateWidth)
+      return () => window.removeEventListener('resize', updateWidth)
+    }
+
+    const observer = new ResizeObserver(updateWidth)
+    observer.observe(node)
+
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <section className="mb-8 border-b border-slate-200/80 pb-6 dark:border-[#2b2f36]">
+      <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-3">
+        <div className="min-w-0 pr-1">
           <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
             {t('movies.calendar.title')}
           </h2>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">
             {t('movies.calendar.summary', {
               count: activeWatchDays,
               total: watchedCount,
@@ -216,109 +310,175 @@ export function WatchActivityCalendar({
             })}
           </p>
         </div>
+
+        {years.length > 0 ? (
+          <div className="justify-self-end">
+            <CalendarYearWheel
+              years={years}
+              value={selectedYear}
+              onValueChange={setSelectedYear}
+              label={t('movies.calendar.year')}
+              ariaLabel={t('movies.calendar.year')}
+            />
+          </div>
+        ) : null}
       </div>
 
       {selectedDateKey ? (
-        <div className="mb-3 flex items-center justify-between rounded-2xl border border-slate-200/80 bg-slate-50/80 px-3.5 py-2.5 text-[11px] text-slate-500 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-400">
+        <div className="mb-4 flex items-center justify-between gap-4 border-t border-slate-200/80 pt-3 text-[11px] text-slate-500 dark:border-[#2b2f36] dark:text-slate-400">
           <span>{selectedDateLabel}</span>
           <button
             type="button"
             onClick={() => onSelectDateKey(null)}
-            className="rounded-full border border-slate-200/80 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-emerald-300 hover:text-emerald-600 dark:border-slate-700/80 dark:bg-slate-900/50 dark:text-slate-300 dark:hover:border-emerald-500 dark:hover:text-emerald-300"
+            className="border-b border-transparent pb-0.5 font-medium text-slate-600 transition hover:border-emerald-300 hover:text-emerald-600 dark:text-slate-300 dark:hover:border-emerald-500 dark:hover:text-emerald-300"
           >
             {t('movies.stats.clearFilter', '清除筛选')}
           </button>
         </div>
       ) : null}
 
-      <div className="overflow-x-auto">
-        <div className="min-w-max">
-          <div className="flex items-end gap-2">
-            <div className="w-6 shrink-0" />
+      <div ref={heatmapRef} className="w-full">
+        <div
+          className="flex items-end"
+          style={{ columnGap: `${calendarLayout.chartGap}px` }}
+        >
+          <div
+            className="shrink-0"
+            style={{ width: `${calendarLayout.weekdayColumnWidth}px` }}
+          />
 
-            <div className="relative h-4">
-              <div className="flex gap-1 opacity-0">
-                {calendarWeeks.map((_, index) => (
-                  <span key={`month-slot-${index}`} className="block h-4 w-3 shrink-0" />
-                ))}
-              </div>
+          <div
+            className="relative"
+            style={{
+              height: `${calendarLayout.monthLabelHeight}px`,
+              width: `${calendarLayout.weekGridWidth}px`,
+            }}
+          >
+            {visibleCalendarMonthLabels.map((item) => (
+              <span
+                key={`${item.label}-${item.weekIndex}`}
+                className={cn(
+                  'absolute top-0 block whitespace-nowrap font-medium leading-none text-slate-500 dark:text-slate-400',
+                  calendarLayout.monthLabelTextClassName
+                )}
+                style={{
+                  left: `${item.weekIndex * (calendarLayout.cellSize + calendarLayout.weekGap)}px`,
+                }}
+              >
+                {item.label}
+              </span>
+            ))}
+          </div>
+        </div>
 
-              {calendarMonthLabels.map((item) => (
-                <span
-                  key={`${item.label}-${item.weekIndex}`}
-                  className="absolute top-0 block whitespace-nowrap text-[11px] font-medium leading-none text-slate-500 dark:text-slate-400"
-                  style={{
-                    left: `calc(${item.weekIndex} * 1rem)`,
-                  }}
-                >
-                  {item.label}
-                </span>
-              ))}
-            </div>
+        <div
+          className="mt-1 flex"
+          style={{ columnGap: `${calendarLayout.chartGap}px` }}
+        >
+          <div
+            className={cn(
+              'grid shrink-0 grid-rows-7 text-slate-400 dark:text-slate-500',
+              calendarLayout.weekdayLabelTextClassName
+            )}
+            style={{
+              width: `${calendarLayout.weekdayColumnWidth}px`,
+              gap: `${calendarLayout.weekGap}px`,
+            }}
+          >
+            <span
+              className="flex items-center overflow-hidden"
+              style={{ height: `${calendarLayout.cellSize}px` }}
+            >
+              {t('movies.calendar.week.mon')}
+            </span>
+            <span style={{ height: `${calendarLayout.cellSize}px` }} />
+            <span
+              className="flex items-center overflow-hidden"
+              style={{ height: `${calendarLayout.cellSize}px` }}
+            >
+              {t('movies.calendar.week.wed')}
+            </span>
+            <span style={{ height: `${calendarLayout.cellSize}px` }} />
+            <span
+              className="flex items-center overflow-hidden"
+              style={{ height: `${calendarLayout.cellSize}px` }}
+            >
+              {t('movies.calendar.week.fri')}
+            </span>
+            <span style={{ height: `${calendarLayout.cellSize}px` }} />
+            <span style={{ height: `${calendarLayout.cellSize}px` }} />
           </div>
 
-          <div className="flex gap-2">
-            <div className="grid w-6 grid-rows-7 gap-1 py-[1px] text-[10px] text-slate-400 dark:text-slate-500">
-              <span className="flex h-3 items-center">{t('movies.calendar.week.mon')}</span>
-              <span className="h-3" />
-              <span className="flex h-3 items-center">{t('movies.calendar.week.wed')}</span>
-              <span className="h-3" />
-              <span className="flex h-3 items-center">{t('movies.calendar.week.fri')}</span>
-              <span className="h-3" />
-              <span className="h-3" />
-            </div>
-
-            <div className="flex gap-1">
-              {calendarWeeks.map((week, weekIndex) => (
-                <div key={`week-${weekIndex}`} className="flex flex-col gap-1">
-                  {week.map((day) => {
-                    const isInteractive = day.isCurrentYear && day.count > 0
-                    return (
-                      <button
-                        key={day.dateKey}
-                        type="button"
-                        onClick={
-                          isInteractive ? () => onSelectDateKey(day.dateKey) : undefined
-                        }
-                        className={cn(
-                          'h-3 w-3 rounded-[3px] ring-1 ring-black/5 transition-transform duration-200 dark:ring-white/5',
-                          isInteractive ? 'hover:scale-[1.12]' : '',
-                          selectedDateKey === day.dateKey
-                            ? 'ring-2 ring-emerald-400 dark:ring-emerald-500'
-                            : '',
-                          day.isCurrentYear
-                            ? getHeatmapLevelClass(day.count)
-                            : 'bg-transparent ring-transparent'
-                        )}
-                        title={
-                          day.isCurrentYear
-                            ? t('movies.calendar.tooltip', {
-                                date: formatDateFromObject(day.date, locale),
-                                count: day.count,
-                              })
-                            : ''
-                        }
-                        disabled={!isInteractive}
-                        aria-pressed={selectedDateKey === day.dateKey}
-                      />
-                    )
-                  })}
-                </div>
-              ))}
-            </div>
+          <div
+            className="flex"
+            style={{
+              gap: `${calendarLayout.weekGap}px`,
+              width: `${calendarLayout.weekGridWidth}px`,
+            }}
+          >
+            {calendarWeeks.map((week, weekIndex) => (
+              <div
+                key={`week-${weekIndex}`}
+                className="flex flex-col"
+                style={{ gap: `${calendarLayout.weekGap}px` }}
+              >
+                {week.map((day) => {
+                  const isInteractive = day.isCurrentYear && day.count > 0
+                  return (
+                    <button
+                      key={day.dateKey}
+                      type="button"
+                      onClick={
+                        isInteractive ? () => onSelectDateKey(day.dateKey) : undefined
+                      }
+                      className={cn(
+                        'shrink-0 ring-1 ring-black/5 transition-transform duration-200 dark:ring-white/5',
+                        isInteractive ? 'hover:scale-[1.12]' : '',
+                        selectedDateKey === day.dateKey
+                          ? 'ring-[1.5px] ring-emerald-400 dark:ring-emerald-500'
+                          : '',
+                        day.isCurrentYear
+                          ? getHeatmapLevelClass(day.count)
+                          : 'bg-transparent ring-transparent'
+                      )}
+                      style={{
+                        width: `${calendarLayout.cellSize}px`,
+                        height: `${calendarLayout.cellSize}px`,
+                        borderRadius: `${Math.max(2, Math.round(calendarLayout.cellSize * 0.28))}px`,
+                      }}
+                      title={
+                        day.isCurrentYear
+                          ? t('movies.calendar.tooltip', {
+                              date: formatDateFromObject(day.date, locale),
+                              count: day.count,
+                            })
+                          : ''
+                      }
+                      disabled={!isInteractive}
+                      aria-pressed={selectedDateKey === day.dateKey}
+                    />
+                  )
+                })}
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      <div className="mt-3 flex items-center justify-end gap-1 text-[10px] text-slate-400 dark:text-slate-500">
+      <div className="mt-4 flex items-center justify-end gap-1 text-[10px] text-slate-400 dark:text-slate-500">
         <span>{t('movies.calendar.less')}</span>
         {[0, 1, 2, 3, 4].map((level) => (
           <span
             key={level}
             className={cn(
-              'h-3 w-3 rounded-[3px] ring-1 ring-black/5 dark:ring-white/5',
+              'ring-1 ring-black/5 dark:ring-white/5',
               getHeatmapLevelClass(level)
             )}
+            style={{
+              width: `${calendarLayout.legendSize}px`,
+              height: `${calendarLayout.legendSize}px`,
+              borderRadius: `${Math.max(2, Math.round(calendarLayout.legendSize * 0.28))}px`,
+            }}
           />
         ))}
         <span>{t('movies.calendar.more')}</span>

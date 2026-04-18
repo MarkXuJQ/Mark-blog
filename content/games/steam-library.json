@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-16T16:42:55.814Z",
+  "generatedAt": "2026-04-18T12:27:58.930Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -13,7 +13,7 @@
     "playedCount": 148,
     "unplayedCount": 76,
     "totalMinutes": 167197,
-    "totalRecentMinutes": 939,
+    "totalRecentMinutes": 281,
     "totalUnlockedAchievements": 1884,
     "totalAvailableAchievements": 7206,
     "featuredAppId": 2246340
@@ -33,9 +33,9 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 152553,
-        "totalNegative": 163991,
-        "totalReviews": 316544,
+        "totalPositive": 152667,
+        "totalNegative": 164025,
+        "totalReviews": 316692,
         "positivePercent": 48
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1771382452",
@@ -64,14 +64,14 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 449115,
-        "totalNegative": 56985,
-        "totalReviews": 506100,
+        "totalPositive": 449247,
+        "totalNegative": 57007,
+        "totalReviews": 506254,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
       "shortDescription": "Welcome to a new world! In Monster Hunter: World, the latest installment in the series, you can enjoy the ultimate hunting experience, using everything at your disposal to hunt monsters in a new world teeming with surprises and excitement.",
-      "releaseDate": "9 Aug, 2018",
+      "releaseDate": "8 Aug, 2018",
       "developers": [
         "CAPCOM Co., Ltd."
       ],
@@ -93,9 +93,9 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 808058,
-        "totalNegative": 26625,
-        "totalReviews": 834683,
+        "totalPositive": 808275,
+        "totalNegative": 26628,
+        "totalReviews": 834903,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1773079016",
@@ -124,9 +124,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 837780,
-        "totalNegative": 27830,
-        "totalReviews": 865610,
+        "totalPositive": 837924,
+        "totalNegative": 27836,
+        "totalReviews": 865760,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991",
@@ -153,9 +153,9 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 320039,
-        "totalNegative": 52116,
-        "totalReviews": 372155,
+        "totalPositive": 320106,
+        "totalNegative": 52117,
+        "totalReviews": 372223,
         "positivePercent": 86
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1740607040",
@@ -184,9 +184,9 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 162407,
-        "totalNegative": 20481,
-        "totalReviews": 182888,
+        "totalPositive": 162443,
+        "totalNegative": 20482,
+        "totalReviews": 182925,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1758656673",
@@ -475,7 +475,7 @@
       "appid": 1903340,
       "name": "Clair Obscur: Expedition 33",
       "playtimeMinutes": 2531,
-      "recentPlaytimeMinutes": 889,
+      "recentPlaytimeMinutes": 231,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1903340/d48fb3ed033a08bad9bf0a2e1ceb145e58ffe0aa.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1903340",
