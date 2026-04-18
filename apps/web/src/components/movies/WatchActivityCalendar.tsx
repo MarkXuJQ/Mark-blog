@@ -82,18 +82,35 @@ function formatMonthLabel(date: Date, locale: string) {
   return new Intl.DateTimeFormat(locale, { month: 'short' }).format(date)
 }
 
-function getCalendarLayout(containerWidth: number, weekCount: number): CalendarLayout {
+function getCalendarLayout(
+  containerWidth: number,
+  weekCount: number
+): CalendarLayout {
   const safeWeekCount = Math.max(weekCount, 1)
   const safeWidth = Math.max(containerWidth, 280)
   const weekdayColumnWidth =
-    safeWidth < 360 ? 14 : safeWidth < 480 ? 18 : 24
-  const chartGap = safeWidth < 360 ? 4 : safeWidth < 480 ? 6 : 8
+    safeWidth < 360 ? 14 : safeWidth < 480 ? 18 : safeWidth < 960 ? 24 : 28
+  const chartGap =
+    safeWidth < 360 ? 4 : safeWidth < 480 ? 6 : safeWidth < 960 ? 8 : 10
   const preferredWeekGap =
-    safeWidth < 340 ? 0 : safeWidth < 420 ? 1 : safeWidth < 560 ? 2 : 3
+    safeWidth < 340
+      ? 0
+      : safeWidth < 420
+        ? 1
+        : safeWidth < 560
+          ? 2
+          : safeWidth < 960
+            ? 3
+            : safeWidth < 1320
+              ? 4
+              : 5
 
   let weekGap = preferredWeekGap
   let cellSize = Math.floor(
-    (safeWidth - weekdayColumnWidth - chartGap - (safeWeekCount - 1) * weekGap) /
+    (safeWidth -
+      weekdayColumnWidth -
+      chartGap -
+      (safeWeekCount - 1) * weekGap) /
       safeWeekCount
   )
 
@@ -108,20 +125,53 @@ function getCalendarLayout(containerWidth: number, weekCount: number): CalendarL
     )
   }
 
-  cellSize = clamp(cellSize, 4, 12)
+  const maxCellSize =
+    safeWidth < 480
+      ? 12
+      : safeWidth < 720
+        ? 14
+        : safeWidth < 960
+          ? 16
+          : safeWidth < 1200
+            ? 18
+            : safeWidth < 1500
+              ? 22
+              : 26
+
+  cellSize = clamp(cellSize, 4, maxCellSize)
 
   return {
     chartGap,
     cellSize,
-    legendSize: clamp(cellSize, 4, 10),
-    monthLabelHeight: safeWidth < 360 ? 12 : 16,
+    legendSize: clamp(Math.round(cellSize * 0.78), 4, 14),
+    monthLabelHeight: safeWidth < 360 ? 12 : safeWidth < 960 ? 16 : 18,
     monthLabelMinSpacing:
-      safeWidth < 360 ? 24 : safeWidth < 480 ? 30 : safeWidth < 640 ? 38 : 46,
+      safeWidth < 360
+        ? 24
+        : safeWidth < 480
+          ? 30
+          : safeWidth < 640
+            ? 38
+            : safeWidth < 960
+              ? 46
+              : safeWidth < 1320
+                ? 56
+                : 66,
     monthLabelTextClassName:
-      safeWidth < 360 ? 'text-[9px]' : safeWidth < 480 ? 'text-[10px]' : 'text-[11px]',
+      safeWidth < 360
+        ? 'text-[9px]'
+        : safeWidth < 480
+          ? 'text-[10px]'
+          : safeWidth < 960
+            ? 'text-[11px]'
+            : 'text-xs',
     weekdayColumnWidth,
     weekdayLabelTextClassName:
-      safeWidth < 360 ? 'text-[9px]' : 'text-[10px]',
+      safeWidth < 360
+        ? 'text-[9px]'
+        : safeWidth < 960
+          ? 'text-[10px]'
+          : 'text-[11px]',
     weekGap,
     weekGridWidth: safeWeekCount * cellSize + (safeWeekCount - 1) * weekGap,
   }
@@ -134,7 +184,9 @@ export function WatchActivityCalendar({
   onSelectDateKey,
 }: WatchActivityCalendarProps) {
   const { t } = useTranslation()
-  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())
+  const [selectedYear, setSelectedYear] = useState<number>(
+    new Date().getFullYear()
+  )
   const heatmapRef = useRef<HTMLDivElement | null>(null)
   const [heatmapWidth, setHeatmapWidth] = useState(0)
 
@@ -150,7 +202,9 @@ export function WatchActivityCalendar({
   )
 
   const years = useMemo(() => {
-    const uniqueYears = new Set(parsedWatchDates.map((date) => date.getFullYear()))
+    const uniqueYears = new Set(
+      parsedWatchDates.map((date) => date.getFullYear())
+    )
     return Array.from(uniqueYears).sort((left, right) => right - left)
   }, [parsedWatchDates])
 
@@ -249,21 +303,21 @@ export function WatchActivityCalendar({
 
   const activeWatchDays = useMemo(
     () =>
-      parsedWatchDates.filter((date) => date.getFullYear() === selectedYear).reduce(
-        (days, date, _index, source) => {
+      parsedWatchDates
+        .filter((date) => date.getFullYear() === selectedYear)
+        .reduce((days, date, _index, source) => {
           const key = toDateKey(date)
           return source.findIndex((item) => toDateKey(item) === key) === _index
             ? days + 1
             : days
-        },
-        0
-      ),
+        }, 0),
     [parsedWatchDates, selectedYear]
   )
 
   const watchedCount = useMemo(
     () =>
-      parsedWatchDates.filter((date) => date.getFullYear() === selectedYear).length,
+      parsedWatchDates.filter((date) => date.getFullYear() === selectedYear)
+        .length,
     [parsedWatchDates, selectedYear]
   )
 
@@ -358,7 +412,7 @@ export function WatchActivityCalendar({
               <span
                 key={`${item.label}-${item.weekIndex}`}
                 className={cn(
-                  'absolute top-0 block whitespace-nowrap font-medium leading-none text-slate-500 dark:text-slate-400',
+                  'absolute top-0 block leading-none font-medium whitespace-nowrap text-slate-500 dark:text-slate-400',
                   calendarLayout.monthLabelTextClassName
                 )}
                 style={{
@@ -429,7 +483,9 @@ export function WatchActivityCalendar({
                       key={day.dateKey}
                       type="button"
                       onClick={
-                        isInteractive ? () => onSelectDateKey(day.dateKey) : undefined
+                        isInteractive
+                          ? () => onSelectDateKey(day.dateKey)
+                          : undefined
                       }
                       className={cn(
                         'shrink-0 ring-1 ring-black/5 transition-transform duration-200 dark:ring-white/5',

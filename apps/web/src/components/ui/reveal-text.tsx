@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
@@ -14,22 +14,27 @@ interface RevealTextProps {
   overlayDuration?: number
   springDuration?: number
   letterImages?: string[]
+  imageStartPosition?: string
+  imageHoverPosition?: string
   className?: string
   align?: 'left' | 'center' | 'right'
 }
 
 const DEFAULT_LETTER_IMAGES = [
-  "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-  "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-  "https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-  "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-  "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-  "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-  "https://images.unsplash.com/photo-1519904981063-b0cf448d479e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
-  "https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+  'https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+  'https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+  'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+  'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+  'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+  'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+  'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
 ]
 
-const ALIGNMENT_CLASS_MAP: Record<NonNullable<RevealTextProps['align']>, string> = {
+const ALIGNMENT_CLASS_MAP: Record<
+  NonNullable<RevealTextProps['align']>,
+  string
+> = {
   left: 'justify-start',
   center: 'justify-center',
   right: 'justify-end',
@@ -45,6 +50,8 @@ export function RevealText({
   overlayDuration = 0.4,
   springDuration = 600,
   letterImages = DEFAULT_LETTER_IMAGES,
+  imageStartPosition = '0% center',
+  imageHoverPosition = '10% center',
   className,
   align = 'center',
 }: RevealTextProps) {
@@ -78,7 +85,7 @@ export function RevealText({
             onMouseLeave={() => setHoveredIndex(null)}
             className={cn(
               fontSize,
-              'relative cursor-pointer overflow-hidden font-black leading-none tracking-tight select-none'
+              'relative cursor-pointer overflow-hidden leading-none font-black tracking-tight select-none'
             )}
             initial={{
               scale: 0,
@@ -107,11 +114,13 @@ export function RevealText({
             </motion.span>
 
             <motion.span
-              className="bg-cover bg-no-repeat text-transparent bg-clip-text"
+              className="bg-cover bg-clip-text bg-no-repeat text-transparent"
               animate={{
                 opacity: hoveredIndex === index ? 1 : 0,
                 backgroundPosition:
-                  hoveredIndex === index ? '10% center' : '0% center',
+                  hoveredIndex === index
+                    ? imageHoverPosition
+                    : imageStartPosition,
               }}
               transition={{
                 opacity: { duration: 0.1 },

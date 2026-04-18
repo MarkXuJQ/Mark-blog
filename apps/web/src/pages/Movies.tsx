@@ -11,7 +11,10 @@ import { cn } from '../utils/cn'
 import { Pagination } from '../components/ui/Pagination'
 import movieCsvRaw from '@content/movies/movie.csv?raw'
 import movieOverridesRaw from '@content/movies/movie-overrides.json'
-import { getMovieReviewBySlug, getMovieReviewBySubjectId } from '../utils/movieReviews'
+import {
+  getMovieReviewBySlug,
+  getMovieReviewBySubjectId,
+} from '../utils/movieReviews'
 
 type ViewMode = 'csv' | 'tmdb'
 type CardLayout = 'list' | 'grid'
@@ -57,7 +60,6 @@ interface TmdbEnrichedMovie {
   releaseDate: string
 }
 
-
 const ROWS_PER_PAGE = 4
 const BASE_COLUMNS = 2
 const MIN_CARD_WIDTH_MD = 190
@@ -68,11 +70,20 @@ const DEFAULT_PLATFORM = 'Douban'
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w342'
 const DOUBAN_PROFILE_URL =
   'https://www.douban.com/people/191287070/?_i=3746089pLWPXRI,3746152pLWPXRI'
+const TMDB_PROFILE_URL = 'https://www.themoviedb.org/u/MarkXu269'
+const CINEMA_REVEAL_TEXT = 'CINEMA'
+const CINEMA_STILL_IMAGES = [
+  '/images/movies/cinema/interstellar.jpg',
+  '/images/movies/cinema/walter-mitty.jpg',
+  '/images/movies/cinema/city-the-animation.jpg',
+  '/images/movies/cinema/wandering-earth-2.jpg',
+  '/images/movies/cinema/midnight-in-paris.jpg',
+  '/images/movies/cinema/avengers-endgame.jpg',
+]
 
 function normalizeCsvHeader(header: string) {
   return header.replace(/^\uFEFF/, '').trim()
 }
-
 
 function parseCsvRows(raw: string): string[][] {
   const rows: string[][] = []
@@ -199,7 +210,6 @@ function toDateKeyFromString(input: string) {
   return `${year}-${month}-${day}`
 }
 
-
 function normalizePosterUrl(path: string | undefined | null) {
   if (!path) return ''
   if (/^https?:\/\//i.test(path)) return path
@@ -208,10 +218,24 @@ function normalizePosterUrl(path: string | undefined | null) {
 
 function calculateColumns(containerWidth: number, viewportWidth: number) {
   if (viewportWidth < 768) return BASE_COLUMNS
-  const minCardWidth = viewportWidth >= 1024 ? MIN_CARD_WIDTH_LG : MIN_CARD_WIDTH_MD
+  const minCardWidth =
+    viewportWidth >= 1024 ? MIN_CARD_WIDTH_LG : MIN_CARD_WIDTH_MD
   const gap = viewportWidth >= 1024 ? GAP_LG : GAP_MD
   const columns = Math.floor((containerWidth + gap) / (minCardWidth + gap))
   return Math.max(BASE_COLUMNS, columns || BASE_COLUMNS)
+}
+
+function shuffleItems<T>(items: T[]) {
+  const shuffled = [...items]
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1))
+    const current = shuffled[index]
+    shuffled[index] = shuffled[randomIndex]
+    shuffled[randomIndex] = current
+  }
+
+  return shuffled
 }
 
 class TmdbRequestError extends Error {
@@ -233,8 +257,11 @@ async function fetchTmdbApi<T>(params: Record<string, string>) {
 
   if (!response.ok) {
     const message =
-      typeof payload?.error === 'string' ? payload.error : `TMDB HTTP ${response.status}`
-    const code = typeof payload?.code === 'string' ? payload.code : 'TMDB_REQUEST_FAILED'
+      typeof payload?.error === 'string'
+        ? payload.error
+        : `TMDB HTTP ${response.status}`
+    const code =
+      typeof payload?.code === 'string' ? payload.code : 'TMDB_REQUEST_FAILED'
     throw new TmdbRequestError({
       status: response.status,
       code,
@@ -257,10 +284,7 @@ async function fetchTmdbMovieById(options: {
   })
 }
 
-async function searchTmdbMovie(options: {
-  query: string
-  language: string
-}) {
+async function searchTmdbMovie(options: { query: string; language: string }) {
   const { query, language } = options
   const payload = await fetchTmdbApi<{ results?: TmdbSearchMovie[] }>({
     action: 'searchMovie',
@@ -313,10 +337,18 @@ function buildCsvMovies(
     const rating = toValidRating(rawRating)
     const platform = (override.platform || DEFAULT_PLATFORM).trim()
     const note = (override.note || '').trim()
-    const linkedReview = subjectId ? getMovieReviewBySubjectId(subjectId) : undefined
+    const linkedReview = subjectId
+      ? getMovieReviewBySubjectId(subjectId)
+      : undefined
     const reviewSlug = (override.reviewSlug || linkedReview?.slug || '').trim()
-    const reviewBySlug = reviewSlug ? getMovieReviewBySlug(reviewSlug) : undefined
-    const reviewSummary = (reviewBySlug?.summary || linkedReview?.summary || '').trim()
+    const reviewBySlug = reviewSlug
+      ? getMovieReviewBySlug(reviewSlug)
+      : undefined
+    const reviewSummary = (
+      reviewBySlug?.summary ||
+      linkedReview?.summary ||
+      ''
+    ).trim()
     const rowId = subjectId ? `${subjectId}-${index}` : `row-${index}`
 
     movies.push({
@@ -373,7 +405,9 @@ async function fetchTmdbEnrichment(options: {
     const dedupedQueries: string[] = []
     for (const query of queryCandidates) {
       const lowered = query.toLowerCase()
-      if (!dedupedQueries.some((existing) => existing.toLowerCase() === lowered)) {
+      if (
+        !dedupedQueries.some((existing) => existing.toLowerCase() === lowered)
+      ) {
         dedupedQueries.push(query)
       }
     }
@@ -411,11 +445,16 @@ export function Movies() {
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
-  const [tmdbMap, setTmdbMap] = useState<Record<string, TmdbEnrichedMovie | null>>({})
+  const [tmdbMap, setTmdbMap] = useState<
+    Record<string, TmdbEnrichedMovie | null>
+  >({})
   const [, setTmdbStatus] = useState<TmdbStatus>('idle')
   const [, setTmdbErrorMessage] = useState('')
   const [columns, setColumns] = useState(BASE_COLUMNS)
   const [gridNode, setGridNode] = useState<HTMLDivElement | null>(null)
+  const [cinemaLetterImages, setCinemaLetterImages] = useState(() =>
+    CINEMA_STILL_IMAGES.slice(0, CINEMA_REVEAL_TEXT.length)
+  )
 
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const tmdbLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
@@ -435,8 +474,12 @@ export function Movies() {
 
     return movieItems.filter((movie) => {
       if (onlyWithReviews && !movie.reviewSlug) return false
-      if (selectedRating !== null && movie.rating !== selectedRating) return false
-      if (selectedDateKey && toDateKeyFromString(movie.watchDate) !== selectedDateKey) {
+      if (selectedRating !== null && movie.rating !== selectedRating)
+        return false
+      if (
+        selectedDateKey &&
+        toDateKeyFromString(movie.watchDate) !== selectedDateKey
+      ) {
         return false
       }
 
@@ -459,7 +502,10 @@ export function Movies() {
   }, [movieItems, keyword, onlyWithReviews, selectedRating, selectedDateKey])
 
   const itemsPerPage = columns * ROWS_PER_PAGE
-  const totalPages = Math.max(1, Math.ceil(filteredMovies.length / itemsPerPage))
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredMovies.length / itemsPerPage)
+  )
 
   useEffect(() => {
     setCurrentPage(1)
@@ -508,13 +554,21 @@ export function Movies() {
   }, [gridNode])
 
   useEffect(() => {
+    setCinemaLetterImages(
+      shuffleItems(CINEMA_STILL_IMAGES).slice(0, CINEMA_REVEAL_TEXT.length)
+    )
+  }, [])
+
+  useEffect(() => {
     if (viewMode !== 'tmdb') {
       setTmdbStatus('idle')
       setTmdbErrorMessage('')
       return
     }
 
-    const targets = pageMovies.filter((movie) => !(movie.id in tmdbMap)).slice(0, 12)
+    const targets = pageMovies
+      .filter((movie) => !(movie.id in tmdbMap))
+      .slice(0, 12)
 
     if (targets.length === 0) {
       setTmdbStatus((prev) => (prev === 'idle' ? 'ready' : prev))
@@ -578,7 +632,10 @@ export function Movies() {
     run().catch((error) => {
       if (cancelled) return
       setTmdbStatus('error')
-      if (error instanceof TmdbRequestError && error.code === 'TMDB_MISSING_CONFIG') {
+      if (
+        error instanceof TmdbRequestError &&
+        error.code === 'TMDB_MISSING_CONFIG'
+      ) {
         setTmdbErrorMessage(t('movies.tmdb.errors.missingConfig'))
       } else if (
         error instanceof TmdbRequestError &&
@@ -593,13 +650,7 @@ export function Movies() {
     return () => {
       cancelled = true
     }
-  }, [
-    pageMovies,
-    tmdbLanguage,
-    tmdbMap,
-    t,
-    viewMode,
-  ])
+  }, [pageMovies, tmdbLanguage, tmdbMap, t, viewMode])
 
   return (
     <>
@@ -608,21 +659,27 @@ export function Movies() {
       <div className="mx-auto w-full max-w-6xl px-4 py-8 xl:max-w-[70vw]">
         <section className="mb-8 border-b border-slate-200/80 pb-8 dark:border-[#2b2f36]">
           <div className="max-w-3xl">
-            <div aria-hidden="true" className="-mb-6 sm:-mb-8 md:-mb-10 lg:-mb-12">
+            <div
+              aria-hidden="true"
+              className="-mb-6 sm:-mb-8 md:-mb-10 lg:-mb-12"
+            >
               <RevealText
-                text="CINEMA"
+                text={CINEMA_REVEAL_TEXT}
                 align="left"
                 textColor="text-slate-200 dark:text-white/10"
                 overlayColor="text-amber-400/70 dark:text-amber-200/40"
+                imageStartPosition="40% center"
+                imageHoverPosition="52% center"
                 fontSize="text-[clamp(4.25rem,17vw,9.5rem)]"
                 letterDelay={0.065}
                 overlayDelay={0.045}
                 overlayDuration={0.45}
                 springDuration={720}
+                letterImages={cinemaLetterImages}
                 className="max-w-[44rem]"
               />
             </div>
-            <div className="relative z-10 mb-4 text-[0.72rem] font-medium uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">
+            <div className="relative z-10 mb-4 text-[0.72rem] font-medium tracking-[0.28em] text-slate-500 uppercase dark:text-slate-400">
               {locale === 'zh-CN' ? '观影档案' : 'Movie Archive'}
             </div>
             <h1 className="relative z-10 -mt-1 text-4xl font-semibold tracking-[-0.04em] text-slate-950 sm:-mt-2 sm:text-5xl dark:text-slate-50">
@@ -645,17 +702,17 @@ export function Movies() {
 
             <section className="mb-6 pb-2">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <label className="relative min-w-0 max-w-xl flex-1 border-b border-slate-200/80 pb-2 dark:border-[#2b2f36]">
+                <label className="relative max-w-xl min-w-0 flex-1 border-b border-slate-200/80 pb-2 dark:border-[#2b2f36]">
                   <Search
                     size={16}
-                    className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 text-slate-400"
+                    className="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2 text-slate-400"
                   />
                   <input
                     type="search"
                     value={keyword}
                     onChange={(event) => setKeyword(event.target.value)}
                     placeholder={t('movies.searchPlaceholder')}
-                    className="w-full bg-transparent py-2 pl-7 pr-0 text-sm text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-200 dark:placeholder:text-slate-500"
+                    className="w-full bg-transparent py-2 pr-0 pl-7 text-sm text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-200 dark:placeholder:text-slate-500"
                   />
                 </label>
 
@@ -670,7 +727,7 @@ export function Movies() {
                         : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-800 dark:text-slate-400 dark:hover:border-[#3a3f48] dark:hover:text-slate-200'
                     )}
                   >
-                    <span className="text-[0.72rem] uppercase tracking-[0.18em]">
+                    <span className="text-[0.72rem] tracking-[0.18em] uppercase">
                       {onlyWithReviews
                         ? t('movies.reviews.onlyWithReviewsOn')
                         : t('movies.reviews.onlyWithReviewsOff')}
@@ -702,28 +759,35 @@ export function Movies() {
                 <div
                   ref={setGridNode}
                   className={cn(
-                    cardLayout === 'grid'
-                      ? 'grid gap-3 lg:gap-4'
-                      : 'space-y-4'
+                    cardLayout === 'grid' ? 'grid gap-3 lg:gap-4' : 'space-y-4'
                   )}
                   style={
                     cardLayout === 'grid'
-                      ? { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }
+                      ? {
+                          gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+                        }
                       : undefined
                   }
                 >
                   {pageMovies.map((movie) => {
                     const watchedAt = formatDate(movie.watchDate, locale)
                     const tmdb = tmdbMap[movie.id] ?? null
-                    const showPoster = viewMode === 'tmdb' && Boolean(tmdb?.posterUrl)
+                    const showPoster =
+                      viewMode === 'tmdb' && Boolean(tmdb?.posterUrl)
                     const reviewPath = movie.reviewSlug
                       ? `/movies/reviews/${encodeURIComponent(movie.reviewSlug)}`
                       : ''
 
                     const canOpenReview = Boolean(reviewPath)
                     const hasReview = Boolean(movie.reviewSlug)
-                    const cardExcerpt = (movie.reviewSummary || movie.note || '').trim()
-                    const metadata = [`${t('movies.watchDate')}: ${watchedAt || '--'}`]
+                    const cardExcerpt = (
+                      movie.reviewSummary ||
+                      movie.note ||
+                      ''
+                    ).trim()
+                    const metadata = [
+                      `${t('movies.watchDate')}: ${watchedAt || '--'}`,
+                    ]
 
                     return (
                       <article
@@ -736,7 +800,10 @@ export function Movies() {
                         onKeyDown={
                           canOpenReview
                             ? (event) => {
-                                if (event.key === 'Enter' || event.key === ' ') {
+                                if (
+                                  event.key === 'Enter' ||
+                                  event.key === ' '
+                                ) {
                                   event.preventDefault()
                                   navigate(reviewPath)
                                 }
@@ -749,9 +816,11 @@ export function Movies() {
                             ? 'border-emerald-200/90 bg-white/84 dark:border-emerald-500/30 dark:bg-[#17191c]/96'
                             : 'border-slate-200/70 bg-white/78 dark:border-[#2b2f36] dark:bg-[#17191c]/92',
                           canOpenReview
-                            ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-300 dark:focus:ring-emerald-700'
+                            ? 'cursor-pointer focus:ring-2 focus:ring-emerald-300 focus:outline-none dark:focus:ring-emerald-700'
                             : '',
-                          cardLayout === 'grid' ? 'flex h-full w-full flex-col' : ''
+                          cardLayout === 'grid'
+                            ? 'flex h-full w-full flex-col'
+                            : ''
                         )}
                       >
                         {viewMode === 'tmdb' ? (
@@ -777,7 +846,7 @@ export function Movies() {
                             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
                             {hasReview ? (
-                              <div className="absolute left-3 top-3 text-[0.62rem] font-medium uppercase tracking-[0.22em] text-white/92">
+                              <div className="absolute top-3 left-3 text-[0.62rem] font-medium tracking-[0.22em] text-white/92 uppercase">
                                 {t('movies.reviews.hasReviewBadge')}
                               </div>
                             ) : null}
@@ -787,9 +856,7 @@ export function Movies() {
                         <div className="flex min-w-0 flex-1 flex-col">
                           <div className="mb-3 flex items-start justify-between gap-3">
                             <div className="min-w-0">
-                              <h2
-                                className="line-clamp-2 text-[1.05rem] font-semibold leading-snug text-slate-900 dark:text-slate-100"
-                              >
+                              <h2 className="line-clamp-2 text-[1.05rem] leading-snug font-semibold text-slate-900 dark:text-slate-100">
                                 {movie.title}
                               </h2>
                               {movie.originalTitle ? (
@@ -818,7 +885,8 @@ export function Movies() {
 
                           <div className="mb-3 flex items-center gap-1.5">
                             {Array.from({ length: 5 }).map((_, index) => {
-                              const active = movie.rating !== null && index < movie.rating
+                              const active =
+                                movie.rating !== null && index < movie.rating
                               return (
                                 <Star
                                   key={index}
@@ -833,7 +901,9 @@ export function Movies() {
                             })}
                             <span className="ml-1 text-xs text-slate-500 dark:text-slate-400">
                               {movie.rating
-                                ? t('movies.rating.value', { rating: movie.rating })
+                                ? t('movies.rating.value', {
+                                    rating: movie.rating,
+                                  })
                                 : t('movies.rating.unrated')}
                             </span>
                           </div>
@@ -871,13 +941,13 @@ export function Movies() {
               watchCount={movieItems.length}
               ratings={movieItems.map((movie) => movie.rating)}
               doubanProfileUrl={DOUBAN_PROFILE_URL}
+              tmdbProfileUrl={TMDB_PROFILE_URL}
               selectedRating={selectedRating}
               onSelectRating={setSelectedRating}
             />
           </aside>
         </div>
       </div>
-
     </>
   )
 }
