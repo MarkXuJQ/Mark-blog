@@ -1,4 +1,4 @@
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useRef } from 'react'
 import {
   motion,
   type MotionStyle,
@@ -81,15 +81,6 @@ interface TravelJourneyRecord {
 interface TravelRecord {
   birthplace?: TravelLocationRecord
   journeys?: TravelJourneyRecord[]
-}
-
-const hoverLift = {
-  whileHover: {
-    scale: 1.004,
-    boxShadow: '0 30px 84px -54px rgba(15,23,42,0.82)',
-  },
-  whileTap: { scale: 0.996 },
-  transition: { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const },
 }
 
 function clamp01(value: number) {
@@ -182,14 +173,6 @@ function usePanelReveal(
   return { opacity, y, scale }
 }
 
-function useSummedTransform(
-  input: [MotionValue<number>, MotionValue<number>]
-) {
-  return useTransform<number, number>(input, ([primary, secondary]) => {
-    return primary + secondary
-  })
-}
-
 export function TravelFootprintPlugin({
   revealProgress,
 }: {
@@ -199,11 +182,8 @@ export function TravelFootprintPlugin({
   const isZh = i18n.language?.startsWith('zh')
   const prefersReducedMotion = useReducedMotion()
   const shellRef = useRef<HTMLDivElement | null>(null)
-  const [isPointerDown, setIsPointerDown] = useState(false)
   const fallbackRevealProgress = useMotionValue(1)
   const pluginReveal = revealProgress ?? fallbackRevealProgress
-  const pointerXRaw = useMotionValue(0)
-  const pointerYRaw = useMotionValue(0)
   const { scrollYProgress } = useScroll({
     target: shellRef,
     offset: ['start end', 'end start'],
@@ -214,41 +194,6 @@ export function TravelFootprintPlugin({
     mass: 0.4,
   })
 
-  const pointerX = useSpring(pointerXRaw, {
-    stiffness: prefersReducedMotion ? 320 : 180,
-    damping: prefersReducedMotion ? 34 : 24,
-    mass: 0.26,
-  })
-  const pointerY = useSpring(pointerYRaw, {
-    stiffness: prefersReducedMotion ? 320 : 180,
-    damping: prefersReducedMotion ? 34 : 24,
-    mass: 0.28,
-  })
-
-  const dragStrength = prefersReducedMotion ? 0 : isPointerDown ? 0.82 : 0.42
-
-  const mapX = useTransform(pointerX, (value) => value * -9 * dragStrength)
-  const mapY = useTransform(pointerY, (value) => value * -7 * dragStrength)
-  const mapRotate = useTransform(
-    pointerX,
-    (value) => value * -0.55 * dragStrength
-  )
-
-  const embedX = useTransform(pointerX, (value) => value * 9 * dragStrength)
-  const embedY = useTransform(pointerY, (value) => value * -7 * dragStrength)
-  const embedRotate = useTransform(
-    pointerX,
-    (value) => value * 0.52 * dragStrength
-  )
-
-  const clockX = useTransform(pointerX, (value) => value * -7 * dragStrength)
-  const clockY = useTransform(pointerY, (value) => value * 7 * dragStrength)
-  const clockRotate = useTransform(
-    pointerX,
-    (value) => value * -0.48 * dragStrength
-  )
-
-  const gridY = useTransform(shellProgress, [0, 0.38, 1], [42, 0, -18])
   const ambientScale = useTransform(
     shellProgress,
     [0, 0.6, 1],
@@ -303,48 +248,15 @@ export function TravelFootprintPlugin({
     Boolean(prefersReducedMotion)
   )
 
-  const mapRevealY = useSummedTransform([mapY, worldReveal.y])
-  const embedRevealY = useSummedTransform([embedY, embedReveal.y])
-  const clockRevealY = useSummedTransform([clockY, clockReveal.y])
-
-  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (prefersReducedMotion) return
-
-    const bounds = event.currentTarget.getBoundingClientRect()
-    const x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1
-    const y = ((event.clientY - bounds.top) / bounds.height) * 2 - 1
-
-    pointerXRaw.set(Math.max(-1, Math.min(1, x)))
-    pointerYRaw.set(Math.max(-1, Math.min(1, y)))
-  }
-
-  const resetPointer = () => {
-    setIsPointerDown(false)
-    pointerXRaw.set(0)
-    pointerYRaw.set(0)
-  }
-
   return (
     <motion.div
       ref={shellRef}
-      className={cn(
-        styles.shell,
-        prefersReducedMotion
-          ? styles.shellStatic
-          : isPointerDown
-            ? styles.shellDragging
-            : styles.shellReady
-      )}
+      className={cn(styles.shell, styles.shellStatic)}
       style={{
         opacity: shellOpacity,
         y: shellRevealY,
         scale: shellRevealScale,
       }}
-      onPointerMove={handlePointerMove}
-      onPointerDown={() => setIsPointerDown(true)}
-      onPointerUp={() => setIsPointerDown(false)}
-      onPointerCancel={resetPointer}
-      onPointerLeave={resetPointer}
     >
       <motion.div
         aria-hidden="true"
@@ -375,13 +287,11 @@ export function TravelFootprintPlugin({
           <TravelWorldMapPanel
             className={styles.introMapLayer}
             viewportClassName={styles.introMapViewport}
-            glowClassName={styles.introMapGlow}
+            showGlow={false}
             baseClassName={styles.introMapBase}
             highlightClassName={styles.introMapHighlight}
             style={{
-              x: mapX,
-              y: mapRevealY,
-              rotate: mapRotate,
+              y: worldReveal.y,
               opacity: worldReveal.opacity,
               scale: worldReveal.scale,
             }}
@@ -400,12 +310,10 @@ export function TravelFootprintPlugin({
         </div>
       </div>
 
-      <motion.div className={styles.grid} style={{ y: gridY }}>
+      <div className={styles.grid}>
         <TravelClockPanel
           style={{
-            x: clockX,
-            y: clockRevealY,
-            rotate: clockRotate,
+            y: clockReveal.y,
             opacity: clockReveal.opacity,
             scale: clockReveal.scale,
           }}
@@ -414,14 +322,12 @@ export function TravelFootprintPlugin({
         <TravelFootprintMapPanel
           isZh={isZh}
           style={{
-            x: embedX,
-            y: embedRevealY,
-            rotate: embedRotate,
+            y: embedReveal.y,
             opacity: embedReveal.opacity,
             scale: embedReveal.scale,
           }}
         />
-      </motion.div>
+      </div>
     </motion.div>
   )
 }
@@ -431,6 +337,7 @@ function TravelWorldMapPanel({
   className,
   viewportClassName,
   glowClassName,
+  showGlow = true,
   baseClassName,
   highlightClassName,
 }: {
@@ -438,13 +345,16 @@ function TravelWorldMapPanel({
   className?: string
   viewportClassName?: string
   glowClassName?: string
+  showGlow?: boolean
   baseClassName?: string
   highlightClassName?: string
 }) {
   return (
     <motion.div className={cn(styles.mapPanel, className)} style={style}>
       <div className={cn(styles.mapViewport, viewportClassName)}>
-        <div className={cn(styles.mapGlow, glowClassName)} />
+        {showGlow ? (
+          <div className={cn(styles.mapGlow, glowClassName)} />
+        ) : null}
         <img
           alt=""
           aria-hidden="true"
@@ -475,7 +385,6 @@ function TravelFootprintMapPanel({
 
   return (
     <motion.section
-      {...hoverLift}
       className={cn(styles.panel, styles.embedPanel)}
       style={style}
     >
@@ -561,8 +470,6 @@ function SummaryPill({
 
 const styles = {
   shell: 'relative mx-auto w-full max-w-[78rem] overflow-visible',
-  shellReady: 'cursor-grab',
-  shellDragging: 'cursor-grabbing',
   shellStatic: 'cursor-default',
   introStage: 'relative overflow-visible',
   introRow:
@@ -590,8 +497,6 @@ const styles = {
     'pointer-events-none relative z-[1] w-full opacity-100 brightness-[1.08] saturate-[1.12]',
   introMapViewport:
     'relative aspect-[2.34/1] w-full overflow-visible sm:aspect-[2.52/1]',
-  introMapGlow:
-    'pointer-events-none absolute inset-[8%_10%_18%] bg-[radial-gradient(circle_at_50%_52%,rgba(125,211,252,0.18)_0%,rgba(125,211,252,0.06)_40%,rgba(125,211,252,0)_76%)] blur-3xl',
   introMapBase: 'absolute inset-0 h-full w-full object-contain opacity-28',
   introMapHighlight:
     'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_62px_rgba(181,232,251,0.3)]',
