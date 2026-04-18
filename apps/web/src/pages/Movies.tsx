@@ -1,15 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Clapperboard, ExternalLink, Search, Star } from 'lucide-react'
+import { Clapperboard, Search, Star } from 'lucide-react'
+import { RiDoubanLine } from 'react-icons/ri'
 import { MovieStatsPanel } from '../components/movies/MovieStatsPanel'
 import { Seo } from '../components/seo/Seo'
 import { WatchActivityCalendar } from '../components/movies/WatchActivityCalendar'
+import { RevealText } from '../components/ui/reveal-text'
 import { cn } from '../utils/cn'
 import { Pagination } from '../components/ui/Pagination'
 import movieCsvRaw from '@content/movies/movie.csv?raw'
 import movieOverridesRaw from '@content/movies/movie-overrides.json'
-import { getMovieReviewBySlug, getMovieReviewBySubjectId } from '../utils/movieReviews'
+import {
+  getMovieReviewBySlug,
+  getMovieReviewBySubjectId,
+} from '../utils/movieReviews'
 
 type ViewMode = 'csv' | 'tmdb'
 type CardLayout = 'list' | 'grid'
@@ -55,7 +60,6 @@ interface TmdbEnrichedMovie {
   releaseDate: string
 }
 
-
 const ROWS_PER_PAGE = 4
 const BASE_COLUMNS = 2
 const MIN_CARD_WIDTH_MD = 190
@@ -67,11 +71,19 @@ const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w342'
 const DOUBAN_PROFILE_URL =
   'https://www.douban.com/people/191287070/?_i=3746089pLWPXRI,3746152pLWPXRI'
 const TMDB_PROFILE_URL = 'https://www.themoviedb.org/u/MarkXu269'
+const CINEMA_REVEAL_TEXT = 'CINEMA'
+const CINEMA_STILL_IMAGES = [
+  '/images/movies/cinema/interstellar.jpg',
+  '/images/movies/cinema/walter-mitty.jpg',
+  '/images/movies/cinema/city-the-animation.jpg',
+  '/images/movies/cinema/wandering-earth-2.jpg',
+  '/images/movies/cinema/midnight-in-paris.jpg',
+  '/images/movies/cinema/avengers-endgame.jpg',
+]
 
 function normalizeCsvHeader(header: string) {
   return header.replace(/^\uFEFF/, '').trim()
 }
-
 
 function parseCsvRows(raw: string): string[][] {
   const rows: string[][] = []
@@ -198,7 +210,6 @@ function toDateKeyFromString(input: string) {
   return `${year}-${month}-${day}`
 }
 
-
 function normalizePosterUrl(path: string | undefined | null) {
   if (!path) return ''
   if (/^https?:\/\//i.test(path)) return path
@@ -207,10 +218,24 @@ function normalizePosterUrl(path: string | undefined | null) {
 
 function calculateColumns(containerWidth: number, viewportWidth: number) {
   if (viewportWidth < 768) return BASE_COLUMNS
-  const minCardWidth = viewportWidth >= 1024 ? MIN_CARD_WIDTH_LG : MIN_CARD_WIDTH_MD
+  const minCardWidth =
+    viewportWidth >= 1024 ? MIN_CARD_WIDTH_LG : MIN_CARD_WIDTH_MD
   const gap = viewportWidth >= 1024 ? GAP_LG : GAP_MD
   const columns = Math.floor((containerWidth + gap) / (minCardWidth + gap))
   return Math.max(BASE_COLUMNS, columns || BASE_COLUMNS)
+}
+
+function shuffleItems<T>(items: T[]) {
+  const shuffled = [...items]
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1))
+    const current = shuffled[index]
+    shuffled[index] = shuffled[randomIndex]
+    shuffled[randomIndex] = current
+  }
+
+  return shuffled
 }
 
 class TmdbRequestError extends Error {
@@ -232,8 +257,11 @@ async function fetchTmdbApi<T>(params: Record<string, string>) {
 
   if (!response.ok) {
     const message =
-      typeof payload?.error === 'string' ? payload.error : `TMDB HTTP ${response.status}`
-    const code = typeof payload?.code === 'string' ? payload.code : 'TMDB_REQUEST_FAILED'
+      typeof payload?.error === 'string'
+        ? payload.error
+        : `TMDB HTTP ${response.status}`
+    const code =
+      typeof payload?.code === 'string' ? payload.code : 'TMDB_REQUEST_FAILED'
     throw new TmdbRequestError({
       status: response.status,
       code,
@@ -256,10 +284,7 @@ async function fetchTmdbMovieById(options: {
   })
 }
 
-async function searchTmdbMovie(options: {
-  query: string
-  language: string
-}) {
+async function searchTmdbMovie(options: { query: string; language: string }) {
   const { query, language } = options
   const payload = await fetchTmdbApi<{ results?: TmdbSearchMovie[] }>({
     action: 'searchMovie',
@@ -312,10 +337,18 @@ function buildCsvMovies(
     const rating = toValidRating(rawRating)
     const platform = (override.platform || DEFAULT_PLATFORM).trim()
     const note = (override.note || '').trim()
-    const linkedReview = subjectId ? getMovieReviewBySubjectId(subjectId) : undefined
+    const linkedReview = subjectId
+      ? getMovieReviewBySubjectId(subjectId)
+      : undefined
     const reviewSlug = (override.reviewSlug || linkedReview?.slug || '').trim()
-    const reviewBySlug = reviewSlug ? getMovieReviewBySlug(reviewSlug) : undefined
-    const reviewSummary = (reviewBySlug?.summary || linkedReview?.summary || '').trim()
+    const reviewBySlug = reviewSlug
+      ? getMovieReviewBySlug(reviewSlug)
+      : undefined
+    const reviewSummary = (
+      reviewBySlug?.summary ||
+      linkedReview?.summary ||
+      ''
+    ).trim()
     const rowId = subjectId ? `${subjectId}-${index}` : `row-${index}`
 
     movies.push({
@@ -372,7 +405,9 @@ async function fetchTmdbEnrichment(options: {
     const dedupedQueries: string[] = []
     for (const query of queryCandidates) {
       const lowered = query.toLowerCase()
-      if (!dedupedQueries.some((existing) => existing.toLowerCase() === lowered)) {
+      if (
+        !dedupedQueries.some((existing) => existing.toLowerCase() === lowered)
+      ) {
         dedupedQueries.push(query)
       }
     }
@@ -404,26 +439,28 @@ export function Movies() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [keyword, setKeyword] = useState('')
-  const [viewMode] = useState<ViewMode>('tmdb')
-  const [cardLayout] = useState<CardLayout>('grid')
+  const viewMode: ViewMode = 'tmdb'
+  const cardLayout: CardLayout = 'grid'
   const [onlyWithReviews, setOnlyWithReviews] = useState(false)
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
-  const [tmdbMap, setTmdbMap] = useState<Record<string, TmdbEnrichedMovie | null>>({})
-  const [tmdbStatus, setTmdbStatus] = useState<TmdbStatus>('idle')
-  const [tmdbErrorMessage, setTmdbErrorMessage] = useState('')
+  const [tmdbMap, setTmdbMap] = useState<
+    Record<string, TmdbEnrichedMovie | null>
+  >({})
+  const [, setTmdbStatus] = useState<TmdbStatus>('idle')
+  const [, setTmdbErrorMessage] = useState('')
   const [columns, setColumns] = useState(BASE_COLUMNS)
   const [gridNode, setGridNode] = useState<HTMLDivElement | null>(null)
+  const [cinemaLetterImages, setCinemaLetterImages] = useState(() =>
+    CINEMA_STILL_IMAGES.slice(0, CINEMA_REVEAL_TEXT.length)
+  )
 
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const tmdbLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
 
   const title = t('nav.movies')
-  const description =
-    locale === 'zh-CN'
-      ? '记录我看过的电影，记录来自豆瓣'
-      : 'A personal movie log sourced from Douban.'
+  const description = t('movies.description')
 
   const movieOverrides = movieOverridesRaw as Record<string, MovieOverride>
 
@@ -437,8 +474,12 @@ export function Movies() {
 
     return movieItems.filter((movie) => {
       if (onlyWithReviews && !movie.reviewSlug) return false
-      if (selectedRating !== null && movie.rating !== selectedRating) return false
-      if (selectedDateKey && toDateKeyFromString(movie.watchDate) !== selectedDateKey) {
+      if (selectedRating !== null && movie.rating !== selectedRating)
+        return false
+      if (
+        selectedDateKey &&
+        toDateKeyFromString(movie.watchDate) !== selectedDateKey
+      ) {
         return false
       }
 
@@ -461,7 +502,10 @@ export function Movies() {
   }, [movieItems, keyword, onlyWithReviews, selectedRating, selectedDateKey])
 
   const itemsPerPage = columns * ROWS_PER_PAGE
-  const totalPages = Math.max(1, Math.ceil(filteredMovies.length / itemsPerPage))
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredMovies.length / itemsPerPage)
+  )
 
   useEffect(() => {
     setCurrentPage(1)
@@ -510,13 +554,21 @@ export function Movies() {
   }, [gridNode])
 
   useEffect(() => {
+    setCinemaLetterImages(
+      shuffleItems(CINEMA_STILL_IMAGES).slice(0, CINEMA_REVEAL_TEXT.length)
+    )
+  }, [])
+
+  useEffect(() => {
     if (viewMode !== 'tmdb') {
       setTmdbStatus('idle')
       setTmdbErrorMessage('')
       return
     }
 
-    const targets = pageMovies.filter((movie) => !(movie.id in tmdbMap)).slice(0, 12)
+    const targets = pageMovies
+      .filter((movie) => !(movie.id in tmdbMap))
+      .slice(0, 12)
 
     if (targets.length === 0) {
       setTmdbStatus((prev) => (prev === 'idle' ? 'ready' : prev))
@@ -580,7 +632,10 @@ export function Movies() {
     run().catch((error) => {
       if (cancelled) return
       setTmdbStatus('error')
-      if (error instanceof TmdbRequestError && error.code === 'TMDB_MISSING_CONFIG') {
+      if (
+        error instanceof TmdbRequestError &&
+        error.code === 'TMDB_MISSING_CONFIG'
+      ) {
         setTmdbErrorMessage(t('movies.tmdb.errors.missingConfig'))
       } else if (
         error instanceof TmdbRequestError &&
@@ -595,83 +650,92 @@ export function Movies() {
     return () => {
       cancelled = true
     }
-  }, [
-    pageMovies,
-    tmdbLanguage,
-    tmdbMap,
-    t,
-    viewMode,
-  ])
+  }, [pageMovies, tmdbLanguage, tmdbMap, t, viewMode])
 
   return (
     <>
       <Seo title={title} description={description} />
 
       <div className="mx-auto w-full max-w-6xl px-4 py-8 xl:max-w-[70vw]">
+        <section className="mb-8 border-b border-slate-200/80 pb-8 dark:border-[#2b2f36]">
+          <div className="max-w-3xl">
+            <div
+              aria-hidden="true"
+              className="-mb-6 sm:-mb-8 md:-mb-10 lg:-mb-12"
+            >
+              <RevealText
+                text={CINEMA_REVEAL_TEXT}
+                align="left"
+                textColor="text-slate-200 dark:text-white/10"
+                overlayColor="text-amber-400/70 dark:text-amber-200/40"
+                imageStartPosition="40% center"
+                imageHoverPosition="52% center"
+                fontSize="text-[clamp(4.25rem,17vw,9.5rem)]"
+                letterDelay={0.065}
+                overlayDelay={0.045}
+                overlayDuration={0.45}
+                springDuration={720}
+                letterImages={cinemaLetterImages}
+                className="max-w-[44rem]"
+              />
+            </div>
+            <div className="relative z-10 mb-4 text-[0.72rem] font-medium tracking-[0.28em] text-slate-500 uppercase dark:text-slate-400">
+              {locale === 'zh-CN' ? '观影档案' : 'Movie Archive'}
+            </div>
+            <h1 className="relative z-10 -mt-1 text-4xl font-semibold tracking-[-0.04em] text-slate-950 sm:-mt-2 sm:text-5xl dark:text-slate-50">
+              {title}
+            </h1>
+            <p className="mt-4 max-w-2xl text-[0.98rem] leading-7 text-slate-600 dark:text-slate-400">
+              {description}
+            </p>
+          </div>
+        </section>
+
         <div className="grid gap-6 lg:grid-cols-[minmax(0,3.8fr)_minmax(280px,1.2fr)] lg:items-start xl:grid-cols-[minmax(0,4fr)_minmax(296px,1.15fr)]">
           <div className="min-w-0">
-            <section className="mb-6">
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-                {title}
-              </h1>
-              <p className="mt-3 max-w-3xl leading-relaxed text-slate-600 dark:text-slate-400">
-                {description}
-              </p>
-            </section>
-
-            <section className="mb-6 rounded-2xl border border-slate-200/70 bg-white/80 p-2.5 shadow-sm backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c] sm:p-3">
-              <div className="flex flex-nowrap items-center gap-2 overflow-hidden sm:gap-3">
-                <label className="relative min-w-0 flex-[1_1_8rem]">
-                  <Search
-                    size={16}
-                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
-                  <input
-                    type="search"
-                    value={keyword}
-                    onChange={(event) => setKeyword(event.target.value)}
-                    placeholder={t('movies.searchPlaceholder')}
-                    className="w-full rounded-[1rem] border border-slate-200 bg-white/90 py-2.5 pl-10 pr-3 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-200 dark:focus:border-blue-500 dark:focus:ring-blue-900/40"
-                  />
-                </label>
-
-                <button
-                  type="button"
-                  onClick={() => setOnlyWithReviews((prev) => !prev)}
-                  className={cn(
-                    'shrink-0 rounded-full border px-3 py-2 text-xs font-medium transition',
-                    onlyWithReviews
-                      ? 'border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-500/50 dark:bg-emerald-900/30 dark:text-emerald-300'
-                      : 'border-slate-200 bg-white/85 text-slate-600 hover:border-slate-300 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-[#3a3f48]'
-                  )}
-                >
-                  {onlyWithReviews
-                    ? t('movies.reviews.onlyWithReviewsOn')
-                    : t('movies.reviews.onlyWithReviewsOff')}
-                </button>
-              </div>
-
-              {viewMode === 'tmdb' ? (
-                <div className="mt-3 rounded-xl border border-sky-200/70 bg-sky-50/70 px-3 py-2 text-xs text-sky-700 dark:border-sky-500/40 dark:bg-sky-900/25 dark:text-sky-200">
-                  {t('movies.tmdb.notice')}
-                  {tmdbStatus === 'loading' ? (
-                    <span className="ml-2">{t('movies.tmdb.loading')}</span>
-                  ) : null}
-                  {tmdbStatus === 'error' && tmdbErrorMessage ? (
-                    <span className="ml-2 text-rose-600 dark:text-rose-300">
-                      {tmdbErrorMessage}
-                    </span>
-                  ) : null}
-                </div>
-              ) : null}
-            </section>
-
             <WatchActivityCalendar
               watchDates={movieItems.map((movie) => movie.watchDate)}
               locale={locale}
               selectedDateKey={selectedDateKey}
               onSelectDateKey={setSelectedDateKey}
             />
+
+            <section className="mb-6 pb-2">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                <label className="relative max-w-xl min-w-0 flex-1 border-b border-slate-200/80 pb-2 dark:border-[#2b2f36]">
+                  <Search
+                    size={16}
+                    className="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2 text-slate-400"
+                  />
+                  <input
+                    type="search"
+                    value={keyword}
+                    onChange={(event) => setKeyword(event.target.value)}
+                    placeholder={t('movies.searchPlaceholder')}
+                    className="w-full bg-transparent py-2 pr-0 pl-7 text-sm text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-200 dark:placeholder:text-slate-500"
+                  />
+                </label>
+
+                <div className="flex flex-col gap-3 lg:items-end">
+                  <button
+                    type="button"
+                    onClick={() => setOnlyWithReviews((prev) => !prev)}
+                    className={cn(
+                      'inline-flex w-fit items-center gap-2 border-b pb-1 text-sm transition',
+                      onlyWithReviews
+                        ? 'border-emerald-500 text-emerald-700 dark:border-emerald-400 dark:text-emerald-300'
+                        : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-800 dark:text-slate-400 dark:hover:border-[#3a3f48] dark:hover:text-slate-200'
+                    )}
+                  >
+                    <span className="text-[0.72rem] tracking-[0.18em] uppercase">
+                      {onlyWithReviews
+                        ? t('movies.reviews.onlyWithReviewsOn')
+                        : t('movies.reviews.onlyWithReviewsOff')}
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </section>
 
             {movieItems.length === 0 ? (
               <section className="rounded-2xl border border-dashed border-slate-300 bg-white/70 p-8 text-center dark:border-slate-700 dark:bg-slate-900/70">
@@ -695,29 +759,35 @@ export function Movies() {
                 <div
                   ref={setGridNode}
                   className={cn(
-                    cardLayout === 'grid'
-                      ? 'grid gap-3 lg:gap-4'
-                      : 'space-y-4'
+                    cardLayout === 'grid' ? 'grid gap-3 lg:gap-4' : 'space-y-4'
                   )}
                   style={
                     cardLayout === 'grid'
-                      ? { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }
+                      ? {
+                          gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+                        }
                       : undefined
                   }
                 >
                   {pageMovies.map((movie) => {
                     const watchedAt = formatDate(movie.watchDate, locale)
                     const tmdb = tmdbMap[movie.id] ?? null
-                    const showPoster = viewMode === 'tmdb' && Boolean(tmdb?.posterUrl)
-                    const tmdbLink = tmdb?.tmdbId
-                      ? `https://www.themoviedb.org/movie/${tmdb.tmdbId}`
-                      : ''
+                    const showPoster =
+                      viewMode === 'tmdb' && Boolean(tmdb?.posterUrl)
                     const reviewPath = movie.reviewSlug
                       ? `/movies/reviews/${encodeURIComponent(movie.reviewSlug)}`
                       : ''
 
                     const canOpenReview = Boolean(reviewPath)
                     const hasReview = Boolean(movie.reviewSlug)
+                    const cardExcerpt = (
+                      movie.reviewSummary ||
+                      movie.note ||
+                      ''
+                    ).trim()
+                    const metadata = [
+                      `${t('movies.watchDate')}: ${watchedAt || '--'}`,
+                    ]
 
                     return (
                       <article
@@ -730,7 +800,10 @@ export function Movies() {
                         onKeyDown={
                           canOpenReview
                             ? (event) => {
-                                if (event.key === 'Enter' || event.key === ' ') {
+                                if (
+                                  event.key === 'Enter' ||
+                                  event.key === ' '
+                                ) {
                                   event.preventDefault()
                                   navigate(reviewPath)
                                 }
@@ -738,27 +811,20 @@ export function Movies() {
                             : undefined
                         }
                         className={cn(
-                          'group rounded-2xl border p-4 shadow-sm backdrop-blur transition-transform duration-300 hover:-translate-y-1 hover:shadow-md',
+                          'group relative flex h-full w-full flex-col overflow-hidden rounded-[1.4rem] border p-3 shadow-[0_24px_56px_-40px_rgba(15,23,42,0.34)] backdrop-blur transition-[transform,border-color,box-shadow,background-color] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_68px_-40px_rgba(15,23,42,0.4)]',
                           hasReview
-                            ? 'border-emerald-300/90 bg-emerald-100/70 shadow-emerald-200/50 dark:border-emerald-400/60 dark:bg-emerald-900/28 dark:shadow-emerald-900/40'
-                            : 'border-slate-200/70 bg-white/80 dark:border-[#2b2f36] dark:bg-[#17191c]',
+                            ? 'border-emerald-200/90 bg-white/84 dark:border-emerald-500/30 dark:bg-[#17191c]/96'
+                            : 'border-slate-200/70 bg-white/78 dark:border-[#2b2f36] dark:bg-[#17191c]/92',
                           canOpenReview
-                            ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-300 dark:focus:ring-emerald-700'
+                            ? 'cursor-pointer focus:ring-2 focus:ring-emerald-300 focus:outline-none dark:focus:ring-emerald-700'
                             : '',
                           cardLayout === 'grid'
                             ? 'flex h-full w-full flex-col'
-                            : viewMode === 'tmdb'
-                              ? 'grid gap-4 sm:grid-cols-[110px_minmax(0,1fr)]'
-                              : 'block'
+                            : ''
                         )}
                       >
                         {viewMode === 'tmdb' ? (
-                          <div
-                            className={cn(
-                              'aspect-[2/3] overflow-hidden rounded-xl bg-slate-100 dark:bg-[#1f2328]',
-                              cardLayout === 'grid' ? 'mb-3' : ''
-                            )}
-                          >
+                          <div className="relative mb-4 aspect-[2/3] overflow-hidden rounded-[1.05rem] bg-slate-100 dark:bg-[#1f2328]">
                             {showPoster ? (
                               <img
                                 src={tmdb?.posterUrl}
@@ -769,105 +835,58 @@ export function Movies() {
                                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                               />
                             ) : (
-                              <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-slate-500 dark:text-slate-400">
+                              <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-[radial-gradient(circle_at_top,rgba(148,163,184,0.15)_0%,rgba(148,163,184,0.04)_36%,transparent_70%)] text-slate-500 dark:text-slate-400">
                                 <Clapperboard size={20} />
                                 <span className="px-2 text-center text-xs">
                                   {t('movies.tmdb.noPoster')}
                                 </span>
                               </div>
                             )}
+
+                            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+
+                            {hasReview ? (
+                              <div className="absolute top-3 left-3 text-[0.62rem] font-medium tracking-[0.22em] text-white/92 uppercase">
+                                {t('movies.reviews.hasReviewBadge')}
+                              </div>
+                            ) : null}
                           </div>
                         ) : null}
 
-                        <div
-                          className={cn(
-                            'flex min-w-0 flex-col',
-                            cardLayout === 'grid' ? 'flex-1' : ''
-                          )}
-                        >
-                          <div
-                            className={cn(
-                              'mb-2 flex items-start justify-between gap-3',
-                              cardLayout === 'grid' ? 'mb-3 block space-y-2' : ''
-                            )}
-                          >
+                        <div className="flex min-w-0 flex-1 flex-col">
+                          <div className="mb-3 flex items-start justify-between gap-3">
                             <div className="min-w-0">
-                              <h2
-                                className={cn(
-                                  'text-lg font-semibold text-slate-900 dark:text-slate-100',
-                                  cardLayout === 'grid'
-                                    ? 'line-clamp-2 leading-snug'
-                                    : 'truncate'
-                                )}
-                              >
+                              <h2 className="line-clamp-2 text-[1.05rem] leading-snug font-semibold text-slate-900 dark:text-slate-100">
                                 {movie.title}
                               </h2>
-                              {movie.originalTitle && cardLayout !== 'grid' ? (
-                                <p className="truncate text-sm text-slate-500 dark:text-slate-400">
+                              {movie.originalTitle ? (
+                                <p className="mt-1 line-clamp-1 text-sm text-slate-500 dark:text-slate-400">
                                   {movie.originalTitle}
-                                </p>
-                              ) : null}
-                              {viewMode === 'tmdb' && tmdb?.tmdbTitle && cardLayout !== 'grid' ? (
-                                <p className="truncate text-xs text-slate-400 dark:text-slate-500">
-                                  TMDB: {tmdb.tmdbTitle}
-                                  {tmdb.tmdbOriginalTitle &&
-                                  tmdb.tmdbOriginalTitle !== tmdb.tmdbTitle
-                                    ? ` / ${tmdb.tmdbOriginalTitle}`
-                                    : ''}
                                 </p>
                               ) : null}
                             </div>
 
-                            <div
-                              className={cn(
-                                'flex items-center gap-2',
-                                cardLayout === 'grid' ? 'flex-wrap' : ''
-                              )}
-                            >
-                              {tmdbLink ? (
-                                <a
-                                  href={tmdbLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={(event) => event.stopPropagation()}
-                                  className={cn(
-                                    'inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300',
-                                    cardLayout === 'grid' ? 'px-2 py-1' : ''
-                                  )}
-                                >
-                                  <ExternalLink size={13} />
-                                  TMDB
-                                </a>
-                              ) : null}
+                            <div className="flex items-center justify-end">
                               {movie.link ? (
                                 <a
                                   href={movie.link}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   onClick={(event) => event.stopPropagation()}
-                                  className={cn(
-                                    'inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-blue-500 dark:hover:text-blue-300',
-                                    cardLayout === 'grid' ? 'px-2 py-1' : ''
-                                  )}
+                                  aria-label={t('movies.actions.openDouban')}
+                                  title={t('movies.actions.openDouban')}
+                                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white/88 text-slate-600 transition hover:border-emerald-300 hover:text-emerald-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-emerald-500 dark:hover:text-emerald-300"
                                 >
-                                  <ExternalLink size={13} />
-                                  {t('movies.actions.openDouban')}
+                                  <RiDoubanLine size={16} />
                                 </a>
                               ) : null}
                             </div>
                           </div>
 
-                          <div className="mb-2 flex flex-wrap items-center gap-2">
-                            {viewMode === 'tmdb' && tmdb?.releaseDate ? (
-                              <span className="inline-flex items-center rounded-full border border-sky-200/80 bg-sky-50/80 px-2.5 py-1 text-xs font-medium text-sky-700 dark:border-sky-500/40 dark:bg-sky-900/25 dark:text-sky-300">
-                                {t('movies.tmdb.releaseDate')}: {formatDate(tmdb.releaseDate, locale)}
-                              </span>
-                            ) : null}
-                          </div>
-
-                          <div className="mb-2 flex items-center gap-1.5">
+                          <div className="mb-3 flex items-center gap-1.5">
                             {Array.from({ length: 5 }).map((_, index) => {
-                              const active = movie.rating !== null && index < movie.rating
+                              const active =
+                                movie.rating !== null && index < movie.rating
                               return (
                                 <Star
                                   key={index}
@@ -882,28 +901,26 @@ export function Movies() {
                             })}
                             <span className="ml-1 text-xs text-slate-500 dark:text-slate-400">
                               {movie.rating
-                                ? t('movies.rating.value', { rating: movie.rating })
+                                ? t('movies.rating.value', {
+                                    rating: movie.rating,
+                                  })
                                 : t('movies.rating.unrated')}
                             </span>
                           </div>
 
-                          <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
-                            <span>
-                              {t('movies.watchDate')}: {watchedAt || '--'}
-                            </span>
+                          <div className="mt-auto space-y-3">
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] leading-5 text-slate-500 dark:text-slate-400">
+                              {metadata.map((item) => (
+                                <span key={item}>{item}</span>
+                              ))}
+                            </div>
+
+                            {cardExcerpt ? (
+                              <p className="line-clamp-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+                                {cardExcerpt}
+                              </p>
+                            ) : null}
                           </div>
-
-                          {movie.reviewSummary && cardLayout !== 'grid' ? (
-                            <p className="mt-2 rounded-xl border border-emerald-200/80 bg-emerald-50/60 px-3 py-2 text-sm text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-900/20 dark:text-emerald-200">
-                              {movie.reviewSummary}
-                            </p>
-                          ) : null}
-
-                          {movie.note && cardLayout !== 'grid' ? (
-                            <p className="mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">
-                              {movie.note}
-                            </p>
-                          ) : null}
                         </div>
                       </article>
                     )
@@ -931,7 +948,6 @@ export function Movies() {
           </aside>
         </div>
       </div>
-
     </>
   )
 }

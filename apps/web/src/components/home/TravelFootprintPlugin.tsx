@@ -1,4 +1,4 @@
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useRef } from 'react'
 import {
   motion,
   type MotionStyle,
@@ -81,15 +81,6 @@ interface TravelJourneyRecord {
 interface TravelRecord {
   birthplace?: TravelLocationRecord
   journeys?: TravelJourneyRecord[]
-}
-
-const hoverLift = {
-  whileHover: {
-    scale: 1.004,
-    boxShadow: '0 30px 84px -54px rgba(15,23,42,0.82)',
-  },
-  whileTap: { scale: 0.996 },
-  transition: { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const },
 }
 
 function clamp01(value: number) {
@@ -182,14 +173,6 @@ function usePanelReveal(
   return { opacity, y, scale }
 }
 
-function useSummedTransform(
-  input: [MotionValue<number>, MotionValue<number>]
-) {
-  return useTransform<number, number>(input, ([primary, secondary]) => {
-    return primary + secondary
-  })
-}
-
 export function TravelFootprintPlugin({
   revealProgress,
 }: {
@@ -199,11 +182,8 @@ export function TravelFootprintPlugin({
   const isZh = i18n.language?.startsWith('zh')
   const prefersReducedMotion = useReducedMotion()
   const shellRef = useRef<HTMLDivElement | null>(null)
-  const [isPointerDown, setIsPointerDown] = useState(false)
   const fallbackRevealProgress = useMotionValue(1)
   const pluginReveal = revealProgress ?? fallbackRevealProgress
-  const pointerXRaw = useMotionValue(0)
-  const pointerYRaw = useMotionValue(0)
   const { scrollYProgress } = useScroll({
     target: shellRef,
     offset: ['start end', 'end start'],
@@ -214,41 +194,6 @@ export function TravelFootprintPlugin({
     mass: 0.4,
   })
 
-  const pointerX = useSpring(pointerXRaw, {
-    stiffness: prefersReducedMotion ? 320 : 180,
-    damping: prefersReducedMotion ? 34 : 24,
-    mass: 0.26,
-  })
-  const pointerY = useSpring(pointerYRaw, {
-    stiffness: prefersReducedMotion ? 320 : 180,
-    damping: prefersReducedMotion ? 34 : 24,
-    mass: 0.28,
-  })
-
-  const dragStrength = prefersReducedMotion ? 0 : isPointerDown ? 0.82 : 0.42
-
-  const mapX = useTransform(pointerX, (value) => value * -9 * dragStrength)
-  const mapY = useTransform(pointerY, (value) => value * -7 * dragStrength)
-  const mapRotate = useTransform(
-    pointerX,
-    (value) => value * -0.55 * dragStrength
-  )
-
-  const embedX = useTransform(pointerX, (value) => value * 9 * dragStrength)
-  const embedY = useTransform(pointerY, (value) => value * -7 * dragStrength)
-  const embedRotate = useTransform(
-    pointerX,
-    (value) => value * 0.52 * dragStrength
-  )
-
-  const clockX = useTransform(pointerX, (value) => value * -7 * dragStrength)
-  const clockY = useTransform(pointerY, (value) => value * 7 * dragStrength)
-  const clockRotate = useTransform(
-    pointerX,
-    (value) => value * -0.48 * dragStrength
-  )
-
-  const gridY = useTransform(shellProgress, [0, 0.38, 1], [42, 0, -18])
   const ambientScale = useTransform(
     shellProgress,
     [0, 0.6, 1],
@@ -303,48 +248,15 @@ export function TravelFootprintPlugin({
     Boolean(prefersReducedMotion)
   )
 
-  const mapRevealY = useSummedTransform([mapY, worldReveal.y])
-  const embedRevealY = useSummedTransform([embedY, embedReveal.y])
-  const clockRevealY = useSummedTransform([clockY, clockReveal.y])
-
-  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (prefersReducedMotion) return
-
-    const bounds = event.currentTarget.getBoundingClientRect()
-    const x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1
-    const y = ((event.clientY - bounds.top) / bounds.height) * 2 - 1
-
-    pointerXRaw.set(Math.max(-1, Math.min(1, x)))
-    pointerYRaw.set(Math.max(-1, Math.min(1, y)))
-  }
-
-  const resetPointer = () => {
-    setIsPointerDown(false)
-    pointerXRaw.set(0)
-    pointerYRaw.set(0)
-  }
-
   return (
     <motion.div
       ref={shellRef}
-      className={cn(
-        styles.shell,
-        prefersReducedMotion
-          ? styles.shellStatic
-          : isPointerDown
-            ? styles.shellDragging
-            : styles.shellReady
-      )}
+      className={cn(styles.shell, styles.shellStatic)}
       style={{
         opacity: shellOpacity,
         y: shellRevealY,
         scale: shellRevealScale,
       }}
-      onPointerMove={handlePointerMove}
-      onPointerDown={() => setIsPointerDown(true)}
-      onPointerUp={() => setIsPointerDown(false)}
-      onPointerCancel={resetPointer}
-      onPointerLeave={resetPointer}
     >
       <motion.div
         aria-hidden="true"
@@ -375,13 +287,11 @@ export function TravelFootprintPlugin({
           <TravelWorldMapPanel
             className={styles.introMapLayer}
             viewportClassName={styles.introMapViewport}
-            glowClassName={styles.introMapGlow}
+            showGlow={false}
             baseClassName={styles.introMapBase}
             highlightClassName={styles.introMapHighlight}
             style={{
-              x: mapX,
-              y: mapRevealY,
-              rotate: mapRotate,
+              y: worldReveal.y,
               opacity: worldReveal.opacity,
               scale: worldReveal.scale,
             }}
@@ -400,12 +310,10 @@ export function TravelFootprintPlugin({
         </div>
       </div>
 
-      <motion.div className={styles.grid} style={{ y: gridY }}>
+      <div className={styles.grid}>
         <TravelClockPanel
           style={{
-            x: clockX,
-            y: clockRevealY,
-            rotate: clockRotate,
+            y: clockReveal.y,
             opacity: clockReveal.opacity,
             scale: clockReveal.scale,
           }}
@@ -414,14 +322,12 @@ export function TravelFootprintPlugin({
         <TravelFootprintMapPanel
           isZh={isZh}
           style={{
-            x: embedX,
-            y: embedRevealY,
-            rotate: embedRotate,
+            y: embedReveal.y,
             opacity: embedReveal.opacity,
             scale: embedReveal.scale,
           }}
         />
-      </motion.div>
+      </div>
     </motion.div>
   )
 }
@@ -431,6 +337,7 @@ function TravelWorldMapPanel({
   className,
   viewportClassName,
   glowClassName,
+  showGlow = true,
   baseClassName,
   highlightClassName,
 }: {
@@ -438,13 +345,16 @@ function TravelWorldMapPanel({
   className?: string
   viewportClassName?: string
   glowClassName?: string
+  showGlow?: boolean
   baseClassName?: string
   highlightClassName?: string
 }) {
   return (
     <motion.div className={cn(styles.mapPanel, className)} style={style}>
       <div className={cn(styles.mapViewport, viewportClassName)}>
-        <div className={cn(styles.mapGlow, glowClassName)} />
+        {showGlow ? (
+          <div className={cn(styles.mapGlow, glowClassName)} />
+        ) : null}
         <img
           alt=""
           aria-hidden="true"
@@ -475,7 +385,6 @@ function TravelFootprintMapPanel({
 
   return (
     <motion.section
-      {...hoverLift}
       className={cn(styles.panel, styles.embedPanel)}
       style={style}
     >
@@ -494,23 +403,19 @@ function TravelFootprintMapPanel({
           </div>
         </div>
         <div className={styles.metricCluster}>
-          <span className={styles.metricPillMuted}>
-            {isZh ? '可缩放 / 可拖拽' : 'Zoomable / draggable'}
-          </span>
+          <a
+            href={FULL_MAP_URL}
+            target="_blank"
+            rel="noreferrer"
+            className={styles.headerAction}
+          >
+            <span>{isZh ? '打开完整地图' : 'Open full map'}</span>
+            <ExternalLink className={styles.headerActionIcon} />
+          </a>
         </div>
       </div>
 
       <div ref={targetRef} className={styles.embedViewport}>
-        <a
-          href={FULL_MAP_URL}
-          target="_blank"
-          rel="noreferrer"
-          className={styles.embedAction}
-        >
-          <span>{isZh ? '打开完整地图' : 'Open full map'}</span>
-          <ExternalLink className={styles.embedActionIcon} />
-        </a>
-
         {shouldRender ? (
           <iframe
             title={isZh ? '旅行地图交互窗口' : 'Interactive travel map'}
@@ -565,8 +470,6 @@ function SummaryPill({
 
 const styles = {
   shell: 'relative mx-auto w-full max-w-[78rem] overflow-visible',
-  shellReady: 'cursor-grab',
-  shellDragging: 'cursor-grabbing',
   shellStatic: 'cursor-default',
   introStage: 'relative overflow-visible',
   introRow:
@@ -594,8 +497,6 @@ const styles = {
     'pointer-events-none relative z-[1] w-full opacity-100 brightness-[1.08] saturate-[1.12]',
   introMapViewport:
     'relative aspect-[2.34/1] w-full overflow-visible sm:aspect-[2.52/1]',
-  introMapGlow:
-    'pointer-events-none absolute inset-[8%_10%_18%] bg-[radial-gradient(circle_at_50%_52%,rgba(125,211,252,0.18)_0%,rgba(125,211,252,0.06)_40%,rgba(125,211,252,0)_76%)] blur-3xl',
   introMapBase: 'absolute inset-0 h-full w-full object-contain opacity-28',
   introMapHighlight:
     'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_62px_rgba(181,232,251,0.3)]',
@@ -622,8 +523,10 @@ const styles = {
   metricCluster: 'flex flex-wrap gap-2',
   metricPill:
     'inline-flex items-center rounded-full border border-cyan-300/16 bg-cyan-300/[0.08] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-cyan-50/88',
-  metricPillMuted:
-    'pt-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-white/42',
+  headerAction:
+    'group inline-flex items-center gap-2 pt-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-white/52 transition-[transform,color] duration-300 hover:-translate-y-0.5 hover:text-cyan-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/55 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
+  headerActionIcon:
+    'h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5',
   mapViewport:
     'relative aspect-[2.28/1] w-full overflow-visible sm:aspect-[2.42/1]',
   mapGlow:
@@ -633,10 +536,6 @@ const styles = {
     'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_32px_rgba(181,232,251,0.36)]',
   embedViewport:
     'relative mt-4 overflow-hidden rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,#0d141a_0%,#091016_100%)] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]',
-  embedAction:
-    'group absolute right-5 top-5 z-20 inline-flex items-center gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-cyan-50/72 transition-[transform,color] duration-300 hover:-translate-y-0.5 hover:text-cyan-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/55 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
-  embedActionIcon:
-    'h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5',
   embedFrame:
     'relative block aspect-square w-full rounded-[20px] border-0 bg-[#10161a] shadow-[0_18px_40px_-28px_rgba(0,0,0,0.78)]',
   embedPlaceholder:

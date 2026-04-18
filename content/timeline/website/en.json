@@ -1,5 +1,57 @@
 [
   {
+    "date": "2026-04-18",
+    "title": "Movie Page Polished and Repaired in a New Pass",
+    "description": "The movie page received another focused round of cleanup across information density, visual hierarchy, and responsive behavior, resulting in a calmer structure and more reliable layout scaling.",
+    "categories": [
+      {
+        "title": "Visual Hierarchy",
+        "items": [
+          {
+            "id": "movies-20260418-1",
+            "content": "Trimmed noisy title-area and card-level metadata, removing extra prompts, stats, and separators for a cleaner presentation",
+            "date": "2026-04-18"
+          },
+          {
+            "id": "movies-20260418-2",
+            "content": "Added the animated CINEMA heading and replaced its inner imagery with curated favorite movie stills to strengthen page atmosphere",
+            "date": "2026-04-18"
+          }
+        ]
+      },
+      {
+        "title": "Interaction & Layout",
+        "items": [
+          {
+            "id": "movies-20260418-3",
+            "content": "Reworked the vertical relationship between the watch-activity calendar and the search area to make filtering feel more natural",
+            "date": "2026-04-18"
+          },
+          {
+            "id": "movies-20260418-4",
+            "content": "Simplified the right-side stats panel into a lighter structure and restored both Douban and TMDB profile links",
+            "date": "2026-04-18"
+          }
+        ]
+      },
+      {
+        "title": "Responsive Fixes",
+        "items": [
+          {
+            "id": "movies-20260418-5",
+            "content": "Reworked the watch calendar scaling on mobile and wide screens so the year selector stays on the right and the heatmap makes fuller use of available width",
+            "date": "2026-04-18"
+          },
+          {
+            "id": "movies-20260418-6",
+            "content": "Kept the movie card grid adapting to container width to reduce horizontal strain and unused whitespace",
+            "date": "2026-04-18"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-04-16",
     "title": "Homepage Content Locked for This Phase",
     "description": "The homepage now settles into a four-part structure: hero cover, blog rail, widget stack, and inspiration radar, with the interaction rhythm tuned for this stage.",

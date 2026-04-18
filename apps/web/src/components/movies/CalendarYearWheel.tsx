@@ -270,15 +270,17 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
       <DropdownTrigger
         aria-label={ariaLabel}
         className={cn(
-          'group flex min-w-[4.875rem] cursor-pointer items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 shadow-sm transition-[border-color,background-color,color,box-shadow] hover:border-slate-300 hover:bg-slate-50/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-w-[10rem] sm:gap-3 sm:px-4 sm:py-3 sm:text-sm dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-[#3a3f48] dark:hover:bg-[#1f2328] dark:focus-visible:ring-blue-500/60 dark:focus-visible:ring-offset-[#17191c]',
+          'group flex min-w-[4.5rem] cursor-pointer items-center justify-end gap-1 border-b border-transparent pb-1 text-xs text-slate-600 transition-[border-color,color] hover:border-slate-300 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-w-[7rem] sm:gap-3 sm:text-sm dark:text-slate-300 dark:hover:border-[#3a3f48] dark:hover:text-slate-100 dark:focus-visible:ring-blue-500/60 dark:focus-visible:ring-offset-[#17191c]',
           isOpen &&
-            'border-slate-300 bg-slate-50/95 text-slate-700 dark:border-[#3a3f48] dark:bg-[#1f2328] dark:text-slate-200'
+            'border-slate-300 text-slate-900 dark:border-[#3a3f48] dark:text-slate-100'
         )}
       >
-        <span className="hidden shrink-0 sm:inline">{label}</span>
+        <span className="hidden shrink-0 text-[0.72rem] uppercase tracking-[0.18em] text-slate-500 sm:inline dark:text-slate-400">
+          {label}
+        </span>
         <span
           className={cn(
-            'flex min-w-[3.875rem] items-center justify-center gap-1 text-sm font-medium text-slate-900 transition-opacity duration-200 sm:ml-auto sm:min-w-[4.5rem] sm:justify-end sm:gap-2 sm:text-base dark:text-slate-100',
+            'flex min-w-[3.5rem] items-center justify-end gap-1 text-sm font-medium text-slate-900 transition-opacity duration-200 sm:ml-auto sm:min-w-[4.5rem] sm:gap-2 sm:text-base dark:text-slate-100',
             isOpen && 'opacity-0'
           )}
         >
@@ -295,7 +297,7 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
 
       <DropdownContent
         align="end"
-        className="!top-1/2 !right-1 !mt-0 !min-w-0 origin-center -translate-y-1/2 overflow-visible border-0 bg-transparent p-0 shadow-none ring-0 sm:!right-3"
+        className="!top-full !right-0 !mt-2 !min-w-0 origin-top-right overflow-visible rounded-2xl border border-slate-200/80 bg-white/92 p-2 shadow-[0_24px_48px_-28px_rgba(15,23,42,0.42)] ring-1 ring-black/5 backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c]/96 dark:ring-white/5"
       >
         <div className="relative w-[4.25rem] overflow-hidden bg-transparent px-0 py-0 shadow-none sm:w-[4.5rem] [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)] [-webkit-mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)]">
           <div className="relative" style={{ height: `${WHEEL_HEIGHT}px` }}>

@@ -183,36 +183,20 @@ export function HomeHeroSection({
                 )}
               >
                 {isZh ? (
-                  <>
-                    <span className="block sm:hidden">欢迎来到</span>
-                    <span className="block sm:hidden">
+                  <Trans
+                    i18nKey="home.title"
+                    components={[
                       <span
+                        key="0"
                         className={styles.highlightText}
                         role="link"
                         tabIndex={0}
                         onClick={handleNameClick}
                         onKeyDown={handleNameKeyDown}
-                      >
-                        Mark
-                      </span>
-                      的自留地
-                    </span>
-                    <span className="hidden sm:inline">
-                      <Trans
-                        i18nKey="home.title"
-                        components={[
-                          <span
-                            key="0"
-                            className={styles.highlightText}
-                            role="link"
-                            tabIndex={0}
-                            onClick={handleNameClick}
-                            onKeyDown={handleNameKeyDown}
-                          />,
-                        ]}
-                      />
-                    </span>
-                  </>
+                      />,
+                      <br key="1" />,
+                    ]}
+                  />
                 ) : (
                   <Trans
                     i18nKey="home.title"

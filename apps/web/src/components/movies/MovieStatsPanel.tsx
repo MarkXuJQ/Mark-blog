@@ -28,21 +28,6 @@ export function MovieStatsPanel({
     [ratings]
   )
 
-  const overallScore = useMemo(() => {
-    if (ratedValues.length === 0) return null
-
-    const averageStars =
-      ratedValues.reduce((sum, rating) => sum + rating, 0) / ratedValues.length
-
-    return Math.round((averageStars / 5) * 100)
-  }, [ratedValues])
-
-  const scoreProgress = overallScore ?? 0
-  const circleRadius = 42
-  const circleCircumference = 2 * Math.PI * circleRadius
-  const circleOffset =
-    circleCircumference - (scoreProgress / 100) * circleCircumference
-
   const ratingDistribution = useMemo(() => {
     const distribution = [5, 4, 3, 2, 1].map((rating) => ({
       rating,
@@ -57,87 +42,41 @@ export function MovieStatsPanel({
   }, [ratedValues])
 
   return (
-    <section className="rounded-3xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c] dark:shadow-[0_12px_36px_rgba(0,0,0,0.45)]">
-      <div className="space-y-4">
-        <div className="rounded-2xl border border-slate-200/70 bg-gradient-to-br from-slate-50/90 to-white/70 p-3.5 dark:border-[#2b2f36] dark:from-[#1f2328] dark:to-[#1f2328]">
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <div className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                {t('movies.stats.watchedCount')}
-              </div>
-              <div className="mt-1 text-3xl font-semibold leading-none text-slate-900 dark:text-slate-100">
-                {watchCount}
-              </div>
-              <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
-                {t('movies.stats.totalLabel', 'All time')}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center rounded-2xl border border-slate-200/70 bg-white/70 p-2.5 shadow-sm dark:border-[#2b2f36] dark:bg-[#17191c]">
-              <div className="relative h-[86px] w-[86px]">
-                <svg
-                  viewBox="0 0 100 100"
-                  className="-rotate-90 h-full w-full"
-                  aria-hidden="true"
-                >
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r={circleRadius}
-                    className="fill-none stroke-slate-200 dark:stroke-[#2b2f36]"
-                    strokeWidth="8"
-                  />
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r={circleRadius}
-                    className="fill-none stroke-[url(#movie-score-gradient)]"
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                    strokeDasharray={circleCircumference}
-                    strokeDashoffset={circleOffset}
-                  />
-                  <defs>
-                    <linearGradient id="movie-score-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#38bdf8" />
-                      <stop offset="50%" stopColor="#34d399" />
-                      <stop offset="100%" stopColor="#f59e0b" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-                    {overallScore === null ? '--' : overallScore}
-                  </div>
-                  <div className="text-[9px] text-slate-500 dark:text-slate-400">
-                    / 100
-                  </div>
-                </div>
-              </div>
-            </div>
+    <section className="rounded-[1.75rem] border border-slate-200/80 bg-white/72 p-5 shadow-[0_24px_56px_-36px_rgba(15,23,42,0.35)] backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c]/92 dark:shadow-[0_28px_56px_-34px_rgba(0,0,0,0.5)]">
+      <div className="space-y-6">
+        <div className="border-b border-slate-200/80 pb-5 dark:border-[#2b2f36]">
+          <div className="text-[0.68rem] font-medium tracking-[0.22em] text-slate-500 uppercase dark:text-slate-400">
+            {t('movies.stats.watchedCount')}
+          </div>
+          <div className="mt-3 text-5xl leading-none font-semibold tracking-[-0.04em] text-slate-950 dark:text-slate-50">
+            {watchCount}
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-amber-50/80 via-slate-50/80 to-white/70 p-3.5 dark:border-[#2b2f36] dark:from-[#1f2328] dark:via-[#1f2328] dark:to-[#1f2328]">
-          <div className="space-y-2.5">
+        <div className="space-y-3">
+          <div className="text-[0.68rem] font-medium tracking-[0.22em] text-slate-500 uppercase dark:text-slate-400">
+            {t('movies.stats.ratingBreakdown')}
+          </div>
+          <div className="space-y-3">
             {ratingDistribution.map((item) => (
               <div key={item.rating}>
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex flex-1 flex-col gap-1">
+                  <div className="flex flex-1 flex-col gap-1.5">
                     <button
                       type="button"
                       onClick={() => onSelectRating(item.rating)}
                       className="group inline-flex items-center gap-0.5 text-left"
                       aria-pressed={selectedRating === item.rating}
-                      title="点击筛选该星级"
+                      aria-label={t('movies.rating.value', {
+                        rating: item.rating,
+                      })}
                     >
                       {Array.from({ length: item.rating }).map((_, index) => (
                         <Star
                           key={`${item.rating}-${index}`}
                           size={11}
                           className={cn(
-                            'transition-transform duration-200 group-hover:scale-[1.18]',
+                            'transition-transform duration-200 group-hover:scale-[1.12]',
                             selectedRating === item.rating
                               ? 'fill-amber-500 text-amber-500'
                               : 'fill-amber-400 text-amber-400'
@@ -145,9 +84,6 @@ export function MovieStatsPanel({
                           style={{ transitionDelay: `${index * 35}ms` }}
                         />
                       ))}
-                      <span className="ml-1 text-[10px] font-medium text-slate-500 opacity-0 transition-opacity duration-200 group-hover:opacity-100 dark:text-slate-400">
-                        点击筛选
-                      </span>
                     </button>
 
                     <div className="relative h-1.5 overflow-hidden rounded-full bg-slate-200/60 dark:bg-[#23262c]">
@@ -167,31 +103,31 @@ export function MovieStatsPanel({
           </div>
         </div>
 
-        <div className="flex items-center justify-between rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white/80 to-slate-50/80 px-3.5 py-2.5 text-[11px] text-slate-500 shadow-sm dark:border-[#2b2f36] dark:from-[#1f2328] dark:to-[#1f2328] dark:text-slate-400">
-          <span className="font-medium text-slate-600 dark:text-slate-300">
-            {selectedRating ? `${selectedRating}★` : '全部'}
-          </span>
-          {selectedRating !== null ? (
+        {selectedRating !== null ? (
+          <div className="flex items-center justify-between border-t border-slate-200/80 pt-4 text-[11px] text-slate-500 dark:border-[#2b2f36] dark:text-slate-400">
+            <span className="font-medium text-slate-600 dark:text-slate-300">
+              {t('movies.rating.value', { rating: selectedRating })}
+            </span>
             <button
               type="button"
               onClick={() => onSelectRating(null)}
-              className="rounded-full border border-slate-200/80 bg-white/80 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-emerald-300 hover:text-emerald-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-emerald-500 dark:hover:text-emerald-300"
+              className="border-b border-transparent pb-0.5 font-medium text-slate-600 transition hover:border-emerald-300 hover:text-emerald-600 dark:text-slate-300 dark:hover:border-emerald-500 dark:hover:text-emerald-300"
             >
               {t('movies.stats.clearFilter', '清除筛选')}
             </button>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
 
         <div className="border-t border-slate-200/80 pt-3 dark:border-[#2b2f36]">
-          <div className="mb-2 text-[11px] text-slate-500 dark:text-slate-400">
+          <div className="mb-3 text-[0.68rem] font-medium tracking-[0.22em] text-slate-500 uppercase dark:text-slate-400">
             {t('movies.profile.label')}
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
             <a
               href={doubanProfileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-emerald-300 hover:text-emerald-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-emerald-500 dark:hover:text-emerald-300"
+              className="inline-flex items-center gap-1 border-b border-transparent pb-0.5 text-sm text-slate-600 transition hover:border-emerald-300 hover:text-emerald-600 dark:text-slate-300 dark:hover:border-emerald-500 dark:hover:text-emerald-300"
             >
               <RiDoubanLine size={14} />
               {t('movies.profile.douban')}
@@ -200,7 +136,7 @@ export function MovieStatsPanel({
               href={tmdbProfileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition hover:border-sky-300 hover:text-sky-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-sky-500 dark:hover:text-sky-300"
+              className="inline-flex items-center gap-1 border-b border-transparent pb-0.5 text-sm text-slate-600 transition hover:border-sky-300 hover:text-sky-600 dark:text-slate-300 dark:hover:border-sky-500 dark:hover:text-sky-300"
             >
               <RiMovie2Line size={14} />
               {t('movies.profile.tmdb')}
