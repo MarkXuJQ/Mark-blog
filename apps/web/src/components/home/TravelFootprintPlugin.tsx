@@ -494,23 +494,19 @@ function TravelFootprintMapPanel({
           </div>
         </div>
         <div className={styles.metricCluster}>
-          <span className={styles.metricPillMuted}>
-            {isZh ? '可缩放 / 可拖拽' : 'Zoomable / draggable'}
-          </span>
+          <a
+            href={FULL_MAP_URL}
+            target="_blank"
+            rel="noreferrer"
+            className={styles.headerAction}
+          >
+            <span>{isZh ? '打开完整地图' : 'Open full map'}</span>
+            <ExternalLink className={styles.headerActionIcon} />
+          </a>
         </div>
       </div>
 
       <div ref={targetRef} className={styles.embedViewport}>
-        <a
-          href={FULL_MAP_URL}
-          target="_blank"
-          rel="noreferrer"
-          className={styles.embedAction}
-        >
-          <span>{isZh ? '打开完整地图' : 'Open full map'}</span>
-          <ExternalLink className={styles.embedActionIcon} />
-        </a>
-
         {shouldRender ? (
           <iframe
             title={isZh ? '旅行地图交互窗口' : 'Interactive travel map'}
@@ -622,8 +618,10 @@ const styles = {
   metricCluster: 'flex flex-wrap gap-2',
   metricPill:
     'inline-flex items-center rounded-full border border-cyan-300/16 bg-cyan-300/[0.08] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-cyan-50/88',
-  metricPillMuted:
-    'pt-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-white/42',
+  headerAction:
+    'group inline-flex items-center gap-2 pt-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-white/52 transition-[transform,color] duration-300 hover:-translate-y-0.5 hover:text-cyan-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/55 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
+  headerActionIcon:
+    'h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5',
   mapViewport:
     'relative aspect-[2.28/1] w-full overflow-visible sm:aspect-[2.42/1]',
   mapGlow:
@@ -633,10 +631,6 @@ const styles = {
     'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_32px_rgba(181,232,251,0.36)]',
   embedViewport:
     'relative mt-4 overflow-hidden rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,#0d141a_0%,#091016_100%)] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]',
-  embedAction:
-    'group absolute right-5 top-5 z-20 inline-flex items-center gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-cyan-50/72 transition-[transform,color] duration-300 hover:-translate-y-0.5 hover:text-cyan-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/55 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
-  embedActionIcon:
-    'h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5',
   embedFrame:
     'relative block aspect-square w-full rounded-[20px] border-0 bg-[#10161a] shadow-[0_18px_40px_-28px_rgba(0,0,0,0.78)]',
   embedPlaceholder:

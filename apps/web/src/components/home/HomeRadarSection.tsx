@@ -337,7 +337,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     ? '个人雷达 / Curated orbit'
     : 'Personal radar / Curated orbit'
   const introDescription = isZh
-    ? '把我会反复回访的博客、实验与网络角落，整理成一张缓慢展开的私人雷达。'
+    ? '把我喜欢的博客、网页和有意思的网络角落整理成一个小雷达'
     : 'A slow personal scan of the blogs, experiments, and web corners I keep returning to.'
   const introMetaItems = [
     {
