@@ -316,10 +316,7 @@ export function HomeHeroAvatarScene({
     }
 
     const handleOrientationChange = (event: DeviceOrientationEvent) => {
-      if (
-        typeof event.beta !== 'number' ||
-        typeof event.gamma !== 'number'
-      ) {
+      if (typeof event.beta !== 'number' || typeof event.gamma !== 'number') {
         return
       }
 
@@ -357,7 +354,13 @@ export function HomeHeroAvatarScene({
       pointerX.set(0)
       pointerY.set(0)
     }
-  }, [isCoarsePointer, motionSensorState, pointerX, pointerY, prefersReducedMotion])
+  }, [
+    isCoarsePointer,
+    motionSensorState,
+    pointerX,
+    pointerY,
+    prefersReducedMotion,
+  ])
 
   const handleEnableMotionSensor = async () => {
     if (prefersReducedMotion) {
@@ -389,9 +392,7 @@ export function HomeHeroAvatarScene({
     !prefersReducedMotion &&
     (motionSensorState === 'idle' || motionSensorState === 'denied')
   const showMotionSensorHint =
-    isCoarsePointer &&
-    !prefersReducedMotion &&
-    motionSensorState === 'granted'
+    isCoarsePointer && !prefersReducedMotion && motionSensorState === 'granted'
   const motionSensorLabel =
     motionSensorState === 'denied'
       ? isZh
@@ -419,10 +420,7 @@ export function HomeHeroAvatarScene({
   }
 
   return (
-    <motion.div
-      className={styles.frameWrap}
-      style={{ y: sceneLift }}
-    >
+    <motion.div className={styles.frameWrap} style={{ y: sceneLift }}>
       <motion.div
         aria-hidden="true"
         className={styles.frame}
@@ -532,26 +530,21 @@ export function HomeHeroAvatarScene({
                 style={{ x: echoX, y: echoY, rotate: avatarRotate }}
               />
               <motion.div
-                data-home-avatar-keyframe="hero"
                 className={styles.avatarShell}
                 style={{ x: avatarX, y: avatarY, rotate: avatarRotate }}
               >
-              <div className={styles.avatarHalo} />
-              <div
-                data-home-avatar-keyframe-core="hero"
-                className={styles.avatarMask}
-              >
-                <img
-                  src={avatarSrc}
-                  alt=""
-                  width={360}
-                  height={360}
-                  decoding="async"
-                  fetchPriority="high"
-                  data-home-avatar-keyframe-image="hero"
-                  className={styles.avatar}
-                />
-              </div>
+                <div className={styles.avatarHalo} />
+                <div className={styles.avatarMask}>
+                  <img
+                    src={avatarSrc}
+                    alt=""
+                    width={360}
+                    height={360}
+                    decoding="async"
+                    fetchPriority="high"
+                    className={styles.avatar}
+                  />
+                </div>
                 <div className={styles.avatarOutline} />
               </motion.div>
 

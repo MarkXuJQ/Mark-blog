@@ -19,7 +19,10 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
       options={{
         autoRaf: true,
         autoResize: true,
-        smoothWheel: !prefersReducedMotion,
+        // Keep native wheel scrolling on the animation-heavy homepage. Lenis is
+        // still available for section-level scrollTo/lock flows, but browsing
+        // should not wait on an extra smoothing layer.
+        smoothWheel: false,
         // Native touch scrolling is more resilient on mobile when the homepage
         // already has several scroll-linked motion scenes running.
         syncTouch: false,

@@ -228,30 +228,20 @@ function HomeTravelAvatarKeyframe({
           </div>
           <div className={styles.keyframeMapStage}>
             <div className={styles.keyframeMapViewport}>
-              <div
-                data-home-avatar-keyframe-rotate="travel"
-                className={styles.keyframeAnchorLayer}
-              >
+              <div className={styles.keyframeAnchorLayer}>
                 <div className={styles.keyframeAnchorCell}>
                   <div className={styles.keyframeAnchorPortrait}>
                     <div
                       aria-hidden="true"
                       className={styles.keyframeAnchorGlow}
                     />
-                    <div
-                      data-home-avatar-keyframe="travel"
-                      className={styles.keyframeAnchorFrame}
-                    >
-                      <div
-                        data-home-avatar-keyframe-core="travel"
-                        className={styles.keyframeAnchorMask}
-                      >
+                    <div className={styles.keyframeAnchorFrame}>
+                      <div className={styles.keyframeAnchorMask}>
                         <img
                           src={avatarSrc}
                           alt=""
                           loading="eager"
                           decoding="async"
-                          data-home-avatar-keyframe-image="travel"
                           className={styles.keyframeAnchorImage}
                         />
                       </div>
@@ -298,7 +288,7 @@ export function HomeWidgetStackSection({
     <section
       ref={sectionRef}
       aria-label={isZh ? '首页小组件堆叠区' : 'Homepage widget stack'}
-      className="relative z-20 isolate"
+      className="relative isolate z-20"
       style={sectionStyle}
     >
       <motion.div className="sticky top-0 h-[100svh] overflow-hidden">
@@ -371,7 +361,8 @@ const styles = {
     'relative min-h-full pt-[14svh] pb-[20svh] sm:pt-[16svh] sm:pb-[22svh] lg:pt-[18svh] lg:pb-[24svh] will-change-transform',
   contentViewportInner: 'relative',
   pluginWrap: 'relative z-10',
-  keyframeScene: 'pointer-events-none invisible absolute inset-0 z-0 select-none',
+  keyframeScene:
+    'pointer-events-none invisible absolute inset-0 z-0 select-none',
   keyframeShell: 'mx-auto w-full max-w-[78rem] overflow-visible',
   keyframeStage: 'relative overflow-visible',
   keyframeHeaderRow: 'relative z-[3] pt-0 sm:pt-1 lg:pt-2',

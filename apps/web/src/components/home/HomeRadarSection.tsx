@@ -272,30 +272,23 @@ function isLightHexColor(hex: string) {
 }
 
 function getNodeDotSize(node: RadarNode) {
-  return SIGNAL_DOT_SIZE_PX + (node.dotScaleSteps ?? 0) * SIGNAL_DOT_SIZE_STEP_PX
+  return (
+    SIGNAL_DOT_SIZE_PX + (node.dotScaleSteps ?? 0) * SIGNAL_DOT_SIZE_STEP_PX
+  )
 }
 
-function HomeRadarAvatarKeyframe({ avatarSrc }: { avatarSrc: string }) {
+function HomeRadarAvatar({ avatarSrc }: { avatarSrc: string }) {
   return (
-    <div
-      aria-hidden="true"
-      data-home-avatar-keyframe="radar"
-      className={cn(
-        styles.avatarKeyframeWrap,
-        styles.avatarKeyframeHidden
-      )}
-    >
-      <div
-        data-home-avatar-keyframe-core="radar"
-        className={styles.avatarKeyframeCore}
-      >
+    <div aria-hidden="true" className={styles.avatarAnchorWrap}>
+      <div className={styles.avatarAnchorGlow} />
+      <div className={styles.avatarAnchorGlass} />
+      <div className={styles.avatarAnchorFrame}>
         <img
           src={avatarSrc}
           alt=""
           loading="lazy"
           decoding="async"
-          data-home-avatar-keyframe-image="radar"
-          className={styles.avatarKeyframeImage}
+          className={styles.avatarAnchorImage}
         />
       </div>
     </div>
@@ -338,11 +331,7 @@ function RadarMetaItem({
     )
   }
 
-  return (
-    <div className={styles.metaItem}>
-      {content}
-    </div>
-  )
+  return <div className={styles.metaItem}>{content}</div>
 }
 
 function RadarAxisMarker({
@@ -411,7 +400,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     verticalLineReveal,
   } = useHomeRadarScene()
   const activeNode = activeNodeId
-    ? RADAR_NODES.find((node) => node.id === activeNodeId) ?? null
+    ? (RADAR_NODES.find((node) => node.id === activeNodeId) ?? null)
     : null
 
   const measureSignalPortalLayout = (node: RadarNode) => {
@@ -525,7 +514,10 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
       const viewportWidth = window.innerWidth
       const sideMargin = viewportWidth >= 640 ? 32 : 24
       const panelWidth = Math.min(336, viewportWidth - sideMargin * 2)
-      const maxLeft = Math.max(sideMargin, viewportWidth - panelWidth - sideMargin)
+      const maxLeft = Math.max(
+        sideMargin,
+        viewportWidth - panelWidth - sideMargin
+      )
 
       setSignalListPosition({
         top: triggerRect.bottom + 12,
@@ -666,7 +658,10 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
         </div>
 
         <div className={styles.radarStage}>
-          <div style={{ top: HOME_RADAR_CENTER_Y }} className={styles.radarField}>
+          <div
+            style={{ top: HOME_RADAR_CENTER_Y }}
+            className={styles.radarField}
+          >
             <div
               aria-hidden="true"
               className={styles.fieldVignette}
@@ -724,7 +719,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
               )
             })}
 
-            <HomeRadarAvatarKeyframe avatarSrc={avatarSrc} />
+            <HomeRadarAvatar avatarSrc={avatarSrc} />
 
             {RADAR_NODES.map((node) => {
               const nodeAngle = getRadarNodeAngle(node)
@@ -1013,8 +1008,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
         </div>
       </div>
 
-      {signalPortalState &&
-      typeof document !== 'undefined'
+      {signalPortalState && typeof document !== 'undefined'
         ? createPortal(
             <a
               href={signalPortalState.node.href}
@@ -1058,7 +1052,9 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                   ? '0 24px 56px -42px rgba(15,23,42,0.18)'
                   : 'none',
               }}
-              onPointerEnter={() => activateSignalNode(signalPortalState.node.id)}
+              onPointerEnter={() =>
+                activateSignalNode(signalPortalState.node.id)
+              }
               onPointerLeave={() =>
                 scheduleSignalNodeDeactivate(signalPortalState.node.id)
               }
@@ -1165,9 +1161,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
           )
         : null}
 
-      {isSignalListOpen &&
-      signalListPosition &&
-      typeof document !== 'undefined'
+      {isSignalListOpen && signalListPosition && typeof document !== 'undefined'
         ? createPortal(
             <div
               ref={signalListRef}
@@ -1254,8 +1248,7 @@ const styles = {
     'text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-slate-500/78 dark:text-white/40',
   signalSourceList:
     'pointer-events-auto z-[140] rounded-[24px] border border-slate-300/70 bg-white/88 p-3 shadow-[0_28px_64px_-36px_rgba(15,23,42,0.34)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/84',
-  signalSourceListHeader:
-    'flex items-center justify-between gap-4 px-1 pb-2',
+  signalSourceListHeader: 'flex items-center justify-between gap-4 px-1 pb-2',
   signalSourceListTitle:
     'text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-slate-500/82 dark:text-white/44',
   signalSourceListCount:
@@ -1273,8 +1266,7 @@ const styles = {
     'pointer-events-auto relative z-[140] overflow-hidden transition-[top,left,width,height,border-radius,background-color,box-shadow] duration-[380ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
   signalPortalIconFrame:
     'absolute overflow-hidden border bg-white transition-[top,left,width,height,border-radius,border-color,box-shadow] duration-[340ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]',
-  signalPortalCopy:
-    'pointer-events-none inset-0',
+  signalPortalCopy: 'pointer-events-none inset-0',
   crosshairVertical:
     'pointer-events-none absolute left-1/2 top-0 h-full w-px origin-center bg-[linear-gradient(180deg,rgba(148,163,184,0)_0%,rgba(148,163,184,0.22)_18%,rgba(148,163,184,0.22)_82%,rgba(148,163,184,0)_100%)]',
   crosshairHorizontal:
@@ -1292,21 +1284,23 @@ const styles = {
     'pointer-events-none absolute left-1/2 top-1/2 h-[28%] w-[28%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.14)_0%,rgba(6,182,212,0.05)_42%,rgba(6,182,212,0)_76%)] blur-3xl',
   fieldCenterDisc:
     'pointer-events-none absolute left-1/2 top-1/2 h-[15.5%] w-[15.5%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-300/55 dark:border-white/14',
+  avatarAnchorWrap:
+    'pointer-events-none absolute left-1/2 top-1/2 z-20 flex h-[20%] w-[20%] min-h-[6.5rem] min-w-[6.5rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full',
+  avatarAnchorGlow:
+    'absolute inset-[-18%] rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.2)_0%,rgba(6,182,212,0.08)_42%,rgba(6,182,212,0)_76%)] blur-2xl dark:bg-[radial-gradient(circle,rgba(125,211,252,0.18)_0%,rgba(125,211,252,0.06)_44%,rgba(15,23,42,0)_78%)]',
+  avatarAnchorGlass:
+    'absolute inset-0 rounded-full border border-white/45 bg-white/18 shadow-[inset_0_1px_0_rgba(255,255,255,0.5),0_20px_44px_-32px_rgba(15,23,42,0.54)] backdrop-blur-2xl dark:border-white/14 dark:bg-white/8 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_20px_44px_-32px_rgba(2,6,23,0.9)]',
+  avatarAnchorFrame:
+    'relative h-[72%] w-[72%] overflow-hidden rounded-full border border-slate-200/80 bg-white/72 shadow-[0_18px_34px_-24px_rgba(15,23,42,0.48)] ring-1 ring-white/70 dark:border-white/24 dark:bg-slate-950/54 dark:shadow-[0_18px_34px_-24px_rgba(2,6,23,0.84)] dark:ring-white/10',
+  avatarAnchorImage: 'h-full w-full scale-[1.04] object-cover object-center',
   axisMarker:
     'absolute z-[5] flex items-center gap-2 font-[var(--font-pixel)] text-[0.6rem] uppercase tracking-[0.24em] text-slate-500/72 dark:text-white/32',
-  axisMarkerTick:
-    'h-px w-4 bg-slate-400/58 dark:bg-white/24',
+  axisMarkerTick: 'h-px w-4 bg-slate-400/58 dark:bg-white/24',
   ring: 'pointer-events-none absolute rounded-full border border-slate-300/62',
   outerRing:
     'border-dashed border-slate-300/80 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]',
   scanBeam:
     'pointer-events-none absolute left-1/2 top-1/2 h-[170vmax] w-[170vmax] -translate-x-1/2 -translate-y-1/2',
-  avatarKeyframeWrap:
-    'absolute left-1/2 top-1/2 z-20 flex h-[20%] w-[20%] min-h-[6.5rem] min-w-[6.5rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-transparent backdrop-blur-2xl',
-  avatarKeyframeHidden: 'pointer-events-none invisible select-none',
-  avatarKeyframeCore:
-    'relative h-[72%] w-[72%] overflow-hidden rounded-full border border-white/60 bg-transparent shadow-[0_14px_28px_-22px_rgba(15,23,42,0.24)]',
-  avatarKeyframeImage: 'h-full w-full object-cover',
   signalLink:
     'absolute z-30 flex h-[44px] w-[44px] -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-visible focus-visible:z-50 focus-visible:outline-none',
   signalLinkActive: 'z-50',
@@ -1335,10 +1329,7 @@ const styles = {
   signalCopyHeader: 'flex items-start gap-3',
   signalCopySpacer: 'h-11 w-11 shrink-0',
   signalCopyTitleBlock: 'flex min-w-0 flex-1 flex-col gap-1 pt-0.5',
-  signalCardEyebrow:
-    'text-[0.64rem] font-semibold uppercase tracking-[0.18em]',
-  signalCardTitle:
-    'text-[0.98rem] font-semibold leading-5 tracking-[-0.01em]',
-  signalCardDescription:
-    'relative z-10 text-[0.84rem] leading-6',
+  signalCardEyebrow: 'text-[0.64rem] font-semibold uppercase tracking-[0.18em]',
+  signalCardTitle: 'text-[0.98rem] font-semibold leading-5 tracking-[-0.01em]',
+  signalCardDescription: 'relative z-10 text-[0.84rem] leading-6',
 }
