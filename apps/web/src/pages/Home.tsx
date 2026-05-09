@@ -37,7 +37,6 @@ const LazyHomeWidgetStackSection = lazy(() =>
 )
 
 const HOME_WIDGET_STACK_PLACEHOLDER_MIN_HEIGHT = '320svh'
-const HOME_WIDGET_STACK_PLACEHOLDER_MARGIN_TOP = '-160svh'
 
 function HomeWidgetStackPlaceholder({
   placeholderRef,
@@ -51,7 +50,6 @@ function HomeWidgetStackPlaceholder({
       className="relative isolate z-20"
       style={{
         minHeight: HOME_WIDGET_STACK_PLACEHOLDER_MIN_HEIGHT,
-        marginTop: HOME_WIDGET_STACK_PLACEHOLDER_MARGIN_TOP,
       }}
     >
       <div className="sticky top-0 h-[100svh] overflow-hidden">

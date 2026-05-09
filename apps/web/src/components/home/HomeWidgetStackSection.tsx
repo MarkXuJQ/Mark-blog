@@ -21,7 +21,6 @@ const SCENE_PROGRESS_MAX_STEP_PER_MS = 0.00105
 const WIDGET_REVEAL_START = 0.2
 const WIDGET_REVEAL_DURATION = 0.42
 const WIDGET_SCENE_HEIGHT = '320svh'
-const WIDGET_SCENE_OVERLAP = '-160svh'
 const CONTENT_SCROLL_START = 0.28
 const CONTENT_SCROLL_HOLD_END = 0.44
 const CONTENT_SCROLL_END = 0.96
@@ -148,7 +147,6 @@ function useHomeWidgetStackScene({
     ? { minHeight: '100svh' }
     : {
         minHeight: `max(${WIDGET_SCENE_HEIGHT}, calc(100svh + ${sceneExtraScroll}px))`,
-        marginTop: WIDGET_SCENE_OVERLAP,
       }
 
   const backdropProgress = useTransform(sceneProgress, (value) =>

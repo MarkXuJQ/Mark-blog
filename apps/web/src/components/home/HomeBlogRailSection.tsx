@@ -1,14 +1,9 @@
 import { forwardRef, useEffect, useMemo, useRef, useState } from 'react'
-import {
-  motion,
-  type MotionValue,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from 'framer-motion'
+import { motion, type MotionValue, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { Label } from '../ui/label'
+import { Slider } from '../ui/slider'
 import { cn } from '../../utils/cn'
 import { getAllPostSummaries } from '../../utils/postSummaries'
 import type { BlogPostSummary } from '../../types'
@@ -23,42 +18,13 @@ interface HomeBlogRailSectionProps {
 }
 
 const BLOG_POST_LIMIT = 7
-const BLOG_REQUIRED_LOOP_PASSES = 2
-const BLOG_SCENE_LEAD_IN_PX = 960
-const BLOG_SCENE_MIN_EXTRA_SCROLL_PX = 3000
-const BLOG_SCROLL_DISTANCE_SCALE = 2 / 3
-const COMPACT_VIEWPORT_QUERY = '(max-width: 767px)'
+const BLOG_RAIL_DEFAULT_SPEED_PERCENT = 100
+const BLOG_RAIL_MIN_SPEED_PERCENT = 50
+const BLOG_RAIL_MAX_SPEED_PERCENT = 180
 
-function getInitialIsCompactViewport() {
-  if (typeof window === 'undefined' || !('matchMedia' in window)) {
-    return false
-  }
-
-  return window.matchMedia(COMPACT_VIEWPORT_QUERY).matches
-}
-
-function useIsCompactViewport() {
-  const [isCompactViewport, setIsCompactViewport] = useState(
-    getInitialIsCompactViewport
-  )
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !('matchMedia' in window)) {
-      return
-    }
-
-    const mediaQuery = window.matchMedia(COMPACT_VIEWPORT_QUERY)
-    const syncViewport = () => {
-      setIsCompactViewport(mediaQuery.matches)
-    }
-
-    syncViewport()
-    mediaQuery.addEventListener('change', syncViewport)
-
-    return () => mediaQuery.removeEventListener('change', syncViewport)
-  }, [])
-
-  return isCompactViewport
+const styles = {
+  autoRailTrack:
+    '[animation:home-blog-rail-marquee_54s_linear_infinite] [@media(prefers-reduced-motion:reduce)]:[animation:none]',
 }
 
 export function HomeBlogRailSection({
@@ -70,15 +36,15 @@ export function HomeBlogRailSection({
   sectionPointerEvents,
 }: HomeBlogRailSectionProps) {
   const { t, i18n } = useTranslation()
-  const prefersReducedMotion = useReducedMotion()
-  const isCompactViewport = useIsCompactViewport()
-  const shouldUseLightweightRail =
-    Boolean(prefersReducedMotion) || isCompactViewport
-  const sectionRef = useRef<HTMLElement | null>(null)
-  const segmentRef = useRef<HTMLDivElement | null>(null)
-  const [segmentWidth, setSegmentWidth] = useState(0)
+  const shouldReduceMotion = Boolean(useReducedMotion())
+  const railTrackRef = useRef<HTMLDivElement | null>(null)
+  const [scrollSpeed, setScrollSpeed] = useState([
+    BLOG_RAIL_DEFAULT_SPEED_PERCENT,
+  ])
 
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
+  const isZh = locale === 'zh-CN'
+  const speedPercent = scrollSpeed[0] ?? BLOG_RAIL_DEFAULT_SPEED_PERCENT
   const allPosts = useMemo(
     () => getAllPostSummaries(i18n.language),
     [i18n.language]
@@ -112,78 +78,33 @@ export function HomeBlogRailSection({
         : null,
     ].filter((item): item is { label: string; value: string } => item != null)
   }, [allPosts, dateFormatter, t])
-  const sceneMinHeight = useMemo(() => {
-    if (shouldUseLightweightRail) return '100svh'
-
-    const baseExtraScrollDistance = Math.max(
-      BLOG_SCENE_MIN_EXTRA_SCROLL_PX,
-      segmentWidth * BLOG_REQUIRED_LOOP_PASSES + BLOG_SCENE_LEAD_IN_PX
-    )
-    const extraScrollDistance =
-      baseExtraScrollDistance * BLOG_SCROLL_DISTANCE_SCALE
-
-    return `calc(100svh + ${Math.round(extraScrollDistance)}px)`
-  }, [segmentWidth, shouldUseLightweightRail])
 
   useEffect(() => {
-    const segmentNode = segmentRef.current
-    if (!segmentNode) return
+    const railTrackNode = railTrackRef.current
+    if (!railTrackNode || shouldReduceMotion) return
 
-    const updateMeasurements = () => {
-      setSegmentWidth(segmentNode.scrollWidth)
+    let frameId = 0
+
+    const syncPlaybackRate = () => {
+      const playbackRate = speedPercent / BLOG_RAIL_DEFAULT_SPEED_PERCENT
+      railTrackNode.getAnimations().forEach((animation) => {
+        animation.updatePlaybackRate(playbackRate)
+      })
     }
 
-    updateMeasurements()
+    syncPlaybackRate()
+    frameId = requestAnimationFrame(syncPlaybackRate)
 
-    if (typeof ResizeObserver === 'undefined') {
-      window.addEventListener('resize', updateMeasurements)
-      return () => window.removeEventListener('resize', updateMeasurements)
-    }
-
-    const observer = new ResizeObserver(updateMeasurements)
-    observer.observe(segmentNode)
-
-    return () => observer.disconnect()
-  }, [posts])
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start start', 'end end'],
-  })
-
-  const progress = useSpring(scrollYProgress, {
-    stiffness: shouldUseLightweightRail ? 260 : 120,
-    damping: shouldUseLightweightRail ? 34 : 22,
-    mass: 0.38,
-  })
-
-  const x = useTransform(progress, (value) => {
-    if (shouldUseLightweightRail || segmentWidth <= 0) return 0
-
-    return -segmentWidth * Math.min(1, Math.max(0, value))
-  })
-
-  const railY = useTransform(progress, (value) => {
-    if (shouldUseLightweightRail) return 0
-    if (value <= 0.16) return 28 + ((12 - 28) * value) / 0.16
-    if (value <= 0.32) return 12 + ((0 - 12) * (value - 0.16)) / 0.16
-    return 0
-  })
-  const railOpacity = useTransform(progress, (value) => {
-    if (shouldUseLightweightRail) return 1
-    if (value <= 0.1) return 0.82 + ((0.92 - 0.82) * value) / 0.1
-    if (value <= 0.22) return 0.92 + ((1 - 0.92) * (value - 0.1)) / 0.12
-    return 1
-  })
+    return () => cancelAnimationFrame(frameId)
+  }, [shouldReduceMotion, speedPercent])
 
   if (posts.length === 0) return null
 
   return (
     <section
-      ref={sectionRef}
       aria-label={locale === 'zh-CN' ? '首页博客流' : 'Homepage blog rail'}
       className="relative isolate z-10"
-      style={{ minHeight: sceneMinHeight }}
+      style={{ minHeight: '100svh' }}
     >
       <motion.div
         className="sticky top-0 h-[100svh] overflow-hidden"
@@ -247,51 +168,97 @@ export function HomeBlogRailSection({
                 className="h-px w-full bg-black/8 dark:bg-white/10"
               />
             </div>
-            <motion.div
-              className={cn(
-                'relative w-full',
-                shouldUseLightweightRail
-                  ? 'scrollbar-hide overflow-x-auto'
-                  : 'overflow-hidden'
-              )}
-              style={{ y: railY, opacity: railOpacity }}
-            >
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 left-0 z-20 w-10 sm:w-16 lg:w-24"
-                style={{
-                  background:
-                    'linear-gradient(90deg, var(--page-background) 0%, transparent 100%)',
-                }}
-              />
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 right-0 z-20 w-10 sm:w-16 lg:w-24"
-                style={{
-                  background:
-                    'linear-gradient(270deg, var(--page-background) 0%, transparent 100%)',
-                }}
-              />
-
-              <motion.div className="flex w-max items-stretch" style={{ x }}>
-                <BlogRailSegment
-                  ref={segmentRef}
-                  posts={posts}
-                  dateFormatter={dateFormatter}
+            <motion.div className="relative w-full" style={{ opacity: 1 }}>
+              <div className="relative overflow-hidden">
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 left-0 z-20 w-10 sm:w-16 lg:w-24"
+                  style={{
+                    background:
+                      'linear-gradient(90deg, var(--page-background) 0%, transparent 100%)',
+                  }}
                 />
-                {shouldUseLightweightRail ? null : (
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 right-0 z-20 w-10 sm:w-16 lg:w-24"
+                  style={{
+                    background:
+                      'linear-gradient(270deg, var(--page-background) 0%, transparent 100%)',
+                  }}
+                />
+
+                <motion.div
+                  ref={railTrackRef}
+                  className={cn(
+                    'flex w-max items-stretch',
+                    !shouldReduceMotion && styles.autoRailTrack
+                  )}
+                >
                   <BlogRailSegment
                     posts={posts}
                     dateFormatter={dateFormatter}
-                    ariaHidden
                   />
-                )}
-              </motion.div>
+                  {shouldReduceMotion ? null : (
+                    <BlogRailSegment
+                      posts={posts}
+                      dateFormatter={dateFormatter}
+                      ariaHidden
+                    />
+                  )}
+                </motion.div>
+              </div>
+
+              <BlogRailSpeedControl
+                isZh={isZh}
+                value={scrollSpeed}
+                speedPercent={speedPercent}
+                onValueChange={setScrollSpeed}
+              />
             </motion.div>
           </div>
         </div>
       </motion.div>
     </section>
+  )
+}
+
+function BlogRailSpeedControl({
+  isZh,
+  value,
+  speedPercent,
+  onValueChange,
+}: {
+  isZh: boolean
+  value: number[]
+  speedPercent: number
+  onValueChange: (value: number[]) => void
+}) {
+  const label = isZh ? '滚动速度' : 'Scroll Speed'
+  const percentLabel = `${speedPercent}%`
+
+  return (
+    <div className="pointer-events-auto absolute right-8 -bottom-10 z-30 w-[min(13rem,calc(100vw-4rem))] sm:right-10 sm:w-56">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <Label
+          htmlFor="home-blog-scroll-speed"
+          className="text-[0.58rem] tracking-[0.2em] text-black/54 uppercase dark:text-white/58"
+        >
+          {label}
+        </Label>
+        <output className="text-xs font-medium text-black/76 tabular-nums dark:text-white/78">
+          {percentLabel}
+        </output>
+      </div>
+      <Slider
+        id="home-blog-scroll-speed"
+        value={value}
+        min={BLOG_RAIL_MIN_SPEED_PERCENT}
+        max={BLOG_RAIL_MAX_SPEED_PERCENT}
+        step={5}
+        aria-label={label}
+        onValueChange={onValueChange}
+      />
+    </div>
   )
 }
 
@@ -352,7 +319,7 @@ function BlogRailItem({
         'group relative flex min-h-[19rem] shrink-0 flex-col justify-between overflow-hidden px-5 py-5 transition-[background-color,transform] duration-300 sm:min-h-[21rem] sm:px-7 sm:py-6 lg:min-h-[22rem] lg:px-8',
         isFeatured
           ? 'w-[20.5rem] bg-black/[0.03] shadow-[0_28px_54px_-42px_rgba(15,23,42,0.42)] sm:w-[28rem] lg:w-[32rem] dark:bg-white/[0.04] dark:shadow-[0_28px_56px_-44px_rgba(2,6,23,0.86)]'
-          : 'w-[18.5rem] hover:bg-black/[0.025] focus-visible:bg-black/[0.025] sm:w-[24rem] lg:w-[28rem] dark:hover:bg-white/[0.03] dark:focus-visible:bg-white/[0.03]'
+          : 'w-[18.5rem] sm:w-[24rem] lg:w-[28rem]'
       )}
       style={{ borderLeft: '1px solid var(--border-color)' }}
     >
@@ -360,9 +327,7 @@ function BlogRailItem({
         aria-hidden="true"
         className={cn(
           'absolute top-0 right-5 left-5 h-px opacity-0 transition-opacity duration-300 sm:right-7 sm:left-7 lg:right-8 lg:left-8',
-          isFeatured && 'opacity-100',
-          !isFeatured &&
-            'group-hover:opacity-100 group-focus-visible:opacity-100'
+          isFeatured && 'opacity-100'
         )}
         style={{ backgroundColor: 'var(--text-primary)' }}
       />
@@ -387,7 +352,7 @@ function BlogRailItem({
       <div className={cn('space-y-4', isFeatured && 'space-y-5')}>
         <h2
           className={cn(
-            'text-balance text-black/88 transition-transform duration-300 group-hover:translate-x-1 group-focus-visible:translate-x-1 dark:text-white/90',
+            'text-balance text-black/88 dark:text-white/90',
             isFeatured
               ? 'text-[1.85rem] leading-[0.98] sm:text-[2.35rem] lg:text-[2.8rem]'
               : 'text-[1.6rem] leading-[1.04] sm:text-[2rem] lg:text-[2.35rem]'
