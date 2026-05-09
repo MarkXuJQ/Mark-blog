@@ -16,7 +16,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
   const words = countWords(post.content)
   const coverImage = post.image ? getImageUrl(post.image) : ''
   const titleClass = cn(
-    'mb-2 line-clamp-2 text-2xl font-bold leading-snug transition-colors',
+    'mb-2 line-clamp-2 text-2xl font-medium leading-snug transition-colors',
     'text-slate-900 group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400'
   )
   const summaryClass =

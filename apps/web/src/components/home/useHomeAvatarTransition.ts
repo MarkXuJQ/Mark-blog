@@ -372,6 +372,26 @@ function getPinnedKeyframeId(
   return 'radar'
 }
 
+function getActiveMeasurementKeyframeIds(
+  progress: number,
+  heroEarlyMove: number
+): AvatarKeyframeId[] {
+  if (isFirstLegActive(progress, heroEarlyMove)) {
+    return ['hero', 'blog']
+  }
+
+  if (isSecondLegActive(progress)) {
+    return ['blog', 'travel']
+  }
+
+  if (isMotionWindowActive(progress, THIRD_LEG_START, THIRD_LEG_END)) {
+    return ['travel', 'radar']
+  }
+
+  const pinnedKeyframeId = getPinnedKeyframeId(progress, heroEarlyMove)
+  return pinnedKeyframeId ? [pinnedKeyframeId] : []
+}
+
 function getSecondLegRotateValue(
   pageProgress: number,
   fromRotation: number,
@@ -558,6 +578,32 @@ function resetShellVisibility(elementMap: AvatarKeyframeElementMap) {
   }
 }
 
+function syncShellOpacity(
+  elementMap: AvatarKeyframeElementMap,
+  progress: number,
+  heroEarlyMove: number
+) {
+  for (const keyframeId of AVATAR_KEYFRAME_IDS) {
+    let elementSet = elementMap[keyframeId]
+
+    if (isElementSetStale(keyframeId, elementSet)) {
+      elementSet = queryAvatarKeyframeElements(keyframeId)
+      elementMap[keyframeId] = elementSet
+    }
+
+    const shell = elementSet.shell
+
+    if (!shell) continue
+
+    const takeoverStrength =
+      keyframeId === 'hero'
+        ? Math.max(getTakeoverStrength(progress, keyframeId), heroEarlyMove)
+        : getTakeoverStrength(progress, keyframeId)
+
+    shell.style.opacity = String(clamp(1 - takeoverStrength, 0, 1))
+  }
+}
+
 function getInterpolatedMeasurementValue(
   progress: number,
   heroEarlyMove: number,
@@ -697,6 +743,8 @@ interface MeasureAvatarKeyframesArgs {
   width: number
   height: number
   isCompact: boolean
+  keyframeIds: readonly AvatarKeyframeId[]
+  previousMeasurements: AvatarKeyframeMeasurements
   progress: number
   heroEarlyMove: number
 }
@@ -706,20 +754,22 @@ function measureAvatarKeyframes({
   width,
   height,
   isCompact,
+  keyframeIds,
+  previousMeasurements,
   progress,
   heroEarlyMove,
 }: MeasureAvatarKeyframesArgs): AvatarKeyframeMeasurements {
   const fallbackMeasurements = getFallbackMeasurements(width, height, isCompact)
 
   if (typeof document === 'undefined' || typeof window === 'undefined') {
-    return fallbackMeasurements
+    return previousMeasurements
   }
 
   const viewportCenterX = width / 2
   const viewportCenterY = height / 2
-  const nextMeasurements = { ...fallbackMeasurements }
+  const nextMeasurements = { ...previousMeasurements }
 
-  for (const keyframeId of AVATAR_KEYFRAME_IDS) {
+  for (const keyframeId of keyframeIds) {
     let elementSet = elementMap[keyframeId]
 
     if (isElementSetStale(keyframeId, elementSet)) {
@@ -797,14 +847,9 @@ function measureAvatarKeyframes({
       ),
       imageScale,
     }
-
-    const takeoverStrength =
-      keyframeId === 'hero'
-        ? Math.max(getTakeoverStrength(progress, keyframeId), heroEarlyMove)
-        : getTakeoverStrength(progress, keyframeId)
-
-    shell.style.opacity = String(clamp(1 - takeoverStrength, 0, 1))
   }
+
+  syncShellOpacity(elementMap, progress, heroEarlyMove)
 
   return nextMeasurements
 }
@@ -981,12 +1026,18 @@ export function useHomeAvatarTransition({
 
     const progress = pageProgress.get()
     const heroEarlyMove = heroEarlyMoveRef.current
+    const activeMeasurementKeyframeIds = getActiveMeasurementKeyframeIds(
+      progress,
+      heroEarlyMove
+    )
 
     keyframeMeasurementsRef.current = measureAvatarKeyframes({
       elementMap: keyframeElementsRef.current,
       width,
       height,
       isCompact,
+      keyframeIds: activeMeasurementKeyframeIds,
+      previousMeasurements: keyframeMeasurementsRef.current,
       progress,
       heroEarlyMove,
     })

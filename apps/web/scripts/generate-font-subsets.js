@@ -41,6 +41,26 @@ const headingFontOutput = path.join(
   projectRoot,
   'src/assets/fonts/NanoFullSong-Subset.woff2'
 )
+const alibabaMediumFontSource =
+  process.env.ALIBABA_MEDIUM_FONT_SOURCE ||
+  path.join(
+    projectRoot,
+    'src/assets/fonts/AlibabaPuHuiTi-3-65-Medium/AlibabaPuHuiTi-3-65-Medium.ttf'
+  )
+const alibabaMediumFontOutput = path.join(
+  projectRoot,
+  'src/assets/fonts/AlibabaPuHuiTi-3-65-Medium-Subset.woff2'
+)
+const alibabaSemiBoldFontSource =
+  process.env.ALIBABA_SEMIBOLD_FONT_SOURCE ||
+  path.join(
+    projectRoot,
+    'src/assets/fonts/AlibabaPuHuiTi-3-75-SemiBold/AlibabaPuHuiTi-3-75-SemiBold.ttf'
+  )
+const alibabaSemiBoldFontOutput = path.join(
+  projectRoot,
+  'src/assets/fonts/AlibabaPuHuiTi-3-75-SemiBold-Subset.woff2'
+)
 const pixelFontSource =
   process.env.PIXEL_FONT_SOURCE ||
   path.join(projectRoot, 'src/assets/pixel/Uranus_Pixel_11Px.ttf')
@@ -63,6 +83,7 @@ const nerdFontOutput = path.join(
 )
 const generatedDir = path.join(projectRoot, '.generated')
 const headingTextPath = path.join(generatedDir, 'font-heading-chars.txt')
+const chineseTextPath = path.join(generatedDir, 'font-chinese-chars.txt')
 const pixelTextPath = path.join(generatedDir, 'font-pixel-chars.txt')
 const nerdFontTextPath = path.join(generatedDir, 'font-nerd-chars.txt')
 
@@ -160,6 +181,10 @@ function buildHeadingText() {
   return uniqueGlyphText(combined)
 }
 
+function buildChineseText() {
+  return uniqueGlyphText(readProjectText() + safeHeadingExtras)
+}
+
 function buildNerdFontText() {
   const combined = readProjectText() + safeCodeExtras
   return uniqueGlyphText(combined)
@@ -217,9 +242,12 @@ function resolveCommandPath(command) {
 }
 
 function findPyftsubset() {
-  const probeFontSource = [headingFontSource, pixelFontSource, nerdFontSource].find(
-    (filePath) => fs.existsSync(filePath)
-  )
+  const probeFontSource = [
+    alibabaMediumFontSource,
+    headingFontSource,
+    pixelFontSource,
+    nerdFontSource,
+  ].find((filePath) => fs.existsSync(filePath))
   const candidates = [
     process.env.PYFTSUBSET,
     resolveCommandPath('pyftsubset'),
@@ -312,15 +340,19 @@ async function main() {
   ensureDir(path.dirname(headingFontOutput))
 
   const headingText = buildHeadingText()
+  const chineseText = buildChineseText()
   const pixelText = uniqueGlyphText(pixelFontText)
   const nerdFontText = buildNerdFontText()
 
   fs.writeFileSync(headingTextPath, headingText)
+  fs.writeFileSync(chineseTextPath, chineseText)
   fs.writeFileSync(pixelTextPath, pixelText)
   fs.writeFileSync(nerdFontTextPath, nerdFontText)
 
   const pyftsubsetPath = findPyftsubset()
   const hasHeadingSource = fs.existsSync(headingFontSource)
+  const hasAlibabaMediumSource = fs.existsSync(alibabaMediumFontSource)
+  const hasAlibabaSemiBoldSource = fs.existsSync(alibabaSemiBoldFontSource)
   const hasPixelSource = fs.existsSync(pixelFontSource)
   const hasNerdSource = fs.existsSync(nerdFontSource)
   const canGenerate = Boolean(pyftsubsetPath)
@@ -346,6 +378,36 @@ async function main() {
       )
     }
     verifyOutputExists(headingFontOutput)
+  }
+
+  if (canGenerate && hasAlibabaMediumSource) {
+    runSubset(pyftsubsetPath, {
+      input: alibabaMediumFontSource,
+      textFile: chineseTextPath,
+      output: alibabaMediumFontOutput,
+    })
+  } else {
+    if (!hasAlibabaMediumSource) {
+      console.warn(
+        `Alibaba PuHuiTi Medium source not found, reusing committed subset: ${alibabaMediumFontSource}`
+      )
+    }
+    verifyOutputExists(alibabaMediumFontOutput)
+  }
+
+  if (canGenerate && hasAlibabaSemiBoldSource) {
+    runSubset(pyftsubsetPath, {
+      input: alibabaSemiBoldFontSource,
+      textFile: chineseTextPath,
+      output: alibabaSemiBoldFontOutput,
+    })
+  } else {
+    if (!hasAlibabaSemiBoldSource) {
+      console.warn(
+        `Alibaba PuHuiTi SemiBold source not found, reusing committed subset: ${alibabaSemiBoldFontSource}`
+      )
+    }
+    verifyOutputExists(alibabaSemiBoldFontOutput)
   }
 
   if (canGenerate && hasPixelSource) {
@@ -379,11 +441,19 @@ async function main() {
   }
 
   const headingSize = fs.statSync(headingFontOutput).size
+  const alibabaMediumSize = fs.statSync(alibabaMediumFontOutput).size
+  const alibabaSemiBoldSize = fs.statSync(alibabaSemiBoldFontOutput).size
   const pixelSize = fs.statSync(pixelFontOutput).size
   const nerdFontSize = fs.statSync(nerdFontOutput).size
 
   console.log(
     `Generated ${path.basename(headingFontOutput)} (${formatBytes(headingSize)})`
+  )
+  console.log(
+    `Generated ${path.basename(alibabaMediumFontOutput)} (${formatBytes(alibabaMediumSize)})`
+  )
+  console.log(
+    `Generated ${path.basename(alibabaSemiBoldFontOutput)} (${formatBytes(alibabaSemiBoldSize)})`
   )
   console.log(
     `Generated ${path.basename(pixelFontOutput)} (${formatBytes(pixelSize)})`
