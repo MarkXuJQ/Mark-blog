@@ -15,7 +15,6 @@ import { Footer } from '../components/layout/Footer'
 import { requestPageTransition } from '../components/transitions/pageTransitionBus'
 import { HomeHeroSection } from '../components/home/HomeHeroSection'
 import { HomeBlogRailSection } from '../components/home/HomeBlogRailSection'
-import { HomeMeteorAvatar } from '../components/home/HomeMeteorAvatar'
 import { useHomePageSceneMotion } from '../components/home/useHomePageSceneMotion'
 import { useDeferredRender } from '../hooks/useDeferredRender'
 import {
@@ -38,7 +37,6 @@ const LazyHomeWidgetStackSection = lazy(() =>
 )
 
 const HOME_WIDGET_STACK_PLACEHOLDER_MIN_HEIGHT = '320svh'
-const HOME_WIDGET_STACK_PLACEHOLDER_MARGIN_TOP = '-160svh'
 
 function HomeWidgetStackPlaceholder({
   placeholderRef,
@@ -49,17 +47,16 @@ function HomeWidgetStackPlaceholder({
     <section
       ref={placeholderRef}
       aria-hidden="true"
-      className="relative z-20 isolate"
+      className="relative isolate z-20 snap-start"
       style={{
         minHeight: HOME_WIDGET_STACK_PLACEHOLDER_MIN_HEIGHT,
-        marginTop: HOME_WIDGET_STACK_PLACEHOLDER_MARGIN_TOP,
       }}
     >
       <div className="sticky top-0 h-[100svh] overflow-hidden">
         <div className="relative h-full">
           <div className="absolute inset-[-14px] z-0 overflow-hidden bg-[linear-gradient(180deg,#050913_0%,#060c17_24%,#07101c_56%,#091522_100%)]">
-            <div className="pointer-events-none absolute left-[-10rem] top-[8rem] h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.18)_0%,rgba(56,189,248,0.05)_34%,rgba(56,189,248,0)_72%)] blur-3xl" />
-            <div className="pointer-events-none absolute bottom-[4rem] right-[-8rem] h-[26rem] w-[26rem] rounded-full bg-[radial-gradient(circle,rgba(251,191,36,0.14)_0%,rgba(251,191,36,0.04)_30%,rgba(251,191,36,0)_74%)] blur-3xl" />
+            <div className="pointer-events-none absolute top-[8rem] left-[-10rem] h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.18)_0%,rgba(56,189,248,0.05)_34%,rgba(56,189,248,0)_72%)] blur-3xl" />
+            <div className="pointer-events-none absolute right-[-8rem] bottom-[4rem] h-[26rem] w-[26rem] rounded-full bg-[radial-gradient(circle,rgba(251,191,36,0.14)_0%,rgba(251,191,36,0.04)_30%,rgba(251,191,36,0)_74%)] blur-3xl" />
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.03)_0px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_0px,transparent_1px)] [background-size:22px_22px] opacity-30" />
           </div>
 
@@ -67,9 +64,9 @@ function HomeWidgetStackPlaceholder({
             <div className="mx-auto h-full w-full max-w-[96rem] overflow-hidden px-4 sm:px-6 lg:px-8">
               <div className="relative min-h-full pt-[14svh] pb-[20svh] sm:pt-[16svh] sm:pb-[22svh] lg:pt-[18svh] lg:pb-[24svh]">
                 <div className="relative w-full">
-                  <div className="pointer-events-none absolute left-1/2 top-1/2 h-[38rem] w-[38rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.12)_0%,rgba(56,189,248,0.05)_34%,rgba(56,189,248,0)_72%)] blur-3xl" />
-                  <div className="pointer-events-none absolute left-1/2 top-1/2 h-[min(88vw,48rem)] w-[min(88vw,48rem)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/7" />
-                  <div className="pointer-events-none absolute left-1/2 top-1/2 h-[min(68vw,36rem)] w-[min(68vw,36rem)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/5" />
+                  <div className="pointer-events-none absolute top-1/2 left-1/2 h-[38rem] w-[38rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.12)_0%,rgba(56,189,248,0.05)_34%,rgba(56,189,248,0)_72%)] blur-3xl" />
+                  <div className="pointer-events-none absolute top-1/2 left-1/2 h-[min(88vw,48rem)] w-[min(88vw,48rem)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/7" />
+                  <div className="pointer-events-none absolute top-1/2 left-1/2 h-[min(68vw,36rem)] w-[min(68vw,36rem)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/5" />
                 </div>
               </div>
             </div>
@@ -105,21 +102,23 @@ function HomeDeferredScenes({ avatarSrc }: { avatarSrc: string }) {
   } = useDeferredRender<HTMLElement>({
     rootMargin: '1600px 0px',
   })
-  const {
-    targetRef: radarPlaceholderRef,
-    shouldRender: shouldRenderRadar,
-  } = useDeferredRender<HTMLDivElement>({
-    rootMargin: '1400px 0px',
-  })
+  const { targetRef: radarPlaceholderRef, shouldRender: shouldRenderRadar } =
+    useDeferredRender<HTMLDivElement>({
+      rootMargin: '1400px 0px',
+    })
 
   return (
     <>
       {shouldRenderWidgetStack ? (
         <Suspense fallback={<HomeWidgetStackPlaceholder />}>
-          <LazyHomeWidgetStackSection avatarSrc={avatarSrc} />
+          <div className="snap-start">
+            <LazyHomeWidgetStackSection avatarSrc={avatarSrc} />
+          </div>
         </Suspense>
       ) : (
-        <HomeWidgetStackPlaceholder placeholderRef={widgetStackPlaceholderRef} />
+        <HomeWidgetStackPlaceholder
+          placeholderRef={widgetStackPlaceholderRef}
+        />
       )}
       {shouldRenderRadar ? (
         <Suspense fallback={<HomeRadarPlaceholder />}>
@@ -193,6 +192,100 @@ function useLenisPageResize(pageRef: RefObject<HTMLDivElement | null>) {
       window.removeEventListener('load', scheduleResize)
     }
   }, [lenis, pageRef])
+}
+
+const HOME_SNAP_LOCK_MS = 680
+const HOME_SNAP_SETTLE_MS = 140
+const HOME_SNAP_MAX_INDEX = 2
+const HOME_SNAP_WHEEL_THRESHOLD = 8
+
+function useHomePageSnap(prefersReducedMotion: boolean) {
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      return
+    }
+
+    let isSnapLocked = false
+    let unlockTimer = 0
+    let settleTimer = 0
+
+    const getViewportHeight = () => Math.max(1, window.innerHeight)
+    const getSnapTop = (index: number) => index * getViewportHeight()
+    const clampSnapIndex = (index: number) =>
+      Math.min(Math.max(index, 0), HOME_SNAP_MAX_INDEX)
+
+    const releaseSnapLock = () => {
+      window.clearTimeout(unlockTimer)
+      unlockTimer = window.setTimeout(() => {
+        isSnapLocked = false
+      }, HOME_SNAP_LOCK_MS)
+    }
+
+    const snapToIndex = (index: number) => {
+      isSnapLocked = true
+      window.clearTimeout(settleTimer)
+      window.scrollTo({
+        top: getSnapTop(clampSnapIndex(index)),
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      })
+      releaseSnapLock()
+    }
+
+    const handleWheel = (event: WheelEvent) => {
+      if (event.defaultPrevented || event.ctrlKey || event.metaKey) return
+      if (Math.abs(event.deltaY) < HOME_SNAP_WHEEL_THRESHOLD) return
+
+      const viewportHeight = getViewportHeight()
+      const currentStep = window.scrollY / viewportHeight
+      const direction = event.deltaY > 0 ? 1 : -1
+
+      if (direction > 0 && currentStep >= HOME_SNAP_MAX_INDEX) return
+      if (direction < 0 && currentStep <= 0) return
+      if (currentStep > HOME_SNAP_MAX_INDEX + 0.18) return
+
+      event.preventDefault()
+
+      if (isSnapLocked) return
+
+      const baseIndex =
+        direction > 0
+          ? Math.floor(currentStep + 0.08)
+          : Math.ceil(currentStep - 0.08)
+      snapToIndex(baseIndex + direction)
+    }
+
+    const settleToNearestSnapPoint = () => {
+      if (isSnapLocked) return
+
+      const viewportHeight = getViewportHeight()
+      const currentStep = window.scrollY / viewportHeight
+      if (currentStep >= HOME_SNAP_MAX_INDEX) return
+
+      const nearestIndex = clampSnapIndex(Math.round(currentStep))
+      const targetTop = getSnapTop(nearestIndex)
+      if (Math.abs(window.scrollY - targetTop) <= 3) return
+
+      snapToIndex(nearestIndex)
+    }
+
+    const handleScroll = () => {
+      window.clearTimeout(settleTimer)
+      settleTimer = window.setTimeout(
+        settleToNearestSnapPoint,
+        HOME_SNAP_SETTLE_MS
+      )
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: false })
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel)
+      window.removeEventListener('scroll', handleScroll)
+      window.clearTimeout(unlockTimer)
+      window.clearTimeout(settleTimer)
+    }
+  }, [prefersReducedMotion])
 }
 
 function useHomePageRuntime(pageRef: RefObject<HTMLDivElement | null>) {
@@ -277,28 +370,21 @@ export function Home() {
     heroSceneProgress,
     heroShadow,
     heroY,
-    pageProgress,
     prefersReducedMotion,
     widgetFilter,
     widgetOpacity,
     widgetPointerEvents,
     widgetScale,
     widgetY,
-  } = useHomePageSceneMotion({ pageRef })
+  } = useHomePageSceneMotion()
+
+  useHomePageSnap(prefersReducedMotion)
 
   return (
     <>
       <Seo jsonLd={webSiteSchema} />
 
       <div ref={pageRef}>
-        <HomeMeteorAvatar
-          avatarSrc={avatarSrc}
-          pageProgress={pageProgress}
-          heroSceneProgress={heroSceneProgress}
-          isDarkMode={isDarkMode}
-          prefersReducedMotion={prefersReducedMotion}
-        />
-
         <HomeHeroSection
           avatarSrc={avatarSrc}
           sceneProgress={heroSceneProgress}

@@ -1,4 +1,3 @@
-import { type RefObject } from 'react'
 import {
   type MotionValue,
   useReducedMotion,
@@ -6,10 +5,6 @@ import {
   useSpring,
   useTransform,
 } from 'framer-motion'
-
-interface UseHomePageSceneMotionArgs {
-  pageRef: RefObject<HTMLDivElement | null>
-}
 
 interface HomePageSceneMotion {
   heroClipPath: MotionValue<string>
@@ -25,7 +20,6 @@ interface HomePageSceneMotion {
   heroSceneProgress: MotionValue<number>
   heroShadow: MotionValue<string>
   heroY: MotionValue<number>
-  pageProgress: MotionValue<number>
   prefersReducedMotion: boolean
   widgetFilter: MotionValue<string>
   widgetOpacity: MotionValue<number>
@@ -34,21 +28,9 @@ interface HomePageSceneMotion {
   widgetY: MotionValue<number>
 }
 
-export function useHomePageSceneMotion({
-  pageRef,
-}: UseHomePageSceneMotionArgs): HomePageSceneMotion {
+export function useHomePageSceneMotion(): HomePageSceneMotion {
   const prefersReducedMotion = Boolean(useReducedMotion())
   const { scrollY } = useScroll()
-  const { scrollYProgress: pageScrollProgress } = useScroll({
-    target: pageRef,
-    offset: ['start start', 'end end'],
-  })
-
-  const pageProgress = useSpring(pageScrollProgress, {
-    stiffness: prefersReducedMotion ? 260 : 120,
-    damping: prefersReducedMotion ? 34 : 20,
-    mass: 0.36,
-  })
 
   const sceneProgressSource = useTransform(
     scrollY,
@@ -99,9 +81,7 @@ export function useHomePageSceneMotion({
   const heroFilter = useTransform(
     heroSceneProgress,
     [0, 0.18, 0.36, 0.56],
-    prefersReducedMotion
-      ? ['blur(0px)', 'blur(0px)', 'blur(1px)', 'blur(2px)']
-      : ['blur(0px)', 'blur(0px)', 'blur(6px)', 'blur(14px)']
+    ['blur(0px)', 'blur(0px)', 'blur(0px)', 'blur(0px)']
   )
   const heroContentOpacity = useTransform(
     heroSceneProgress,
@@ -162,7 +142,6 @@ export function useHomePageSceneMotion({
     heroSceneProgress,
     heroShadow,
     heroY,
-    pageProgress,
     prefersReducedMotion,
     widgetFilter,
     widgetOpacity,
