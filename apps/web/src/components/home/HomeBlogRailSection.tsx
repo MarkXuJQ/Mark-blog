@@ -18,9 +18,9 @@ interface HomeBlogRailSectionProps {
 }
 
 const BLOG_POST_LIMIT = 7
-const BLOG_RAIL_DEFAULT_SPEED_PERCENT = 100
-const BLOG_RAIL_MIN_SPEED_PERCENT = 50
-const BLOG_RAIL_MAX_SPEED_PERCENT = 180
+const BLOG_RAIL_DEFAULT_SPEED_PERCENT = 50
+const BLOG_RAIL_MIN_SPEED_PERCENT = 20
+const BLOG_RAIL_MAX_SPEED_PERCENT = 100
 
 const styles = {
   autoRailTrack:
@@ -103,11 +103,10 @@ export function HomeBlogRailSection({
   return (
     <section
       aria-label={locale === 'zh-CN' ? '首页博客流' : 'Homepage blog rail'}
-      className="relative isolate z-10"
-      style={{ minHeight: '100svh' }}
+      className="relative isolate z-10 h-[100vh] snap-start snap-always"
     >
       <motion.div
-        className="sticky top-0 h-[100svh] overflow-hidden"
+        className="sticky top-0 h-[100vh] overflow-hidden"
         style={{
           scale: sectionScale,
           y: sectionY,

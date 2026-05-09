@@ -4,7 +4,11 @@
     "date": "2026-05-09",
     "content": [
       "Optimized homepage mobile scrolling performance: layout measurements dropped by about 63%, style calculations dropped by about 66%, mobile scroll sampling holds p95 around 16.8ms, and no long tasks were observed",
-      "Updated the type system: English headings now use Montserrat, while Chinese text uses Alibaba PuHuiTi"
+      "Updated the type system: English headings now use Montserrat, while Chinese text uses Alibaba PuHuiTi",
+      "Reworked the homepage blog showcase: removed scroll-progress coupling and per-frame measurements, switched to a passive auto-scrolling rail, and added a scroll-speed control",
+      "Adjusted the homepage opening rhythm: the hero and blog showcase now snap as 100vh sections, while scrolling returns to normal for the longer sections after the third screen",
+      "Added vertical cut-reveal motion to the homepage hero title and copy, with refined text hierarchy and opacity",
+      "Fixed the third-screen travel widget sequence: the heading stays visible while the LED footprint map, life clock, and interactive map appear in order"
     ]
   },
   {

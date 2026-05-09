@@ -47,7 +47,7 @@ function HomeWidgetStackPlaceholder({
     <section
       ref={placeholderRef}
       aria-hidden="true"
-      className="relative isolate z-20"
+      className="relative isolate z-20 snap-start"
       style={{
         minHeight: HOME_WIDGET_STACK_PLACEHOLDER_MIN_HEIGHT,
       }}
@@ -111,7 +111,9 @@ function HomeDeferredScenes({ avatarSrc }: { avatarSrc: string }) {
     <>
       {shouldRenderWidgetStack ? (
         <Suspense fallback={<HomeWidgetStackPlaceholder />}>
-          <LazyHomeWidgetStackSection avatarSrc={avatarSrc} />
+          <div className="snap-start">
+            <LazyHomeWidgetStackSection avatarSrc={avatarSrc} />
+          </div>
         </Suspense>
       ) : (
         <HomeWidgetStackPlaceholder
@@ -190,6 +192,100 @@ function useLenisPageResize(pageRef: RefObject<HTMLDivElement | null>) {
       window.removeEventListener('load', scheduleResize)
     }
   }, [lenis, pageRef])
+}
+
+const HOME_SNAP_LOCK_MS = 680
+const HOME_SNAP_SETTLE_MS = 140
+const HOME_SNAP_MAX_INDEX = 2
+const HOME_SNAP_WHEEL_THRESHOLD = 8
+
+function useHomePageSnap(prefersReducedMotion: boolean) {
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      return
+    }
+
+    let isSnapLocked = false
+    let unlockTimer = 0
+    let settleTimer = 0
+
+    const getViewportHeight = () => Math.max(1, window.innerHeight)
+    const getSnapTop = (index: number) => index * getViewportHeight()
+    const clampSnapIndex = (index: number) =>
+      Math.min(Math.max(index, 0), HOME_SNAP_MAX_INDEX)
+
+    const releaseSnapLock = () => {
+      window.clearTimeout(unlockTimer)
+      unlockTimer = window.setTimeout(() => {
+        isSnapLocked = false
+      }, HOME_SNAP_LOCK_MS)
+    }
+
+    const snapToIndex = (index: number) => {
+      isSnapLocked = true
+      window.clearTimeout(settleTimer)
+      window.scrollTo({
+        top: getSnapTop(clampSnapIndex(index)),
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      })
+      releaseSnapLock()
+    }
+
+    const handleWheel = (event: WheelEvent) => {
+      if (event.defaultPrevented || event.ctrlKey || event.metaKey) return
+      if (Math.abs(event.deltaY) < HOME_SNAP_WHEEL_THRESHOLD) return
+
+      const viewportHeight = getViewportHeight()
+      const currentStep = window.scrollY / viewportHeight
+      const direction = event.deltaY > 0 ? 1 : -1
+
+      if (direction > 0 && currentStep >= HOME_SNAP_MAX_INDEX) return
+      if (direction < 0 && currentStep <= 0) return
+      if (currentStep > HOME_SNAP_MAX_INDEX + 0.18) return
+
+      event.preventDefault()
+
+      if (isSnapLocked) return
+
+      const baseIndex =
+        direction > 0
+          ? Math.floor(currentStep + 0.08)
+          : Math.ceil(currentStep - 0.08)
+      snapToIndex(baseIndex + direction)
+    }
+
+    const settleToNearestSnapPoint = () => {
+      if (isSnapLocked) return
+
+      const viewportHeight = getViewportHeight()
+      const currentStep = window.scrollY / viewportHeight
+      if (currentStep >= HOME_SNAP_MAX_INDEX) return
+
+      const nearestIndex = clampSnapIndex(Math.round(currentStep))
+      const targetTop = getSnapTop(nearestIndex)
+      if (Math.abs(window.scrollY - targetTop) <= 3) return
+
+      snapToIndex(nearestIndex)
+    }
+
+    const handleScroll = () => {
+      window.clearTimeout(settleTimer)
+      settleTimer = window.setTimeout(
+        settleToNearestSnapPoint,
+        HOME_SNAP_SETTLE_MS
+      )
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: false })
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel)
+      window.removeEventListener('scroll', handleScroll)
+      window.clearTimeout(unlockTimer)
+      window.clearTimeout(settleTimer)
+    }
+  }, [prefersReducedMotion])
 }
 
 function useHomePageRuntime(pageRef: RefObject<HTMLDivElement | null>) {
@@ -281,6 +377,8 @@ export function Home() {
     widgetScale,
     widgetY,
   } = useHomePageSceneMotion()
+
+  useHomePageSnap(prefersReducedMotion)
 
   return (
     <>

@@ -25,10 +25,10 @@ const FULL_MAP_URL = 'https://travel.markxu.icu/'
 const SHELL_REVEAL_END = 0.28
 const WORLD_PANEL_REVEAL_START = 0.08
 const WORLD_PANEL_REVEAL_END = 0.34
-const EMBED_PANEL_REVEAL_START = 0.4
-const EMBED_PANEL_REVEAL_END = 0.66
-const CLOCK_PANEL_REVEAL_START = 0.72
-const CLOCK_PANEL_REVEAL_END = 0.96
+const CLOCK_PANEL_REVEAL_START = 0.4
+const CLOCK_PANEL_REVEAL_END = 0.66
+const EMBED_PANEL_REVEAL_START = 0.72
+const EMBED_PANEL_REVEAL_END = 0.96
 
 const CHINA_CITY_TO_PROVINCE: Record<string, string> = {
   北京: '北京',
@@ -92,8 +92,8 @@ function easeOutCubic(value: number) {
 }
 
 function getLocationKeys(location: TravelLocationRecord) {
-  return [location.label, location.name].filter(
-    (value): value is string => Boolean(value?.trim())
+  return [location.label, location.name].filter((value): value is string =>
+    Boolean(value?.trim())
   )
 }
 
@@ -210,12 +210,6 @@ export function TravelFootprintPlugin({
     [0, 0.24, 1],
     [0, 0.46, 0.22]
   )
-  const shellOpacity = useTransform(pluginReveal, (value) => {
-    const eased = prefersReducedMotion
-      ? clamp01(value)
-      : easeOutCubic(clamp01(value / SHELL_REVEAL_END))
-    return prefersReducedMotion ? 1 : 0.2 + eased * 0.8
-  })
   const shellRevealY = useTransform(pluginReveal, (value) => {
     const eased = prefersReducedMotion
       ? clamp01(value)
@@ -253,7 +247,6 @@ export function TravelFootprintPlugin({
       ref={shellRef}
       className={cn(styles.shell, styles.shellStatic)}
       style={{
-        opacity: shellOpacity,
         y: shellRevealY,
         scale: shellRevealScale,
       }}
@@ -273,12 +266,12 @@ export function TravelFootprintPlugin({
         <div className={styles.introRow}>
           <div className={styles.introCopy}>
             <p className={styles.introEyebrow}>
-              {isZh ? '旅行足迹 / Travel footprint' : 'Travel footprint / Atlas'}
+              {isZh
+                ? '旅行足迹 / Travel footprint'
+                : 'Travel footprint / Atlas'}
             </p>
             <h2 className={cn('heading-display', styles.introTitle)}>
-              {isZh
-                ? '去过的地方'
-                : "Places I've Been"}
+              {isZh ? '去过的地方' : "Places I've Been"}
             </h2>
           </div>
         </div>
@@ -394,7 +387,9 @@ function TravelFootprintMapPanel({
             <MapPinned className="h-4 w-4" />
           </div>
           <div className={styles.cardCopy}>
-            <p className={styles.cardEyebrow}>{isZh ? '交互地图' : 'Live map'}</p>
+            <p className={styles.cardEyebrow}>
+              {isZh ? '交互地图' : 'Live map'}
+            </p>
             <p className={styles.cardTitle}>
               {isZh
                 ? '这里记录了我具体去过的地方。'
@@ -441,11 +436,7 @@ function TravelFootprintMapPanel({
   )
 }
 
-function TravelClockPanel({
-  style,
-}: {
-  style?: MotionStyle
-}) {
+function TravelClockPanel({ style }: { style?: MotionStyle }) {
   return (
     <motion.div className={styles.clockCell} style={style}>
       <LifeSinceClock bare className={styles.clockPanel} />
@@ -453,13 +444,7 @@ function TravelClockPanel({
   )
 }
 
-function SummaryPill({
-  value,
-  label,
-}: {
-  value: number
-  label: string
-}) {
+function SummaryPill({ value, label }: { value: number; label: string }) {
   return (
     <div className={styles.summaryPill}>
       <span className={styles.summaryPillValue}>{value}</span>
@@ -472,10 +457,8 @@ const styles = {
   shell: 'relative mx-auto w-full max-w-[78rem] overflow-visible',
   shellStatic: 'cursor-default',
   introStage: 'relative overflow-visible',
-  introRow:
-    'relative z-[3] pt-0 sm:pt-1 lg:pt-2',
-  introCopy:
-    'relative z-[3] max-w-3xl',
+  introRow: 'relative z-[3] pt-0 sm:pt-1 lg:pt-2',
+  introCopy: 'relative z-[3] max-w-3xl',
   introEyebrow:
     'font-[var(--font-pixel)] text-[0.72rem] uppercase tracking-[0.28em] text-cyan-100/58 drop-shadow-[0_10px_24px_rgba(5,9,19,0.45)]',
   introTitle:
@@ -486,7 +469,8 @@ const styles = {
     'absolute bottom-[6%] right-[4%] z-[3] flex flex-wrap items-baseline justify-end gap-x-5 gap-y-2 sm:bottom-[7%] sm:right-[5%] sm:gap-x-6 lg:bottom-[8%] lg:right-[6%]',
   summaryPill:
     'inline-flex items-baseline gap-2.5 border-l border-white/10 pl-4 text-white first:border-l-0 first:pl-0',
-  summaryPillValue: 'text-[1.15rem] font-semibold leading-none tabular-nums text-white/86',
+  summaryPillValue:
+    'text-[1.15rem] font-semibold leading-none tabular-nums text-white/86',
   summaryPillLabel:
     'text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-white/40',
   ambientOrbit:
@@ -504,8 +488,7 @@ const styles = {
   panel:
     'relative min-w-0 w-full overflow-hidden rounded-[30px] border border-white/9 bg-[linear-gradient(180deg,rgba(10,16,22,0.92)_0%,rgba(7,12,18,0.97)_100%)] p-4 text-white shadow-[0_34px_110px_-56px_rgba(2,6,23,0.86)] ring-1 ring-white/[0.025] will-change-transform sm:p-5',
   mapPanel: 'relative z-[2] w-full self-start',
-  embedPanel:
-    'z-[4] self-start lg:col-start-2 lg:row-start-1 lg:w-full',
+  embedPanel: 'z-[4] self-start lg:col-start-2 lg:row-start-1 lg:w-full',
   clockCell:
     'relative z-[3] w-full self-start will-change-transform lg:col-start-1 lg:row-start-1 lg:max-w-[28rem] xl:max-w-[30rem]',
   clockPanel: 'h-full w-full overflow-visible',

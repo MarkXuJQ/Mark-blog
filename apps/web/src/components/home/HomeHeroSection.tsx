@@ -1,5 +1,6 @@
 import { motion, type MotionValue } from 'framer-motion'
-import { useTranslation, Trans } from 'react-i18next'
+import { useTranslation } from 'react-i18next'
+import { VerticalCutReveal } from '../ui/vertical-cut-reveal'
 import { cn } from '../../utils/cn'
 import { getImageUrl } from '../../utils/image'
 import { HomeHeroAvatarScene } from './HomeHeroAvatarScene'
@@ -99,6 +100,18 @@ function HomeHeroBackground({ isDarkMode }: { isDarkMode: boolean }) {
   )
 }
 
+const HERO_TITLE_REVEAL_TRANSITION = {
+  type: 'spring',
+  stiffness: 200,
+  damping: 21,
+} as const
+
+const HERO_COPY_REVEAL_TRANSITION = {
+  type: 'spring',
+  stiffness: 210,
+  damping: 26,
+} as const
+
 export function HomeHeroSection({
   avatarSrc,
   sceneProgress,
@@ -131,6 +144,12 @@ export function HomeHeroSection({
     ? styles.contentContainerDark
     : styles.contentContainerLight
   const dotClass = isDarkMode ? styles.dotDark : styles.dotLight
+  const titlePrefix = isZh ? '欢迎来到' : 'Welcome to '
+  const titleSuffix = isZh ? '的自留地' : "'s Backyard"
+  const introText = `${t('home.intro')} 🌱`
+  const descriptionText = `${t('home.description')} ✨`
+  const titleStagger = prefersReducedMotion ? 0 : 0.018
+  const copyStagger = prefersReducedMotion ? 0 : 0.035
 
   return (
     <motion.section
@@ -182,41 +201,86 @@ export function HomeHeroSection({
                   'no-heading-letter-spacing'
                 )}
               >
-                {isZh ? (
-                  <Trans
-                    i18nKey="home.title"
-                    components={[
-                      <span
-                        key="0"
-                        className={styles.highlightText}
-                        role="link"
-                        tabIndex={0}
-                        onClick={handleNameClick}
-                        onKeyDown={handleNameKeyDown}
-                      />,
-                      <br key="1" />,
-                    ]}
-                  />
-                ) : (
-                  <Trans
-                    i18nKey="home.title"
-                    components={[
-                      <span
-                        key="0"
-                        className={styles.highlightText}
-                        role="link"
-                        tabIndex={0}
-                        onClick={handleNameClick}
-                        onKeyDown={handleNameKeyDown}
-                      />,
-                    ]}
-                  />
-                )}
+                <span className={styles.titleLine}>
+                  <VerticalCutReveal
+                    splitBy="characters"
+                    staggerDuration={titleStagger}
+                    staggerFrom="first"
+                    transition={HERO_TITLE_REVEAL_TRANSITION}
+                    containerClassName="inline-flex"
+                  >
+                    {titlePrefix}
+                  </VerticalCutReveal>
+                  {isZh ? <br /> : null}
+                  <span className={isZh ? styles.titleTailLine : undefined}>
+                    <span
+                      className={styles.highlightText}
+                      role="link"
+                      tabIndex={0}
+                      onClick={handleNameClick}
+                      onKeyDown={handleNameKeyDown}
+                    >
+                      <VerticalCutReveal
+                        splitBy="characters"
+                        staggerDuration={titleStagger}
+                        staggerFrom="center"
+                        transition={{
+                          ...HERO_TITLE_REVEAL_TRANSITION,
+                          delay: prefersReducedMotion ? 0 : 0.22,
+                        }}
+                        containerClassName="inline-flex"
+                        elementLevelClassName={styles.highlightGlyph}
+                      >
+                        Mark
+                      </VerticalCutReveal>
+                    </span>
+                    <VerticalCutReveal
+                      splitBy="characters"
+                      staggerDuration={titleStagger}
+                      staggerFrom="last"
+                      reverse
+                      transition={{
+                        ...HERO_TITLE_REVEAL_TRANSITION,
+                        delay: prefersReducedMotion ? 0 : 0.34,
+                      }}
+                      containerClassName="inline-flex"
+                    >
+                      {titleSuffix}
+                    </VerticalCutReveal>
+                  </span>
+                </span>
               </h1>
 
               <div className={cn(styles.contentContainer, contentClass)}>
-                <p>{t('home.intro')}</p>
-                <p>{t('home.description')}</p>
+                <p>
+                  <VerticalCutReveal
+                    splitBy="words"
+                    staggerDuration={copyStagger}
+                    staggerFrom="first"
+                    transition={{
+                      ...HERO_COPY_REVEAL_TRANSITION,
+                      delay: prefersReducedMotion ? 0 : 0.52,
+                    }}
+                    containerClassName="inline-flex"
+                  >
+                    {introText}
+                  </VerticalCutReveal>
+                </p>
+                <p>
+                  <VerticalCutReveal
+                    splitBy="words"
+                    staggerDuration={copyStagger}
+                    staggerFrom="first"
+                    reverse
+                    transition={{
+                      ...HERO_COPY_REVEAL_TRANSITION,
+                      delay: prefersReducedMotion ? 0 : 0.68,
+                    }}
+                    containerClassName="inline-flex"
+                  >
+                    {descriptionText}
+                  </VerticalCutReveal>
+                </p>
               </div>
 
               <div className={styles.heroFooter}>
@@ -246,9 +310,9 @@ export function HomeHeroSection({
 
 const styles = {
   heroLayer:
-    'relative overflow-hidden origin-top will-change-transform [transform:translateZ(0)]',
+    'relative h-[100vh] snap-start snap-always overflow-hidden origin-top will-change-transform [transform:translateZ(0)]',
   heroSection:
-    'relative min-h-[100vh] w-full overflow-hidden bg-[var(--page-background)] transition-colors duration-300',
+    'relative h-[100vh] w-full overflow-hidden bg-[var(--page-background)] transition-colors duration-300',
   heroMedia: 'absolute inset-0',
   heroImage: 'h-full w-full object-cover blur-[10px] scale-[1.08]',
   heroImageDay: 'brightness-[1.02] saturate-[1.01]',
@@ -261,7 +325,7 @@ const styles = {
   heroAuraNight:
     'bg-[radial-gradient(circle_at_18%_28%,rgba(56,189,248,0.18),rgba(56,189,248,0)_32%),radial-gradient(circle_at_78%_24%,rgba(251,191,36,0.16),rgba(251,191,36,0)_28%),radial-gradient(circle_at_52%_78%,rgba(255,255,255,0.1),rgba(255,255,255,0)_36%)]',
   heroContent:
-    'relative z-10 flex min-h-[100vh] items-center px-5 pt-28 pb-10 sm:px-8 sm:pt-32 lg:px-10',
+    'relative z-10 flex h-[100vh] items-center px-5 pt-28 pb-10 sm:px-8 sm:pt-32 lg:px-10',
   heroContentLight: 'text-black',
   heroContentDark: 'text-white',
   heroContentInner:
@@ -273,16 +337,20 @@ const styles = {
   title: cn(
     'mt-2 max-w-4xl text-center text-4xl font-semibold tracking-tight sm:text-6xl lg:mt-6 lg:text-left lg:text-7xl'
   ),
+  titleLine: 'inline-block',
+  titleTailLine: 'inline-flex items-baseline justify-center lg:justify-start',
   titleLight: 'text-black',
   titleDark: 'text-white drop-shadow-[0_10px_30px_rgba(15,23,42,0.35)]',
   highlightText: cn(
-    'inline-block cursor-pointer bg-gradient-to-r from-orange-500 via-orange-500 to-red-500 bg-clip-text text-transparent',
+    'inline-flex cursor-pointer items-baseline',
     'transition-transform duration-300 hover:-translate-y-1 hover:scale-105 hover:rotate-3'
   ),
+  highlightGlyph:
+    'bg-gradient-to-r from-orange-500 via-orange-500 to-red-500 bg-clip-text text-transparent',
   contentContainer:
     'mx-auto mt-6 max-w-2xl space-y-5 px-2 text-base font-medium leading-relaxed sm:text-lg lg:mx-0 lg:px-0',
-  contentContainerLight: 'text-black',
-  contentContainerDark: 'text-white/82',
+  contentContainerLight: 'text-black/80',
+  contentContainerDark: 'text-white/80',
   heroActions:
     'mt-7 flex flex-wrap items-center justify-center gap-3 lg:justify-start',
   primaryAction:
