@@ -1,5 +1,13 @@
 [
   {
+    "id": "qf-20260509",
+    "date": "2026-05-09",
+    "content": [
+      "Optimized homepage mobile scrolling performance: layout measurements dropped by about 63%, style calculations dropped by about 66%, mobile scroll sampling holds p95 around 16.8ms, and no long tasks were observed",
+      "Updated the type system: English headings now use Montserrat, while Chinese text uses Alibaba PuHuiTi"
+    ]
+  },
+  {
     "id": "qf-20260412",
     "date": "2026-04-12",
     "content": [

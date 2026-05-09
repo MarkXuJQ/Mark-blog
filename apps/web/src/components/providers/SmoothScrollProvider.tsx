@@ -20,7 +20,9 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
         autoRaf: true,
         autoResize: true,
         smoothWheel: !prefersReducedMotion,
-        syncTouch: !prefersReducedMotion,
+        // Native touch scrolling is more resilient on mobile when the homepage
+        // already has several scroll-linked motion scenes running.
+        syncTouch: false,
         lerp: prefersReducedMotion ? 0.18 : 0.085,
         duration: prefersReducedMotion ? 0.9 : 1.15,
         wheelMultiplier: 0.92,

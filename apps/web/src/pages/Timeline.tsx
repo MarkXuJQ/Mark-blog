@@ -354,7 +354,7 @@ const styles = {
     'inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400',
   expandIcon: 'ml-auto text-slate-400 transition-transform duration-200',
   eventTitle:
-    'mt-1 text-2xl font-bold text-slate-900 transition-colors hover:text-blue-600 dark:text-slate-100 dark:hover:text-blue-400',
+    'mt-1 text-2xl font-medium text-slate-900 transition-colors hover:text-blue-600 dark:text-slate-100 dark:hover:text-blue-400',
   eventDescription: 'mt-2 text-slate-600 dark:text-slate-400',
 
   // Expanded Content

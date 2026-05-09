@@ -229,7 +229,7 @@ export function BlogPost() {
                     ))}
                   </div>
 
-                  <h1 className="mt-4 max-w-3xl text-3xl font-black tracking-tight text-white drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)] sm:text-4xl md:text-5xl">
+                  <h1 className="mt-4 max-w-3xl text-3xl font-medium tracking-tight text-white drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)] sm:text-4xl md:text-5xl">
                     {post.title}
                   </h1>
 
@@ -371,7 +371,7 @@ const styles = {
     'prose-a:no-underline hover:prose-a:underline'
   ),
   title:
-    'mb-4 text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl dark:text-slate-100',
+    'mb-4 text-3xl font-medium tracking-tight text-slate-900 md:text-4xl dark:text-slate-100',
   metaContainer:
     'mb-4 flex flex-wrap items-center gap-4 text-sm text-slate-500 dark:text-slate-400',
   statsContainer:

@@ -47,6 +47,7 @@
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
+    "Alibaba PuHuiTi 3",
     "PingFang SC",
     "Hiragino Sans GB",
     "Microsoft YaHei UI",
@@ -67,9 +68,9 @@
   --border-color: rgba(15, 23, 42, 0.08);
   --radius-md: 0.75rem;
   --shadow-card: 0 1px 2px rgba(2, 6, 23, 0.05), 0 8px 24px rgba(2, 6, 23, 0.06);
-  --font-heading: "Nano Full Song", "Songti SC", "STSong", serif;
+  --font-heading: "Montserrat", "Alibaba PuHuiTi 3", "Nano Full Song", "Songti SC", "STSong", serif;
   --font-pixel: "Uranus Pixel", "JetBrains Mono Nerd Web", "JetBrains Mono", monospace;
-  --letter-spacing-heading: 0.06em;
+  --letter-spacing-heading: 0;
 }
 
 html {
@@ -107,6 +108,14 @@ h1, h2, h3 {
 .heading-display {
   font-family: var(--font-heading);
   letter-spacing: var(--letter-spacing-heading) !important;
+}
+.heading-brand,
+.heading-display,
+h1,
+h2,
+h3 {
+  font-optical-sizing: auto;
+  font-style: normal;
 }
 .no-heading-letter-spacing {
   letter-spacing: normal !important;
@@ -488,6 +497,24 @@ i {
   border-radius: inherit;
   pointer-events: none;
   mix-blend-mode: normal;
+}
+
+@font-face {
+  font-family: "Alibaba PuHuiTi 3";
+  src: url("../fonts/AlibabaPuHuiTi-3-65-Medium-Subset.woff2") format("woff2");
+  font-weight: 400 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+2E80-2EFF,U+3000-303F,U+3400-4DBF,U+4E00-9FFF,U+F900-FAFF,U+FE10-FE1F,U+FE30-FE4F,U+FF00-FFEF;
+}
+
+@font-face {
+  font-family: "Alibaba PuHuiTi 3";
+  src: url("../fonts/AlibabaPuHuiTi-3-75-SemiBold-Subset.woff2") format("woff2");
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+2E80-2EFF,U+3000-303F,U+3400-4DBF,U+4E00-9FFF,U+F900-FAFF,U+FE10-FE1F,U+FE30-FE4F,U+FF00-FFEF;
 }
 
 @font-face {
