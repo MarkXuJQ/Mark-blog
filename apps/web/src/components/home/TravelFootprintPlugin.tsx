@@ -13,6 +13,7 @@ import { ExternalLink, MapPinned } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '../../utils/cn'
 import { useDeferredRender } from '../../hooks/useDeferredRender'
+import { useIsCoarsePointer } from '../../hooks/useIsCoarsePointer'
 import markTravelRecord from '@content/travel/records/mark.json'
 import worldFootprintBaseSvg from '../../assets/travel/world-footprint-base.svg'
 import worldFootprintHighlightSvg from '../../assets/travel/world-footprint-highlight.svg'
@@ -181,6 +182,7 @@ export function TravelFootprintPlugin({
   const { i18n } = useTranslation()
   const isZh = i18n.language?.startsWith('zh')
   const prefersReducedMotion = useReducedMotion()
+  const isCoarsePointer = useIsCoarsePointer()
   const shellRef = useRef<HTMLDivElement | null>(null)
   const fallbackRevealProgress = useMotionValue(1)
   const pluginReveal = revealProgress ?? fallbackRevealProgress
@@ -188,11 +190,15 @@ export function TravelFootprintPlugin({
     target: shellRef,
     offset: ['start end', 'end start'],
   })
-  const shellProgress = useSpring(scrollYProgress, {
+  const smoothedShellProgress = useSpring(scrollYProgress, {
     stiffness: prefersReducedMotion ? 220 : 110,
     damping: prefersReducedMotion ? 34 : 24,
     mass: 0.4,
   })
+  const shellProgress =
+    prefersReducedMotion || isCoarsePointer
+      ? scrollYProgress
+      : smoothedShellProgress
 
   const ambientScale = useTransform(
     shellProgress,
@@ -373,7 +379,7 @@ function TravelFootprintMapPanel({
   style?: MotionStyle
 }) {
   const { targetRef, shouldRender } = useDeferredRender<HTMLDivElement>({
-    rootMargin: '560px 0px',
+    rootMargin: '320px 0px',
   })
 
   return (

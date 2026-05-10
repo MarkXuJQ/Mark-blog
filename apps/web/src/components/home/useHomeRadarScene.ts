@@ -6,11 +6,16 @@ import {
   useState,
 } from 'react'
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
+import { useIsCoarsePointer } from '../../hooks/useIsCoarsePointer'
 
-const RADAR_VIRTUAL_SCROLL_FACTOR = 0.96
-const RADAR_VIRTUAL_SCROLL_MIN = 760
-const RADAR_VIRTUAL_SCROLL_MAX = 1040
+const RADAR_VIRTUAL_SCROLL_FACTOR = 1.08
+const RADAR_VIRTUAL_SCROLL_MIN = 860
+const RADAR_VIRTUAL_SCROLL_MAX = 1140
+const RADAR_VIRTUAL_SCROLL_FACTOR_COARSE = 0.68
+const RADAR_VIRTUAL_SCROLL_MIN_COARSE = 420
+const RADAR_VIRTUAL_SCROLL_MAX_COARSE = 720
 const RADAR_LOCK_TOLERANCE_PX = 36
+const RADAR_LOCK_TOLERANCE_PX_COARSE = 96
 const RADAR_RELEASE_NUDGE_PX = 28
 
 const HORIZONTAL_LINE_START = 0.12
@@ -140,6 +145,7 @@ export function getRadarNodeAngle(node: { left: string; top: string }) {
 
 export function useHomeRadarScene() {
   const reduceMotion = usePrefersReducedMotion()
+  const isCoarsePointer = useIsCoarsePointer()
   const lenis = useLenis()
   const sectionRef = useRef<HTMLElement | null>(null)
   const sceneProgressRef = useRef(reduceMotion ? 1 : 0)
@@ -154,6 +160,7 @@ export function useHomeRadarScene() {
   const autoExplorationScrollBoostRef = useRef(0)
   const beamLoopFrameRef = useRef<number | null>(null)
   const signalHoverExitTimeoutRef = useRef<number | null>(null)
+  const lastWindowScrollYRef = useRef(0)
   const [viewportHeight, setViewportHeight] = useState(0)
   const [sceneProgress, setSceneProgress] = useState(reduceMotion ? 1 : 0)
   const [autoExplorationProgress, setAutoExplorationProgress] = useState(
@@ -176,6 +183,7 @@ export function useHomeRadarScene() {
       setViewportHeight((current) =>
         current === nextHeight ? current : nextHeight
       )
+      lastWindowScrollYRef.current = window.scrollY
     }
 
     updateViewportHeight()
@@ -188,9 +196,15 @@ export function useHomeRadarScene() {
 
   const virtualScrollDistance = getBoundedScrollDistance(
     viewportHeight,
-    RADAR_VIRTUAL_SCROLL_FACTOR,
-    RADAR_VIRTUAL_SCROLL_MIN,
-    RADAR_VIRTUAL_SCROLL_MAX
+    isCoarsePointer
+      ? RADAR_VIRTUAL_SCROLL_FACTOR_COARSE
+      : RADAR_VIRTUAL_SCROLL_FACTOR,
+    isCoarsePointer
+      ? RADAR_VIRTUAL_SCROLL_MIN_COARSE
+      : RADAR_VIRTUAL_SCROLL_MIN,
+    isCoarsePointer
+      ? RADAR_VIRTUAL_SCROLL_MAX_COARSE
+      : RADAR_VIRTUAL_SCROLL_MAX
   )
 
   const clearAutoExplorationTimers = useCallback(() => {
@@ -388,6 +402,38 @@ export function useHomeRadarScene() {
     })
   }, [lenis, reduceMotion])
 
+  const maybeLockSceneFromViewport = useCallback(
+    (direction: 1 | -1) => {
+      if (reduceMotion || isLockedRef.current || isAutoExplorationCompleteRef.current) {
+        return
+      }
+
+      const sectionNode = sectionRef.current
+      if (!sectionNode) return
+
+      const tolerance = isCoarsePointer
+        ? RADAR_LOCK_TOLERANCE_PX_COARSE
+        : RADAR_LOCK_TOLERANCE_PX
+      const rect = sectionNode.getBoundingClientRect()
+      const nearTop =
+        rect.top <= tolerance &&
+        rect.top >= -(isCoarsePointer ? viewportHeight * 0.18 : tolerance)
+      const spansViewport = rect.bottom >= viewportHeight * 0.58
+
+      if (!nearTop || !spansViewport) return
+
+      if (
+        direction > 0 &&
+        sceneProgressRef.current < AUTO_EXPLORATION_TRIGGER_PROGRESS
+      ) {
+        lockScene()
+      } else if (direction < 0 && sceneProgressRef.current > 0.001) {
+        lockScene()
+      }
+    },
+    [isCoarsePointer, lockScene, reduceMotion, viewportHeight]
+  )
+
   useEffect(() => {
     if (reduceMotion) return
 
@@ -455,28 +501,35 @@ export function useHomeRadarScene() {
       if (isLockedRef.current) return
       if (isAutoExplorationCompleteRef.current) return
 
-      const sectionNode = sectionRef.current
-      if (!sectionNode) return
-
-      const rect = sectionNode.getBoundingClientRect()
-      const nearTop =
-        rect.top <= RADAR_LOCK_TOLERANCE_PX &&
-        rect.top >= -RADAR_LOCK_TOLERANCE_PX
-
-      if (!nearTop) return
-
-      if (
-        instance.direction > 0 &&
-        sceneProgressRef.current < AUTO_EXPLORATION_TRIGGER_PROGRESS
-      ) {
-        lockScene()
-      } else if (instance.direction < 0 && sceneProgressRef.current > 0.001) {
-        lockScene()
-      }
+      if (instance.direction === 0) return
+      maybeLockSceneFromViewport(instance.direction > 0 ? 1 : -1)
     },
-    [lockScene, reduceMotion],
+    [maybeLockSceneFromViewport, reduceMotion],
     0
   )
+
+  useEffect(() => {
+    if (reduceMotion) return
+
+    lastWindowScrollYRef.current = window.scrollY
+
+    const onScroll = () => {
+      if (unlockDirectionRef.current !== 0 || isLockedRef.current) {
+        lastWindowScrollYRef.current = window.scrollY
+        return
+      }
+
+      const nextScrollY = window.scrollY
+      const delta = nextScrollY - lastWindowScrollYRef.current
+      lastWindowScrollYRef.current = nextScrollY
+
+      if (Math.abs(delta) < 1) return
+      maybeLockSceneFromViewport(delta > 0 ? 1 : -1)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [maybeLockSceneFromViewport, reduceMotion])
 
   const progress = reduceMotion ? 1 : sceneProgress
 

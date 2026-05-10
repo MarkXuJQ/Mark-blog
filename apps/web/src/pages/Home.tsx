@@ -16,7 +16,9 @@ import { requestPageTransition } from '../components/transitions/pageTransitionB
 import { HomeHeroSection } from '../components/home/HomeHeroSection'
 import { HomeBlogRailSection } from '../components/home/HomeBlogRailSection'
 import { useHomePageSceneMotion } from '../components/home/useHomePageSceneMotion'
+import { useHomeSectionPager } from '../components/home/useHomeSectionPager'
 import { useDeferredRender } from '../hooks/useDeferredRender'
+import { useIsCoarsePointer } from '../hooks/useIsCoarsePointer'
 import {
   DEFAULT_DESCRIPTION,
   getSiteUrl,
@@ -37,7 +39,6 @@ const LazyHomeWidgetStackSection = lazy(() =>
 )
 
 const HOME_WIDGET_STACK_PLACEHOLDER_MIN_HEIGHT = '320svh'
-
 function HomeWidgetStackPlaceholder({
   placeholderRef,
 }: {
@@ -47,6 +48,7 @@ function HomeWidgetStackPlaceholder({
     <section
       ref={placeholderRef}
       aria-hidden="true"
+      data-home-snap="widget"
       className="relative isolate z-20 snap-start"
       style={{
         minHeight: HOME_WIDGET_STACK_PLACEHOLDER_MIN_HEIGHT,
@@ -86,6 +88,7 @@ function HomeRadarPlaceholder({
     <div
       ref={placeholderRef}
       aria-hidden="true"
+      data-home-snap="radar"
       className="relative isolate z-[30] min-h-[100svh] overflow-hidden"
       style={{ backgroundColor: 'var(--page-background)' }}
     >
@@ -95,16 +98,22 @@ function HomeRadarPlaceholder({
   )
 }
 
-function HomeDeferredScenes({ avatarSrc }: { avatarSrc: string }) {
+function HomeDeferredScenes({
+  avatarSrc,
+  isCoarsePointer,
+}: {
+  avatarSrc: string
+  isCoarsePointer: boolean
+}) {
   const {
     targetRef: widgetStackPlaceholderRef,
     shouldRender: shouldRenderWidgetStack,
   } = useDeferredRender<HTMLElement>({
-    rootMargin: '1600px 0px',
+    rootMargin: isCoarsePointer ? '520px 0px' : '1600px 0px',
   })
   const { targetRef: radarPlaceholderRef, shouldRender: shouldRenderRadar } =
     useDeferredRender<HTMLDivElement>({
-      rootMargin: '1400px 0px',
+      rootMargin: isCoarsePointer ? '420px 0px' : '1400px 0px',
     })
 
   return (
@@ -194,100 +203,6 @@ function useLenisPageResize(pageRef: RefObject<HTMLDivElement | null>) {
   }, [lenis, pageRef])
 }
 
-const HOME_SNAP_LOCK_MS = 680
-const HOME_SNAP_SETTLE_MS = 140
-const HOME_SNAP_MAX_INDEX = 2
-const HOME_SNAP_WHEEL_THRESHOLD = 8
-
-function useHomePageSnap(prefersReducedMotion: boolean) {
-  useEffect(() => {
-    if (typeof window === 'undefined' || typeof document === 'undefined') {
-      return
-    }
-
-    let isSnapLocked = false
-    let unlockTimer = 0
-    let settleTimer = 0
-
-    const getViewportHeight = () => Math.max(1, window.innerHeight)
-    const getSnapTop = (index: number) => index * getViewportHeight()
-    const clampSnapIndex = (index: number) =>
-      Math.min(Math.max(index, 0), HOME_SNAP_MAX_INDEX)
-
-    const releaseSnapLock = () => {
-      window.clearTimeout(unlockTimer)
-      unlockTimer = window.setTimeout(() => {
-        isSnapLocked = false
-      }, HOME_SNAP_LOCK_MS)
-    }
-
-    const snapToIndex = (index: number) => {
-      isSnapLocked = true
-      window.clearTimeout(settleTimer)
-      window.scrollTo({
-        top: getSnapTop(clampSnapIndex(index)),
-        behavior: prefersReducedMotion ? 'auto' : 'smooth',
-      })
-      releaseSnapLock()
-    }
-
-    const handleWheel = (event: WheelEvent) => {
-      if (event.defaultPrevented || event.ctrlKey || event.metaKey) return
-      if (Math.abs(event.deltaY) < HOME_SNAP_WHEEL_THRESHOLD) return
-
-      const viewportHeight = getViewportHeight()
-      const currentStep = window.scrollY / viewportHeight
-      const direction = event.deltaY > 0 ? 1 : -1
-
-      if (direction > 0 && currentStep >= HOME_SNAP_MAX_INDEX) return
-      if (direction < 0 && currentStep <= 0) return
-      if (currentStep > HOME_SNAP_MAX_INDEX + 0.18) return
-
-      event.preventDefault()
-
-      if (isSnapLocked) return
-
-      const baseIndex =
-        direction > 0
-          ? Math.floor(currentStep + 0.08)
-          : Math.ceil(currentStep - 0.08)
-      snapToIndex(baseIndex + direction)
-    }
-
-    const settleToNearestSnapPoint = () => {
-      if (isSnapLocked) return
-
-      const viewportHeight = getViewportHeight()
-      const currentStep = window.scrollY / viewportHeight
-      if (currentStep >= HOME_SNAP_MAX_INDEX) return
-
-      const nearestIndex = clampSnapIndex(Math.round(currentStep))
-      const targetTop = getSnapTop(nearestIndex)
-      if (Math.abs(window.scrollY - targetTop) <= 3) return
-
-      snapToIndex(nearestIndex)
-    }
-
-    const handleScroll = () => {
-      window.clearTimeout(settleTimer)
-      settleTimer = window.setTimeout(
-        settleToNearestSnapPoint,
-        HOME_SNAP_SETTLE_MS
-      )
-    }
-
-    window.addEventListener('wheel', handleWheel, { passive: false })
-    window.addEventListener('scroll', handleScroll, { passive: true })
-
-    return () => {
-      window.removeEventListener('wheel', handleWheel)
-      window.removeEventListener('scroll', handleScroll)
-      window.clearTimeout(unlockTimer)
-      window.clearTimeout(settleTimer)
-    }
-  }, [prefersReducedMotion])
-}
-
 function useHomePageRuntime(pageRef: RefObject<HTMLDivElement | null>) {
   const isDarkMode = useIsDarkMode()
   const nameClickCountRef = useRef(0)
@@ -330,6 +245,7 @@ function useHomePageRuntime(pageRef: RefObject<HTMLDivElement | null>) {
 export function Home() {
   const { t, i18n } = useTranslation()
   const pageRef = useRef<HTMLDivElement | null>(null)
+  const isCoarsePointer = useIsCoarsePointer()
   const avatarSrc = getImageUrl('/images/IMG_1766.JPG')
   const siteUrl = getSiteUrl()
   const isZh = i18n.language?.startsWith('zh')
@@ -356,29 +272,13 @@ export function Home() {
     },
   }
 
-  const {
-    heroClipPath,
-    heroContentOpacity,
-    heroContentY,
-    heroFilter,
-    heroMediaScale,
-    heroMediaY,
-    heroOpacity,
-    heroPointerEvents,
-    heroRadius,
-    heroScale,
-    heroSceneProgress,
-    heroShadow,
-    heroY,
-    prefersReducedMotion,
-    widgetFilter,
-    widgetOpacity,
-    widgetPointerEvents,
-    widgetScale,
-    widgetY,
-  } = useHomePageSceneMotion()
+  const { hero, blog, prefersReducedMotion } =
+    useHomePageSceneMotion(isCoarsePointer)
 
-  useHomePageSnap(prefersReducedMotion)
+  useHomeSectionPager({
+    enabled: !isCoarsePointer,
+    prefersReducedMotion,
+  })
 
   return (
     <>
@@ -387,36 +287,35 @@ export function Home() {
       <div ref={pageRef}>
         <HomeHeroSection
           avatarSrc={avatarSrc}
-          sceneProgress={heroSceneProgress}
+          sceneProgress={hero.sceneProgress}
           isDarkMode={isDarkMode}
           prefersReducedMotion={prefersReducedMotion}
           isZh={isZh}
-          heroScale={heroScale}
-          heroOpacity={heroOpacity}
-          heroY={heroY}
-          heroRadius={heroRadius}
-          heroClipPath={heroClipPath}
-          heroShadow={heroShadow}
-          heroFilter={heroFilter}
-          heroPointerEvents={heroPointerEvents}
-          heroMediaScale={heroMediaScale}
-          heroMediaY={heroMediaY}
-          heroContentOpacity={heroContentOpacity}
-          heroContentY={heroContentY}
+          heroScale={hero.scale}
+          heroOpacity={hero.opacity}
+          heroY={hero.y}
+          heroShadow={hero.shadow}
+          heroPointerEvents={hero.pointerEvents}
+          heroMediaScale={hero.mediaScale}
+          heroMediaY={hero.mediaY}
+          heroContentOpacity={hero.contentOpacity}
+          heroContentY={hero.contentY}
           handleNameClick={handleNameClick}
           handleNameKeyDown={handleNameKeyDown}
         />
 
         <HomeBlogRailSection
           avatarSrc={avatarSrc}
-          sectionScale={widgetScale}
-          sectionY={widgetY}
-          sectionOpacity={widgetOpacity}
-          sectionFilter={widgetFilter}
-          sectionPointerEvents={widgetPointerEvents}
+          sectionScale={blog.scale}
+          sectionY={blog.y}
+          sectionOpacity={blog.opacity}
+          sectionPointerEvents={blog.pointerEvents}
         />
 
-        <HomeDeferredScenes avatarSrc={avatarSrc} />
+        <HomeDeferredScenes
+          avatarSrc={avatarSrc}
+          isCoarsePointer={isCoarsePointer}
+        />
 
         <div className="relative z-20 mx-auto w-full max-w-3xl px-4 pb-8">
           <Footer className="mt-0" />

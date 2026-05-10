@@ -14,10 +14,7 @@ interface HomeHeroSectionProps {
   heroScale: MotionValue<number>
   heroOpacity: MotionValue<number>
   heroY: MotionValue<number>
-  heroRadius: MotionValue<number>
-  heroClipPath: MotionValue<string>
   heroShadow: MotionValue<string>
-  heroFilter: MotionValue<string>
   heroPointerEvents: MotionValue<string>
   heroMediaScale: MotionValue<number>
   heroMediaY: MotionValue<number>
@@ -121,10 +118,7 @@ export function HomeHeroSection({
   heroScale,
   heroOpacity,
   heroY,
-  heroRadius,
-  heroClipPath,
   heroShadow,
-  heroFilter,
   heroPointerEvents,
   heroMediaScale,
   heroMediaY,
@@ -146,23 +140,21 @@ export function HomeHeroSection({
   const dotClass = isDarkMode ? styles.dotDark : styles.dotLight
   const titlePrefix = isZh ? '欢迎来到' : 'Welcome to '
   const titleSuffix = isZh ? '的自留地' : "'s Backyard"
-  const introText = `${t('home.intro')} 🌱`
-  const descriptionText = `${t('home.description')} ✨`
+  const introText = t('home.intro')
+  const descriptionText = t('home.description')
   const titleStagger = prefersReducedMotion ? 0 : 0.018
   const copyStagger = prefersReducedMotion ? 0 : 0.035
 
   return (
     <motion.section
+      data-home-snap="hero"
       aria-label={isZh ? '首页封面' : 'Homepage cover'}
       className={styles.heroLayer}
       style={{
         scale: heroScale,
         opacity: heroOpacity,
         y: heroY,
-        borderRadius: heroRadius,
-        clipPath: heroClipPath,
         boxShadow: heroShadow,
-        filter: heroFilter,
         pointerEvents: heroPointerEvents,
       }}
     >

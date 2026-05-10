@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, type MotionValue, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
@@ -13,7 +13,6 @@ interface HomeBlogRailSectionProps {
   sectionScale?: MotionValue<number>
   sectionY?: MotionValue<number>
   sectionOpacity?: MotionValue<number>
-  sectionFilter?: MotionValue<string>
   sectionPointerEvents?: MotionValue<string>
 }
 
@@ -32,7 +31,6 @@ export function HomeBlogRailSection({
   sectionScale,
   sectionY,
   sectionOpacity,
-  sectionFilter,
   sectionPointerEvents,
 }: HomeBlogRailSectionProps) {
   const { t, i18n } = useTranslation()
@@ -102,8 +100,10 @@ export function HomeBlogRailSection({
 
   return (
     <section
+      data-home-snap="blog"
       aria-label={locale === 'zh-CN' ? '首页博客流' : 'Homepage blog rail'}
       className="relative isolate z-10 h-[100vh] snap-start snap-always"
+      style={{ backgroundColor: 'var(--page-background)' }}
     >
       <motion.div
         className="sticky top-0 h-[100vh] overflow-hidden"
@@ -111,7 +111,6 @@ export function HomeBlogRailSection({
           scale: sectionScale,
           y: sectionY,
           opacity: sectionOpacity,
-          filter: sectionFilter,
           pointerEvents: sectionPointerEvents,
         }}
       >
@@ -167,7 +166,7 @@ export function HomeBlogRailSection({
                 className="h-px w-full bg-black/8 dark:bg-white/10"
               />
             </div>
-            <motion.div className="relative w-full" style={{ opacity: 1 }}>
+            <div className="relative w-full">
               <div className="relative overflow-hidden">
                 <div
                   aria-hidden="true"
@@ -186,7 +185,7 @@ export function HomeBlogRailSection({
                   }}
                 />
 
-                <motion.div
+                <div
                   ref={railTrackRef}
                   className={cn(
                     'flex w-max items-stretch',
@@ -204,7 +203,7 @@ export function HomeBlogRailSection({
                       ariaHidden
                     />
                   )}
-                </motion.div>
+                </div>
               </div>
 
               <BlogRailSpeedControl
@@ -213,7 +212,7 @@ export function HomeBlogRailSection({
                 speedPercent={speedPercent}
                 onValueChange={setScrollSpeed}
               />
-            </motion.div>
+            </div>
           </div>
         </div>
       </motion.div>
@@ -236,7 +235,10 @@ function BlogRailSpeedControl({
   const percentLabel = `${speedPercent}%`
 
   return (
-    <div className="pointer-events-auto absolute right-8 -bottom-10 z-30 w-[min(13rem,calc(100vw-4rem))] sm:right-10 sm:w-56">
+    <div
+      data-home-no-pager="true"
+      className="pointer-events-auto absolute right-8 -bottom-10 z-30 w-[min(13rem,calc(100vw-4rem))] sm:right-10 sm:w-56"
+    >
       <div className="mb-2 flex items-center justify-between gap-3">
         <Label
           htmlFor="home-blog-scroll-speed"
@@ -267,28 +269,30 @@ interface BlogRailSegmentProps {
   ariaHidden?: boolean
 }
 
-const BlogRailSegment = forwardRef<HTMLDivElement, BlogRailSegmentProps>(
-  function BlogRailSegment({ posts, dateFormatter, ariaHidden }, ref) {
-    return (
-      <div ref={ref} className="flex shrink-0 pl-4 sm:pl-6 lg:pl-8">
-        {posts.map((post, index) => (
-          <BlogRailItem
-            key={`${ariaHidden ? 'ghost' : 'live'}-${post.slug}`}
-            post={post}
-            index={index}
-            dateFormatter={dateFormatter}
-            ariaHidden={ariaHidden}
-          />
-        ))}
-        <div
-          aria-hidden="true"
-          className="my-5 w-px shrink-0 sm:my-6"
-          style={{ backgroundColor: 'var(--border-color)' }}
+function BlogRailSegment({
+  posts,
+  dateFormatter,
+  ariaHidden,
+}: BlogRailSegmentProps) {
+  return (
+    <div className="flex shrink-0 pl-4 sm:pl-6 lg:pl-8">
+      {posts.map((post, index) => (
+        <BlogRailItem
+          key={`${ariaHidden ? 'ghost' : 'live'}-${post.slug}`}
+          post={post}
+          index={index}
+          dateFormatter={dateFormatter}
+          ariaHidden={ariaHidden}
         />
-      </div>
-    )
-  }
-)
+      ))}
+      <div
+        aria-hidden="true"
+        className="my-5 w-px shrink-0 sm:my-6"
+        style={{ backgroundColor: 'var(--border-color)' }}
+      />
+    </div>
+  )
+}
 
 function BlogRailItem({
   post,

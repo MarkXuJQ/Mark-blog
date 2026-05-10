@@ -561,6 +561,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
   return (
     <section
       ref={sectionRef}
+      data-home-snap="radar"
       aria-label={isZh ? '主页雷达区' : 'Homepage radar'}
       className="relative isolate z-[30] h-[100svh] overflow-hidden"
       style={{ backgroundColor: 'var(--page-background)' }}
