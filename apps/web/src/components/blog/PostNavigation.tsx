@@ -1,7 +1,7 @@
 import type { MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import type { BlogPost } from '../../types'
+import type { BlogPost } from '@/types'
 
 interface PostNavigationProps {
   prev?: BlogPost
@@ -44,6 +44,7 @@ function NavigationCard({
   return (
     <Link
       to={`/blog/${post.slug}`}
+      data-link-preview="off"
       onMouseEnter={handleCardMouseEnter}
       onMouseMove={handleCardMouseMove}
       onMouseLeave={handleCardMouseLeave}

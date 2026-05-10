@@ -12,13 +12,13 @@ import {
   useTransform,
   type MotionValue,
 } from 'framer-motion'
-import { cn } from '../../utils/cn'
+import { cn } from '@/lib/utils'
+import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)
 }
 
-const COARSE_POINTER_QUERY = '(pointer: coarse)'
 const MAX_SENSOR_TILT = 18
 
 type MotionSensorState =
@@ -32,47 +32,6 @@ type DeviceOrientationPermissionResult = 'granted' | 'denied'
 
 type DeviceOrientationWithPermission = typeof DeviceOrientationEvent & {
   requestPermission?: () => Promise<DeviceOrientationPermissionResult>
-}
-
-function getInitialCoarsePointerPreference() {
-  if (typeof window === 'undefined' || !('matchMedia' in window)) {
-    return false
-  }
-
-  return window.matchMedia(COARSE_POINTER_QUERY).matches
-}
-
-function useIsCoarsePointer() {
-  const [isCoarsePointer, setIsCoarsePointer] = useState(
-    getInitialCoarsePointerPreference
-  )
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !('matchMedia' in window)) {
-      return
-    }
-
-    const mediaQuery = window.matchMedia(COARSE_POINTER_QUERY)
-    const legacyMediaQuery = mediaQuery as MediaQueryList & {
-      addListener?: (listener: () => void) => void
-      removeListener?: (listener: () => void) => void
-    }
-    const syncCoarsePointer = () => {
-      setIsCoarsePointer(mediaQuery.matches)
-    }
-
-    syncCoarsePointer()
-
-    if ('addEventListener' in mediaQuery) {
-      mediaQuery.addEventListener('change', syncCoarsePointer)
-      return () => mediaQuery.removeEventListener('change', syncCoarsePointer)
-    }
-
-    legacyMediaQuery.addListener?.(syncCoarsePointer)
-    return () => legacyMediaQuery.removeListener?.(syncCoarsePointer)
-  }, [])
-
-  return isCoarsePointer
 }
 
 function getDeviceOrientationConstructor() {

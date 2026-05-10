@@ -1,12 +1,12 @@
-import rawPostSummaries from '../data/post-summaries.json'
-import type { BlogPostSummary } from '../types'
+import rawPostSummaries from '../../data/post-summaries.json'
+import type { BlogPostSummary } from '@/types'
 
 type PostLanguage = 'zh' | 'en'
 type LocalizedBlogPostSummary = BlogPostSummary & {
   language: PostLanguage
 }
 
-const resolveLanguage = (language?: string): PostLanguage => {
+function resolveLanguage(language?: string): PostLanguage {
   return language?.toLowerCase().startsWith('zh') ? 'zh' : 'en'
 }
 
@@ -21,10 +21,12 @@ export function getAllPostSummaries(language?: string): BlogPostSummary[] {
 
   const summaries = postSummaries
     .filter((post) => post.language === normalizedLanguage)
-    .map(({ language: _language, ...post }) => post)
-    .sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    )
+    .map((post) => {
+      const { language, ...summary } = post
+      void language
+      return summary
+    })
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   cachedPostSummaries[normalizedLanguage] = summaries
   return summaries

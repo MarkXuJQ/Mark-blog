@@ -2,12 +2,12 @@ import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Star } from 'lucide-react'
-import { Card } from '../components/ui/Card'
-import { Seo } from '../components/seo/Seo'
-import { cn } from '../utils/cn'
-import { getMovieReviewBySlug } from '../utils/movieReviews'
-import { rewriteHtmlImageSrc } from '../utils/image'
-import { decorateArticleLinkPreviews } from '../utils/articleLinkPreview'
+import { Seo } from '@/components/seo/Seo'
+import { Card } from '@/components/ui/Card'
+import { decorateArticleLinkPreviews } from '@/lib/article'
+import { getMovieReviewBySlug } from '@/lib/content'
+import { cn } from '@/lib/utils'
+import { rewriteHtmlImageSrc } from '@/utils/image'
 
 export function MovieReviewPost() {
   const { slug } = useParams()
@@ -91,10 +91,10 @@ const styles = {
     'dark:text-slate-400 dark:hover:text-slate-200'
   ),
   article: cn(
-    'prose prose-slate dark:prose-invert max-w-none',
+    'article-rich prose prose-slate dark:prose-invert max-w-none',
     'prose-a:text-blue-600 hover:prose-a:text-blue-500',
     'dark:prose-a:text-blue-400 dark:hover:prose-a:text-blue-300',
-    'prose-a:no-underline hover:prose-a:underline'
+    'prose-a:no-underline'
   ),
   title:
     'mb-4 text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl dark:text-slate-100',

@@ -2,7 +2,7 @@ import { ArrowUpCircle, MessageSquareText } from 'lucide-react'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Card } from '../ui/Card'
-import { cn } from '../../utils/cn'
+import { cn } from '@/lib/utils'
 import '../../i18n'
 import { X } from 'lucide-react'
 

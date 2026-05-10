@@ -1,10 +1,10 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Layers, Calendar } from 'lucide-react'
-import { getAllPostSummaries } from '../utils/postSummaries'
-import { cn } from '../utils/cn'
-import { Seo } from '../components/seo/Seo'
-import type { BlogPostSummary } from '../types'
+import { Seo } from '@/components/seo/Seo'
+import { getAllPostSummaries } from '@/lib/content'
+import { cn } from '@/lib/utils'
+import type { BlogPostSummary } from '@/types'
 
 export function Archive() {
   const { t, i18n } = useTranslation()

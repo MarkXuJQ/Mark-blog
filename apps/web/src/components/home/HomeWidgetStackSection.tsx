@@ -14,6 +14,7 @@ import {
   useTransform,
 } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
 import { TravelFootprintPlugin } from './TravelFootprintPlugin'
 
 const BACKDROP_REVEAL_END = 0
@@ -40,11 +41,13 @@ function useHomeWidgetStackScene({
   contentViewportRef,
   contentTrackRef,
   prefersReducedMotion,
+  isCoarsePointer,
 }: {
   sectionRef: RefObject<HTMLElement | null>
   contentViewportRef: RefObject<HTMLDivElement | null>
   contentTrackRef: RefObject<HTMLDivElement | null>
   prefersReducedMotion: boolean
+  isCoarsePointer: boolean
 }) {
   const [contentScrollDistance, setContentScrollDistance] = useState(0)
   const [sceneExtraScroll, setSceneExtraScroll] = useState(0)
@@ -62,15 +65,15 @@ function useHomeWidgetStackScene({
     sceneTargetProgressRef.current = initialProgress
     sceneProgress.set(initialProgress)
 
-    if (prefersReducedMotion) return
+    if (prefersReducedMotion || isCoarsePointer) return
 
     return scrollYProgress.on('change', (latest) => {
       sceneTargetProgressRef.current = latest
     })
-  }, [prefersReducedMotion, sceneProgress, scrollYProgress])
+  }, [isCoarsePointer, prefersReducedMotion, sceneProgress, scrollYProgress])
 
   useAnimationFrame((_, delta) => {
-    if (prefersReducedMotion) {
+    if (prefersReducedMotion || isCoarsePointer) {
       const latest = scrollYProgress.get()
       sceneTargetProgressRef.current = latest
       if (sceneProgress.get() !== latest) sceneProgress.set(latest)
@@ -265,6 +268,7 @@ export function HomeWidgetStackSection({
   const { i18n } = useTranslation()
   const isZh = i18n.language?.startsWith('zh')
   const prefersReducedMotion = Boolean(useReducedMotion())
+  const isCoarsePointer = useIsCoarsePointer()
   const sectionRef = useRef<HTMLElement | null>(null)
   const contentViewportRef = useRef<HTMLDivElement | null>(null)
   const contentTrackRef = useRef<HTMLDivElement | null>(null)
@@ -280,11 +284,13 @@ export function HomeWidgetStackSection({
     contentViewportRef,
     contentTrackRef,
     prefersReducedMotion,
+    isCoarsePointer,
   })
 
   return (
     <section
       ref={sectionRef}
+      data-home-snap="widget"
       aria-label={isZh ? '首页小组件堆叠区' : 'Homepage widget stack'}
       className="relative isolate z-20"
       style={sectionStyle}
@@ -356,7 +362,7 @@ const styles = {
   contentViewport:
     'mx-auto h-full w-full max-w-[96rem] overflow-hidden px-4 sm:px-6 lg:px-8',
   contentTrack:
-    'relative min-h-full pt-[14svh] pb-[20svh] sm:pt-[16svh] sm:pb-[22svh] lg:pt-[18svh] lg:pb-[24svh] will-change-transform',
+    'relative min-h-full pt-[10svh] pb-[18svh] sm:pt-[12svh] sm:pb-[20svh] lg:pt-[13svh] lg:pb-[22svh] will-change-transform',
   contentViewportInner: 'relative',
   pluginWrap: 'relative z-10',
   keyframeScene:

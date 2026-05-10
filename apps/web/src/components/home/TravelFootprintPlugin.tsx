@@ -11,8 +11,9 @@ import {
 } from 'framer-motion'
 import { ExternalLink, MapPinned } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '../../utils/cn'
-import { useDeferredRender } from '../../hooks/useDeferredRender'
+import { cn } from '@/lib/utils'
+import { useDeferredRender } from '@/hooks/useDeferredRender'
+import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
 import markTravelRecord from '@content/travel/records/mark.json'
 import worldFootprintBaseSvg from '../../assets/travel/world-footprint-base.svg'
 import worldFootprintHighlightSvg from '../../assets/travel/world-footprint-highlight.svg'
@@ -181,6 +182,7 @@ export function TravelFootprintPlugin({
   const { i18n } = useTranslation()
   const isZh = i18n.language?.startsWith('zh')
   const prefersReducedMotion = useReducedMotion()
+  const isCoarsePointer = useIsCoarsePointer()
   const shellRef = useRef<HTMLDivElement | null>(null)
   const fallbackRevealProgress = useMotionValue(1)
   const pluginReveal = revealProgress ?? fallbackRevealProgress
@@ -188,11 +190,15 @@ export function TravelFootprintPlugin({
     target: shellRef,
     offset: ['start end', 'end start'],
   })
-  const shellProgress = useSpring(scrollYProgress, {
+  const smoothedShellProgress = useSpring(scrollYProgress, {
     stiffness: prefersReducedMotion ? 220 : 110,
     damping: prefersReducedMotion ? 34 : 24,
     mass: 0.4,
   })
+  const shellProgress =
+    prefersReducedMotion || isCoarsePointer
+      ? scrollYProgress
+      : smoothedShellProgress
 
   const ambientScale = useTransform(
     shellProgress,
@@ -274,22 +280,6 @@ export function TravelFootprintPlugin({
               {isZh ? '去过的地方' : "Places I've Been"}
             </h2>
           </div>
-        </div>
-
-        <div className={styles.introMapStage}>
-          <TravelWorldMapPanel
-            className={styles.introMapLayer}
-            viewportClassName={styles.introMapViewport}
-            showGlow={false}
-            baseClassName={styles.introMapBase}
-            highlightClassName={styles.introMapHighlight}
-            style={{
-              y: worldReveal.y,
-              opacity: worldReveal.opacity,
-              scale: worldReveal.scale,
-            }}
-          />
-
           <div className={styles.introMeta}>
             <SummaryPill
               value={travelSummary.countryCount}
@@ -304,13 +294,23 @@ export function TravelFootprintPlugin({
       </div>
 
       <div className={styles.grid}>
-        <TravelClockPanel
-          style={{
-            y: clockReveal.y,
-            opacity: clockReveal.opacity,
-            scale: clockReveal.scale,
-          }}
-        />
+        <div className={styles.leftRail}>
+          <TravelWorldOverviewPanel
+            style={{
+              y: worldReveal.y,
+              opacity: worldReveal.opacity,
+              scale: worldReveal.scale,
+            }}
+          />
+
+          <TravelClockPanel
+            style={{
+              y: clockReveal.y,
+              opacity: clockReveal.opacity,
+              scale: clockReveal.scale,
+            }}
+          />
+        </div>
 
         <TravelFootprintMapPanel
           isZh={isZh}
@@ -322,6 +322,27 @@ export function TravelFootprintPlugin({
         />
       </div>
     </motion.div>
+  )
+}
+
+function TravelWorldOverviewPanel({
+  style,
+}: {
+  style?: MotionStyle
+}) {
+  return (
+    <motion.section
+      className={cn(styles.panel, styles.worldOverviewPanel)}
+      style={style}
+    >
+      <TravelWorldMapPanel
+        className={styles.worldOverviewMap}
+        viewportClassName={styles.worldOverviewViewport}
+        glowClassName={styles.worldOverviewGlow}
+        baseClassName={styles.worldOverviewBase}
+        highlightClassName={styles.worldOverviewHighlight}
+      />
+    </motion.section>
   )
 }
 
@@ -373,7 +394,7 @@ function TravelFootprintMapPanel({
   style?: MotionStyle
 }) {
   const { targetRef, shouldRender } = useDeferredRender<HTMLDivElement>({
-    rootMargin: '560px 0px',
+    rootMargin: '320px 0px',
   })
 
   return (
@@ -438,9 +459,12 @@ function TravelFootprintMapPanel({
 
 function TravelClockPanel({ style }: { style?: MotionStyle }) {
   return (
-    <motion.div className={styles.clockCell} style={style}>
-      <LifeSinceClock bare className={styles.clockPanel} />
-    </motion.div>
+    <motion.section
+      className={cn(styles.panel, styles.clockCell)}
+      style={style}
+    >
+      <LifeSinceClock bare compact className={styles.clockPanel} />
+    </motion.section>
   )
 }
 
@@ -457,16 +481,14 @@ const styles = {
   shell: 'relative mx-auto w-full max-w-[78rem] overflow-visible',
   shellStatic: 'cursor-default',
   introStage: 'relative overflow-visible',
-  introRow: 'relative z-[3] pt-0 sm:pt-1 lg:pt-2',
+  introRow: 'relative z-[3] pt-0',
   introCopy: 'relative z-[3] max-w-3xl',
   introEyebrow:
     'font-[var(--font-pixel)] text-[0.72rem] uppercase tracking-[0.28em] text-cyan-100/58 drop-shadow-[0_10px_24px_rgba(5,9,19,0.45)]',
   introTitle:
-    'mt-3 max-w-[16ch] text-3xl font-semibold leading-[0.98] text-white/94 text-balance drop-shadow-[0_18px_34px_rgba(5,9,19,0.48)] sm:text-[3.35rem] lg:text-[4rem]',
-  introMapStage:
-    'relative z-[2] mx-auto mt-3 w-full max-w-[58rem] overflow-visible sm:mt-5 lg:mt-6 lg:max-w-[62rem]',
+    'mt-2 max-w-[16ch] text-3xl font-semibold leading-[0.98] text-white/94 text-balance drop-shadow-[0_18px_34px_rgba(5,9,19,0.48)] sm:text-[3.15rem] lg:text-[3.7rem]',
   introMeta:
-    'absolute bottom-[6%] right-[4%] z-[3] flex flex-wrap items-baseline justify-end gap-x-5 gap-y-2 sm:bottom-[7%] sm:right-[5%] sm:gap-x-6 lg:bottom-[8%] lg:right-[6%]',
+    'relative z-[3] mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-2 sm:mt-5 sm:gap-x-6',
   summaryPill:
     'inline-flex items-baseline gap-2.5 border-l border-white/10 pl-4 text-white first:border-l-0 first:pl-0',
   summaryPillValue:
@@ -477,20 +499,26 @@ const styles = {
     'pointer-events-none absolute left-1/2 top-6 -z-10 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.18)_0%,rgba(56,189,248,0.08)_28%,rgba(56,189,248,0)_68%)] blur-3xl',
   ambientOrbitSecondary:
     'pointer-events-none absolute right-[-2rem] top-[20rem] -z-10 h-[18rem] w-[18rem] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0.04)_30%,rgba(255,255,255,0)_70%)] blur-3xl',
-  introMapLayer:
-    'pointer-events-none relative z-[1] w-full opacity-100 brightness-[1.08] saturate-[1.12]',
-  introMapViewport:
-    'relative aspect-[2.34/1] w-full overflow-visible sm:aspect-[2.52/1]',
-  introMapBase: 'absolute inset-0 h-full w-full object-contain opacity-28',
-  introMapHighlight:
-    'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_62px_rgba(181,232,251,0.3)]',
-  grid: 'relative grid items-start gap-6 pt-10 sm:gap-8 sm:pt-12 lg:grid-cols-[minmax(19.5rem,24.5rem)_minmax(0,1fr)] lg:gap-x-8 lg:gap-y-8 lg:pt-16',
+  grid: 'relative grid items-start gap-5 pt-6 sm:gap-6 sm:pt-8 lg:grid-cols-[minmax(19.5rem,24.5rem)_minmax(0,1fr)] lg:gap-x-7 lg:gap-y-5 lg:pt-8',
+  leftRail:
+    'relative z-[3] flex min-w-0 flex-col gap-5 sm:gap-6 lg:col-start-1 lg:row-start-1 lg:max-w-[28rem] xl:max-w-[30rem]',
   panel:
     'relative min-w-0 w-full overflow-hidden rounded-[30px] border border-white/9 bg-[linear-gradient(180deg,rgba(10,16,22,0.92)_0%,rgba(7,12,18,0.97)_100%)] p-4 text-white shadow-[0_34px_110px_-56px_rgba(2,6,23,0.86)] ring-1 ring-white/[0.025] will-change-transform sm:p-5',
+  worldOverviewPanel:
+    'self-start p-3 sm:p-4',
+  worldOverviewMap:
+    'relative w-full self-start brightness-[1.08] saturate-[1.12]',
+  worldOverviewViewport:
+    'relative aspect-[2.22/1] w-full overflow-visible',
+  worldOverviewGlow:
+    'pointer-events-none absolute inset-[-10%_-7%_-16%] bg-[radial-gradient(circle_at_50%_52%,rgba(56,189,248,0.18)_0%,rgba(56,189,248,0.08)_36%,rgba(56,189,248,0)_74%)] blur-3xl',
+  worldOverviewBase: 'absolute inset-0 h-full w-full object-contain opacity-30',
+  worldOverviewHighlight:
+    'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_54px_rgba(181,232,251,0.34)]',
   mapPanel: 'relative z-[2] w-full self-start',
   embedPanel: 'z-[4] self-start lg:col-start-2 lg:row-start-1 lg:w-full',
   clockCell:
-    'relative z-[3] w-full self-start will-change-transform lg:col-start-1 lg:row-start-1 lg:max-w-[28rem] xl:max-w-[30rem]',
+    'w-full self-start will-change-transform p-3 sm:p-4',
   clockPanel: 'h-full w-full overflow-visible',
   cardHeader: 'flex items-start gap-2.5',
   panelHeaderSplit:

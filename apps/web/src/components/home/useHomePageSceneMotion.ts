@@ -6,29 +6,35 @@ import {
   useTransform,
 } from 'framer-motion'
 
-interface HomePageSceneMotion {
-  heroClipPath: MotionValue<string>
-  heroContentOpacity: MotionValue<number>
-  heroContentY: MotionValue<number>
-  heroFilter: MotionValue<string>
-  heroMediaScale: MotionValue<number>
-  heroMediaY: MotionValue<number>
-  heroOpacity: MotionValue<number>
-  heroPointerEvents: MotionValue<string>
-  heroRadius: MotionValue<number>
-  heroScale: MotionValue<number>
-  heroSceneProgress: MotionValue<number>
-  heroShadow: MotionValue<string>
-  heroY: MotionValue<number>
-  prefersReducedMotion: boolean
-  widgetFilter: MotionValue<string>
-  widgetOpacity: MotionValue<number>
-  widgetPointerEvents: MotionValue<string>
-  widgetScale: MotionValue<number>
-  widgetY: MotionValue<number>
+interface HomeHeroMotion {
+  contentOpacity: MotionValue<number>
+  contentY: MotionValue<number>
+  mediaScale: MotionValue<number>
+  mediaY: MotionValue<number>
+  opacity: MotionValue<number>
+  pointerEvents: MotionValue<string>
+  scale: MotionValue<number>
+  sceneProgress: MotionValue<number>
+  shadow: MotionValue<string>
+  y: MotionValue<number>
 }
 
-export function useHomePageSceneMotion(): HomePageSceneMotion {
+interface HomeBlogMotion {
+  opacity: MotionValue<number>
+  pointerEvents: MotionValue<string>
+  scale: MotionValue<number>
+  y: MotionValue<number>
+}
+
+interface HomePageSceneMotion {
+  hero: HomeHeroMotion
+  blog: HomeBlogMotion
+  prefersReducedMotion: boolean
+}
+
+export function useHomePageSceneMotion(
+  isCoarsePointer = false
+): HomePageSceneMotion {
   const prefersReducedMotion = Boolean(useReducedMotion())
   const { scrollY } = useScroll()
 
@@ -38,11 +44,15 @@ export function useHomePageSceneMotion(): HomePageSceneMotion {
     [0, 1]
   )
 
-  const heroSceneProgress = useSpring(sceneProgressSource, {
+  const smoothedHeroSceneProgress = useSpring(sceneProgressSource, {
     stiffness: prefersReducedMotion ? 240 : 160,
     damping: prefersReducedMotion ? 36 : 24,
     mass: 0.3,
   })
+  const heroSceneProgress =
+    prefersReducedMotion || isCoarsePointer
+      ? sceneProgressSource
+      : smoothedHeroSceneProgress
 
   const heroScale = useTransform(
     heroSceneProgress,
@@ -59,12 +69,6 @@ export function useHomePageSceneMotion(): HomePageSceneMotion {
     [0, 0.14, 0.38, 0.62],
     prefersReducedMotion ? [0, -3, -10, -18] : [0, -18, -132, -228]
   )
-  const heroRadius = useTransform(heroSceneProgress, [0, 1], [0, 0])
-  const heroClipPath = useTransform(
-    heroSceneProgress,
-    [0, 1],
-    ['inset(0% 0% 0% 0% round 0px)', 'inset(0% 0% 0% 0% round 0px)']
-  )
   const heroPointerEvents = useTransform(heroSceneProgress, (value) =>
     value > 0.44 ? 'none' : 'auto'
   ) as MotionValue<string>
@@ -77,11 +81,6 @@ export function useHomePageSceneMotion(): HomePageSceneMotion {
       '0 46px 96px -62px rgba(15,23,42,0.14)',
       '0 20px 42px -34px rgba(15,23,42,0.04)',
     ]
-  )
-  const heroFilter = useTransform(
-    heroSceneProgress,
-    [0, 0.18, 0.36, 0.56],
-    ['blur(0px)', 'blur(0px)', 'blur(0px)', 'blur(0px)']
   )
   const heroContentOpacity = useTransform(
     heroSceneProgress,
@@ -119,34 +118,29 @@ export function useHomePageSceneMotion(): HomePageSceneMotion {
     [0.02, 0.16, 0.38, 0.56],
     prefersReducedMotion ? [0.92, 0.96, 0.99, 1] : [0.18, 0.4, 0.82, 1]
   )
-  const widgetFilter = useTransform(
-    heroSceneProgress,
-    [0.02, 0.22, 0.44, 0.6],
-    ['blur(0px)', 'blur(0px)', 'blur(0px)', 'blur(0px)']
-  )
   const widgetPointerEvents = useTransform(heroSceneProgress, (value) =>
     value > 0.18 ? 'auto' : 'none'
   ) as MotionValue<string>
 
   return {
-    heroClipPath,
-    heroContentOpacity,
-    heroContentY,
-    heroFilter,
-    heroMediaScale,
-    heroMediaY,
-    heroOpacity,
-    heroPointerEvents,
-    heroRadius,
-    heroScale,
-    heroSceneProgress,
-    heroShadow,
-    heroY,
+    hero: {
+      contentOpacity: heroContentOpacity,
+      contentY: heroContentY,
+      mediaScale: heroMediaScale,
+      mediaY: heroMediaY,
+      opacity: heroOpacity,
+      pointerEvents: heroPointerEvents,
+      scale: heroScale,
+      sceneProgress: heroSceneProgress,
+      shadow: heroShadow,
+      y: heroY,
+    },
+    blog: {
+      opacity: widgetOpacity,
+      pointerEvents: widgetPointerEvents,
+      scale: widgetScale,
+      y: widgetY,
+    },
     prefersReducedMotion,
-    widgetFilter,
-    widgetOpacity,
-    widgetPointerEvents,
-    widgetScale,
-    widgetY,
   }
 }

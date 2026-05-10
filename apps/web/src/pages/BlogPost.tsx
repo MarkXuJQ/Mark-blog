@@ -2,22 +2,14 @@ import { useEffect, useMemo } from 'react'
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Clock, FileText } from 'lucide-react'
-import { Card } from '../components/ui/Card'
-import { getPostBySlug, getAdjacentPosts } from '../utils/posts'
-import { countWords } from '../utils/readingTime'
-import { cn } from '../utils/cn'
-import { getImageUrl, rewriteHtmlImageSrc } from '../utils/image'
-import { decorateArticleLinkPreviews } from '../utils/articleLinkPreview'
-import { Seo } from '../components/seo/Seo'
-import { Copyright } from '../components/blog/Copyright'
-import { PostNavigation } from '../components/blog/PostNavigation'
-import { useImageLightbox } from '../hooks/useImageLightbox'
-import { useCodeBlockEnhancements } from '../hooks/useCodeBlockEnhancements'
-import { DeferredComments } from '../components/comments/DeferredComments'
+import { Copyright } from '@/components/blog/Copyright'
+import { PostNavigation } from '@/components/blog/PostNavigation'
+import { DeferredComments } from '@/components/comments/DeferredComments'
 import {
   applySearchHighlights,
   clearSearchHighlights,
-} from '../components/search/domHighlight'
+} from '@/components/search/domHighlight'
+import { Seo } from '@/components/seo/Seo'
 import {
   DEFAULT_IMAGE,
   buildBreadcrumbSchema,
@@ -26,7 +18,15 @@ import {
   toAbsoluteUrl,
   toIsoDateTime,
   type JsonLd,
-} from '../components/seo/shared'
+} from '@/components/seo/shared'
+import { Card } from '@/components/ui/Card'
+import { useCodeBlockEnhancements } from '@/hooks/useCodeBlockEnhancements'
+import { useImageLightbox } from '@/hooks/useImageLightbox'
+import { decorateArticleLinkPreviews } from '@/lib/article'
+import { getAdjacentPosts, getPostBySlug } from '@/lib/content'
+import { countWords } from '@/utils/readingTime'
+import { cn } from '@/lib/utils'
+import { getImageUrl, rewriteHtmlImageSrc } from '@/utils/image'
 
 export function BlogPost() {
   const { slug } = useParams()
@@ -365,10 +365,10 @@ const styles = {
     'dark:text-slate-400 dark:hover:text-slate-200'
   ),
   article: cn(
-    'prose prose-slate dark:prose-invert max-w-none',
+    'article-rich prose prose-slate dark:prose-invert max-w-none',
     'prose-a:text-blue-600 hover:prose-a:text-blue-500',
     'dark:prose-a:text-blue-400 dark:hover:prose-a:text-blue-300',
-    'prose-a:no-underline hover:prose-a:underline'
+    'prose-a:no-underline'
   ),
   title:
     'mb-4 text-3xl font-medium tracking-tight text-slate-900 md:text-4xl dark:text-slate-100',

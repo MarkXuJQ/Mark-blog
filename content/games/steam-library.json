@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-18T13:31:49.266Z",
+  "generatedAt": "2026-05-10T15:31:20.244Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -12,10 +12,10 @@
     "gameCount": 224,
     "playedCount": 148,
     "unplayedCount": 76,
-    "totalMinutes": 167197,
-    "totalRecentMinutes": 217,
+    "totalMinutes": 167212,
+    "totalRecentMinutes": 0,
     "totalUnlockedAchievements": 1884,
-    "totalAvailableAchievements": 7206,
+    "totalAvailableAchievements": 7211,
     "featuredAppId": 2246340
   },
   "featured": [
@@ -33,9 +33,9 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 152673,
-        "totalNegative": 164025,
-        "totalReviews": 316698,
+        "totalPositive": 153700,
+        "totalNegative": 164367,
+        "totalReviews": 318067,
         "positivePercent": 48
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1771382452",
@@ -64,9 +64,9 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 449250,
-        "totalNegative": 57007,
-        "totalReviews": 506257,
+        "totalPositive": 450482,
+        "totalNegative": 57151,
+        "totalReviews": 507633,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
@@ -93,12 +93,12 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 808280,
-        "totalNegative": 26627,
-        "totalReviews": 834907,
+        "totalPositive": 811133,
+        "totalNegative": 26748,
+        "totalReviews": 837881,
         "positivePercent": 97
       },
-      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1773079016",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
       "shortDescription": "Baldur’s Gate 3 is a story-rich, party-based RPG set in the universe of Dungeons &amp; Dragons, where your choices shape a tale of fellowship and betrayal, survival and sacrifice, and the lure of absolute power.",
       "releaseDate": "3 Aug, 2023",
       "developers": [
@@ -124,9 +124,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 837931,
-        "totalNegative": 27835,
-        "totalReviews": 865766,
+        "totalPositive": 840196,
+        "totalNegative": 27945,
+        "totalReviews": 868141,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991",
@@ -153,9 +153,9 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 320108,
-        "totalNegative": 52118,
-        "totalReviews": 372226,
+        "totalPositive": 320969,
+        "totalNegative": 52193,
+        "totalReviews": 373162,
         "positivePercent": 86
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1740607040",
@@ -184,12 +184,12 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 162443,
-        "totalNegative": 20482,
-        "totalReviews": 182925,
+        "totalPositive": 162908,
+        "totalNegative": 20559,
+        "totalReviews": 183467,
         "positivePercent": 89
       },
-      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1758656673",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1777476997",
       "shortDescription": "In this action-adventure game, set sail for Ancient Greece to alter its fate. Fight in visceral battles on land and sea, shape your destiny from outcast to legend, and uncover secrets of your past.",
       "releaseDate": "5 Oct, 2018",
       "developers": [
@@ -363,7 +363,7 @@
       "appid": 431960,
       "name": "Wallpaper Engine",
       "playtimeMinutes": 3074,
-      "recentPlaytimeMinutes": 1,
+      "recentPlaytimeMinutes": 0,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/431960/72edaed9d748c6cf7397ffb1c83f0b837b9ebd9d.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/431960",
@@ -475,7 +475,7 @@
       "appid": 1903340,
       "name": "Clair Obscur: Expedition 33",
       "playtimeMinutes": 2531,
-      "recentPlaytimeMinutes": 167,
+      "recentPlaytimeMinutes": 0,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1903340/d48fb3ed033a08bad9bf0a2e1ceb145e58ffe0aa.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1903340",
@@ -654,7 +654,7 @@
       "appid": 2868840,
       "name": "Slay the Spire 2",
       "playtimeMinutes": 1349,
-      "recentPlaytimeMinutes": 2,
+      "recentPlaytimeMinutes": 0,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2868840/f92b09dab91f1d1738f72fe0dd9be18dcc2901f9.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/2868840",
@@ -1241,7 +1241,7 @@
       "appid": 932850,
       "name": "Simmiland",
       "playtimeMinutes": 241,
-      "recentPlaytimeMinutes": 47,
+      "recentPlaytimeMinutes": 0,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/932850/f756db37132f4bcd9c367d7323bd3c150fcc691a.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/932850",
@@ -1388,7 +1388,7 @@
       "communityUrl": "https://steamcommunity.com/app/3478870",
       "achievementStats": {
         "unlockedCount": 5,
-        "totalCount": 40
+        "totalCount": 45
       }
     },
     {
@@ -1649,6 +1649,17 @@
       }
     },
     {
+      "appid": 365670,
+      "name": "Blender",
+      "playtimeMinutes": 84,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/365670/48733cd333eea6e40711a1b9c6dde32ffe363ced.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/365670",
+      "communityUrl": "https://steamcommunity.com/app/365670",
+      "achievementStats": null
+    },
+    {
       "appid": 702670,
       "name": "Donut County",
       "playtimeMinutes": 84,
@@ -1714,17 +1725,6 @@
         "unlockedCount": 3,
         "totalCount": 12
       }
-    },
-    {
-      "appid": 365670,
-      "name": "Blender",
-      "playtimeMinutes": 69,
-      "recentPlaytimeMinutes": 0,
-      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/365670/48733cd333eea6e40711a1b9c6dde32ffe363ced.jpg",
-      "logoUrl": "",
-      "storeUrl": "https://store.steampowered.com/app/365670",
-      "communityUrl": "https://steamcommunity.com/app/365670",
-      "achievementStats": null
     },
     {
       "appid": 250180,

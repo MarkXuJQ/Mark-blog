@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CalendarYearWheel } from './CalendarYearWheel'
-import { cn } from '../../utils/cn'
+import { cn } from '@/lib/utils'
 
 interface CalendarDayCell {
   date: Date

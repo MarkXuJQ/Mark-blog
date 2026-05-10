@@ -1,7 +1,7 @@
 import { useTranslation, Trans } from 'react-i18next'
-import { Seo } from '../components/seo/Seo'
-import { DeferredComments } from '../components/comments/DeferredComments'
-import { WebsiteCard } from '../components/ui/WebsiteCard'
+import { DeferredComments } from '@/components/comments/DeferredComments'
+import { Seo } from '@/components/seo/Seo'
+import { WebsiteCard } from '@/components/ui/WebsiteCard'
 
 export function About() {
   const { t } = useTranslation()

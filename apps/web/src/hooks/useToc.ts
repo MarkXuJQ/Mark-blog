@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { setupTocTree } from '../utils/toc'
+import { setupTocTree } from '@/lib/toc'
 
 export function useToc(
   mainRef: React.RefObject<HTMLElement>,

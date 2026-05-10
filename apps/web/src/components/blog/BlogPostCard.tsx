@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom'
 import { Calendar, FileText } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Card } from '../ui/Card'
-import { countWords } from '../../utils/readingTime'
-import { cn } from '../../utils/cn'
-import { getImageUrl } from '../../utils/image'
-import type { BlogPost } from '../../types'
+import { countWords } from '@/utils/readingTime'
+import { cn } from '@/lib/utils'
+import { getImageUrl } from '@/utils/image'
+import type { BlogPost } from '@/types'
 
 interface BlogPostCardProps {
   post: BlogPost

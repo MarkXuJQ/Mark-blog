@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useAnimation } from 'framer-motion'
 import { IoArrowUpSharp } from 'react-icons/io5'
 import { useScrollToTop } from '../../hooks/useScrollToTop'
-import { cn } from '../../utils/cn'
+import { cn } from '@/lib/utils'
 
 export function DraggableBackToTop() {
   const { showTopBtn, scrollToTop } = useScrollToTop()

@@ -1,4 +1,4 @@
-import { cn } from '../../utils/cn'
+import { cn } from '@/lib/utils'
 import { Trans, useTranslation } from 'react-i18next'
 import { LuGithub } from 'react-icons/lu'
 import { RiBilibiliLine, RiTwitterXFill, RiInstagramLine } from 'react-icons/ri'

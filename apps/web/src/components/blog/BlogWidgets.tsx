@@ -2,14 +2,14 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SearchTriggerInput } from '../search/SearchTriggerInput'
 import { Card } from '../ui/Card'
-import { cn } from '../../utils/cn'
-import { getImageUrl } from '../../utils/image'
+import { cn } from '@/lib/utils'
+import { getImageUrl } from '@/utils/image'
 import { Link } from 'react-router-dom'
 import { Calendar, Clock, FileText, Activity, Hash, Layers } from 'lucide-react'
 import { LuGithub } from 'react-icons/lu'
 import { RiBilibiliLine, RiTwitterXFill, RiInstagramLine } from 'react-icons/ri'
-import type { BlogPost } from '../../types'
-import { countWords } from '../../utils/readingTime'
+import { countWords } from '@/utils/readingTime'
+import type { BlogPost } from '@/types'
 
 // --- Profile Content (Internal) ---
 function ProfileContent() {

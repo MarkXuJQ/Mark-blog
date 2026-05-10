@@ -1,5 +1,5 @@
 import { useId, type CSSProperties, type SVGProps } from 'react'
-import { cn } from '../../utils/cn'
+import { cn } from '@/lib/utils'
 
 export interface LifeClockDisplayRow {
   value: string

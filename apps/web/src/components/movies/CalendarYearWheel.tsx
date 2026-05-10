@@ -1,13 +1,14 @@
 import { ChevronDown } from 'lucide-react'
 import {
   useEffect,
+  useCallback,
   useMemo,
   useRef,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from 'react'
-import { cn } from '../../utils/cn'
+import { cn } from '@/lib/utils'
 import {
   Dropdown,
   DropdownContent,
@@ -78,7 +79,7 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
     valueRef.current = value
   }, [selectedIndex, value])
 
-  const commitIndex = (nextIndex: number, closeAfterChange = false) => {
+  const commitIndex = useCallback((nextIndex: number, closeAfterChange = false) => {
     const safeIndex = clampIndex(nextIndex, years.length)
     const nextYear = years[safeIndex]
     if (typeof nextYear !== 'number') return
@@ -92,14 +93,14 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
     if (closeAfterChange) {
       setIsOpen(false)
     }
-  }
+  }, [onValueChange, setIsOpen, years])
 
-  const moveBySteps = (deltaSteps: number) => {
+  const moveBySteps = useCallback((deltaSteps: number) => {
     if (deltaSteps === 0) return
     commitIndex(selectedIndexRef.current + deltaSteps)
-  }
+  }, [commitIndex])
 
-  const processDelta = (
+  const processDelta = useCallback((
     deltaY: number,
     options: { threshold: number; maxSteps?: number }
   ) => {
@@ -123,7 +124,7 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
 
       moveBySteps(limitedStepCount)
     }
-  }
+  }, [moveBySteps, years.length])
 
   const clearSuppressedClick = () => {
     if (suppressClickTimeoutRef.current !== null) {
@@ -167,7 +168,7 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
       clearSuppressedClick()
       resetPointerState()
     }
-  }, [isOpen])
+  }, [isOpen, processDelta])
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse') return

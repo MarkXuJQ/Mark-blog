@@ -6,9 +6,9 @@ import zhEvents from '@content/timeline/website/zh.json'
 import enEvents from '@content/timeline/website/en.json'
 import zhQuickFixes from '@content/timeline/quickfix/zh.json'
 import enQuickFixes from '@content/timeline/quickfix/en.json'
-import type { TimelineEvent, QuickFixGroup } from '../types'
 import { GitCommit, ChevronDown, ChevronRight } from 'lucide-react'
-import { Seo } from '../components/seo/Seo'
+import { Seo } from '@/components/seo/Seo'
+import type { QuickFixGroup, TimelineEvent } from '@/types'
 
 // Cast the JSON data to the correct type
 const zhTimelineEvents = zhEvents as TimelineEvent[]
@@ -92,16 +92,6 @@ export function Timeline() {
   return (
     <div
       className={styles.container}
-      onKeyDown={(event) => {
-        if (event.key === 'ArrowLeft') {
-          event.preventDefault()
-          moveTab(-1)
-        }
-        if (event.key === 'ArrowRight') {
-          event.preventDefault()
-          moveTab(1)
-        }
-      }}
       onPointerDown={(event) => {
         if (event.pointerType === 'mouse' && event.button !== 0) return
         if (isInteractiveTarget(event.target)) {
@@ -137,7 +127,6 @@ export function Timeline() {
         pointerState.current.isDown = false
         pointerState.current.hasSwiped = false
       }}
-      tabIndex={0}
     >
       <Seo title={t('nav.timeline')} />
       <div className={styles.wrapper}>
@@ -145,11 +134,28 @@ export function Timeline() {
           <h1 className={styles.title}>{t('nav.timeline')}</h1>
         </div>
 
-        <div className={styles.tabs}>
+        <div
+          className={styles.tabs}
+          role="tablist"
+          aria-label={t('nav.timeline')}
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === 'ArrowLeft') {
+              event.preventDefault()
+              moveTab(-1)
+            }
+            if (event.key === 'ArrowRight') {
+              event.preventDefault()
+              moveTab(1)
+            }
+          }}
+        >
           {tabs.map((tab) => (
             <button
               key={tab.id}
               type="button"
+              role="tab"
+              aria-selected={activeTab === tab.id}
               className={
                 activeTab === tab.id ? styles.tabActive : styles.tab
               }

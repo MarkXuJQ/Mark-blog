@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getAllPosts } from '../../utils/posts'
+import { getAllPosts } from '@/lib/content'
 import { SearchInput } from './SearchInput'
 import { closeGlobalSearch, subscribeGlobalSearch } from './globalSearchBus'
 import {

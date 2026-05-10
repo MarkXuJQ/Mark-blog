@@ -3,18 +3,18 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Clapperboard, Search, Star } from 'lucide-react'
 import { RiDoubanLine } from 'react-icons/ri'
-import { MovieStatsPanel } from '../components/movies/MovieStatsPanel'
-import { Seo } from '../components/seo/Seo'
-import { WatchActivityCalendar } from '../components/movies/WatchActivityCalendar'
-import { RevealText } from '../components/ui/reveal-text'
-import { cn } from '../utils/cn'
-import { Pagination } from '../components/ui/Pagination'
-import movieCsvRaw from '@content/movies/movie.csv?raw'
-import movieOverridesRaw from '@content/movies/movie-overrides.json'
+import { MovieStatsPanel } from '@/components/movies/MovieStatsPanel'
+import { Seo } from '@/components/seo/Seo'
+import { Pagination } from '@/components/ui/Pagination'
+import { RevealText } from '@/components/ui/reveal-text'
+import { WatchActivityCalendar } from '@/components/movies/WatchActivityCalendar'
 import {
   getMovieReviewBySlug,
   getMovieReviewBySubjectId,
-} from '../utils/movieReviews'
+} from '@/lib/content'
+import { cn } from '@/lib/utils'
+import movieCsvRaw from '@content/movies/movie.csv?raw'
+import movieOverridesRaw from '@content/movies/movie-overrides.json'
 
 type ViewMode = 'csv' | 'tmdb'
 type CardLayout = 'list' | 'grid'
@@ -790,10 +790,10 @@ export function Movies() {
                     ]
 
                     return (
-                      <article
+                      <button
                         key={movie.id}
-                        role={canOpenReview ? 'link' : undefined}
-                        tabIndex={canOpenReview ? 0 : undefined}
+                        type="button"
+                        disabled={!canOpenReview}
                         onClick={
                           canOpenReview ? () => navigate(reviewPath) : undefined
                         }
@@ -817,7 +817,7 @@ export function Movies() {
                             : 'border-slate-200/70 bg-white/78 dark:border-[#2b2f36] dark:bg-[#17191c]/92',
                           canOpenReview
                             ? 'cursor-pointer focus:ring-2 focus:ring-emerald-300 focus:outline-none dark:focus:ring-emerald-700'
-                            : '',
+                            : 'cursor-default',
                           cardLayout === 'grid'
                             ? 'flex h-full w-full flex-col'
                             : ''
@@ -922,7 +922,7 @@ export function Movies() {
                             ) : null}
                           </div>
                         </div>
-                      </article>
+                      </button>
                     )
                   })}
                 </div>
