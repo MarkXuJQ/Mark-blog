@@ -365,10 +365,10 @@ const styles = {
     'dark:text-slate-400 dark:hover:text-slate-200'
   ),
   article: cn(
-    'prose prose-slate dark:prose-invert max-w-none',
+    'article-rich prose prose-slate dark:prose-invert max-w-none',
     'prose-a:text-blue-600 hover:prose-a:text-blue-500',
     'dark:prose-a:text-blue-400 dark:hover:prose-a:text-blue-300',
-    'prose-a:no-underline hover:prose-a:underline'
+    'prose-a:no-underline'
   ),
   title:
     'mb-4 text-3xl font-medium tracking-tight text-slate-900 md:text-4xl dark:text-slate-100',

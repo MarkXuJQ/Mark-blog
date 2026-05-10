@@ -44,6 +44,7 @@ function NavigationCard({
   return (
     <Link
       to={`/blog/${post.slug}`}
+      data-link-preview="off"
       onMouseEnter={handleCardMouseEnter}
       onMouseMove={handleCardMouseMove}
       onMouseLeave={handleCardMouseLeave}

@@ -33,8 +33,6 @@ image: "https://img.markxu.icu/imgvoiceinput.jpeg"
 
 传统的开源是“人读代码，编译器执行”，而这个项目是“人读Prompt，AI 执行”。作者 yetone 甚至专门建立了一个 [voice-input-dist的repo](https://github.com/yetone/voice-input-dist) 来存放他利用ai最终构建出的 App源码，以方便将“源”与“产物”彻底分离（小巧思说是），也方便用户进行对比。
 
----
-
 ## Prompt 里藏了什么？
 
 仔细看这个项目，我们能探索的只有这一端prompt，为了尝试后续的复现，我分析了下这段 Prompt 。这不是一个程序小白随手写出来的需求文档，告诉ai我需要什么样的软件，而是一个对 macOS 底层 API 有精准的调用要求的程序员所构建出来的文档：
@@ -50,8 +48,6 @@ image: "https://img.markxu.icu/imgvoiceinput.jpeg"
 从上面具体的专业术语可以看出作者在写这段 prompt 的时候，清晰的知道需要调用什么框架，有什么组件可以去使用，后续会遇到什么冲突问题，又应该如何去解决。因为作者足够了解相关的技术知识和实现难题，才可以这样精准的写出整个项目的完整 prompt。甚至有Github上issue的留言：
 
 > 这玩意才是真正的 prompt 开发教程
-
----
 
 ## 我的复现 (On My Mac)
 
@@ -90,8 +86,6 @@ image: "https://img.markxu.icu/imgvoiceinput.jpeg"
 >
 > 第二处是 FloatingPanelController.swift (line 93) 的修复。这里原来给 NSPanel 设置了 collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .moveToActiveSpace, .ignoresCycle]。问题在于，.canJoinAllSpaces 和 .moveToActiveSpace 这两个行为语义上是冲突的：一个强调“加入所有 Space”，另一个强调“跟随当前活跃 Space 移动”。AppKit 对这类窗口行为组合比较敏感，有时会直接触发断言，最终表现成 abort signal 崩溃。修复后我把它改成了更稳妥的组合：保留 .moveToActiveSpace、.fullScreenAuxiliary、.ignoresCycle，再加上 .transient，去掉 .canJoinAllSpaces。这样浮窗依然能在当前空间和全屏应用旁边正常显示，但不会再因为窗口行为冲突而在初始化时崩掉。
 
----
-
 ## 效果展示
 
 其实你们应该能想到，这整篇文章就是我用这个软件进行转述的，效果还蛮不错的。而且出字很快，比苹果原装带有的语音输入要反馈更加及时，而且调用也方便些。
@@ -100,8 +94,6 @@ image: "https://img.markxu.icu/imgvoiceinput.jpeg"
 ![我的效果](https://img.markxu.icu/imgAppEffect.png)
 
 说到其具体缺点，可以看到我们的字没有居中有些难受，后续通过codex进行提示也修复了。总体看下来也不如[作者使用claude做出来的效果](https://private-user-images.githubusercontent.com/1206493/570996776-3228f78a-f035-447d-98ef-8826798a122c.mp4?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzU0ODU4NTksIm5iZiI6MTc3NTQ4NTU1OSwicGF0aCI6Ii8xMjA2NDkzLzU3MDk5Njc3Ni0zMjI4Zjc4YS1mMDM1LTQ0N2QtOThlZi04ODI2Nzk4YTEyMmMubXA0P1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI2MDQwNiUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNjA0MDZUMTQyNTU5WiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9OWY5YTBiZjNmNDNlYmVjMThjZTkyYmVlMzhhNWE5ZGVkMDUzYjE2NTA0Y2M0NmUxYWI4ODg0NmYxMmZjMDljMSZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.hn6EDW1eCK1AOOo7I77njFUspVoIxag2_bk1BwJxfQE)要好，但是至少能用，不是吗？
-
----
 
 ## 这是否是开源的未来（哪怕是部分），还是只是一次恶搞？
 
@@ -117,8 +109,6 @@ image: "https://img.markxu.icu/imgvoiceinput.jpeg"
 - **不方便操作** ：如果要生成代码，还是得确保用户本身有AI环境，而且有足够的资金配置，这种项目比较小还好说，如果是较大的项目的话就比较贵了。而且需要用户等待其结果生成，并不如直接下载作者发布的release。
 
 ![我与作者的结构对比](https://img.markxu.icu/imgContrastBetweenMineandAuthor.png)
-
----
 
 总的来说，我认为这一次尝试不是件坏事，相反作者特别具有创意的repo发布方式还带给了我点小小的震撼。其实可以把这次看作一个更好的AI教程，而不是具体实现项目的方式，因为如果想要达到作者这样的prompt的话,还是需要一定的功底和基础知识。不说高手的情况，单论我自己，是无法做到一次性就写出像作者这么完美的提示词的。
 

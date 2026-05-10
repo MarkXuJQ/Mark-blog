@@ -9,9 +9,9 @@ import { LinkPreviewCard, LinkPreviewMetadataCard } from './link-preview'
 
 const PREVIEW_WIDTH = 220
 const PREVIEW_HEIGHT = 138
-const PREVIEW_OFFSET = 14
+const PREVIEW_OFFSET = 40
 const VIEWPORT_GUTTER = 12
-const CLOSE_DELAY_MS = 120
+const CLOSE_DELAY_MS = 220
 
 type ActiveLinkState = {
   key: string
@@ -69,11 +69,18 @@ function resolvePreviewUrl(rawHref: string, siteUrl: string) {
 }
 
 function getEligibleAnchor(target: EventTarget | null) {
-  if (!(target instanceof Element)) {
+  const element =
+    target instanceof Element
+      ? target
+      : target instanceof Node
+        ? target.parentElement
+        : null
+
+  if (!(element instanceof Element)) {
     return null
   }
 
-  const anchor = target.closest('a[href]')
+  const anchor = element.closest('a[href]')
   if (!(anchor instanceof HTMLAnchorElement)) {
     return null
   }
@@ -102,13 +109,13 @@ function getPlacement(rect: DOMRect) {
   const viewportHeight = window.innerHeight
   const topCandidate = rect.top - PREVIEW_HEIGHT - PREVIEW_OFFSET
   const bottomCandidate = rect.bottom + PREVIEW_OFFSET
-  const top =
-    topCandidate >= VIEWPORT_GUTTER
-      ? topCandidate
-      : Math.min(
-          bottomCandidate,
-          viewportHeight - PREVIEW_HEIGHT - VIEWPORT_GUTTER
-        )
+  const canPlaceAbove = topCandidate >= VIEWPORT_GUTTER
+  const top = canPlaceAbove
+    ? topCandidate
+    : Math.min(
+        bottomCandidate,
+        viewportHeight - PREVIEW_HEIGHT - VIEWPORT_GUTTER
+      )
   const left = Math.min(
     Math.max(
       rect.left + rect.width / 2 - PREVIEW_WIDTH / 2,
@@ -233,7 +240,16 @@ export function GlobalLinkPreview() {
       clearCloseTimer()
     }
 
-    const handlePointerMove = (event: PointerEvent) => {
+    const handleMouseOver = (event: MouseEvent) => {
+      const anchor = getEligibleAnchor(event.target)
+      if (!anchor) {
+        return
+      }
+
+      openPreview(anchor, event.clientX)
+    }
+
+    const handleMouseMove = (event: MouseEvent) => {
       const anchor = getEligibleAnchor(event.target)
       if (!anchor) {
         if (!isPreviewHovered) {
@@ -242,7 +258,18 @@ export function GlobalLinkPreview() {
         return
       }
 
+      if (activeAnchorRef.current === anchor) {
+        const rect = anchor.getBoundingClientRect()
+        mouseX.set((event.clientX - rect.left - rect.width / 2) * 0.18)
+        clearCloseTimer()
+        return
+      }
+
       openPreview(anchor, event.clientX)
+    }
+
+    const handleMouseDown = () => {
+      closePreview()
     }
 
     const handleFocusIn = (event: FocusEvent) => {
@@ -290,7 +317,9 @@ export function GlobalLinkPreview() {
       }
     }
 
-    document.addEventListener('pointermove', handlePointerMove, { passive: true })
+    document.addEventListener('mouseover', handleMouseOver, { passive: true })
+    document.addEventListener('mousemove', handleMouseMove, { passive: true })
+    document.addEventListener('mousedown', handleMouseDown, { passive: true })
     document.addEventListener('focusin', handleFocusIn)
     document.addEventListener('focusout', handleFocusOut)
     window.addEventListener('scroll', refreshPreviewPosition, true)
@@ -299,7 +328,9 @@ export function GlobalLinkPreview() {
 
     return () => {
       clearCloseTimer()
-      document.removeEventListener('pointermove', handlePointerMove)
+      document.removeEventListener('mouseover', handleMouseOver)
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mousedown', handleMouseDown)
       document.removeEventListener('focusin', handleFocusIn)
       document.removeEventListener('focusout', handleFocusOut)
       window.removeEventListener('scroll', refreshPreviewPosition, true)
@@ -317,49 +348,53 @@ export function GlobalLinkPreview() {
       <AnimatePresence>
         {activeLink ? (
           <div
-            className="pointer-events-auto absolute"
+            className="pointer-events-none absolute"
             style={getPlacement(activeLink.rect)}
-            onPointerEnter={() => {
-              if (closeTimerRef.current !== null) {
-                window.clearTimeout(closeTimerRef.current)
-                closeTimerRef.current = null
-              }
-              setIsPreviewHovered(true)
-            }}
-            onPointerLeave={() => {
-              setIsPreviewHovered(false)
-              closeTimerRef.current = window.setTimeout(() => {
-                activeAnchorRef.current = null
-                mouseX.set(0)
-                setActiveLink(null)
-              }, CLOSE_DELAY_MS)
-            }}
           >
-            {activeLink.mode === 'metadata' && activeLink.title ? (
-              <LinkPreviewMetadataCard
-                key={activeLink.key}
-                title={activeLink.title}
-                description={activeLink.description}
-                badge={activeLink.badge}
-                imageSrc={activeLink.imageSrc}
-                urlLabel={activeLink.urlLabel}
-                href={activeLink.href}
-                followX={followX}
-              />
-            ) : (
-              <LinkPreviewCard
-                key={activeLink.key}
-                url={activeLink.href}
-                previewUrl={activeLink.previewUrl}
-                peekWidth={PREVIEW_WIDTH}
-                peekHeight={PREVIEW_HEIGHT}
-                clickable={false}
-                enableLensEffect
-                isStatic={Boolean(activeLink.isStatic)}
-                imageSrc={activeLink.imageSrc}
-                followX={followX}
-              />
-            )}
+            <div
+              className="pointer-events-auto"
+              onPointerEnter={() => {
+                if (closeTimerRef.current !== null) {
+                  window.clearTimeout(closeTimerRef.current)
+                  closeTimerRef.current = null
+                }
+                setIsPreviewHovered(true)
+              }}
+              onPointerLeave={() => {
+                setIsPreviewHovered(false)
+                closeTimerRef.current = window.setTimeout(() => {
+                  activeAnchorRef.current = null
+                  mouseX.set(0)
+                  setActiveLink(null)
+                }, CLOSE_DELAY_MS)
+              }}
+            >
+              {activeLink.mode === 'metadata' && activeLink.title ? (
+                <LinkPreviewMetadataCard
+                  key={activeLink.key}
+                  title={activeLink.title}
+                  description={activeLink.description}
+                  badge={activeLink.badge}
+                  imageSrc={activeLink.imageSrc}
+                  urlLabel={activeLink.urlLabel}
+                  href={activeLink.href}
+                  followX={followX}
+                />
+              ) : (
+                <LinkPreviewCard
+                  key={activeLink.key}
+                  url={activeLink.href}
+                  previewUrl={activeLink.previewUrl}
+                  peekWidth={PREVIEW_WIDTH}
+                  peekHeight={PREVIEW_HEIGHT}
+                  clickable={false}
+                  enableLensEffect
+                  isStatic={Boolean(activeLink.isStatic)}
+                  imageSrc={activeLink.imageSrc}
+                  followX={followX}
+                />
+              )}
+            </div>
           </div>
         ) : null}
       </AnimatePresence>

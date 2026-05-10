@@ -1,5 +1,13 @@
 [
   {
+    "id": "qf-20260510",
+    "date": "2026-05-10",
+    "content": [
+      "Refined blog article heading hierarchy: added numbered h2 styling with a theme-color underline glow, restored the small accent marker for h3, and unified heading rendering across posts",
+      "Improved in-article link previews: fixed hover preview and hover animation issues in Mac Chrome, and repositioned the preview card so it no longer blocks link clicks"
+    ]
+  },
+  {
     "id": "qf-20260509",
     "date": "2026-05-09",
     "content": [
