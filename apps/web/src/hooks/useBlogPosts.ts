@@ -1,8 +1,8 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { getAllPosts } from '../utils/posts'
+import { getAllPosts } from '@/lib/content'
+import type { BlogPost } from '@/types'
 import { useSearch } from './useSearch'
-import type { BlogPost } from '../types'
 
 export type SortBy = 'date' | 'updated'
 

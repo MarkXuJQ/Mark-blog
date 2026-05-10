@@ -17,10 +17,10 @@ import {
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Pagination } from '../components/ui/Pagination'
-import { SelectMenu } from '../components/ui/SelectMenu'
-import { Seo } from '../components/seo/Seo'
-import { cn } from '../utils/cn'
+import { Seo } from '@/components/seo/Seo'
+import { Pagination } from '@/components/ui/Pagination'
+import { SelectMenu } from '@/components/ui/SelectMenu'
+import { cn } from '@/lib/utils'
 
 type LoadStatus = 'loading' | 'ready' | 'error'
 type GameSort = 'playtime' | 'recent' | 'achievements'

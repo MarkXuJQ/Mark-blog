@@ -2,12 +2,12 @@ import { Outlet, useLocation, useParams } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
-import { LeftSidebarWidget } from '../components/blog/BlogWidgets'
-import { BlogTocCard, BlogTocDrawer } from '../components/blog/BlogTocCard'
-import { BlogRelatedPosts } from '../components/blog/BlogRelatedPosts'
-import { useToc } from '../hooks/useToc'
-import { getPostBySlug } from '../utils/posts'
-import { getAllPostSummaries } from '../utils/postSummaries'
+import { BlogRelatedPosts } from '@/components/blog/BlogRelatedPosts'
+import { BlogTocCard, BlogTocDrawer } from '@/components/blog/BlogTocCard'
+import { LeftSidebarWidget } from '@/components/blog/BlogWidgets'
+import { useToc } from '@/hooks/useToc'
+import { getAllPostSummaries } from '@/lib/content'
+import { getPostBySlug } from '@/lib/content'
 
 export function BlogPostLayout() {
   const { t, i18n } = useTranslation()

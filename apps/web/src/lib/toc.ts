@@ -58,10 +58,10 @@ export function setupToc(
   let raf = 0
   function detectActive() {
     let activeId = toc[0]?.id || ''
-    for (let i = 0; i < headings.length; i++) {
-      const r = headings[i].getBoundingClientRect()
-      if (r.top - topOffset <= 0) {
-        activeId = headings[i].id
+    for (let index = 0; index < headings.length; index += 1) {
+      const rect = headings[index].getBoundingClientRect()
+      if (rect.top - topOffset <= 0) {
+        activeId = headings[index].id
       } else {
         break
       }
@@ -166,10 +166,10 @@ export function setupTocTree(
     let raf = 0
     const detectActive = () => {
       let activeId = flat[0]?.id || ''
-      for (let i = 0; i < headings.length; i++) {
-        const r = headings[i].getBoundingClientRect()
-        if (r.top - topOffset <= 0) {
-          activeId = headings[i].id
+      for (let index = 0; index < headings.length; index += 1) {
+        const rect = headings[index].getBoundingClientRect()
+        if (rect.top - topOffset <= 0) {
+          activeId = headings[index].id
         } else {
           break
         }

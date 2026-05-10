@@ -2,22 +2,14 @@ import { useEffect, useMemo } from 'react'
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Clock, FileText } from 'lucide-react'
-import { Card } from '../components/ui/Card'
-import { getPostBySlug, getAdjacentPosts } from '../utils/posts'
-import { countWords } from '../utils/readingTime'
-import { cn } from '../utils/cn'
-import { getImageUrl, rewriteHtmlImageSrc } from '../utils/image'
-import { decorateArticleLinkPreviews } from '../utils/articleLinkPreview'
-import { Seo } from '../components/seo/Seo'
-import { Copyright } from '../components/blog/Copyright'
-import { PostNavigation } from '../components/blog/PostNavigation'
-import { useImageLightbox } from '../hooks/useImageLightbox'
-import { useCodeBlockEnhancements } from '../hooks/useCodeBlockEnhancements'
-import { DeferredComments } from '../components/comments/DeferredComments'
+import { Copyright } from '@/components/blog/Copyright'
+import { PostNavigation } from '@/components/blog/PostNavigation'
+import { DeferredComments } from '@/components/comments/DeferredComments'
 import {
   applySearchHighlights,
   clearSearchHighlights,
-} from '../components/search/domHighlight'
+} from '@/components/search/domHighlight'
+import { Seo } from '@/components/seo/Seo'
 import {
   DEFAULT_IMAGE,
   buildBreadcrumbSchema,
@@ -26,7 +18,15 @@ import {
   toAbsoluteUrl,
   toIsoDateTime,
   type JsonLd,
-} from '../components/seo/shared'
+} from '@/components/seo/shared'
+import { Card } from '@/components/ui/Card'
+import { useCodeBlockEnhancements } from '@/hooks/useCodeBlockEnhancements'
+import { useImageLightbox } from '@/hooks/useImageLightbox'
+import { decorateArticleLinkPreviews } from '@/lib/article'
+import { getAdjacentPosts, getPostBySlug } from '@/lib/content'
+import { countWords } from '@/utils/readingTime'
+import { cn } from '@/lib/utils'
+import { getImageUrl, rewriteHtmlImageSrc } from '@/utils/image'
 
 export function BlogPost() {
   const { slug } = useParams()

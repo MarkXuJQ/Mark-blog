@@ -2,11 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, type MotionValue, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { getAllPostSummaries } from '@/lib/content'
 import { Label } from '../ui/label'
 import { Slider } from '../ui/slider'
-import { cn } from '../../utils/cn'
-import { getAllPostSummaries } from '../../utils/postSummaries'
-import type { BlogPostSummary } from '../../types'
+import { cn } from '@/lib/utils'
+import type { BlogPostSummary } from '@/types'
 
 interface HomeBlogRailSectionProps {
   avatarSrc: string

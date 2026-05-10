@@ -1,17 +1,17 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useBlogPosts } from '../hooks/useBlogPosts'
-import { BlogFilter } from '../components/blog/BlogFilter'
-import { BlogPostCard } from '../components/blog/BlogPostCard'
-import { SearchStatus } from '../components/search/SearchStatus'
-import { Pagination } from '../components/ui/Pagination'
-import { Seo } from '../components/seo/Seo'
+import { BlogFilter } from '@/components/blog/BlogFilter'
+import { BlogPostCard } from '@/components/blog/BlogPostCard'
+import { SearchStatus } from '@/components/search/SearchStatus'
+import { Seo } from '@/components/seo/Seo'
 import {
   buildBreadcrumbSchema,
   getSiteUrl,
   toAbsoluteUrl,
   type JsonLd,
-} from '../components/seo/shared'
+} from '@/components/seo/shared'
+import { Pagination } from '@/components/ui/Pagination'
+import { useBlogPosts } from '@/hooks/useBlogPosts'
 
 const ITEMS_PER_PAGE = 10
 

@@ -12,8 +12,8 @@ import {
   useTransform,
   type MotionValue,
 } from 'framer-motion'
-import { cn } from '../../utils/cn'
-import { useIsCoarsePointer } from '../../hooks/useIsCoarsePointer'
+import { cn } from '@/lib/utils'
+import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)

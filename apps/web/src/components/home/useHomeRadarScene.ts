@@ -5,8 +5,8 @@ import {
   useRef,
   useState,
 } from 'react'
-import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
-import { useIsCoarsePointer } from '../../hooks/useIsCoarsePointer'
+import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 
 const RADAR_VIRTUAL_SCROLL_FACTOR = 1.08
 const RADAR_VIRTUAL_SCROLL_MIN = 860
@@ -17,6 +17,9 @@ const RADAR_VIRTUAL_SCROLL_MAX_COARSE = 720
 const RADAR_LOCK_TOLERANCE_PX = 36
 const RADAR_LOCK_TOLERANCE_PX_COARSE = 96
 const RADAR_RELEASE_NUDGE_PX = 28
+const RADAR_RETURN_SCROLL_DURATION = 1.02
+const RADAR_RETURN_SUPPRESS_PAGER_MS = 980
+const HOME_PAGER_SUPPRESS_EVENT = 'home:pager-suppress'
 
 const HORIZONTAL_LINE_START = 0.12
 const HORIZONTAL_LINE_END = 0.25
@@ -135,6 +138,22 @@ function getBoundedScrollDistance(
 
 function parsePercent(value: string) {
   return Number.parseFloat(value)
+}
+
+function getSectionReturnScrollTop(
+  sectionName: 'widget' | 'radar',
+  fallbackTop: number
+) {
+  const sectionNode = document.querySelector<HTMLElement>(
+    `[data-home-snap="${sectionName}"]`
+  )
+
+  if (!sectionNode) return fallbackTop
+
+  return Math.max(
+    fallbackTop,
+    fallbackTop + Math.max(0, sectionNode.offsetHeight - window.innerHeight)
+  )
 }
 
 export function getRadarNodeAngle(node: { left: string; top: string }) {
@@ -335,6 +354,32 @@ export function useHomeRadarScene() {
 
       const sectionTop = sectionNode.offsetTop
       requestAnimationFrame(() => {
+        if (direction < 0) {
+          const widgetNode = document.querySelector<HTMLElement>(
+            '[data-home-snap="widget"]'
+          )
+          const widgetTop = widgetNode?.offsetTop ?? sectionTop - window.innerHeight
+          const widgetReturnTop = getSectionReturnScrollTop('widget', widgetTop)
+
+          window.dispatchEvent(
+            new CustomEvent(HOME_PAGER_SUPPRESS_EVENT, {
+              detail: { durationMs: RADAR_RETURN_SUPPRESS_PAGER_MS },
+            })
+          )
+
+          lenis.scrollTo(widgetReturnTop, {
+            duration: reduceMotion ? 0 : RADAR_RETURN_SCROLL_DURATION,
+            immediate: reduceMotion,
+            force: true,
+            lock: true,
+          })
+
+          window.setTimeout(() => {
+            unlockDirectionRef.current = 0
+          }, reduceMotion ? 0 : RADAR_RETURN_SUPPRESS_PAGER_MS)
+          return
+        }
+
         lenis.scrollTo(sectionTop + direction * RADAR_RELEASE_NUDGE_PX, {
           immediate: true,
           force: true,
@@ -342,7 +387,7 @@ export function useHomeRadarScene() {
         unlockDirectionRef.current = 0
       })
     },
-    [lenis]
+    [lenis, reduceMotion]
   )
 
   const applyVirtualScrollDelta = useCallback(

@@ -1,8 +1,8 @@
 import { motion, type MotionValue } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { VerticalCutReveal } from '../ui/vertical-cut-reveal'
-import { cn } from '../../utils/cn'
-import { getImageUrl } from '../../utils/image'
+import { cn } from '@/lib/utils'
+import { getImageUrl } from '@/utils/image'
 import { HomeHeroAvatarScene } from './HomeHeroAvatarScene'
 
 interface HomeHeroSectionProps {

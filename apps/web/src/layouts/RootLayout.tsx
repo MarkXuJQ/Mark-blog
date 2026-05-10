@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
-import { NavBar } from '../components/layout/NavBar'
-import { Footer } from '../components/layout/Footer'
-import { ThemeToggle } from '../components/ui/ThemeToggle'
-import { PageTransitionHost } from '../components/transitions/PageTransitionHost'
-import { GlobalSearchHost } from '../components/search/GlobalSearchHost'
-import { DraggableBackToTop } from '../components/ui/DraggableBackToTop'
-import { GlobalLinkPreview } from '../components/ui/GlobalLinkPreview'
-import { useTheme } from '../hooks/useTheme'
-import { useScrollVisibility } from '../hooks/useScrollVisibility'
+import { Footer } from '@/components/layout/Footer'
+import { NavBar } from '@/components/layout/NavBar'
+import { GlobalSearchHost } from '@/components/search/GlobalSearchHost'
+import { PageTransitionHost } from '@/components/transitions/PageTransitionHost'
+import { DraggableBackToTop } from '@/components/ui/DraggableBackToTop'
+import { GlobalLinkPreview } from '@/components/ui/GlobalLinkPreview'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { useScrollVisibility } from '@/hooks/useScrollVisibility'
+import { useTheme } from '@/hooks/useTheme'
 
 export function RootLayout() {
   const { mode, setMode } = useTheme()

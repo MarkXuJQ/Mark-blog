@@ -1,4 +1,4 @@
-import type { MarkdownPost } from '../types'
+import type { MarkdownPost } from '@/types'
 
 export interface MovieReview {
   slug: string
@@ -25,7 +25,7 @@ const markdownFiles = import.meta.glob<MarkdownMovieReview>(
   { eager: true },
 )
 
-let __cachedReviews: MovieReview[] | null = null
+let cachedReviews: MovieReview[] | null = null
 
 function toReview(path: string, module: MarkdownMovieReview): MovieReview | null {
   const slug = path.split('/').pop()?.replace('.md', '') || ''
@@ -60,14 +60,14 @@ function toReview(path: string, module: MarkdownMovieReview): MovieReview | null
 }
 
 export function getAllMovieReviews(): MovieReview[] {
-  if (__cachedReviews) return __cachedReviews
+  if (cachedReviews) return cachedReviews
 
-  __cachedReviews = Object.entries(markdownFiles)
+  cachedReviews = Object.entries(markdownFiles)
     .map(([path, module]) => toReview(path, module))
     .filter((review): review is MovieReview => Boolean(review))
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
-  return __cachedReviews
+  return cachedReviews
 }
 
 export function getMovieReviewBySlug(slug: string): MovieReview | undefined {
@@ -78,6 +78,7 @@ export function getMovieReviewBySubjectId(
   subjectId: string
 ): MovieReview | undefined {
   if (!subjectId) return undefined
-  return getAllMovieReviews().find((review) => review.movieSubjectId === subjectId)
+  return getAllMovieReviews().find(
+    (review) => review.movieSubjectId === subjectId
+  )
 }
-

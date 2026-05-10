@@ -1,10 +1,14 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { Seo } from '../components/seo/Seo'
-import { SearchInput } from '../components/search/SearchInput'
-import { getAllPosts } from '../utils/posts'
-import { buildBlogSearchDocs, normalizeQuery, searchBlogDocs } from '../components/search/blogSearch'
+import { SearchInput } from '@/components/search/SearchInput'
+import {
+  buildBlogSearchDocs,
+  normalizeQuery,
+  searchBlogDocs,
+} from '@/components/search/blogSearch'
+import { Seo } from '@/components/seo/Seo'
+import { getAllPosts } from '@/lib/content'
 
 export function Search() {
   const { t, i18n } = useTranslation()

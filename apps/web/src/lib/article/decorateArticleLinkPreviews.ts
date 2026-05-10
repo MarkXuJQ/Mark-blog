@@ -1,7 +1,6 @@
-import { getSiteUrl } from '../components/seo/shared'
-import { getMovieReviewBySlug } from './movieReviews'
-import { getImageUrl } from './image'
-import { getPostBySlug } from './posts'
+import { getSiteUrl } from '@/components/seo/shared'
+import { getImageUrl } from '@/utils/image'
+import { getMovieReviewBySlug, getPostBySlug } from '@/lib/content'
 
 function normalizePathname(pathname: string) {
   const normalized = pathname.replace(/\/+$/, '')
@@ -65,10 +64,7 @@ export function decorateArticleLinkPreviews(html: string, language?: string) {
       anchor.setAttribute('data-link-preview-url-label', post.date)
 
       if (post.image) {
-        anchor.setAttribute(
-          'data-link-preview-image',
-          getImageUrl(post.image)
-        )
+        anchor.setAttribute('data-link-preview-image', getImageUrl(post.image))
       }
 
       return

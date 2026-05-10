@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useLightbox } from '../components/ui/Lightbox'
+import { useLightbox } from '@/components/ui/Lightbox'
 
 /**
  * A hook that automatically attaches click handlers to all images within a container

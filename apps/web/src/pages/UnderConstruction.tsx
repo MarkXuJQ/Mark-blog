@@ -1,10 +1,10 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { Card } from '../components/ui/Card'
 import { Construction } from 'lucide-react'
-import { cn } from '../utils/cn'
-import { Seo } from '../components/seo/Seo'
-import { LifeProgress } from '../components/progress/LifeProgress'
+import { LifeProgress } from '@/components/progress/LifeProgress'
+import { Seo } from '@/components/seo/Seo'
+import { Card } from '@/components/ui/Card'
+import { cn } from '@/lib/utils'
 
 export function UnderConstruction() {
   const { t } = useTranslation()

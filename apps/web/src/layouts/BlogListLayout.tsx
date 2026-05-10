@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { LeftSidebarWidget, StatsWidget } from '../components/blog/BlogWidgets'
-import { getAllPosts } from '../utils/posts'
+import { LeftSidebarWidget, StatsWidget } from '@/components/blog/BlogWidgets'
+import { getAllPosts } from '@/lib/content'
 
 export function BlogListLayout() {
   const { i18n } = useTranslation()

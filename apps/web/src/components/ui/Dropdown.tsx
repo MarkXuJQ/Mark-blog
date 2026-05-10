@@ -5,7 +5,7 @@ import React, {
   createContext,
   useContext,
 } from 'react'
-import { cn } from '../../utils/cn'
+import { cn } from '@/lib/utils'
 
 interface DropdownContextType {
   isOpen: boolean

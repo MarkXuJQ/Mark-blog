@@ -8,6 +8,7 @@ const HOME_RADAR_SNAP_THRESHOLD_VIEWPORTS = 0.9
 const HOME_RADAR_RELEASE_THRESHOLD_VIEWPORTS = 0.35
 const HOME_SECTION_EXIT_THRESHOLD_VIEWPORTS = 0.35
 const HOME_SECTION_ENTRY_GAP_VIEWPORTS = 0.08
+const HOME_PAGER_SUPPRESS_EVENT = 'home:pager-suppress'
 const HOME_PAGER_INTERACTIVE_SELECTOR = [
   'input',
   'textarea',
@@ -22,6 +23,24 @@ type HomeSnapSectionName = 'hero' | 'blog' | 'widget' | 'radar'
 interface HomeSnapSection {
   name: HomeSnapSectionName
   top: number
+}
+
+function getSectionReturnTop(
+  sectionName: HomeSnapSectionName,
+  sections: HomeSnapSection[],
+  viewportHeight: number
+) {
+  const sectionNode = document.querySelector<HTMLElement>(
+    `[data-home-snap="${sectionName}"]`
+  )
+  const sectionTop = findSectionTop(sections, sectionName, 0)
+
+  if (!sectionNode) return sectionTop
+
+  return Math.max(
+    sectionTop,
+    sectionTop + Math.max(0, sectionNode.offsetHeight - viewportHeight)
+  )
 }
 
 function isElementWithinInteractiveZone(target: EventTarget | null) {
@@ -57,6 +76,7 @@ function getSnapTargetTop(
   const heroTop = findSectionTop(sections, 'hero', 0)
   const blogTop = findSectionTop(sections, 'blog', viewportHeight)
   const widgetTop = findSectionTop(sections, 'widget', viewportHeight * 2)
+  const widgetReturnTop = getSectionReturnTop('widget', sections, viewportHeight)
   const radarTop =
     sections.find((section) => section.name === 'radar')?.top ?? null
 
@@ -89,7 +109,7 @@ function getSnapTargetTop(
       radarTop + viewportHeight * HOME_RADAR_RELEASE_THRESHOLD_VIEWPORTS &&
     currentScrollY > radarTop - viewportHeight * HOME_SECTION_ENTRY_GAP_VIEWPORTS
   ) {
-    return widgetTop
+    return widgetReturnTop
   }
 
   if (
@@ -131,6 +151,7 @@ export function useHomeSectionPager({
 
     let isPagerLocked = false
     let unlockTimer = 0
+    let pagerSuppressedUntil = 0
 
     const lockPager = () => {
       isPagerLocked = true
@@ -160,6 +181,7 @@ export function useHomeSectionPager({
 
     const trySnap = (direction: 1 | -1) => {
       if (isPagerLocked) return false
+      if (Date.now() < pagerSuppressedUntil) return false
 
       const viewportHeight = Math.max(1, window.innerHeight)
       const sections = getSnapSections()
@@ -209,12 +231,23 @@ export function useHomeSectionPager({
       }
     }
 
+    const handlePagerSuppress = (event: Event) => {
+      const detail = (event as CustomEvent<{ durationMs?: number }>).detail
+      const durationMs = Math.max(0, detail?.durationMs ?? 0)
+      pagerSuppressedUntil = Date.now() + durationMs
+    }
+
     window.addEventListener('wheel', handleWheel, { passive: false })
     window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener(HOME_PAGER_SUPPRESS_EVENT, handlePagerSuppress as EventListener)
 
     return () => {
       window.removeEventListener('wheel', handleWheel)
       window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener(
+        HOME_PAGER_SUPPRESS_EVENT,
+        handlePagerSuppress as EventListener
+      )
       window.clearTimeout(unlockTimer)
     }
   }, [enabled, lenis, prefersReducedMotion])

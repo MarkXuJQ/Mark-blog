@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { cn } from '../../utils/cn'
+import { cn } from '@/lib/utils'
 
 type SegmentedToggleItem<T extends string> = {
   value: T

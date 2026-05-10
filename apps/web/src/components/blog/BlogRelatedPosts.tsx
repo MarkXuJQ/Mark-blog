@@ -2,9 +2,9 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Card } from '../ui/Card'
-import { getImageUrl } from '../../utils/image'
-import { cn } from '../../utils/cn'
-import type { BlogPost, BlogPostSummary } from '../../types'
+import { getImageUrl } from '@/utils/image'
+import { cn } from '@/lib/utils'
+import type { BlogPost, BlogPostSummary } from '@/types'
 
 interface BlogRelatedPostsProps {
   currentPost: BlogPost | null

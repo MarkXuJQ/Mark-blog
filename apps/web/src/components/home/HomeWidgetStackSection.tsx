@@ -14,8 +14,8 @@ import {
   useTransform,
 } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
 import { TravelFootprintPlugin } from './TravelFootprintPlugin'
-import { useIsCoarsePointer } from '../../hooks/useIsCoarsePointer'
 
 const BACKDROP_REVEAL_END = 0
 const SCENE_PROGRESS_MAX_STEP_PER_MS = 0.00105
@@ -362,7 +362,7 @@ const styles = {
   contentViewport:
     'mx-auto h-full w-full max-w-[96rem] overflow-hidden px-4 sm:px-6 lg:px-8',
   contentTrack:
-    'relative min-h-full pt-[14svh] pb-[20svh] sm:pt-[16svh] sm:pb-[22svh] lg:pt-[18svh] lg:pb-[24svh] will-change-transform',
+    'relative min-h-full pt-[10svh] pb-[18svh] sm:pt-[12svh] sm:pb-[20svh] lg:pt-[13svh] lg:pb-[22svh] will-change-transform',
   contentViewportInner: 'relative',
   pluginWrap: 'relative z-10',
   keyframeScene:

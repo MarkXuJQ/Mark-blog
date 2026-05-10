@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { ListFilter, Check, ChevronDown, ArrowDown } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '../../utils/cn'
-import type { SortBy } from '../../hooks/useBlogPosts'
+import { cn } from '@/lib/utils'
+import type { SortBy } from '@/hooks/useBlogPosts'
 import {
   Dropdown,
   DropdownContent,
