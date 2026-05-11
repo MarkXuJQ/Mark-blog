@@ -3,7 +3,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://markxu.icu</id>
     <title>Mark's Space</title>
-    <updated>2026-03-24T00:00:00.000Z</updated>
+    <updated>2026-04-07T00:00:00.000Z</updated>
     <generator>Mark Xu Blog Generator</generator>
     <author>
         <name>Mark Xu</name>
@@ -16,6 +16,34 @@
     <logo>https://markxu.icu/images/IMG_1766.JPG</logo>
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
+    <entry>
+        <title type="html"><![CDATA[Mac Terminal Setup Notes]]></title>
+        <id>https://markxu.icu/blog/mac-terminal-setup-notes</id>
+        <link href="https://markxu.icu/blog/mac-terminal-setup-notes"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img4d29eab0f1dc8.jpeg" type="image/jpeg"/>
+        <updated>2026-04-07T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[My old terminal was packed with oh-my-zsh and plugins I could barely remember, and it looked ugly enough that I did not even want to use it. So I decided to rebuild my terminal from scratch.]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img4d29eab0f1dc8.jpeg" alt="Mac Terminal Setup Notes" /> <p>My old terminal was packed with oh-my-zsh and plugins I could barely remember, and it looked ugly enough that I did not even want to use it. So I decided to rebuild my terminal from scratch.</p> <a class="view-full" href="https://markxu.icu/blog/mac-terminal-setup-notes" target="_blank">Read full article</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[When Open Source Is Only a Prompt: I Found a Ridiculous New Way to Open Source]]></title>
+        <id>https://markxu.icu/blog/prompt-only-open-source</id>
+        <link href="https://markxu.icu/blog/prompt-only-open-source"/>
+        <link rel="enclosure" href="https://img.markxu.icu/imgvoiceinput.jpeg" type="image/jpeg"/>
+        <updated>2026-04-05T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[I recently found a GitHub project called voice-input-src, a voice input app for Mac. The surprising part is that the repository contains only one detailed prompt for AI.]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgvoiceinput.jpeg" alt="When Open Source Is Only a Prompt: I Found a Ridiculous New Way to Open Source" /> <p>I recently found a GitHub project called voice-input-src, a voice input app for Mac. The surprising part is that the repository contains only one detailed prompt for AI.</p> <a class="view-full" href="https://markxu.icu/blog/prompt-only-open-source" target="_blank">Read full article</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[My First Blog]]></title>
         <id>https://markxu.icu/blog/My-first-blog</id>

@@ -5,9 +5,6 @@ import { cn } from '@/lib/utils'
 import {
   easeOutBack,
   easeOutCubic,
-  getBeamRevealProgress,
-  getRadarNodeAngle,
-  getTrailingBeamImpact,
   getSignalShellShift,
   HOME_RADAR_CENTER_Y,
   HOME_RADAR_RING_DURATION,
@@ -20,13 +17,14 @@ import {
 import {
   getNodeDotSize,
   isLightHexColor,
-  NODE_REVEAL_ANGLE_WINDOW,
-  NODE_SCAN_GLOW_ANGLE_WINDOW,
+  RADAR_CATEGORY_LABELS,
+  RADAR_CATEGORY_ORDER,
   RADAR_AXIS_MARKERS,
   RADAR_NODES,
   RING_INSETS,
   SIGNAL_CARD_SIZE_PX,
   SIGNAL_DOT_SIZE_PX,
+  type RadarNodeCategory,
   type RadarNode,
   type SignalPortalState,
   withAlpha,
@@ -34,6 +32,76 @@ import {
 
 interface HomeRadarSectionProps {
   avatarSrc: string
+}
+
+interface DynamicRadarSignal {
+  id: string
+  node: RadarNode
+  left: string
+  top: string
+  createdAtRotation: number
+}
+
+const RADAR_DYNAMIC_SIGNAL_SPACING_MIN = 40
+const RADAR_DYNAMIC_SIGNAL_SPACING_MAX = 90
+const RADAR_DYNAMIC_SIGNAL_SPACING_MEAN = 60
+const RADAR_DYNAMIC_SIGNAL_SPACING_STD_DEV = 12
+const RADAR_DYNAMIC_SIGNAL_ENTER_DISTANCE = 22
+const RADAR_DYNAMIC_SIGNAL_HIT_GLOW_DISTANCE = 34
+const RADAR_DYNAMIC_SIGNAL_FADE_START = 270
+const RADAR_DYNAMIC_SIGNAL_FADE_DISTANCE = 40
+const RADAR_DYNAMIC_SIGNAL_INNER_RADIUS = 22
+const RADAR_DYNAMIC_SIGNAL_OUTER_RADIUS = 43
+const RADAR_DYNAMIC_SIGNAL_MAX_COUNT = 5
+
+function normalizeRadarAngle(angle: number) {
+  const normalized = angle % 360
+  return normalized < 0 ? normalized + 360 : normalized
+}
+
+function getClockwiseRadarDelta(from: number, to: number) {
+  return normalizeRadarAngle(to - from)
+}
+
+function getNormallyBiasedSignalSpacing() {
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const u1 = Math.max(Number.EPSILON, Math.random())
+    const u2 = Math.random()
+    const normalSample =
+      Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2)
+    const spacing =
+      RADAR_DYNAMIC_SIGNAL_SPACING_MEAN +
+      normalSample * RADAR_DYNAMIC_SIGNAL_SPACING_STD_DEV
+
+    if (
+      spacing >= RADAR_DYNAMIC_SIGNAL_SPACING_MIN &&
+      spacing <= RADAR_DYNAMIC_SIGNAL_SPACING_MAX
+    ) {
+      return spacing
+    }
+  }
+
+  return Math.min(
+    RADAR_DYNAMIC_SIGNAL_SPACING_MAX,
+    Math.max(
+      RADAR_DYNAMIC_SIGNAL_SPACING_MIN,
+      RADAR_DYNAMIC_SIGNAL_SPACING_MEAN +
+        (Math.random() - 0.5) * RADAR_DYNAMIC_SIGNAL_SPACING_STD_DEV
+    )
+  )
+}
+
+function getSignalPositionOnBeam(angle: number) {
+  const radius =
+    RADAR_DYNAMIC_SIGNAL_INNER_RADIUS +
+    Math.random() *
+      (RADAR_DYNAMIC_SIGNAL_OUTER_RADIUS - RADAR_DYNAMIC_SIGNAL_INNER_RADIUS)
+  const radians = (angle * Math.PI) / 180
+
+  return {
+    left: `${50 + radius * Math.sin(radians)}%`,
+    top: `${50 - radius * Math.cos(radians)}%`,
+  }
 }
 
 function HomeRadarAvatar({ avatarSrc }: { avatarSrc: string }) {
@@ -59,6 +127,7 @@ function RadarMetaItem({
   label,
   button = false,
   expanded,
+  pressed,
   controlsId,
   onClick,
 }: {
@@ -66,6 +135,7 @@ function RadarMetaItem({
   label: string
   button?: boolean
   expanded?: boolean
+  pressed?: boolean
   controlsId?: string
   onClick?: () => void
 }) {
@@ -81,6 +151,7 @@ function RadarMetaItem({
       <button
         type="button"
         aria-expanded={expanded}
+        aria-pressed={pressed}
         aria-controls={controlsId}
         className={cn(styles.metaItem, styles.metaItemButton)}
         onClick={onClick}
@@ -120,6 +191,11 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
   const { i18n } = useTranslation()
   const isZh = i18n.language?.startsWith('zh')
   const [isSignalListOpen, setIsSignalListOpen] = useState(false)
+  const [activeSignalCategory, setActiveSignalCategory] =
+    useState<RadarNodeCategory>('personal-blog')
+  const [isRadarManuallyPaused, setIsRadarManuallyPaused] = useState(false)
+  const [isPageVisible, setIsPageVisible] = useState(true)
+  const [isRadarSectionVisible, setIsRadarSectionVisible] = useState(true)
   const [signalPortalState, setSignalPortalState] =
     useState<SignalPortalState | null>(null)
   const [signalListPosition, setSignalListPosition] = useState<{
@@ -132,6 +208,25 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
   const signalNodeRefs = useRef<Record<string, HTMLAnchorElement | null>>({})
   const signalPortalFrameRef = useRef<number | null>(null)
   const signalPortalCloseTimeoutRef = useRef<number | null>(null)
+  useEffect(() => {
+    const updateVisibility = () => {
+      setIsPageVisible(document.visibilityState !== 'hidden')
+    }
+
+    updateVisibility()
+    document.addEventListener('visibilitychange', updateVisibility)
+    window.addEventListener('focus', updateVisibility)
+    window.addEventListener('blur', updateVisibility)
+
+    return () => {
+      document.removeEventListener('visibilitychange', updateVisibility)
+      window.removeEventListener('focus', updateVisibility)
+      window.removeEventListener('blur', updateVisibility)
+    }
+  }, [])
+
+  const isRadarPaused =
+    isRadarManuallyPaused || !isPageVisible || !isRadarSectionVisible
   const introEyebrow = isZh
     ? '个人雷达 / Curated orbit'
     : 'Personal radar / Curated orbit'
@@ -139,28 +234,153 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     ? '把我喜欢的博客、网页和有意思的网络角落整理成一个小雷达'
     : 'A slow personal scan of the blogs, experiments, and web corners I keep returning to.'
   const signalCount = String(RADAR_NODES.length).padStart(2, '0')
+  const activeSignalSourceNodes = RADAR_NODES.filter(
+    (node) => node.category === activeSignalCategory
+  )
   const signalListId = 'home-radar-signal-list'
   const {
     activateSignalNode,
     activeNodeId,
     ambienceReveal,
+    beamAngle,
     beamFocusAngle,
-    beamFocusSweepAngle,
-    beamLoopActive,
     beamOpacity,
     beamRotate,
-    beamSweepStartAngle,
-    explorationProgress,
     horizontalLineReveal,
     introReveal,
     progress,
     scheduleSignalNodeDeactivate,
     sectionRef,
     verticalLineReveal,
-  } = useHomeRadarScene()
+  } = useHomeRadarScene({ paused: isRadarPaused })
   const activeNode = activeNodeId
     ? (RADAR_NODES.find((node) => node.id === activeNodeId) ?? null)
     : null
+
+  const [dynamicSignals, setDynamicSignals] = useState<DynamicRadarSignal[]>(
+    []
+  )
+  const previousBeamAngleRef = useRef(beamAngle)
+  const totalBeamRotationRef = useRef(beamAngle)
+  const nextSignalRotationRef = useRef(
+    beamAngle + getNormallyBiasedSignalSpacing()
+  )
+  const dynamicSignalSequenceRef = useRef(0)
+  const nextSignalNodeIndexRef = useRef(0)
+
+  useEffect(() => {
+    const sectionNode = sectionRef.current
+    if (!sectionNode || typeof IntersectionObserver === 'undefined') return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsRadarSectionVisible(entry.isIntersecting)
+      },
+      {
+        threshold: 0.08,
+      }
+    )
+
+    observer.observe(sectionNode)
+
+    return () => observer.disconnect()
+  }, [sectionRef])
+
+  useEffect(() => {
+    if (beamOpacity <= 0.02) {
+      previousBeamAngleRef.current = beamAngle
+      totalBeamRotationRef.current = beamAngle
+      nextSignalRotationRef.current =
+        beamAngle + getNormallyBiasedSignalSpacing()
+      setDynamicSignals((current) => (current.length > 0 ? [] : current))
+      return
+    }
+
+    if (isRadarPaused) {
+      previousBeamAngleRef.current = beamAngle
+      return
+    }
+
+    const previousAngle = previousBeamAngleRef.current
+    const angleDelta = getClockwiseRadarDelta(previousAngle, beamAngle)
+
+    previousBeamAngleRef.current = beamAngle
+    totalBeamRotationRef.current += angleDelta
+
+    if (angleDelta <= 0) {
+      return
+    }
+
+    const currentRotation = totalBeamRotationRef.current
+    const liveSignals = dynamicSignals.filter(
+      (signal) =>
+        currentRotation - signal.createdAtRotation <
+        RADAR_DYNAMIC_SIGNAL_FADE_START + RADAR_DYNAMIC_SIGNAL_FADE_DISTANCE
+    )
+    const nextSignals: DynamicRadarSignal[] = []
+
+    while (
+      currentRotation >= nextSignalRotationRef.current &&
+      nextSignals.length < 1 &&
+      liveSignals.length + nextSignals.length < RADAR_DYNAMIC_SIGNAL_MAX_COUNT
+    ) {
+      const targetAngle = beamFocusAngle
+      const occupiedNodeIds = new Set([
+        ...liveSignals.map((signal) => signal.node.id),
+        ...nextSignals.map((signal) => signal.node.id),
+      ])
+      let node = RADAR_NODES[nextSignalNodeIndexRef.current % RADAR_NODES.length]
+
+      for (let offset = 0; offset < RADAR_NODES.length; offset += 1) {
+        const candidateIndex =
+          (nextSignalNodeIndexRef.current + offset) % RADAR_NODES.length
+        const candidate = RADAR_NODES[candidateIndex]
+
+        if (!occupiedNodeIds.has(candidate.id)) {
+          node = candidate
+          nextSignalNodeIndexRef.current =
+            (candidateIndex + 1) % RADAR_NODES.length
+          break
+        }
+      }
+
+      const { left, top } = getSignalPositionOnBeam(targetAngle)
+
+      dynamicSignalSequenceRef.current += 1
+      nextSignals.push({
+        id: `${node.id}-${currentRotation.toFixed(2)}-${dynamicSignalSequenceRef.current}`,
+        node,
+        left,
+        top,
+        createdAtRotation: currentRotation,
+      })
+
+      nextSignalRotationRef.current =
+        currentRotation + getNormallyBiasedSignalSpacing()
+    }
+
+    setDynamicSignals((current) => {
+      const currentLiveSignals = current.filter(
+        (signal) =>
+          currentRotation - signal.createdAtRotation <
+          RADAR_DYNAMIC_SIGNAL_FADE_START +
+            RADAR_DYNAMIC_SIGNAL_FADE_DISTANCE
+      )
+
+      if (
+        nextSignals.length === 0 &&
+        currentLiveSignals.length === current.length
+      ) {
+        return current
+      }
+
+      const combined = [...currentLiveSignals, ...nextSignals]
+
+      return combined.slice(
+        Math.max(0, combined.length - RADAR_DYNAMIC_SIGNAL_MAX_COUNT)
+      )
+    })
+  }, [beamAngle, beamFocusAngle, beamOpacity, dynamicSignals, isRadarPaused])
 
   const measureSignalPortalLayout = (node: RadarNode) => {
     const triggerRect = signalNodeRefs.current[node.id]?.getBoundingClientRect()
@@ -411,8 +631,11 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
             </div>
 
             <RadarMetaItem
-              value={isZh ? '动态' : 'Live'}
-              label={isZh ? '扫描' : 'Sweep'}
+              value={isRadarManuallyPaused ? (isZh ? '暂停' : 'Paused') : isZh ? '扫描' : 'Sweep'}
+              label={isRadarManuallyPaused ? (isZh ? '继续' : 'Resume') : isZh ? '动态' : 'Live'}
+              button
+              pressed={isRadarManuallyPaused}
+              onClick={() => setIsRadarManuallyPaused((paused) => !paused)}
             />
           </div>
         </div>
@@ -481,42 +704,15 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
 
             <HomeRadarAvatar avatarSrc={avatarSrc} />
 
-            {RADAR_NODES.map((node) => {
-              const nodeAngle = getRadarNodeAngle(node)
-              const isNodeActive = activeNodeId === node.id
-              const isNodePortalActive = signalPortalState?.node.id === node.id
+            {dynamicSignals.map((signal) => {
+              const node = signal.node
               const nodeLabel = isZh ? node.label.zh : node.label.en
               const nodeEyebrow = isZh ? node.eyebrow.zh : node.eyebrow.en
               const nodeDescription = isZh
                 ? node.description.zh
                 : node.description.en
-              const nodeRevealRaw =
-                explorationProgress <= 0
-                  ? 0
-                  : beamLoopActive
-                    ? 1
-                    : getBeamRevealProgress(
-                        beamFocusSweepAngle,
-                        nodeAngle,
-                        NODE_REVEAL_ANGLE_WINDOW,
-                        beamSweepStartAngle
-                      )
-              const nodeOpacity = easeOutCubic(nodeRevealRaw)
-              const nodeScale = mix(0.36, 1, easeOutBack(nodeRevealRaw))
-              const scanGlowRaw =
-                explorationProgress <= 0
-                  ? 0
-                  : getTrailingBeamImpact(
-                      beamFocusAngle,
-                      nodeAngle,
-                      NODE_SCAN_GLOW_ANGLE_WINDOW
-                    )
-              const scanGlow = easeOutCubic(scanGlowRaw)
-              const scanPulseProgress = 1 - scanGlowRaw
-              const scanPulseTravel = easeOutCubic(scanPulseProgress)
               const dotSize = getNodeDotSize(node)
-              const pulseFieldSize = dotSize + 46
-              const pulseStartScale = dotSize / pulseFieldSize
+              const pulseFieldSize = dotSize + 56
               const useDarkCardText = isLightHexColor(node.color)
               const cardTextColor = useDarkCardText ? '#0F172A' : '#FFFFFF'
               const cardMutedTextColor = useDarkCardText
@@ -527,7 +723,6 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                 10 - (node.dotScaleSteps ?? 0) * 2
               )
               const faviconScale = 1.12 + (node.dotScaleSteps ?? 0) * 0.08
-              const restShellShadow = 'none'
               const { shiftX, shiftY } = getSignalShellShift(
                 node,
                 SIGNAL_CARD_SIZE_PX,
@@ -540,48 +735,47 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
               const signalShellBorderColor = 'transparent'
               const signalIconFrameBackground = '#FFFFFF'
               const signalIconFrameBorderColor = '#E2E8F0'
-              const signalScanGlowOpacity = isNodePortalActive
-                ? 0
-                : scanGlow * 0.92
-              const signalScanGlowScale = mix(0.92, 1.14, scanGlow)
-              const signalPulseFieldOpacity = isNodePortalActive
-                ? 0
-                : Math.min(1, scanGlow * 0.82)
-              const signalPulseHaloOpacity = isNodePortalActive
-                ? 0
-                : Math.min(1, scanGlow * 0.9)
-              const signalPulseHaloScale = mix(
-                pulseStartScale * 0.96,
-                1.18,
-                scanPulseTravel
-              )
-              const signalPulseRingOpacity = isNodePortalActive
-                ? 0
-                : Math.min(1, scanGlow * 0.96)
-              const signalPulseRingScale = mix(
-                pulseStartScale,
-                1.38,
-                scanPulseTravel
-              )
-              const signalPulseEchoOpacity = isNodePortalActive
-                ? 0
-                : Math.min(1, scanGlow * 0.56)
-              const signalPulseEchoScale = mix(
-                pulseStartScale,
-                1.58,
-                scanPulseTravel
-              )
               const signalIconFrameScale = 1
               const signalIconFrameShadow =
-                scanGlow > 0.001
-                  ? `0 12px 18px -14px rgba(15,23,42,0.14), 0 0 ${
-                      14 + scanGlow * 20
-                    }px ${withAlpha(node.color, 0.26 + scanGlow * 0.18)}`
-                  : '0 12px 18px -14px rgba(15,23,42,0.14)'
+                '0 12px 18px -14px rgba(15,23,42,0.14)'
+              const signalAge =
+                totalBeamRotationRef.current - signal.createdAtRotation
+              const enterProgress = easeOutBack(
+                Math.min(
+                  1,
+                  Math.max(
+                    0,
+                    signalAge / RADAR_DYNAMIC_SIGNAL_ENTER_DISTANCE
+                  )
+                )
+              )
+              const hitGlowProgress = Math.max(
+                0,
+                1 - signalAge / RADAR_DYNAMIC_SIGNAL_HIT_GLOW_DISTANCE
+              )
+              const fadeProgress = Math.min(
+                1,
+                Math.max(
+                  0,
+                  (signalAge - RADAR_DYNAMIC_SIGNAL_FADE_START) /
+                  RADAR_DYNAMIC_SIGNAL_FADE_DISTANCE
+                )
+              )
+              const signalOpacity = enterProgress * (1 - fadeProgress)
+              const signalScale =
+                mix(0.42, 1, enterProgress) * mix(1, 0.88, fadeProgress)
+              const pulseOpacity =
+                Math.max(0, 0.86 - fadeProgress * 0.92) *
+                Math.max(0.18, enterProgress)
+              const pulseScale =
+                mix(0.7, 1.08, enterProgress) + fadeProgress * 0.2
+              const hitGlowOpacity = hitGlowProgress * (1 - fadeProgress)
+              const hitGlowScale = mix(0.72, 1.28, easeOutCubic(hitGlowProgress))
+              const rippleDelay = `-${(signal.createdAtRotation % 1.8).toFixed(2)}s`
 
               return (
                 <a
-                  key={node.id}
+                  key={signal.id}
                   ref={(element) => {
                     signalNodeRefs.current[node.id] = element
                   }}
@@ -592,20 +786,20 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                   title={nodeLabel}
                   className={cn(
                     styles.signalLink,
-                    isNodeActive && styles.signalLinkActive
+                    activeNodeId === node.id && styles.signalLinkActive
                   )}
                   onPointerEnter={() => activateSignalNode(node.id)}
                   onPointerLeave={() => scheduleSignalNodeDeactivate(node.id)}
                   onFocus={() => activateSignalNode(node.id)}
                   onBlur={() => scheduleSignalNodeDeactivate(node.id)}
                   style={{
-                    left: node.left,
-                    top: node.top,
+                    left: signal.left,
+                    top: signal.top,
                     width: dotSize,
                     height: dotSize,
-                    opacity: nodeOpacity,
-                    scale: nodeScale,
-                    pointerEvents: nodeOpacity < 0.98 ? 'none' : 'auto',
+                    opacity: signalOpacity,
+                    scale: signalScale,
+                    pointerEvents: signalOpacity >= 0.85 ? 'auto' : 'none',
                   }}
                 >
                   <span
@@ -626,47 +820,46 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                     style={{
                       width: pulseFieldSize,
                       height: pulseFieldSize,
-                      opacity: signalPulseFieldOpacity,
+                      opacity: pulseOpacity,
                     }}
                   >
                     <span
                       className={styles.signalPulseHalo}
                       style={{
-                        opacity: signalPulseHaloOpacity,
-                        scale: signalPulseHaloScale,
+                        opacity: pulseOpacity * 0.8,
+                        scale: pulseScale,
                         background: `radial-gradient(circle, ${withAlpha(
                           node.color,
-                          0.32 + scanGlow * 0.16
-                        )} 0%, ${withAlpha(node.color, 0.12 + scanGlow * 0.08)} 34%, ${withAlpha(
+                          0.22
+                        )} 0%, ${withAlpha(node.color, 0.1)} 34%, ${withAlpha(
                           node.color,
                           0
                         )} 60%)`,
                       }}
                     />
                     <span
-                      className={styles.signalPulseRing}
+                      className={cn(
+                        styles.signalPulseRing,
+                        styles.signalPulseRipple
+                      )}
                       style={{
-                        opacity: signalPulseRingOpacity,
-                        scale: signalPulseRingScale,
-                        borderColor: withAlpha(
-                          node.color,
-                          0.28 + scanGlow * 0.24
-                        ),
-                        boxShadow: `0 0 ${16 + scanGlow * 18}px ${withAlpha(
-                          node.color,
-                          0.18 + scanGlow * 0.12
-                        )}`,
+                        opacity: pulseOpacity * 0.7,
+                        scale: pulseScale + 0.08,
+                        borderColor: withAlpha(node.color, 0.3),
+                        boxShadow: `0 0 20px ${withAlpha(node.color, 0.16)}`,
+                        animationDelay: rippleDelay,
                       }}
                     />
                     <span
-                      className={styles.signalPulseEcho}
+                      className={cn(
+                        styles.signalPulseEcho,
+                        styles.signalPulseRippleSlow
+                      )}
                       style={{
-                        opacity: signalPulseEchoOpacity,
-                        scale: signalPulseEchoScale,
-                        borderColor: withAlpha(
-                          node.color,
-                          0.12 + scanGlow * 0.1
-                        ),
+                        opacity: pulseOpacity * 0.42,
+                        scale: pulseScale + 0.24,
+                        borderColor: withAlpha(node.color, 0.12),
+                        animationDelay: rippleDelay,
                       }}
                     />
                   </span>
@@ -677,11 +870,11 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                     style={{
                       width: dotSize,
                       height: dotSize,
-                      opacity: isNodePortalActive ? 0 : nodeOpacity,
+                      opacity: activeNodeId === node.id ? 0 : signalOpacity,
                       borderRadius: dotSize,
                       background: signalShellBackground,
                       borderColor: signalShellBorderColor,
-                      boxShadow: restShellShadow,
+                      boxShadow: 'none',
                       ['--signal-shell-translate' as string]: '0 0',
                     }}
                   >
@@ -689,12 +882,12 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                       aria-hidden="true"
                       className={styles.signalScanGlow}
                       style={{
-                        opacity: signalScanGlowOpacity,
-                        scale: signalScanGlowScale,
+                        opacity: 0.18 + hitGlowOpacity * 0.58,
+                        scale: Math.max(1.02, hitGlowScale),
                         background: `radial-gradient(circle, ${withAlpha(
                           node.color,
-                          0.48
-                        )} 0%, ${withAlpha(node.color, 0.18)} 44%, ${withAlpha(
+                          0.42 + hitGlowOpacity * 0.18
+                        )} 0%, ${withAlpha(node.color, 0.16)} 44%, ${withAlpha(
                           node.color,
                           0
                         )} 74%)`,
@@ -928,6 +1121,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
               id={signalListId}
               aria-label={isZh ? '雷达信号列表' : 'Radar signal list'}
               className={styles.signalSourceList}
+              onWheel={(event) => event.stopPropagation()}
               style={{
                 position: 'fixed',
                 top: signalListPosition.top,
@@ -944,8 +1138,46 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                 </span>
               </div>
 
-              <div className={styles.signalSourceListBody}>
-                {RADAR_NODES.map((node) => (
+              <div
+                className={styles.signalSourceTabs}
+                role="tablist"
+                aria-label={isZh ? '信号分类' : 'Signal categories'}
+              >
+                {RADAR_CATEGORY_ORDER.map((category) => {
+                  const isActiveCategory = activeSignalCategory === category
+                  const categoryLabel = isZh
+                    ? RADAR_CATEGORY_LABELS[category].zh
+                    : RADAR_CATEGORY_LABELS[category].en
+                  const categoryCount = RADAR_NODES.filter(
+                    (node) => node.category === category
+                  ).length
+
+                  return (
+                    <button
+                      key={category}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActiveCategory}
+                      className={cn(
+                        styles.signalSourceTab,
+                        isActiveCategory && styles.signalSourceTabActive
+                      )}
+                      onClick={() => setActiveSignalCategory(category)}
+                    >
+                      <span>{categoryLabel}</span>
+                      <span className={styles.signalSourceTabCount}>
+                        {String(categoryCount).padStart(2, '0')}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              <div
+                className={styles.signalSourceListBody}
+                onWheel={(event) => event.stopPropagation()}
+              >
+                {activeSignalSourceNodes.map((node) => (
                   <a
                     key={node.id}
                     href={node.href}
@@ -1013,8 +1245,16 @@ const styles = {
     'text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-slate-500/82 dark:text-white/44',
   signalSourceListCount:
     'text-sm font-semibold tracking-[0.02em] text-slate-900 dark:text-white/88',
+  signalSourceTabs:
+    'mb-2 grid grid-cols-2 gap-1 rounded-[18px] border border-slate-200/78 bg-slate-100/70 p-1 dark:border-white/10 dark:bg-white/[0.045]',
+  signalSourceTab:
+    'inline-flex min-w-0 items-center justify-center gap-2 rounded-[14px] px-2.5 py-2 text-[0.72rem] font-semibold text-slate-500/82 transition-[background-color,color,box-shadow,transform] duration-200 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/45 dark:text-white/46 dark:hover:text-white/88',
+  signalSourceTabActive:
+    'bg-white text-slate-950 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.22)] dark:bg-white/12 dark:text-white',
+  signalSourceTabCount:
+    'shrink-0 font-[var(--font-pixel)] text-[0.62rem] opacity-60',
   signalSourceListBody:
-    'grid max-h-[min(18rem,45svh)] gap-1.5 overflow-y-auto pr-1',
+    'grid max-h-[min(18rem,45svh)] gap-1.5 overflow-y-auto overscroll-contain pr-1',
   signalSourceItem:
     'group flex items-center gap-3 rounded-[18px] px-3 py-2.5 text-left transition-colors duration-200 hover:bg-slate-100/84 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/45 dark:hover:bg-white/6 dark:focus-visible:ring-cyan-300/45',
   signalSourceIconWrap:
@@ -1073,6 +1313,10 @@ const styles = {
     'absolute inset-0 rounded-full border transition-[opacity,scale,border-color,box-shadow] duration-[120ms] ease-out',
   signalPulseEcho:
     'absolute inset-0 rounded-full border transition-[opacity,scale,border-color] duration-[160ms] ease-out',
+  signalPulseRipple:
+    '[animation:radar-signal-ripple_1.8s_cubic-bezier(0.16,1,0.3,1)_both] [@media(prefers-reduced-motion:reduce)]:[animation:none]',
+  signalPulseRippleSlow:
+    '[animation:radar-signal-ripple_2.35s_cubic-bezier(0.16,1,0.3,1)_both] [@media(prefers-reduced-motion:reduce)]:[animation:none]',
   signalScanGlow:
     'pointer-events-none absolute inset-0 rounded-full transition-[opacity,scale] duration-[180ms] ease-out',
   signalShell:

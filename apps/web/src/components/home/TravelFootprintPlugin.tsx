@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import {
   motion,
   type MotionStyle,
@@ -9,7 +9,7 @@ import {
   useSpring,
   useTransform,
 } from 'framer-motion'
-import { ExternalLink, MapPinned } from 'lucide-react'
+import { ExternalLink, MapPinned, MousePointer2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { useDeferredRender } from '@/hooks/useDeferredRender'
@@ -393,6 +393,7 @@ function TravelFootprintMapPanel({
   isZh: boolean
   style?: MotionStyle
 }) {
+  const [isMapInteractive, setIsMapInteractive] = useState(false)
   const { targetRef, shouldRender } = useDeferredRender<HTMLDivElement>({
     rootMargin: '320px 0px',
   })
@@ -423,23 +424,49 @@ function TravelFootprintMapPanel({
             href={FULL_MAP_URL}
             target="_blank"
             rel="noreferrer"
-            className={styles.headerAction}
+            className={styles.mapActionButton}
           >
             <span>{isZh ? '打开完整地图' : 'Open full map'}</span>
-            <ExternalLink className={styles.headerActionIcon} />
+            <ExternalLink className={styles.mapActionIcon} />
           </a>
+          <button
+            type="button"
+            aria-pressed={isMapInteractive}
+            className={cn(
+              styles.mapActionButton,
+              isMapInteractive && styles.mapActionButtonActive
+            )}
+            onClick={() => setIsMapInteractive((current) => !current)}
+          >
+            <MousePointer2 className={styles.mapActionIcon} />
+            <span>{isZh ? '进行交互' : 'Interact'}</span>
+          </button>
         </div>
       </div>
 
-      <div ref={targetRef} className={styles.embedViewport}>
+      <div
+        ref={targetRef}
+        className={cn(
+          styles.embedViewport,
+          isMapInteractive && styles.embedViewportInteractive
+        )}
+      >
         {shouldRender ? (
+          <>
           <iframe
             title={isZh ? '旅行地图交互窗口' : 'Interactive travel map'}
             src={EMBED_MAP_URL}
             loading="lazy"
             referrerPolicy="strict-origin-when-cross-origin"
-            className={styles.embedFrame}
+            className={cn(
+              styles.embedFrame,
+              !isMapInteractive && styles.embedFrameLocked
+            )}
           />
+          {!isMapInteractive ? (
+            <div aria-hidden="true" className={styles.embedInteractionVeil} />
+          ) : null}
+          </>
         ) : (
           <div
             aria-hidden="true"
@@ -534,10 +561,12 @@ const styles = {
   metricCluster: 'flex flex-wrap gap-2',
   metricPill:
     'inline-flex items-center rounded-full border border-cyan-300/16 bg-cyan-300/[0.08] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-cyan-50/88',
-  headerAction:
-    'group inline-flex items-center gap-2 pt-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-white/52 transition-[transform,color] duration-300 hover:-translate-y-0.5 hover:text-cyan-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/55 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
-  headerActionIcon:
-    'h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5',
+  mapActionButton:
+    'group inline-flex items-center justify-center gap-2 rounded-full border border-cyan-200/14 bg-white/[0.045] px-3.5 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/58 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-[transform,color,background-color,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-cyan-200/28 hover:bg-cyan-200/[0.08] hover:text-cyan-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/55 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 active:translate-y-0.5',
+  mapActionButtonActive:
+    'translate-y-0.5 border-cyan-200/42 bg-cyan-300/[0.16] text-cyan-50 shadow-[inset_0_2px_8px_rgba(8,47,73,0.36),0_0_28px_rgba(34,211,238,0.14)] hover:translate-y-0.5',
+  mapActionIcon:
+    'h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:scale-105',
   mapViewport:
     'relative aspect-[2.28/1] w-full overflow-visible sm:aspect-[2.42/1]',
   mapGlow:
@@ -547,8 +576,14 @@ const styles = {
     'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_32px_rgba(181,232,251,0.36)]',
   embedViewport:
     'relative mt-4 overflow-hidden rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,#0d141a_0%,#091016_100%)] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]',
+  embedViewportInteractive:
+    'border-cyan-200/22 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_36px_rgba(34,211,238,0.08)]',
   embedFrame:
     'relative block aspect-square w-full rounded-[20px] border-0 bg-[#10161a] shadow-[0_18px_40px_-28px_rgba(0,0,0,0.78)]',
+  embedFrameLocked:
+    'pointer-events-none saturate-[0.92]',
+  embedInteractionVeil:
+    'absolute inset-2 rounded-[20px] bg-[radial-gradient(circle_at_50%_42%,rgba(255,255,255,0.035)_0%,rgba(255,255,255,0)_48%)]',
   embedPlaceholder:
     'flex items-center justify-center overflow-hidden border border-white/6 bg-[linear-gradient(180deg,#0f171d_0%,#101921_52%,#0d141a_100%)] text-center',
   embedPlaceholderGlow:

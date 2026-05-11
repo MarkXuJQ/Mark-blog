@@ -1,16 +1,42 @@
+import radarSites from '@content/Radar/sites.json'
+import dbushellFavicon from '../../assets/home/radar/dbushell.png'
 import eventuallymakingFavicon from '../../assets/home/radar/eventuallymaking.png'
+import geokashFavicon from '../../assets/home/radar/geokash.png'
 import joshwcomeauFavicon from '../../assets/home/radar/joshwcomeau.png'
 import messengerFavicon from '../../assets/home/radar/messenger.png'
+import nineteenHundredFavicon from '../../assets/home/radar/nineteen-hundred.png'
 import pathosFavicon from '../../assets/home/radar/pathos.png'
 import radiogardenFavicon from '../../assets/home/radar/radiogarden.png'
+import rleonardiFavicon from '../../assets/home/radar/rleonardi.png'
 import ruanyifengFavicon from '../../assets/home/radar/ruanyifeng.png'
 import tongliaoFavicon from '../../assets/home/radar/tongliao.png'
+import uselesswebFavicon from '../../assets/home/radar/uselessweb.png'
+import zhheoFavicon from '../../assets/home/radar/zhheo.png'
+import zhiluFavicon from '../../assets/home/radar/zhilu.png'
+
+const RADAR_FAVICONS = {
+  dbushell: dbushellFavicon,
+  eventuallymaking: eventuallymakingFavicon,
+  geokash: geokashFavicon,
+  joshwcomeau: joshwcomeauFavicon,
+  messenger: messengerFavicon,
+  'nineteen-hundred': nineteenHundredFavicon,
+  pathos: pathosFavicon,
+  radiogarden: radiogardenFavicon,
+  rleonardi: rleonardiFavicon,
+  ruanyifeng: ruanyifengFavicon,
+  tongliao: tongliaoFavicon,
+  uselessweb: uselesswebFavicon,
+  zhheo: zhheoFavicon,
+  zhilu: zhiluFavicon,
+} as const
+
+export type RadarNodeCategory = 'personal-blog' | 'interesting-site'
 
 export interface RadarNode {
   id: string
+  category: RadarNodeCategory
   href: string
-  left: string
-  top: string
   faviconSrc: string
   label: {
     zh: string
@@ -30,6 +56,10 @@ export interface RadarNode {
   dotScaleSteps?: number
 }
 
+interface RadarSiteContentItem extends Omit<RadarNode, 'faviconSrc'> {
+  faviconKey: keyof typeof RADAR_FAVICONS
+}
+
 export interface SignalPortalState {
   node: RadarNode
   originTop: number
@@ -40,146 +70,25 @@ export interface SignalPortalState {
   expanded: boolean
 }
 
-const RADAR_SIGNAL_GREEN = '#10A64B'
-const RADAR_SIGNAL_ORANGE = '#FF6F43'
-const RADAR_SIGNAL_VIOLET = '#7670E8'
-const RADAR_SIGNAL_YELLOW = '#F4C433'
+export const RADAR_CATEGORY_ORDER = [
+  'personal-blog',
+  'interesting-site',
+] as const satisfies RadarNodeCategory[]
 
-export const RADAR_NODES: RadarNode[] = [
-  {
-    id: 'ruanyifeng',
-    href: 'https://www.ruanyifeng.com/blog/',
-    left: '79%',
-    top: '29%',
-    faviconSrc: ruanyifengFavicon,
-    label: { zh: '阮一峰的网络日志', en: "Ruanyifeng's Blog" },
-    eyebrow: {
-      zh: '科技写作 / 编程观察',
-      en: 'Tech essays / Programming notes',
-    },
-    description: {
-      zh: '长期更新的中文技术博客，围绕编程方法、工具趋势与科技周刊展开。',
-      en: 'A long-running Chinese tech blog about programming practice, tools, and weekly observations on the web.',
-    },
-    cardAlignX: 'right',
-    cardAlignY: 'bottom',
-    color: RADAR_SIGNAL_ORANGE,
-  },
-  {
-    id: 'eventuallymaking',
-    href: 'https://eventuallymaking.io/',
-    left: '23%',
-    top: '33%',
-    faviconSrc: eventuallymakingFavicon,
-    label: { zh: 'Eventuallymaking', en: 'Eventuallymaking' },
-    eyebrow: {
-      zh: '软件工程 / 创业笔记',
-      en: 'Software engineering / Startups',
-    },
-    description: {
-      zh: '一位拥有二十多年经验的软件工程师，持续分享技术、产品和创业实践。',
-      en: 'A veteran software engineer sharing notes on technology, product building, and startups.',
-    },
-    cardAlignX: 'left',
-    cardAlignY: 'bottom',
-    color: RADAR_SIGNAL_VIOLET,
-  },
-  {
-    id: 'messenger',
-    href: 'https://messenger.abeto.co/',
-    left: '17%',
-    top: '66%',
-    faviconSrc: messengerFavicon,
-    label: { zh: 'Messenger', en: 'Messenger' },
-    eyebrow: {
-      zh: '独立网页游戏',
-      en: 'Indie web game',
-    },
-    description: {
-      zh: '“星球虽小，总得有人送货。”一款气质很强的太空投递小游戏。',
-      en: `"It's a small planet, but someone's gotta make the deliveries." A tiny space-delivery web game with attitude.`,
-    },
-    cardAlignX: 'left',
-    cardAlignY: 'top',
-    color: RADAR_SIGNAL_GREEN,
-  },
-  {
-    id: 'radiogarden',
-    href: 'https://radio.garden/visit/washington-dc/DIlWBUQt',
-    left: '34%',
-    top: '78%',
-    faviconSrc: radiogardenFavicon,
-    label: { zh: 'Radio Garden', en: 'Radio Garden' },
-    eyebrow: {
-      zh: 'Washington DC / Live radio',
-      en: 'Washington DC / Live radio',
-    },
-    description: {
-      zh: '直接落到 Washington DC 的收听页，像在地球仪上旋钮式漫游全球电台。',
-      en: 'Drops straight into the Washington DC listening view, a globe-like way to wander through live radio stations.',
-    },
-    cardAlignX: 'center',
-    cardAlignY: 'top',
-    color: RADAR_SIGNAL_GREEN,
-  },
-  {
-    id: 'joshwcomeau',
-    href: 'https://www.joshwcomeau.com/',
-    left: '50%',
-    top: '12%',
-    faviconSrc: joshwcomeauFavicon,
-    label: { zh: 'Josh W. Comeau', en: 'Josh W. Comeau' },
-    eyebrow: {
-      zh: 'React / CSS / Animation',
-      en: 'React / CSS / Animation',
-    },
-    description: {
-      zh: '面向开发者的友好教程站点，内容聚焦 React、CSS、动画与前端体验。',
-      en: 'Friendly tutorials for developers, focused on React, CSS, animation, and front-end craft.',
-    },
-    cardAlignX: 'center',
-    cardAlignY: 'bottom',
-    color: RADAR_SIGNAL_VIOLET,
-  },
-  {
-    id: 'pathos',
-    href: 'https://pathos.page/',
-    left: '67%',
-    top: '74%',
-    faviconSrc: pathosFavicon,
-    label: { zh: 'Pathos.page', en: 'Pathos.page' },
-    eyebrow: {
-      zh: '2750 words / 法哲学',
-      en: '2750 words / Legal philosophy',
-    },
-    description: {
-      zh: '一个法哲学研究者的博客，记录学术写作、问题意识与社会观察。',
-      en: 'A blog by a legal philosophy researcher, documenting scholarship, writing, and social observation.',
-    },
-    cardAlignX: 'right',
-    cardAlignY: 'top',
-    color: RADAR_SIGNAL_YELLOW,
-  },
-  {
-    id: 'tongliao',
-    href: 'https://www.tongliaouniverse.cn/',
-    left: '85%',
-    top: '57%',
-    faviconSrc: tongliaoFavicon,
-    label: { zh: '通辽宇宙知识库', en: 'Tongliao Universe' },
-    eyebrow: {
-      zh: '小国梗 / 历史狠人',
-      en: 'Microstates / History lore',
-    },
-    description: {
-      zh: '围绕奇葩小国、硬核历史人物与通辽宇宙梗文化展开的互动知识站。',
-      en: 'An interactive knowledge base about eccentric microstates, hard-core historical figures, and Tongliao Universe lore.',
-    },
-    cardAlignX: 'right',
-    cardAlignY: 'top',
-    color: RADAR_SIGNAL_VIOLET,
-  },
-]
+export const RADAR_CATEGORY_LABELS: Record<
+  RadarNodeCategory,
+  { zh: string; en: string }
+> = {
+  'personal-blog': { zh: '个人博客', en: 'Personal blogs' },
+  'interesting-site': { zh: '有意思的网站', en: 'Interesting sites' },
+}
+
+export const RADAR_NODES: RadarNode[] = (
+  radarSites as RadarSiteContentItem[]
+).map(({ faviconKey, ...site }) => ({
+  ...site,
+  faviconSrc: RADAR_FAVICONS[faviconKey] ?? RADAR_FAVICONS.ruanyifeng,
+}))
 
 export const RING_INSETS = ['8%', '18%', '30%', '42%', '54%']
 export const NODE_REVEAL_ANGLE_WINDOW = 18
