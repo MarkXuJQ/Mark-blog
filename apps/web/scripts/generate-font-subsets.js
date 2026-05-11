@@ -190,7 +190,7 @@ function resolveFontSource(options) {
     if (exact) return exact
   }
 
-  return candidates[0] ?? null
+  return null
 }
 
 function uniqueGlyphText(input) {
