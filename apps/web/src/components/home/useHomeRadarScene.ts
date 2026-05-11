@@ -136,10 +136,6 @@ function getBoundedScrollDistance(
   return Math.min(max, Math.max(min, viewportHeight * factor))
 }
 
-function parsePercent(value: string) {
-  return Number.parseFloat(value)
-}
-
 function getSectionReturnScrollTop(
   sectionName: 'widget' | 'radar',
   fallbackTop: number
@@ -156,13 +152,7 @@ function getSectionReturnScrollTop(
   )
 }
 
-export function getRadarNodeAngle(node: { left: string; top: string }) {
-  const x = parsePercent(node.left) - 50
-  const y = parsePercent(node.top) - 50
-  return ((Math.atan2(y, x) * 180) / Math.PI + 90 + 360) % 360
-}
-
-export function useHomeRadarScene() {
+export function useHomeRadarScene({ paused = false }: { paused?: boolean } = {}) {
   const reduceMotion = usePrefersReducedMotion()
   const isCoarsePointer = useIsCoarsePointer()
   const lenis = useLenis()
@@ -591,8 +581,9 @@ export function useHomeRadarScene() {
 
   const explorationProgress = reduceMotion ? 1 : autoExplorationProgress
   const sweepBeamAngle = explorationProgress * FULL_ROTATION_DEGREES
-  const beamLoopActive = !reduceMotion && explorationProgress >= 1
-  const beamAngle = beamLoopActive ? beamLoopAngle : sweepBeamAngle
+  const beamLoopReady = !reduceMotion && explorationProgress >= 1
+  const beamLoopActive = beamLoopReady && !paused
+  const beamAngle = beamLoopReady ? beamLoopAngle : sweepBeamAngle
   const beamOpacity = easeOutCubic(segmentProgress(explorationProgress, 0, 0.08))
   const beamRotate = beamAngle + BEAM_HEAD_OFFSET
   const beamFocusAngle = normalizeAngle(beamAngle + BEAM_FOCUS_OFFSET)
@@ -600,7 +591,7 @@ export function useHomeRadarScene() {
   const beamFocusSweepAngle = beamSweepStartAngle + sweepBeamAngle
 
   useEffect(() => {
-    if (reduceMotion || !beamLoopActive) {
+    if (reduceMotion || paused || !beamLoopActive) {
       clearBeamLoopFrame()
       return
     }
@@ -631,7 +622,7 @@ export function useHomeRadarScene() {
     beamLoopFrameRef.current = requestAnimationFrame(advance)
 
     return clearBeamLoopFrame
-  }, [beamLoopActive, clearBeamLoopFrame, reduceMotion])
+  }, [beamLoopActive, clearBeamLoopFrame, paused, reduceMotion])
 
   return {
     activateSignalNode,
