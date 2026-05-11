@@ -2,9 +2,20 @@ import { defineConfig, loadEnv, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { plugin as markdown, Mode } from 'vite-plugin-markdown'
+import MarkdownIt from 'markdown-it'
+import katex from 'katex'
+import markdownItTexmath from 'markdown-it-texmath'
 import fs from 'node:fs'
 import path from 'path'
 import { pathToFileURL } from 'node:url'
+
+const markdownIt = new MarkdownIt({ html: true }).use(markdownItTexmath, {
+  engine: katex,
+  delimiters: 'dollars',
+  katexOptions: {
+    throwOnError: false,
+  },
+})
 
 function vercelApiDevPlugin(): Plugin {
   const apiHandlers = {
@@ -59,7 +70,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    markdown({ mode: [Mode.HTML, Mode.TOC] }),
+    markdown({ mode: [Mode.HTML, Mode.TOC], markdownIt }),
     vercelApiDevPlugin(),
   ],
   resolve: {

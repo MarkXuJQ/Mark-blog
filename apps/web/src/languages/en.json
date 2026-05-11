@@ -88,12 +88,13 @@
     },
     "filter": {
       "allTags": "All Tags",
-      "allCategories": "All Categories"
+      "allCategories": "All Posts"
     },
     "categories": {
       "essay": "Life Notes",
       "experience": "Experience",
       "tech": "Tech Sharing",
+      "share": "Resources",
       "project": "Projects"
     },
     "sort": {

@@ -326,10 +326,10 @@ const styles = {
           : 'font-normal text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
       ),
     label: 'inline-flex w-[3.75rem] justify-center truncate text-center',
-    menu: 'absolute top-full right-0 mt-2 w-32 origin-top-right rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 dark:border-[#2b2f36] dark:bg-[#17191c] dark:ring-white/10',
+    menu: 'absolute top-full right-0 mt-2 w-max min-w-0 origin-top-right rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 dark:border-[#2b2f36] dark:bg-[#17191c] dark:ring-white/10',
     item: (isActive: boolean) =>
       cn(
-        'block rounded-md px-4 py-2 text-sm transition-colors',
+        'block whitespace-nowrap rounded-md px-4 py-2 text-sm transition-colors',
         isActive
           ? 'bg-slate-100 text-slate-900 dark:bg-[#23262c] dark:text-slate-100'
           : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-[#23262c] dark:hover:text-slate-200'

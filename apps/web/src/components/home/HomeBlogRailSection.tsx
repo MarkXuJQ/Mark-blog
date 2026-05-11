@@ -3,6 +3,7 @@ import { motion, type MotionValue, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { getAllPostSummaries } from '@/lib/content'
+import { CategoryLabel } from '@/components/blog/CategoryLabel'
 import { Label } from '../ui/label'
 import { Slider } from '../ui/slider'
 import { cn } from '@/lib/utils'
@@ -314,9 +315,6 @@ function BlogRailItem({
 }) {
   const { t } = useTranslation()
   const formattedDate = dateFormatter.format(new Date(post.date))
-  const categoryLabel = post.category
-    ? t(`blog.categories.${post.category}`, post.category)
-    : null
   const itemNumber = String(index + 1).padStart(2, '0')
   const isFeatured = index === 0
 
@@ -349,10 +347,12 @@ function BlogRailItem({
           <div className="text-[0.7rem] tracking-[0.24em] text-[var(--text-secondary)] uppercase sm:text-[0.74rem]">
             {formattedDate}
           </div>
-          {categoryLabel ? (
-            <div className="inline-flex items-center text-[0.66rem] font-medium tracking-[0.16em] text-black/34 uppercase dark:text-white/34">
-              {categoryLabel}
-            </div>
+          {post.category ? (
+            <CategoryLabel
+              category={post.category}
+              className="text-[0.66rem] tracking-[0.16em] uppercase"
+              iconClassName="h-3.5 w-3.5"
+            />
           ) : null}
         </div>
 

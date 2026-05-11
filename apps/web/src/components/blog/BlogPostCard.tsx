@@ -6,6 +6,7 @@ import { countWords } from '@/utils/readingTime'
 import { cn } from '@/lib/utils'
 import { getImageUrl } from '@/utils/image'
 import type { BlogPost } from '@/types'
+import { CategoryLabel } from './CategoryLabel'
 
 interface BlogPostCardProps {
   post: BlogPost
@@ -22,7 +23,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
   const summaryClass =
     'text-sm leading-6 text-[var(--text-secondary)] sm:text-[0.95rem]'
   const metaClass =
-    'mt-auto flex flex-wrap items-center gap-2 border-t border-slate-100 pt-2 text-[0.7rem] text-slate-500 dark:border-slate-800 dark:text-slate-400'
+    'mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-slate-100 pt-2 text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400'
 
   // Layout A: no cover image, text-only card.
   if (!coverImage) {
@@ -41,11 +42,9 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
 
               {/* Meta info row: category + date + word count */}
               <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
-                <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
                   {post.category && (
-                    <span className="rounded-md bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                      {t(`blog.categories.${post.category}`, post.category)}
-                    </span>
+                    <CategoryLabel category={post.category} />
                   )}
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
@@ -93,9 +92,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
 
               <div className={metaClass}>
                 {post.category && (
-                  <span className="rounded-md bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                    {t(`blog.categories.${post.category}`, post.category)}
-                  </span>
+                  <CategoryLabel category={post.category} />
                 )}
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
@@ -119,9 +116,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
 
               <div className={metaClass}>
                 {post.category && (
-                  <span className="rounded-md bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                    {t(`blog.categories.${post.category}`, post.category)}
-                  </span>
+                  <CategoryLabel category={post.category} />
                 )}
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
