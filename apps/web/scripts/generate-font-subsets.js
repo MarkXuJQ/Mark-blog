@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
-import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -12,104 +12,112 @@ const userHome = process.env.HOME || process.env.USERPROFILE || repoRoot
 
 const textExtensions = new Set([
   '.css',
+  '.csv',
   '.html',
-  '.json',
   '.js',
+  '.json',
   '.jsx',
   '.md',
-  '.txt',
   '.ts',
   '.tsx',
+  '.txt',
   '.xml',
-  '.csv',
 ])
 
-const bundledHeadingFontSource = path.join(
-  projectRoot,
-  'src/assets/fonts/纳米丰宋_纳挼字库/NanoFullSong-Regular.ttf'
-)
-const legacyHeadingFontSource = path.join(
-  projectRoot,
-  'src/assets/纳米丰宋_纳挼字库/NanoFullSong-Regular.ttf'
-)
-const headingFontSource =
-  process.env.HEADING_FONT_SOURCE ||
-  (fs.existsSync(bundledHeadingFontSource)
-    ? bundledHeadingFontSource
-    : legacyHeadingFontSource)
-const headingFontOutput = path.join(
-  projectRoot,
-  'src/assets/fonts/NanoFullSong-Subset.woff2'
-)
-const alibabaMediumFontSource =
-  process.env.ALIBABA_MEDIUM_FONT_SOURCE ||
-  path.join(
-    projectRoot,
-    'src/assets/fonts/AlibabaPuHuiTi-3-65-Medium/AlibabaPuHuiTi-3-65-Medium.ttf'
-  )
+const fontSourceExtensions = ['.ttf', '.otf', '.woff2', '.woff']
+const generatedDir = path.join(projectRoot, '.generated')
+
 const alibabaMediumFontOutput = path.join(
   projectRoot,
   'src/assets/fonts/AlibabaPuHuiTi-3-65-Medium-Subset.woff2'
 )
-const alibabaSemiBoldFontSource =
-  process.env.ALIBABA_SEMIBOLD_FONT_SOURCE ||
-  path.join(
-    projectRoot,
-    'src/assets/fonts/AlibabaPuHuiTi-3-75-SemiBold/AlibabaPuHuiTi-3-75-SemiBold.ttf'
-  )
 const alibabaSemiBoldFontOutput = path.join(
   projectRoot,
   'src/assets/fonts/AlibabaPuHuiTi-3-75-SemiBold-Subset.woff2'
 )
-const pixelFontSource =
-  process.env.PIXEL_FONT_SOURCE ||
-  path.join(projectRoot, 'src/assets/pixel/Uranus_Pixel_11Px.ttf')
 const pixelFontOutput = path.join(
   projectRoot,
   'src/assets/fonts/UranusPixel-Subset.woff2'
 )
-const bundledNerdFontSource = path.join(
-  projectRoot,
-  'src/assets/fonts/JetBrainsMonoNerdFont-Regular.ttf'
-)
-const nerdFontSource =
-  process.env.NERD_FONT_SOURCE ||
-  (fs.existsSync(bundledNerdFontSource)
-    ? bundledNerdFontSource
-    : path.join(userHome, 'Library/Fonts/JetBrainsMonoNerdFontMono-Regular.ttf'))
 const nerdFontOutput = path.join(
   projectRoot,
   'src/assets/fonts/JetBrainsMonoNerd-Subset.woff2'
 )
-const generatedDir = path.join(projectRoot, '.generated')
-const headingTextPath = path.join(generatedDir, 'font-heading-chars.txt')
+
 const chineseTextPath = path.join(generatedDir, 'font-chinese-chars.txt')
+const alibabaSemiBoldTextPath = path.join(
+  generatedDir,
+  'font-alibaba-semibold-chars.txt'
+)
 const pixelTextPath = path.join(generatedDir, 'font-pixel-chars.txt')
 const nerdFontTextPath = path.join(generatedDir, 'font-nerd-chars.txt')
+
+const alibabaMediumFontSource = resolveFontSource({
+  envVar: 'ALIBABA_MEDIUM_FONT_SOURCE',
+  roots: [
+    path.join(projectRoot, 'src/assets/fonts/AlibabaPuHuiTi-3-65-Medium'),
+    path.join(projectRoot, 'src/assets/fonts'),
+  ],
+  baseNames: ['AlibabaPuHuiTi-3-65-Medium'],
+})
+const alibabaSemiBoldFontSource = resolveFontSource({
+  envVar: 'ALIBABA_SEMIBOLD_FONT_SOURCE',
+  roots: [
+    path.join(projectRoot, 'src/assets/fonts/AlibabaPuHuiTi-3-75-SemiBold'),
+    path.join(projectRoot, 'src/assets/fonts'),
+  ],
+  baseNames: ['AlibabaPuHuiTi-3-75-SemiBold'],
+})
+const pixelFontSource = resolveFontSource({
+  envVar: 'PIXEL_FONT_SOURCE',
+  roots: [path.join(projectRoot, 'src/assets/pixel')],
+  baseNames: ['Uranus_Pixel_11Px'],
+})
+const nerdFontSource = resolveFontSource({
+  envVar: 'NERD_FONT_SOURCE',
+  roots: [
+    path.join(projectRoot, 'src/assets/fonts'),
+    path.join(userHome, 'Library/Fonts'),
+    path.join(userHome, 'AppData/Local/Microsoft/Windows/Fonts'),
+    path.join(userHome, 'AppData/Local/Fonts'),
+  ],
+  baseNames: [
+    'JetBrainsMonoNerdFont-Regular',
+    'JetBrainsMonoNerdFontMono-Regular',
+  ],
+})
+
+if (
+  nerdFontSource &&
+  !/JetBrainsMonoNerdFont/i.test(path.basename(nerdFontSource))
+) {
+  throw new Error(
+    `Resolved NERD_FONT_SOURCE to '${nerdFontSource}', but JetBrains Nerd font source is required. ` +
+      'Please set NERD_FONT_SOURCE to a JetBrainsMonoNerdFont file and do not point it to Montreal.'
+  )
+}
 
 const pixelFontText = [
   'BLOG · LIFE · MOVIES · GAMES',
   'EASTER EGG UNLOCKED',
   'HIDDEN ROUTE ACTIVATED',
-  '  •  ',
+  '  →  ',
 ].join('\n')
 
-const safeHeadingExtras = [
+const safeChineseExtras = [
   '0123456789',
   'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
   'abcdefghijklmnopqrstuvwxyz',
   ` '",.:;!?()[]{}+-=*/&_@#%<>~|^$`,
-  '，。！？；：、“”‘’（）《》【】—…·',
+  `，。！？；：、""''“”‘’（）《》【】「」『』——…·`,
+  '￥℃％',
 ].join('')
 
 const safeCodeExtras = [
   ` !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\`abcdefghijklmnopqrstuvwxyz{|}~`,
-  '，。！？；：、“”‘’（）《》【】—…·',
-  '←↑→↓↔↕│└┘├┤┬┴┼─',
-  '❮❯…',
-  '',
-  '',
-  '󰀵󰕈󰐿󰣭󰌽󰣨󰣛󰣇󰣚󱄛',
+  `，。！？；：、""''“”‘’（）《》【】「」『』——…·`,
+  '←↑→↓↔↕↖↗↘↙│┃┌┐└┘├┤┬┴┼─━',
+  '✓✔✕✖•',
 ].join('')
 
 function collectTextFiles(dirPath, files = []) {
@@ -119,7 +127,11 @@ function collectTextFiles(dirPath, files = []) {
     const fullPath = path.join(dirPath, entry.name)
 
     if (entry.isDirectory()) {
-      if (entry.name === 'assets' || entry.name === 'dist' || entry.name === 'node_modules') {
+      if (
+        entry.name === 'assets' ||
+        entry.name === 'dist' ||
+        entry.name === 'node_modules'
+      ) {
         continue
       }
       collectTextFiles(fullPath, files)
@@ -132,6 +144,53 @@ function collectTextFiles(dirPath, files = []) {
   }
 
   return files
+}
+
+function collectFontFiles(dirPath, files = []) {
+  if (!fs.existsSync(dirPath)) return files
+
+  for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
+    if (entry.name === '__MACOSX' || entry.name.startsWith('._')) continue
+
+    const fullPath = path.join(dirPath, entry.name)
+
+    if (entry.isDirectory()) {
+      collectFontFiles(fullPath, files)
+      continue
+    }
+
+    if (
+      entry.isFile() &&
+      fontSourceExtensions.includes(path.extname(entry.name).toLowerCase())
+    ) {
+      files.push(fullPath)
+    }
+  }
+
+  return files
+}
+
+function resolveFontSource(options) {
+  const envPath = process.env[options.envVar]
+  if (envPath && fs.existsSync(envPath)) return path.resolve(envPath)
+
+  const candidates = []
+  for (const root of options.roots) {
+    candidates.push(...collectFontFiles(root))
+  }
+
+  for (const ext of fontSourceExtensions) {
+    const exact = candidates.find((candidate) => {
+      const parsed = path.parse(candidate)
+      return (
+        parsed.ext.toLowerCase() === ext &&
+        options.baseNames.includes(parsed.name)
+      )
+    })
+    if (exact) return exact
+  }
+
+  return candidates[0] ?? null
 }
 
 function uniqueGlyphText(input) {
@@ -172,22 +231,24 @@ function readProjectText() {
   return readTextFiles(getProjectTextFiles())
 }
 
-function buildHeadingText() {
+function buildChineseText() {
+  return uniqueGlyphText(readProjectText() + safeChineseExtras)
+}
+
+function buildAlibabaSemiBoldText() {
   const combined =
     readTextFiles([
       ...collectTextFiles(path.join(projectRoot, 'src')),
       path.join(projectRoot, 'index.html'),
-    ]) + safeHeadingExtras
-  return uniqueGlyphText(combined)
-}
+    ]) +
+    readProjectText() +
+    safeChineseExtras
 
-function buildChineseText() {
-  return uniqueGlyphText(readProjectText() + safeHeadingExtras)
+  return uniqueGlyphText(combined)
 }
 
 function buildNerdFontText() {
-  const combined = readProjectText() + safeCodeExtras
-  return uniqueGlyphText(combined)
+  return uniqueGlyphText(readProjectText() + safeCodeExtras)
 }
 
 function ensureDir(dirPath) {
@@ -195,7 +256,7 @@ function ensureDir(dirPath) {
 }
 
 function canEncodeWoff2(candidate, inputFont) {
-  if (!fs.existsSync(inputFont)) return false
+  if (!inputFont || !fs.existsSync(inputFont)) return false
 
   const probeOutput = path.join(
     generatedDir,
@@ -227,32 +288,21 @@ function canEncodeWoff2(candidate, inputFont) {
   return succeeded
 }
 
-function resolveCommandPath(command) {
-  const result = spawnSync(process.env.SHELL || '/bin/sh', ['-lc', `command -v ${command}`], {
-    encoding: 'utf8',
-    shell: false,
-  })
-
-  if (result.error || result.status !== 0) {
-    return null
-  }
-
-  const resolvedPath = result.stdout?.trim()
-  return resolvedPath || null
-}
-
 function findPyftsubset() {
   const probeFontSource = [
     alibabaMediumFontSource,
-    headingFontSource,
+    alibabaSemiBoldFontSource,
     pixelFontSource,
     nerdFontSource,
-  ].find((filePath) => fs.existsSync(filePath))
+  ].find(Boolean)
   const candidates = [
     process.env.PYFTSUBSET,
-    resolveCommandPath('pyftsubset'),
-    '/Users/markxu/anaconda3/envs/pelvis_seg/bin/pyftsubset',
     'pyftsubset',
+    path.join(userHome, 'anaconda3/envs/pelvis_seg/bin/pyftsubset'),
+    path.join(userHome, 'miniconda3/Scripts/pyftsubset.exe'),
+    path.join(userHome, 'AppData/Roaming/Python/Python313/Scripts/pyftsubset.exe'),
+    path.join(userHome, 'AppData/Roaming/Python/Python312/Scripts/pyftsubset.exe'),
+    path.join(userHome, 'AppData/Roaming/Python/Python311/Scripts/pyftsubset.exe'),
   ].filter(Boolean)
 
   for (const candidate of candidates) {
@@ -311,7 +361,7 @@ function runSubset(pyftsubsetPath, options) {
   const stdout = result.stdout?.trim()
   const stderr = result.stderr?.trim()
   const isKnownLocalWarning =
-    typeof stderr === 'string' && stderr.includes("_distutils_hack")
+    typeof stderr === 'string' && stderr.includes('_distutils_hack')
 
   if (stdout) {
     console.log(stdout)
@@ -335,29 +385,45 @@ function verifyOutputExists(filePath) {
   }
 }
 
+function generateOrReuse(pyftsubsetPath, options) {
+  const hasSource = Boolean(options.input && fs.existsSync(options.input))
+
+  if (pyftsubsetPath && hasSource) {
+    runSubset(pyftsubsetPath, options)
+    return
+  }
+
+  if (!hasSource) {
+    console.warn(
+      `${options.label} source not found, reusing committed subset font.`
+    )
+  }
+
+  verifyOutputExists(options.output)
+}
+
+function logOutput(filePath) {
+  const size = fs.statSync(filePath).size
+  console.log(`Generated ${path.basename(filePath)} (${formatBytes(size)})`)
+}
+
 async function main() {
   ensureDir(generatedDir)
-  ensureDir(path.dirname(headingFontOutput))
+  ensureDir(path.dirname(alibabaMediumFontOutput))
 
-  const headingText = buildHeadingText()
   const chineseText = buildChineseText()
+  const alibabaSemiBoldText = buildAlibabaSemiBoldText()
   const pixelText = uniqueGlyphText(pixelFontText)
   const nerdFontText = buildNerdFontText()
 
-  fs.writeFileSync(headingTextPath, headingText)
   fs.writeFileSync(chineseTextPath, chineseText)
+  fs.writeFileSync(alibabaSemiBoldTextPath, alibabaSemiBoldText)
   fs.writeFileSync(pixelTextPath, pixelText)
   fs.writeFileSync(nerdFontTextPath, nerdFontText)
 
   const pyftsubsetPath = findPyftsubset()
-  const hasHeadingSource = fs.existsSync(headingFontSource)
-  const hasAlibabaMediumSource = fs.existsSync(alibabaMediumFontSource)
-  const hasAlibabaSemiBoldSource = fs.existsSync(alibabaSemiBoldFontSource)
-  const hasPixelSource = fs.existsSync(pixelFontSource)
-  const hasNerdSource = fs.existsSync(nerdFontSource)
-  const canGenerate = Boolean(pyftsubsetPath)
 
-  if (canGenerate) {
+  if (pyftsubsetPath) {
     console.log('Generating font subsets with:', pyftsubsetPath)
   } else {
     console.warn(
@@ -365,102 +431,38 @@ async function main() {
     )
   }
 
-  if (canGenerate && hasHeadingSource) {
-    runSubset(pyftsubsetPath, {
-      input: headingFontSource,
-      textFile: headingTextPath,
-      output: headingFontOutput,
-    })
-  } else {
-    if (!hasHeadingSource) {
-      console.warn(
-        `Heading font source not found, reusing committed subset: ${headingFontSource}`
-      )
-    }
-    verifyOutputExists(headingFontOutput)
-  }
+  generateOrReuse(pyftsubsetPath, {
+    input: alibabaMediumFontSource,
+    textFile: chineseTextPath,
+    output: alibabaMediumFontOutput,
+    label: 'Alibaba PuHuiTi Medium',
+  })
 
-  if (canGenerate && hasAlibabaMediumSource) {
-    runSubset(pyftsubsetPath, {
-      input: alibabaMediumFontSource,
-      textFile: chineseTextPath,
-      output: alibabaMediumFontOutput,
-    })
-  } else {
-    if (!hasAlibabaMediumSource) {
-      console.warn(
-        `Alibaba PuHuiTi Medium source not found, reusing committed subset: ${alibabaMediumFontSource}`
-      )
-    }
-    verifyOutputExists(alibabaMediumFontOutput)
-  }
+  generateOrReuse(pyftsubsetPath, {
+    input: alibabaSemiBoldFontSource,
+    textFile: alibabaSemiBoldTextPath,
+    output: alibabaSemiBoldFontOutput,
+    label: 'Alibaba PuHuiTi SemiBold',
+  })
 
-  if (canGenerate && hasAlibabaSemiBoldSource) {
-    runSubset(pyftsubsetPath, {
-      input: alibabaSemiBoldFontSource,
-      textFile: chineseTextPath,
-      output: alibabaSemiBoldFontOutput,
-    })
-  } else {
-    if (!hasAlibabaSemiBoldSource) {
-      console.warn(
-        `Alibaba PuHuiTi SemiBold source not found, reusing committed subset: ${alibabaSemiBoldFontSource}`
-      )
-    }
-    verifyOutputExists(alibabaSemiBoldFontOutput)
-  }
+  generateOrReuse(pyftsubsetPath, {
+    input: pixelFontSource,
+    textFile: pixelTextPath,
+    output: pixelFontOutput,
+    label: 'Pixel font',
+  })
 
-  if (canGenerate && hasPixelSource) {
-    runSubset(pyftsubsetPath, {
-      input: pixelFontSource,
-      textFile: pixelTextPath,
-      output: pixelFontOutput,
-    })
-  } else {
-    if (!hasPixelSource) {
-      console.warn(
-        `Pixel font source not found, reusing committed subset: ${pixelFontSource}`
-      )
-    }
-    verifyOutputExists(pixelFontOutput)
-  }
+  generateOrReuse(pyftsubsetPath, {
+    input: nerdFontSource,
+    textFile: nerdFontTextPath,
+    output: nerdFontOutput,
+    label: 'Nerd font',
+  })
 
-  if (canGenerate && hasNerdSource) {
-    runSubset(pyftsubsetPath, {
-      input: nerdFontSource,
-      textFile: nerdFontTextPath,
-      output: nerdFontOutput,
-    })
-  } else {
-    if (!hasNerdSource) {
-      console.warn(
-        `Nerd font source not found, reusing committed subset: ${nerdFontSource}`
-      )
-    }
-    verifyOutputExists(nerdFontOutput)
-  }
-
-  const headingSize = fs.statSync(headingFontOutput).size
-  const alibabaMediumSize = fs.statSync(alibabaMediumFontOutput).size
-  const alibabaSemiBoldSize = fs.statSync(alibabaSemiBoldFontOutput).size
-  const pixelSize = fs.statSync(pixelFontOutput).size
-  const nerdFontSize = fs.statSync(nerdFontOutput).size
-
-  console.log(
-    `Generated ${path.basename(headingFontOutput)} (${formatBytes(headingSize)})`
-  )
-  console.log(
-    `Generated ${path.basename(alibabaMediumFontOutput)} (${formatBytes(alibabaMediumSize)})`
-  )
-  console.log(
-    `Generated ${path.basename(alibabaSemiBoldFontOutput)} (${formatBytes(alibabaSemiBoldSize)})`
-  )
-  console.log(
-    `Generated ${path.basename(pixelFontOutput)} (${formatBytes(pixelSize)})`
-  )
-  console.log(
-    `Generated ${path.basename(nerdFontOutput)} (${formatBytes(nerdFontSize)})`
-  )
+  logOutput(alibabaMediumFontOutput)
+  logOutput(alibabaSemiBoldFontOutput)
+  logOutput(pixelFontOutput)
+  logOutput(nerdFontOutput)
 }
 
 main().catch((error) => {

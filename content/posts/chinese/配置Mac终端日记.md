@@ -1,5 +1,7 @@
 ---
 title: "配置Mac终端日记"
+slug: "mac-terminal-setup-notes-cn"
+aliases: ["mac-terminal-setup-notes"]
 
 date: "2026-04-07"
 

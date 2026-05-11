@@ -1,11 +1,12 @@
 [
   {
-    "id": "大学四年，我的几个“小抽屉”",
-    "slug": "大学四年，我的几个“小抽屉”",
+    "id": "university-info-drawers-cn",
+    "slug": "university-info-drawers-cn",
     "language": "zh",
     "title": "大学四年，我的几个“小抽屉”",
     "date": "2026-05-11",
-    "summary": "一直有搜集各种有趣的信息源的习惯，四年来，关注了不少B站up，公众号，以及个人博客，想要把我印象中高质量，经常更新且好玩好读的几个信息源记录下，留给未来的自己，也分享给大家。",
+    "summary": "一直有搜集各种有趣的信息源的习惯，想要把我印象中高质量，经常更新且好玩好读的几个信息源记录下，留给未来的自己，也分享给大家。",
+    "image": "https://img.markxu.icu/img06bdb9ed7cc5e8.png",
     "tags": [
       "News",
       "Sources",
@@ -15,8 +16,8 @@
     "category": "Share"
   },
   {
-    "id": "配置Mac终端日记",
-    "slug": "配置Mac终端日记",
+    "id": "mac-terminal-setup-notes-cn",
+    "slug": "mac-terminal-setup-notes-cn",
     "language": "zh",
     "title": "配置Mac终端日记",
     "date": "2026-04-07",
@@ -31,8 +32,24 @@
     "category": "tech"
   },
   {
-    "id": "当开源只剩下一段 Prompt：我发现了一种“离谱”的开源方式",
-    "slug": "当开源只剩下一段 Prompt：我发现了一种“离谱”的开源方式",
+    "id": "mac-terminal-setup-notes",
+    "slug": "mac-terminal-setup-notes",
+    "language": "en",
+    "title": "Mac Terminal Setup Notes",
+    "date": "2026-04-07",
+    "summary": "My old terminal was packed with oh-my-zsh and plugins I could barely remember, and it looked ugly enough that I did not even want to use it. So I decided to rebuild my terminal from scratch.",
+    "image": "https://img.markxu.icu/img4d29eab0f1dc8.jpeg",
+    "tags": [
+      "MacOS",
+      "Terminal",
+      "Tools",
+      "Beautify"
+    ],
+    "category": "tech"
+  },
+  {
+    "id": "prompt-only-open-source-cn",
+    "slug": "prompt-only-open-source-cn",
     "language": "zh",
     "title": "当开源只剩下一段 Prompt：我发现了一种“离谱”的开源方式",
     "date": "2026-04-05",
@@ -49,8 +66,26 @@
     "category": "tech"
   },
   {
-    "id": "第一篇博客",
-    "slug": "第一篇博客",
+    "id": "prompt-only-open-source",
+    "slug": "prompt-only-open-source",
+    "language": "en",
+    "title": "When Open Source Is Only a Prompt: I Found a Ridiculous New Way to Open Source",
+    "date": "2026-04-05",
+    "updated": "2026-04-06",
+    "summary": "I recently found a GitHub project called voice-input-src, a voice input app for Mac. The surprising part is that the repository contains only one detailed prompt for AI.",
+    "image": "https://img.markxu.icu/imgvoiceinput.jpeg",
+    "tags": [
+      "Github",
+      "Swift",
+      "MacOS",
+      "AI",
+      "Prompt"
+    ],
+    "category": "tech"
+  },
+  {
+    "id": "first-blog-post-cn",
+    "slug": "first-blog-post-cn",
     "language": "zh",
     "title": "第一篇博客",
     "date": "2026-03-24",
@@ -77,8 +112,8 @@
     "category": "essay"
   },
   {
-    "id": "广州游记",
-    "slug": "广州游记",
+    "id": "guangzhou-trip-notes-cn",
+    "slug": "guangzhou-trip-notes-cn",
     "language": "zh",
     "title": "广州游记",
     "date": "2024-03-22",
@@ -107,8 +142,8 @@
     "category": "essay"
   },
   {
-    "id": "潮汕游记",
-    "slug": "潮汕游记",
+    "id": "chaoshan-trip-notes-cn",
+    "slug": "chaoshan-trip-notes-cn",
     "language": "zh",
     "title": "潮汕游记",
     "date": "2023-09-27",

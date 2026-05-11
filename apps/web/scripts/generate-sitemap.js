@@ -38,12 +38,18 @@ function collectMarkdownFiles(dirPath) {
   return files
 }
 
+function resolvePostSlug(filePath, data) {
+  return typeof data.slug === 'string' && data.slug.trim()
+    ? data.slug.trim()
+    : path.basename(filePath, '.md')
+}
+
 const files = collectMarkdownFiles(POSTS_DIR)
 
 const allPosts = files.map((filePath) => {
   const content = fs.readFileSync(filePath, 'utf-8')
   const { data } = matter(content)
-  const slug = path.basename(filePath, '.md')
+  const slug = resolvePostSlug(filePath, data)
 
   return {
     slug,

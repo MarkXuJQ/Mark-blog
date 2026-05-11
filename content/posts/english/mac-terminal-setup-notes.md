@@ -1,0 +1,443 @@
+---
+title: "Mac Terminal Setup Notes"
+date: "2026-04-07"
+summary: "My old terminal was packed with oh-my-zsh and plugins I could barely remember, and it looked ugly enough that I did not even want to use it. So I decided to rebuild my terminal from scratch."
+tags: ["MacOS", "Terminal", "Tools", "Beautify"]
+category: "tech"
+image: "https://img.markxu.icu/img4d29eab0f1dc8.jpeg"
+---
+
+For exploration and fun, my old terminal had been stuffed with oh-my-zsh and all kinds of plugins. At some point I could no longer remember what I had installed. Worse, the interface looked so awkward that I did not even want to open it.
+
+Recently I saw Ghostty on Bilibili, along with a few terminal customization videos that looked surprisingly nice. So this time I decided to start from zero and rebuild my terminal properly.
+
+---
+
+I started using the terminal shortly after I bought my Mac and finished setting up the development environment. Back then I knew almost nothing about customization tools like Raycast or Bartender, let alone the command line habits that macOS users often build over time.
+
+Later, my older brother tried to teach me a few things. When he opened my computer, he exclaimed: "Why is your computer so primitive?"
+
+That was probably the first time I realized how different macOS habits could be from Windows habits. I have always preferred simple setups on Windows too, but from that moment on I started exploring how to make my Mac environment both prettier and more useful.
+
+## A Messy Beginning
+
+For a long time, my terminal looked close to the default style. I forgot to keep screenshots, but it was basically a gray background with plain text. Following different online tutorials, I installed iTerm2, oh-my-zsh, and a large number of plugins.
+
+The problem was that the whole setup became too messy. I either forgot how to use some plugins, or simply never used them at all. The terminal still worked, but it often required plugin updates, and opening a new terminal window had more than a second of delay. That became annoying.
+
+So I decided to rebuild everything and write down the process. It may also serve as a reference for classmates who recently bought a Mac and want a clean terminal setup.
+
+## Sharpen the Tools First
+
+Choosing the right tools is the core of this rebuild. My criteria were simple:
+
+1. Performance first: short startup time and fast rendering.
+2. Low maintenance cost: usable out of the box, easy to customize, clear configuration path, and not dependent on plugin stacking.
+3. Good looking: good looks are productivity. :)
+
+In the end, I chose this combination: Ghostty + native Zsh + Starship + Yazi. It covers my current needs almost completely, and I can add smaller tools later if needed.
+
+After such a long time, I realized I barely used most of the old oh-my-zsh plugins. Installing oh-my-zsh again does not make much sense for me right now. This article also shares a similar idea: [A Guide to the Zsh Line Editor with Examples](https://thevaluable.dev/zsh-install-configure-mouseless/).
+
+Let me briefly introduce the tools.
+
+### Ghostty: Terminal Emulator
+
+[The official docs describe it like this:](https://ghostty.org/docs)
+
+> Ghostty is a fast, feature-rich, and cross-platform terminal emulator that uses platform-native UI and GPU acceleration.
+
+Similar tools include Terminal.app, iTerm2, Warp, WezTerm, Alacritty, Kitty, and more.
+
+Why did I choose Ghostty among so many options? I first noticed it because [Boris Cherny recommended it](https://x.com/bcherny/status/2017742753971769626). I tried it and unexpectedly found that it fit me very well.
+
+![Boris Cherny recommending Ghostty](https://img.markxu.icu/imgBorisRecommendGhostty.png)
+
+- It is compiled from Zig to native machine code, avoiding VM/interpreter overhead and GC pauses.
+- Its character buffer maps directly to GPU memory, skipping CPU round trips.
+- It parses TOML configuration once at startup and does not rely on plugin hot reload, which makes it fast. The configuration is also centralized in one TOML file, so settings are clear and easy to understand.
+
+After using it for a while, Ghostty starts much faster than my previous setup, and memory usage is reasonable. It feels close to what I imagine a modern terminal should be.
+
+### Starship: Prompt Engine
+
+Similar tool: oh-my-posh.
+
+Starship is written in Rust and distributed as a compiled program. It starts very quickly. As a prompt engine, it replaces the main use case I previously relied on oh-my-zsh for: making the prompt look nice.
+
+The old setup had to run a pile of shell scripts every time the terminal opened. Now startup is faster, and the whole experience feels much smoother.
+
+### Yazi: Async File Manager
+
+Yazi is somewhat like macOS Finder, but controlled through the keyboard. Once you understand your machine's file structure, it feels more efficient than constantly typing `cd` and `ls`.
+
+It is also written in Rust, so loading is fast. It supports live previews, which means you do not have to find a file and press Space just to inspect it. It can preview text, images, and many other files directly.
+
+![Yazi preview looks really nice](https://img.markxu.icu/imgyazi.png)
+
+It also uses Vim-style keybindings. If you have used Vim before, it feels natural. Even if you have not, you can probably learn the basics quickly, and the `?` help menu is friendly.
+
+## Reproducible Setup Steps
+
+### Prerequisites
+
+Install Homebrew, the command-line package manager for macOS, and a Nerd Font for terminal icons.
+
+Install Homebrew:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Update Homebrew:
+
+```bash
+brew update
+```
+
+### Install the Software
+
+```bash
+# Font
+brew install --cask font-jetbrains-mono-nerd-font
+
+# Terminal emulator
+brew install --cask ghostty
+
+# Prompt engine
+brew install starship
+
+# File manager + preview dependencies
+brew install yazi ffmpegthumbnailer sevenzip poppler jq fd ripgrep fzf
+
+# Other useful tools
+# Command autosuggestions + syntax highlighting
+brew install zsh-autosuggestions zsh-syntax-highlighting
+```
+
+### Configure Ghostty
+
+Open Ghostty and press `Command + ,`. A TOML config file should appear. You can copy my config into it:
+
+```toml
+# ===== Font settings =====
+font-family = JetBrainsMono Nerd Font
+font-size = 14
+
+# ===== Window padding =====
+window-padding-x = 12
+window-padding-y = 12
+
+# ===== Cursor and scrolling =====
+cursor-style = block
+scrollback-limit = 10000
+copy-on-select = true
+
+# ===== Theme =====
+theme = Catppuccin Mocha
+
+# ===== Quick terminal: Cmd + backtick =====
+keybind = cmd+`=toggle_quick_terminal
+```
+
+At this point, the terminal should already look much better.
+
+Next is Starship. You can also read the [official Starship configuration docs](https://starship.rs/config/#:~:text=To%20get%20started%20configuring%20starship%2C).
+
+Create the config file:
+
+```bash
+mkdir -p ~/.config && touch ~/.config/starship.toml
+```
+
+Open it:
+
+```bash
+nano ~/.config/starship.toml
+```
+
+If you are not familiar with nano or Vim, you can use VS Code and open the file with `code ~/.config/starship.toml`.
+
+My config:
+
+```toml
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+[](red)\
+$os\
+$username\
+[](bg:peach fg:red)\
+$directory\
+[](bg:yellow fg:peach)\
+$git_branch\
+$git_status\
+[](fg:yellow bg:green)\
+$c\
+$rust\
+$golang\
+$nodejs\
+$php\
+$java\
+$kotlin\
+$haskell\
+$python\
+[](fg:green bg:sapphire)\
+$conda\
+[](fg:sapphire bg:lavender)\
+$time\
+[ ](fg:lavender)\
+$cmd_duration\
+$line_break\
+$character"""
+
+palette = 'catppuccin_mocha'
+
+[os]
+disabled = false
+style = "bg:red fg:crust"
+
+[os.symbols]
+Windows = ""
+Ubuntu = "󰕈"
+SUSE = ""
+Raspbian = "󰐿"
+Mint = "󰣭"
+Macos = "󰀵"
+Manjaro = ""
+Linux = "󰌽"
+Gentoo = "󰣨"
+Fedora = "󰣛"
+Alpine = ""
+Amazon = ""
+Android = ""
+AOSC = ""
+Arch = "󰣇"
+Artix = "󰣇"
+CentOS = ""
+Debian = "󰣚"
+Redhat = "󱄛"
+RedHatEnterprise = "󱄛"
+
+[username]
+show_always = true
+style_user = "bg:red fg:crust"
+style_root = "bg:red fg:crust"
+format = '[ $user]($style)'
+
+[directory]
+style = "bg:peach fg:crust"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = "󰝚 "
+"Pictures" = " "
+"Developer" = "󰲋 "
+
+[git_branch]
+symbol = ""
+style = "bg:yellow"
+format = '[[ $symbol $branch ](fg:crust bg:yellow)]($style)'
+
+[git_status]
+style = "bg:yellow"
+format = '[[($all_status$ahead_behind )](fg:crust bg:yellow)]($style)'
+
+[nodejs]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[c]
+symbol = " "
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[rust]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[golang]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[php]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[java]
+symbol = " "
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[kotlin]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[haskell]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[python]
+symbol = ""
+style = "bg:green"
+format = '[[ $symbol( $version)(\(#$virtualenv\)) ](fg:crust bg:green)]($style)'
+
+[docker_context]
+symbol = ""
+style = "bg:sapphire"
+format = '[[ $symbol( $context) ](fg:crust bg:sapphire)]($style)'
+
+[conda]
+symbol = "  "
+style = "fg:crust bg:sapphire"
+format = '[$symbol$environment ]($style)'
+ignore_base = false
+
+[time]
+disabled = false
+time_format = "%R"
+style = "bg:lavender"
+format = '[[  $time ](fg:crust bg:lavender)]($style)'
+
+[line_break]
+disabled = true
+
+[character]
+disabled = false
+success_symbol = '[❯](bold fg:green)'
+error_symbol = '[❯](bold fg:red)'
+vimcmd_symbol = '[❮](bold fg:green)'
+vimcmd_replace_one_symbol = '[❮](bold fg:lavender)'
+vimcmd_replace_symbol = '[❮](bold fg:lavender)'
+vimcmd_visual_symbol = '[❮](bold fg:yellow)'
+
+[cmd_duration]
+show_milliseconds = true
+format = " in $duration "
+style = "bg:lavender"
+disabled = false
+show_notifications = true
+min_time_to_notify = 45000
+
+[palettes.catppuccin_mocha]
+rosewater = "#f5e0dc"
+flamingo = "#f2cdcd"
+pink = "#f5c2e7"
+mauve = "#cba6f7"
+red = "#f38ba8"
+maroon = "#eba0ac"
+peach = "#fab387"
+yellow = "#f9e2af"
+green = "#a6e3a1"
+teal = "#94e2d5"
+sky = "#89dceb"
+sapphire = "#74c7ec"
+blue = "#89b4fa"
+lavender = "#b4befe"
+text = "#cdd6f4"
+subtext1 = "#bac2de"
+subtext0 = "#a6adc8"
+overlay2 = "#9399b2"
+overlay1 = "#7f849c"
+overlay0 = "#6c7086"
+surface2 = "#585b70"
+surface1 = "#45475a"
+surface0 = "#313244"
+base = "#1e1e2e"
+mantle = "#181825"
+crust = "#11111b"
+```
+
+If you want another theme, list Starship presets with:
+
+```bash
+starship preset --list
+```
+
+It will show options such as `bracketed-segments`, `catppuccin-powerline`, `tokyo-night`, and more.
+
+Apply a preset like this:
+
+```bash
+starship preset tokyo-night > ~/.config/starship.toml
+```
+
+Finally, configure Zsh. I recommend appending the following to your existing `~/.zshrc` instead of overwriting it, because your file may already contain Conda, Node, or other environment settings.
+
+```bash
+nano ~/.zshrc
+```
+
+```bash
+# ===== Homebrew: macOS package manager =====
+export PATH="/opt/homebrew/bin:$PATH"
+
+# ===== Starship =====
+eval "$(starship init zsh)"
+
+# ===== Completion =====
+autoload -Uz compinit && compinit
+
+# ===== Yazi terminal file manager =====
+function y() {
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
+
+# yy as a shortcut for yazi
+alias yy="y"
+
+# ===== Zsh Autosuggestions =====
+source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# ===== Zsh Syntax Highlighting =====
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+```
+
+### Verify the Setup
+
+```bash
+exec zsh
+```
+
+### If You Use VS Code
+
+If you use VS Code or another editor and see strange characters in the integrated terminal, the problem is usually the font. Open settings, search for `terminal font`, and set it to:
+
+```text
+JetBrainsMono Nerd Font
+```
+
+Now you should have a beautiful and practical terminal.
+
+## Why This Is Worth the Time
+
+![Final terminal result](https://img.markxu.icu/imgfinalshowTerminal.png)
+
+The terminal is not just a tool. For developers, it is one of the workbenches we face every day. With vibe coding becoming more common, terminal usage is also becoming more frequent. A well-configured terminal can make the whole workflow feel clearer and more pleasant.
+
+- Ghostty: [Official Site](https://ghostty.org) | [GitHub](https://github.com/ghostty-org/ghostty)
+- Starship: [Official Site](https://starship.rs) | [GitHub](https://github.com/starship/starship)
+- Yazi: [Official Site](https://yazi-rs.github.io) | [GitHub](https://github.com/sxyazi/yazi)
+
+> This setup was verified with:
+>
+> - Ghostty 1.3.1 (stable)
+> - Starship 1.24.2
+> - Yazi 0.3.0
+>
+> Configuration syntax may differ across versions. If you run into problems, check the official docs for your installed version first.

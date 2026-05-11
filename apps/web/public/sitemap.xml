@@ -41,19 +41,25 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://markxu.icu/blog/%E9%85%8D%E7%BD%AEMac%E7%BB%88%E7%AB%AF%E6%97%A5%E8%AE%B0</loc>
+    <loc>https://markxu.icu/blog/university-info-drawers-cn</loc>
+    <lastmod>2026-05-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://markxu.icu/blog/mac-terminal-setup-notes-cn</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://markxu.icu/blog/%E5%BD%93%E5%BC%80%E6%BA%90%E5%8F%AA%E5%89%A9%E4%B8%8B%E4%B8%80%E6%AE%B5%20Prompt%EF%BC%9A%E6%88%91%E5%8F%91%E7%8E%B0%E4%BA%86%E4%B8%80%E7%A7%8D%E2%80%9C%E7%A6%BB%E8%B0%B1%E2%80%9D%E7%9A%84%E5%BC%80%E6%BA%90%E6%96%B9%E5%BC%8F</loc>
+    <loc>https://markxu.icu/blog/prompt-only-open-source-cn</loc>
     <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://markxu.icu/blog/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2</loc>
+    <loc>https://markxu.icu/blog/first-blog-post-cn</loc>
     <lastmod>2026-03-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -65,7 +71,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://markxu.icu/blog/%E5%B9%BF%E5%B7%9E%E6%B8%B8%E8%AE%B0</loc>
+    <loc>https://markxu.icu/blog/guangzhou-trip-notes-cn</loc>
     <lastmod>2026-03-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -77,7 +83,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://markxu.icu/blog/%E6%BD%AE%E6%B1%95%E6%B8%B8%E8%AE%B0</loc>
+    <loc>https://markxu.icu/blog/chaoshan-trip-notes-cn</loc>
     <lastmod>2026-02-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>

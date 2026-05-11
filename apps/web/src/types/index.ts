@@ -2,6 +2,7 @@ export interface BlogPostSummary {
   id: string
   title: string
   slug: string
+  aliases?: string[]
   date: string
   updated?: string
   summary: string
@@ -19,6 +20,8 @@ export interface MarkdownPostAttributes {
   date: string
   updated?: string
   summary: string
+  slug?: string
+  aliases?: string[]
   image?: string
   tags?: string[]
   category?: string

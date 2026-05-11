@@ -139,7 +139,8 @@ export function HomeHeroSection({
     : styles.contentContainerLight
   const dotClass = isDarkMode ? styles.dotDark : styles.dotLight
   const titlePrefix = isZh ? '欢迎来到' : 'Welcome to '
-  const titleSuffix = isZh ? '的自留地' : "'s Backyard"
+  const titlePossessive = isZh ? '' : "'s"
+  const titleSuffix = isZh ? '的自留地' : 'Backyard'
   const introText = t('home.intro')
   const descriptionText = t('home.description')
   const titleStagger = prefersReducedMotion ? 0 : 0.018
@@ -207,27 +208,52 @@ export function HomeHeroSection({
                     {titlePrefix}
                   </VerticalCutReveal>
                   {isZh ? <br /> : null}
-                  <span className={isZh ? styles.titleTailLine : undefined}>
-                    <span
-                      className={styles.highlightText}
-                      role="link"
-                      tabIndex={0}
-                      onClick={handleNameClick}
-                      onKeyDown={handleNameKeyDown}
-                    >
-                      <VerticalCutReveal
-                        splitBy="characters"
-                        staggerDuration={titleStagger}
-                        staggerFrom="center"
-                        transition={{
-                          ...HERO_TITLE_REVEAL_TRANSITION,
-                          delay: prefersReducedMotion ? 0 : 0.22,
-                        }}
-                        containerClassName="inline-flex"
-                        elementLevelClassName={styles.highlightGlyph}
+                  <span className={styles.titleTailLine}>
+                    <span className={styles.titleNameGroup}>
+                      <span
+                        className={styles.highlightText}
+                        role="link"
+                        tabIndex={0}
+                        onClick={handleNameClick}
+                        onKeyDown={handleNameKeyDown}
                       >
-                        Mark
-                      </VerticalCutReveal>
+                        <VerticalCutReveal
+                          splitBy="characters"
+                          staggerDuration={titleStagger}
+                          staggerFrom="center"
+                          transition={{
+                            ...HERO_TITLE_REVEAL_TRANSITION,
+                            delay: prefersReducedMotion ? 0 : 0.22,
+                          }}
+                          containerClassName="inline-flex"
+                          elementLevelClassName={styles.highlightGlyph}
+                        >
+                          Mark
+                        </VerticalCutReveal>
+                      </span>
+                      {titlePossessive ? (
+                        <VerticalCutReveal
+                          splitBy="characters"
+                          staggerDuration={titleStagger}
+                          staggerFrom="last"
+                          reverse
+                          transition={{
+                            ...HERO_TITLE_REVEAL_TRANSITION,
+                            delay: prefersReducedMotion ? 0 : 0.34,
+                          }}
+                          containerClassName="inline-flex"
+                        >
+                          {titlePossessive}
+                        </VerticalCutReveal>
+                      ) : null}
+                      {titlePossessive ? (
+                        <span
+                          aria-hidden="true"
+                          className={styles.titleNameSpace}
+                        >
+                          {' '}
+                        </span>
+                      ) : null}
                     </span>
                     <VerticalCutReveal
                       splitBy="characters"
@@ -337,7 +363,10 @@ const styles = {
     'mt-2 max-w-4xl text-center text-4xl font-semibold tracking-tight sm:text-6xl lg:mt-6 lg:text-left lg:text-7xl'
   ),
   titleLine: 'inline-block',
-  titleTailLine: 'inline-flex items-baseline justify-center lg:justify-start',
+  titleTailLine:
+    'inline-flex flex-wrap items-baseline justify-center lg:justify-start',
+  titleNameGroup: 'inline-flex flex-nowrap items-baseline whitespace-nowrap',
+  titleNameSpace: 'whitespace-pre',
   titleLight: 'text-black',
   titleDark: 'text-white drop-shadow-[0_10px_30px_rgba(15,23,42,0.35)]',
   highlightText: cn(
