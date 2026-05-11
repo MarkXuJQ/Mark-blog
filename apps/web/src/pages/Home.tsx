@@ -13,6 +13,7 @@ import { HomeBlogRailSection } from '@/components/home/HomeBlogRailSection'
 import { HomeHeroSection } from '@/components/home/HomeHeroSection'
 import { useHomePageSceneMotion } from '@/components/home/useHomePageSceneMotion'
 import { useHomePageRuntime } from '@/components/home/useHomePageRuntime'
+import { useHomeGsapReveal } from '@/components/home/useHomeGsapReveal'
 import { useHomeSectionPager } from '@/components/home/useHomeSectionPager'
 import { Seo } from '@/components/seo/Seo'
 import {
@@ -116,6 +117,7 @@ export function Home() {
     enabled: !isCoarsePointer,
     prefersReducedMotion,
   })
+  useHomeGsapReveal(pageRef, { prefersReducedMotion })
 
   return (
     <>
@@ -154,7 +156,10 @@ export function Home() {
           isCoarsePointer={isCoarsePointer}
         />
 
-        <div className="relative z-20 mx-auto w-full max-w-3xl px-4 pb-8">
+        <div
+          data-home-reveal="footer"
+          className="relative z-20 mx-auto w-full max-w-3xl px-4 pb-8"
+        >
           <Footer className="mt-0" />
         </div>
       </div>

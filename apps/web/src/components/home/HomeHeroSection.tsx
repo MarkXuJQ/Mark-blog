@@ -184,7 +184,10 @@ export function HomeHeroSection({
           style={{ opacity: heroContentOpacity, y: heroContentY }}
         >
           <div className={styles.heroContentInner}>
-            <div className={styles.heroCopy}>
+            <div
+              data-home-reveal="hero-copy"
+              className={styles.heroCopy}
+            >
               <h1
                 className={cn(
                   styles.title,
@@ -284,7 +287,11 @@ export function HomeHeroSection({
               </div>
             </div>
 
-            <div className={styles.heroVisualWrap}>
+            <div
+              data-home-reveal="hero-visual"
+              data-home-reveal-delay={prefersReducedMotion ? undefined : 0.16}
+              className={styles.heroVisualWrap}
+            >
               <HomeHeroAvatarScene
                 avatarSrc={avatarSrc}
                 sceneProgress={sceneProgress}
