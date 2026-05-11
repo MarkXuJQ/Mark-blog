@@ -33,14 +33,25 @@ const cachedPosts: PostsCache = { zh: null, en: null }
 let cachedAllPosts: BlogPost[] | null = null
 
 function parsePost(path: string, module: MarkdownPost): BlogPost | null {
-  const slug = path.split('/').pop()?.replace('.md', '') || ''
+  const fileSlug = path.split('/').pop()?.replace('.md', '') || ''
+  const frontmatterSlug = module.attributes.slug?.trim()
+  const slug = frontmatterSlug || fileSlug
   if (!slug) return null
 
   const { attributes, html } = module
+  const aliases = new Set<string>()
+  if (fileSlug !== slug) aliases.add(fileSlug)
+  attributes.aliases?.forEach((alias) => {
+    const normalizedAlias = alias.trim()
+    if (normalizedAlias && normalizedAlias !== slug) {
+      aliases.add(normalizedAlias)
+    }
+  })
 
   return {
     id: slug,
     slug,
+    aliases: aliases.size > 0 ? Array.from(aliases) : undefined,
     title: attributes.title,
     date: attributes.date,
     updated: attributes.updated,
@@ -103,9 +114,13 @@ export function getPostBySlug(
   options?: { fallback?: boolean }
 ): BlogPost | undefined {
   const fallbackEnabled = options?.fallback !== false
-  const exactMatch = getAllPosts(language).find((post) => post.slug === slug)
+  const exactMatch = getAllPosts(language).find(
+    (post) => post.slug === slug || post.aliases?.includes(slug)
+  )
   if (exactMatch || !fallbackEnabled) return exactMatch
-  return getAllPostsAcrossLanguages().find((post) => post.slug === slug)
+  return getAllPostsAcrossLanguages().find(
+    (post) => post.slug === slug || post.aliases?.includes(slug)
+  )
 }
 
 export function getAdjacentPosts(
@@ -115,7 +130,9 @@ export function getAdjacentPosts(
 ): { prev?: BlogPost; next?: BlogPost } {
   const fallbackEnabled = options?.fallback !== false
   const languagePosts = getAllPosts(language)
-  const index = languagePosts.findIndex((post) => post.slug === slug)
+  const index = languagePosts.findIndex(
+    (post) => post.slug === slug || post.aliases?.includes(slug)
+  )
 
   if (index !== -1) {
     const next = index > 0 ? languagePosts[index - 1] : undefined
@@ -128,7 +145,9 @@ export function getAdjacentPosts(
   if (!fallbackEnabled) return {}
 
   const allPosts = getAllPostsAcrossLanguages()
-  const allIndex = allPosts.findIndex((post) => post.slug === slug)
+  const allIndex = allPosts.findIndex(
+    (post) => post.slug === slug || post.aliases?.includes(slug)
+  )
   if (allIndex === -1) return {}
 
   const next = allIndex > 0 ? allPosts[allIndex - 1] : undefined

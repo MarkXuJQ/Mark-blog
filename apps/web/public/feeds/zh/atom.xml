@@ -3,7 +3,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://markxu.icu</id>
     <title>Mark的自留地</title>
-    <updated>2026-04-07T00:00:00.000Z</updated>
+    <updated>2026-05-11T00:00:00.000Z</updated>
     <generator>Mark Xu Blog Generator</generator>
     <author>
         <name>Mark Xu</name>
@@ -17,13 +17,27 @@
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
     <entry>
+        <title type="html"><![CDATA[大学四年，我的几个“小抽屉”]]></title>
+        <id>https://markxu.icu/blog/university-info-drawers-cn</id>
+        <link href="https://markxu.icu/blog/university-info-drawers-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img06bdb9ed7cc5e8.png" type="image/png"/>
+        <updated>2026-05-11T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[一直有搜集各种有趣的信息源的习惯，想要把我印象中高质量，经常更新且好玩好读的几个信息源记录下，留给未来的自己，也分享给大家。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img06bdb9ed7cc5e8.png" alt="大学四年，我的几个“小抽屉”" /> <p>一直有搜集各种有趣的信息源的习惯，想要把我印象中高质量，经常更新且好玩好读的几个信息源记录下，留给未来的自己，也分享给大家。</p> <a class="view-full" href="https://markxu.icu/blog/university-info-drawers-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[配置Mac终端日记]]></title>
-        <id>https://markxu.icu/blog/%E9%85%8D%E7%BD%AEMac%E7%BB%88%E7%AB%AF%E6%97%A5%E8%AE%B0</id>
-        <link href="https://markxu.icu/blog/%E9%85%8D%E7%BD%AEMac%E7%BB%88%E7%AB%AF%E6%97%A5%E8%AE%B0"/>
+        <id>https://markxu.icu/blog/mac-terminal-setup-notes-cn</id>
+        <link href="https://markxu.icu/blog/mac-terminal-setup-notes-cn"/>
         <link rel="enclosure" href="https://img.markxu.icu/img4d29eab0f1dc8.jpeg" type="image/jpeg"/>
         <updated>2026-04-07T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[我以前的终端被 oh-my-zsh 和各类插件塞的满满的，界面还丑到自己都不愿意用。所以这次我打算从0开始，完整的重新构建一下我的终端。]]></summary>
-        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img4d29eab0f1dc8.jpeg" alt="配置Mac终端日记" /> <p>我以前的终端被 oh-my-zsh 和各类插件塞的满满的，界面还丑到自己都不愿意用。所以这次我打算从0开始，完整的重新构建一下我的终端。</p> <a class="view-full" href="https://markxu.icu/blog/%E9%85%8D%E7%BD%AEMac%E7%BB%88%E7%AB%AF%E6%97%A5%E8%AE%B0" target="_blank">点击查看全文</a>]]></content>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img4d29eab0f1dc8.jpeg" alt="配置Mac终端日记" /> <p>我以前的终端被 oh-my-zsh 和各类插件塞的满满的，界面还丑到自己都不愿意用。所以这次我打算从0开始，完整的重新构建一下我的终端。</p> <a class="view-full" href="https://markxu.icu/blog/mac-terminal-setup-notes-cn" target="_blank">点击查看全文</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>
@@ -32,12 +46,12 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[当开源只剩下一段 Prompt：我发现了一种“离谱”的开源方式]]></title>
-        <id>https://markxu.icu/blog/%E5%BD%93%E5%BC%80%E6%BA%90%E5%8F%AA%E5%89%A9%E4%B8%8B%E4%B8%80%E6%AE%B5%20Prompt%EF%BC%9A%E6%88%91%E5%8F%91%E7%8E%B0%E4%BA%86%E4%B8%80%E7%A7%8D%E2%80%9C%E7%A6%BB%E8%B0%B1%E2%80%9D%E7%9A%84%E5%BC%80%E6%BA%90%E6%96%B9%E5%BC%8F</id>
-        <link href="https://markxu.icu/blog/%E5%BD%93%E5%BC%80%E6%BA%90%E5%8F%AA%E5%89%A9%E4%B8%8B%E4%B8%80%E6%AE%B5%20Prompt%EF%BC%9A%E6%88%91%E5%8F%91%E7%8E%B0%E4%BA%86%E4%B8%80%E7%A7%8D%E2%80%9C%E7%A6%BB%E8%B0%B1%E2%80%9D%E7%9A%84%E5%BC%80%E6%BA%90%E6%96%B9%E5%BC%8F"/>
+        <id>https://markxu.icu/blog/prompt-only-open-source-cn</id>
+        <link href="https://markxu.icu/blog/prompt-only-open-source-cn"/>
         <link rel="enclosure" href="https://img.markxu.icu/imgvoiceinput.jpeg" type="image/jpeg"/>
         <updated>2026-04-05T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[最近在 GitHub 上看到了一个项目：voice-input-src。一个为mac写的语音输入软件。震惊的是打开仓库你会发现只有一段写给AI的Prompt。]]></summary>
-        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgvoiceinput.jpeg" alt="当开源只剩下一段 Prompt：我发现了一种“离谱”的开源方式" /> <p>最近在 GitHub 上看到了一个项目：voice-input-src。一个为mac写的语音输入软件。震惊的是打开仓库你会发现只有一段写给AI的Prompt。</p> <a class="view-full" href="https://markxu.icu/blog/%E5%BD%93%E5%BC%80%E6%BA%90%E5%8F%AA%E5%89%A9%E4%B8%8B%E4%B8%80%E6%AE%B5%20Prompt%EF%BC%9A%E6%88%91%E5%8F%91%E7%8E%B0%E4%BA%86%E4%B8%80%E7%A7%8D%E2%80%9C%E7%A6%BB%E8%B0%B1%E2%80%9D%E7%9A%84%E5%BC%80%E6%BA%90%E6%96%B9%E5%BC%8F" target="_blank">点击查看全文</a>]]></content>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgvoiceinput.jpeg" alt="当开源只剩下一段 Prompt：我发现了一种“离谱”的开源方式" /> <p>最近在 GitHub 上看到了一个项目：voice-input-src。一个为mac写的语音输入软件。震惊的是打开仓库你会发现只有一段写给AI的Prompt。</p> <a class="view-full" href="https://markxu.icu/blog/prompt-only-open-source-cn" target="_blank">点击查看全文</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>
@@ -46,12 +60,12 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[第一篇博客]]></title>
-        <id>https://markxu.icu/blog/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2</id>
-        <link href="https://markxu.icu/blog/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2"/>
+        <id>https://markxu.icu/blog/first-blog-post-cn</id>
+        <link href="https://markxu.icu/blog/first-blog-post-cn"/>
         <link rel="enclosure" href="https://img.markxu.icu/imgmarketshareofReactVueAngular.png" type="image/png"/>
         <updated>2026-03-24T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[个人网站字面意义上的第一篇博客，分享下个人感受和经历。]]></summary>
-        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgmarketshareofReactVueAngular.png" alt="第一篇博客" /> <p>个人网站字面意义上的第一篇博客，分享下个人感受和经历。</p> <a class="view-full" href="https://markxu.icu/blog/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2" target="_blank">点击查看全文</a>]]></content>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgmarketshareofReactVueAngular.png" alt="第一篇博客" /> <p>个人网站字面意义上的第一篇博客，分享下个人感受和经历。</p> <a class="view-full" href="https://markxu.icu/blog/first-blog-post-cn" target="_blank">点击查看全文</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>
@@ -60,12 +74,12 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[广州游记]]></title>
-        <id>https://markxu.icu/blog/%E5%B9%BF%E5%B7%9E%E6%B8%B8%E8%AE%B0</id>
-        <link href="https://markxu.icu/blog/%E5%B9%BF%E5%B7%9E%E6%B8%B8%E8%AE%B0"/>
+        <id>https://markxu.icu/blog/guangzhou-trip-notes-cn</id>
+        <link href="https://markxu.icu/blog/guangzhou-trip-notes-cn"/>
         <link rel="enclosure" href="https://img.markxu.icu/imgIMG_20240323_广州tower.png" type="image/png"/>
         <updated>2024-03-22T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[这是我在广州的游记，主要是流水账，但也记录了我和好兄弟在旅程中经历的小故事。]]></summary>
-        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgIMG_20240323_广州tower.png" alt="广州游记" /> <p>这是我在广州的游记，主要是流水账，但也记录了我和好兄弟在旅程中经历的小故事。</p> <a class="view-full" href="https://markxu.icu/blog/%E5%B9%BF%E5%B7%9E%E6%B8%B8%E8%AE%B0" target="_blank">点击查看全文</a>]]></content>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgIMG_20240323_广州tower.png" alt="广州游记" /> <p>这是我在广州的游记，主要是流水账，但也记录了我和好兄弟在旅程中经历的小故事。</p> <a class="view-full" href="https://markxu.icu/blog/guangzhou-trip-notes-cn" target="_blank">点击查看全文</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>
@@ -74,12 +88,12 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[潮汕游记]]></title>
-        <id>https://markxu.icu/blog/%E6%BD%AE%E6%B1%95%E6%B8%B8%E8%AE%B0</id>
-        <link href="https://markxu.icu/blog/%E6%BD%AE%E6%B1%95%E6%B8%B8%E8%AE%B0"/>
+        <id>https://markxu.icu/blog/chaoshan-trip-notes-cn</id>
+        <link href="https://markxu.icu/blog/chaoshan-trip-notes-cn"/>
         <link rel="enclosure" href="https://img.markxu.icu/imgIMG_20230922_汕头.png" type="image/png"/>
         <updated>2023-09-27T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[这是我在潮汕的游记，记录了大二第一次独自出去玩的经历。]]></summary>
-        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgIMG_20230922_汕头.png" alt="潮汕游记" /> <p>这是我在潮汕的游记，记录了大二第一次独自出去玩的经历。</p> <a class="view-full" href="https://markxu.icu/blog/%E6%BD%AE%E6%B1%95%E6%B8%B8%E8%AE%B0" target="_blank">点击查看全文</a>]]></content>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgIMG_20230922_汕头.png" alt="潮汕游记" /> <p>这是我在潮汕的游记，记录了大二第一次独自出去玩的经历。</p> <a class="view-full" href="https://markxu.icu/blog/chaoshan-trip-notes-cn" target="_blank">点击查看全文</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>

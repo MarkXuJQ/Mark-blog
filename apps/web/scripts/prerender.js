@@ -3,6 +3,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import process from 'node:process'
 import { createRequire } from 'node:module'
+import matter from 'gray-matter'
 import puppeteer from 'puppeteer'
 import { spawn } from 'node:child_process'
 
@@ -36,6 +37,23 @@ function collectMarkdownFiles(dirPath) {
   return files
 }
 
+function resolvePostSlugs(filePath) {
+  const fileSlug = path.basename(filePath, '.md')
+  const content = fs.readFileSync(filePath, 'utf-8')
+  const { data } = matter(content)
+  const slug =
+    typeof data.slug === 'string' && data.slug.trim()
+      ? data.slug.trim()
+      : fileSlug
+  const aliases = Array.isArray(data.aliases)
+    ? data.aliases.filter(
+        (alias) => typeof alias === 'string' && alias.trim()
+      )
+    : []
+
+  return Array.from(new Set([slug, ...aliases, fileSlug]))
+}
+
 // Utility to verify dist exists
 if (!fs.existsSync(DIST_DIR)) {
   console.error(
@@ -61,8 +79,9 @@ function getRoutes() {
   if (fs.existsSync(POSTS_DIR)) {
     const files = collectMarkdownFiles(POSTS_DIR)
     files.forEach((filePath) => {
-      const slug = path.basename(filePath, '.md')
-      routes.push(`/blog/${slug}`)
+      resolvePostSlugs(filePath).forEach((slug) => {
+        routes.push(`/blog/${slug}`)
+      })
     })
   }
 

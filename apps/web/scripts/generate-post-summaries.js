@@ -51,6 +51,11 @@ function normalizeOptionalStringArray(value) {
     : undefined
 }
 
+function resolvePostSlug(filePath, data) {
+  const fileSlug = path.basename(filePath, '.md')
+  return normalizeOptionalString(data.slug) || fileSlug
+}
+
 function buildPostSummaries() {
   if (!fs.existsSync(POSTS_DIR)) {
     throw new Error(`Posts directory not found: ${POSTS_DIR}`)
@@ -60,7 +65,7 @@ function buildPostSummaries() {
   const summaries = files.map((filePath) => {
     const rawContent = fs.readFileSync(filePath, 'utf-8')
     const { data } = matter(rawContent)
-    const slug = path.basename(filePath, '.md')
+    const slug = resolvePostSlug(filePath, data)
 
     return {
       id: slug,

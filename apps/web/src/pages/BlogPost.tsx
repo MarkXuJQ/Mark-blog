@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Clock, FileText } from 'lucide-react'
+import { CategoryLabel } from '@/components/blog/CategoryLabel'
 import { Copyright } from '@/components/blog/Copyright'
 import { PostNavigation } from '@/components/blog/PostNavigation'
 import { DeferredComments } from '@/components/comments/DeferredComments'
@@ -130,10 +131,6 @@ export function BlogPost() {
   const publishedAt = toIsoDateTime(post.date)
   const modifiedAt = toIsoDateTime(post.updated || post.date)
   const schemaLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
-  const categoryLabel = post.category
-    ? t(`blog.categories.${post.category}`, post.category)
-    : ''
-
   const blogPostingSchema: JsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -240,10 +237,11 @@ export function BlogPost() {
                   ) : null}
 
                   <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/85 drop-shadow-[0_2px_12px_rgba(15,23,42,0.38)]">
-                    {categoryLabel ? (
-                      <span className="rounded-md border border-white/18 bg-white/14 px-2 py-0.5 text-xs font-semibold text-white/95 backdrop-blur">
-                        {categoryLabel}
-                      </span>
+                    {post.category ? (
+                      <CategoryLabel
+                        category={post.category}
+                        className="drop-shadow-[0_2px_10px_rgba(15,23,42,0.5)]"
+                      />
                     ) : null}
                     <div className="inline-flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
@@ -304,8 +302,8 @@ export function BlogPost() {
               </div>
 
               <div className={styles.statsContainer}>
-                {categoryLabel ? (
-                  <span className={styles.categoryBadge}>{categoryLabel}</span>
+                {post.category ? (
+                  <CategoryLabel category={post.category} />
                 ) : null}
                 <div className={styles.iconText}>
                   <Calendar className="h-4 w-4" />
@@ -379,10 +377,6 @@ const styles = {
   iconText: 'flex items-center gap-1',
   updatedText: 'flex items-center gap-1 text-slate-400',
   tagsContainer: 'flex gap-2',
-  categoryBadge: cn(
-    'rounded-md bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700',
-    'dark:bg-blue-900 dark:text-blue-300'
-  ),
   tag: cn(
     'rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium',
     'text-slate-600 dark:bg-slate-800 dark:text-slate-300'

@@ -1,8 +1,12 @@
 import { useTranslation } from 'react-i18next'
-import { ListFilter, Check, ChevronDown, ArrowDown } from 'lucide-react'
+import { ChevronDown, ArrowDown } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import type { SortBy } from '@/hooks/useBlogPosts'
+import {
+  getBlogCategoryMeta,
+  getBlogCategoryTranslationKey,
+} from './categoryMeta'
 import {
   Dropdown,
   DropdownContent,
@@ -19,6 +23,22 @@ interface BlogFilterProps {
   onToggleSort: () => void
 }
 
+function CategoryMenuLabel({ category }: { category?: string | null }) {
+  const { t } = useTranslation()
+  const meta = getBlogCategoryMeta(category)
+  const Icon = meta.icon
+  const label = category
+    ? t(getBlogCategoryTranslationKey(category), category)
+    : t('blog.filter.allCategories')
+
+  return (
+    <span className="inline-flex items-center gap-2.5 text-[0.95rem] font-medium text-slate-700 dark:text-slate-200">
+      <Icon aria-hidden="true" className="h-[1.125rem] w-[1.125rem] shrink-0" />
+      <span>{label}</span>
+    </span>
+  )
+}
+
 function FilterTrigger({
   selectedCategory,
 }: {
@@ -26,20 +46,22 @@ function FilterTrigger({
 }) {
   const { isOpen } = useDropdown()
   const { t } = useTranslation()
+  const meta = getBlogCategoryMeta(selectedCategory)
+  const Icon = meta.icon
+  const label = selectedCategory
+    ? t(getBlogCategoryTranslationKey(selectedCategory), selectedCategory)
+    : t('blog.filter.allCategories')
+
   return (
     <DropdownTrigger
       className={cn(
-        'flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors',
+        'flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[0.95rem] font-medium text-slate-700 transition-colors',
         'hover:bg-slate-50 hover:text-slate-900',
         'dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100'
       )}
     >
-      <ListFilter size={16} />
-      <span>
-        {selectedCategory
-          ? t(`blog.categories.${selectedCategory}`, selectedCategory)
-          : t('blog.filter.allCategories')}
-      </span>
+      <Icon className={cn('h-[1.1rem] w-[1.1rem]', meta.textClassName)} />
+      <span className={meta.textClassName}>{label}</span>
       <ChevronDown
         size={14}
         className={cn(
@@ -68,32 +90,22 @@ export function BlogFilter({
 
         <DropdownContent
           align="start"
-          className="w-auto min-w-[8rem] sm:right-0 sm:left-auto sm:origin-top-right"
+          className="w-max min-w-0 p-1.5 sm:right-0 sm:left-auto sm:origin-top-right"
         >
           <DropdownItem
-            className={cn(
-              'flex w-full items-center justify-between',
-              !selectedCategory &&
-                'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
-            )}
+            className="flex w-full items-center whitespace-nowrap px-3 py-2.5"
             onClick={() => onSelectCategory(null)}
           >
-            {t('blog.filter.allCategories')}
-            {!selectedCategory && <Check size={14} />}
+            <CategoryMenuLabel />
           </DropdownItem>
 
           {allCategories.map((category) => (
             <DropdownItem
               key={category}
-              className={cn(
-                'flex w-full items-center justify-between',
-                selectedCategory === category &&
-                  'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
-              )}
+              className="flex w-full items-center whitespace-nowrap px-3 py-2.5"
               onClick={() => onSelectCategory(category)}
             >
-              <span>{t(`blog.categories.${category}`, category)}</span>
-              {selectedCategory === category && <Check size={14} />}
+              <CategoryMenuLabel category={category} />
             </DropdownItem>
           ))}
         </DropdownContent>

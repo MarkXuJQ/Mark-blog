@@ -3,6 +3,7 @@ import { motion, type MotionValue, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { getAllPostSummaries } from '@/lib/content'
+import { CategoryLabel } from '@/components/blog/CategoryLabel'
 import { Label } from '../ui/label'
 import { Slider } from '../ui/slider'
 import { cn } from '@/lib/utils'
@@ -121,7 +122,10 @@ export function HomeBlogRailSection({
           <div className="relative flex h-full flex-col justify-center gap-16 py-12 sm:py-14">
             <div className="flex flex-col gap-6 px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                <div className="space-y-3">
+                <div
+                  data-home-reveal="blog-header"
+                  className="space-y-3"
+                >
                   <div className="h-px w-14 bg-black/12 dark:bg-white/16" />
                   <div className="flex items-center gap-4">
                     <h2 className="heading-display text-[1.95rem] leading-none font-medium tracking-[0.08em] text-black/88 sm:text-[2.2rem] lg:text-[2.6rem] dark:text-white/90">
@@ -148,6 +152,8 @@ export function HomeBlogRailSection({
                   {headerStats.map((stat) => (
                     <div
                       key={stat.label}
+                      data-home-reveal="blog-stat"
+                      data-home-reveal-index={headerStats.indexOf(stat)}
                       className="inline-flex min-h-11 items-baseline gap-2.5 text-left"
                     >
                       <span className="text-[0.68rem] font-semibold tracking-[0.22em] text-black/34 uppercase dark:text-white/34">
@@ -237,6 +243,8 @@ function BlogRailSpeedControl({
   return (
     <div
       data-home-no-pager="true"
+      data-home-reveal="blog-control"
+      data-home-reveal-delay={0.2}
       className="pointer-events-auto absolute right-8 -bottom-10 z-30 w-[min(13rem,calc(100vw-4rem))] sm:right-10 sm:w-56"
     >
       <div className="mb-2 flex items-center justify-between gap-3">
@@ -307,9 +315,6 @@ function BlogRailItem({
 }) {
   const { t } = useTranslation()
   const formattedDate = dateFormatter.format(new Date(post.date))
-  const categoryLabel = post.category
-    ? t(`blog.categories.${post.category}`, post.category)
-    : null
   const itemNumber = String(index + 1).padStart(2, '0')
   const isFeatured = index === 0
 
@@ -318,6 +323,8 @@ function BlogRailItem({
       to={`/blog/${post.slug}`}
       tabIndex={ariaHidden ? -1 : undefined}
       aria-hidden={ariaHidden}
+      data-home-reveal={ariaHidden ? undefined : 'blog-card'}
+      data-home-reveal-index={ariaHidden ? undefined : index}
       className={cn(
         'group relative flex min-h-[19rem] shrink-0 flex-col justify-between overflow-hidden px-5 py-5 transition-[background-color,transform] duration-300 sm:min-h-[21rem] sm:px-7 sm:py-6 lg:min-h-[22rem] lg:px-8',
         isFeatured
@@ -340,10 +347,12 @@ function BlogRailItem({
           <div className="text-[0.7rem] tracking-[0.24em] text-[var(--text-secondary)] uppercase sm:text-[0.74rem]">
             {formattedDate}
           </div>
-          {categoryLabel ? (
-            <div className="inline-flex items-center text-[0.66rem] font-medium tracking-[0.16em] text-black/34 uppercase dark:text-white/34">
-              {categoryLabel}
-            </div>
+          {post.category ? (
+            <CategoryLabel
+              category={post.category}
+              className="text-[0.66rem] tracking-[0.16em] uppercase"
+              iconClassName="h-3.5 w-3.5"
+            />
           ) : null}
         </div>
 

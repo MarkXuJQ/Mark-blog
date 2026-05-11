@@ -88,12 +88,13 @@
     },
     "filter": {
       "allTags": "全部标签",
-      "allCategories": "全部分类"
+      "allCategories": "全部文章"
     },
     "categories": {
       "essay": "生活杂谈",
-      "experience": "经验分享",
+      "experience": "人生经历",
       "tech": "技术分享",
+      "share": "资源分享",
       "project": "项目介绍"
     },
     "sort": {

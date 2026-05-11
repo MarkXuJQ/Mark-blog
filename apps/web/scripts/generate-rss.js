@@ -60,10 +60,16 @@ const resolveLanguageFromPath = (filePath) => {
   return 'zh'
 }
 
+const resolvePostSlug = (filePath, data) => {
+  return typeof data.slug === 'string' && data.slug.trim()
+    ? data.slug.trim()
+    : path.basename(filePath, '.md')
+}
+
 const allPosts = files.map((filePath) => {
   const content = fs.readFileSync(filePath, 'utf-8')
   const { data, content: markdownContent } = matter(content)
-  const slug = path.basename(filePath, '.md')
+  const slug = resolvePostSlug(filePath, data)
   const language = resolveLanguageFromPath(filePath)
 
   let coverImage = data.image || undefined

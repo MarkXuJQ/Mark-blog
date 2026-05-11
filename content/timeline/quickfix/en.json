@@ -1,5 +1,15 @@
 [
   {
+    "id": "qf-20260511",
+    "date": "2026-05-11",
+    "content": [
+      "Improved blog category presentation: added the Share category entry, paired each category with its icon, and switched category badges to lightweight colored icon-and-text labels",
+      "Refined the blog category dropdown: removed selected checkmarks and internal category colors, enlarged menu items, and let the drawer width fit the longest label naturally",
+      "Unified the metadata scale and spacing on blog cards so category, date, and word count share a cleaner visual hierarchy",
+      "Applied the same content-fit dropdown width behavior to the navbar's other-entry menu, removing extra right-side whitespace"
+    ]
+  },
+  {
     "id": "qf-20260510",
     "date": "2026-05-10",
     "content": [

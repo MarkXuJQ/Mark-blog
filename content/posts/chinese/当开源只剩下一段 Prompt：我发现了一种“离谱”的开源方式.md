@@ -1,5 +1,7 @@
 ---
 title: "当开源只剩下一段 Prompt：我发现了一种“离谱”的开源方式"
+slug: "prompt-only-open-source-cn"
+aliases: ["prompt-only-open-source"]
 
 date: "2026-04-05"
 

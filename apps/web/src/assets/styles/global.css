@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 @import 'highlight.js/styles/github-dark.css';
+@import 'katex/dist/katex.min.css';
+@import 'markdown-it-texmath/css/texmath.css';
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -125,6 +127,28 @@ h3 {
 em,
 i {
   font-style: normal !important;
+}
+
+.katex em,
+.katex i {
+  font-style: italic !important;
+}
+
+.markdown-body eq,
+.prose eq {
+  display: inline;
+}
+
+.markdown-body eqn,
+.prose eqn {
+  display: block;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.markdown-body .katex-display,
+.prose .katex-display {
+  margin: 1.25rem 0;
 }
 
 /* Quote blocks: de-emphasize and keep upright (no italics). */

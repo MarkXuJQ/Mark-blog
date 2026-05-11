@@ -1,5 +1,10 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import {
+  canonicalBlogCategoryKey,
+  compareBlogCategories,
+  PREFERRED_BLOG_CATEGORIES,
+} from '@/components/blog/categoryMeta'
 import { getAllPosts } from '@/lib/content'
 import type { BlogPost } from '@/types'
 import { useSearch } from './useSearch'
@@ -45,11 +50,19 @@ export function useBlogPosts() {
 
   // Derived state
   const allCategories = useMemo(() => {
-    const categories = new Set<string>()
-    allPosts.forEach((post) => {
-      if (post.category) categories.add(post.category)
+    const categories = new Map<string, string>()
+
+    PREFERRED_BLOG_CATEGORIES.forEach((category) => {
+      categories.set(canonicalBlogCategoryKey(category), category)
     })
-    return Array.from(categories).sort()
+
+    allPosts.forEach((post) => {
+      if (post.category) {
+        categories.set(canonicalBlogCategoryKey(post.category), post.category)
+      }
+    })
+
+    return Array.from(categories.values()).sort(compareBlogCategories)
   }, [allPosts])
 
   const filteredAndSortedPosts = useMemo(() => {
