@@ -36,6 +36,78 @@ interface HomeRadarSectionProps {
   avatarSrc: string
 }
 
+interface DynamicRadarSignal {
+  id: string
+  node: RadarNode
+  left: string
+  top: string
+  targetAngle: number
+  createdAtRotation: number
+}
+
+const RADAR_DYNAMIC_SIGNAL_SPACING_MIN = 40
+const RADAR_DYNAMIC_SIGNAL_SPACING_MAX = 90
+const RADAR_DYNAMIC_SIGNAL_SPACING_MEAN = 60
+const RADAR_DYNAMIC_SIGNAL_SPACING_STD_DEV = 12
+const RADAR_DYNAMIC_SIGNAL_ENTER_DISTANCE = 22
+const RADAR_DYNAMIC_SIGNAL_HIT_GLOW_DISTANCE = 34
+const RADAR_DYNAMIC_SIGNAL_FADE_START = 270
+const RADAR_DYNAMIC_SIGNAL_FADE_DISTANCE = 40
+const RADAR_DYNAMIC_SIGNAL_INNER_RADIUS = 22
+const RADAR_DYNAMIC_SIGNAL_OUTER_RADIUS = 43
+const RADAR_DYNAMIC_SIGNAL_MIN_COUNT = 3
+const RADAR_DYNAMIC_SIGNAL_MAX_COUNT = 5
+
+function normalizeRadarAngle(angle: number) {
+  const normalized = angle % 360
+  return normalized < 0 ? normalized + 360 : normalized
+}
+
+function getClockwiseRadarDelta(from: number, to: number) {
+  return normalizeRadarAngle(to - from)
+}
+
+function getNormallyBiasedSignalSpacing() {
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const u1 = Math.max(Number.EPSILON, Math.random())
+    const u2 = Math.random()
+    const normalSample =
+      Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2)
+    const spacing =
+      RADAR_DYNAMIC_SIGNAL_SPACING_MEAN +
+      normalSample * RADAR_DYNAMIC_SIGNAL_SPACING_STD_DEV
+
+    if (
+      spacing >= RADAR_DYNAMIC_SIGNAL_SPACING_MIN &&
+      spacing <= RADAR_DYNAMIC_SIGNAL_SPACING_MAX
+    ) {
+      return spacing
+    }
+  }
+
+  return Math.min(
+    RADAR_DYNAMIC_SIGNAL_SPACING_MAX,
+    Math.max(
+      RADAR_DYNAMIC_SIGNAL_SPACING_MIN,
+      RADAR_DYNAMIC_SIGNAL_SPACING_MEAN +
+        (Math.random() - 0.5) * RADAR_DYNAMIC_SIGNAL_SPACING_STD_DEV
+    )
+  )
+}
+
+function getSignalPositionOnBeam(angle: number) {
+  const radius =
+    RADAR_DYNAMIC_SIGNAL_INNER_RADIUS +
+    Math.random() *
+      (RADAR_DYNAMIC_SIGNAL_OUTER_RADIUS - RADAR_DYNAMIC_SIGNAL_INNER_RADIUS)
+  const radians = (angle * Math.PI) / 180
+
+  return {
+    left: `${50 + radius * Math.sin(radians)}%`,
+    top: `${50 - radius * Math.cos(radians)}%`,
+  }
+}
+
 function HomeRadarAvatar({ avatarSrc }: { avatarSrc: string }) {
   return (
     <div aria-hidden="true" className={styles.avatarAnchorWrap}>
@@ -144,6 +216,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     activateSignalNode,
     activeNodeId,
     ambienceReveal,
+    beamAngle,
     beamFocusAngle,
     beamFocusSweepAngle,
     beamLoopActive,
@@ -161,6 +234,121 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
   const activeNode = activeNodeId
     ? (RADAR_NODES.find((node) => node.id === activeNodeId) ?? null)
     : null
+
+  const [dynamicSignals, setDynamicSignals] = useState<DynamicRadarSignal[]>(
+    []
+  )
+  const previousBeamAngleRef = useRef(beamAngle)
+  const totalBeamRotationRef = useRef(beamAngle)
+  const nextSignalRotationRef = useRef(
+    beamAngle + getNormallyBiasedSignalSpacing()
+  )
+  const dynamicSignalSequenceRef = useRef(0)
+  const nextSignalNodeIndexRef = useRef(0)
+  const staticFallbackCount = Math.max(
+    0,
+    RADAR_DYNAMIC_SIGNAL_MIN_COUNT - dynamicSignals.length
+  )
+  const dynamicSignalNodeIds = new Set(
+    dynamicSignals.map((signal) => signal.node.id)
+  )
+  const staticFallbackNodeIds = new Set(
+    RADAR_NODES.filter((node) => !dynamicSignalNodeIds.has(node.id))
+      .slice(0, staticFallbackCount)
+      .map((node) => node.id)
+  )
+
+  useEffect(() => {
+    if (beamOpacity <= 0.02) {
+      previousBeamAngleRef.current = beamAngle
+      totalBeamRotationRef.current = beamAngle
+      nextSignalRotationRef.current =
+        beamAngle + getNormallyBiasedSignalSpacing()
+      setDynamicSignals((current) => (current.length > 0 ? [] : current))
+      return
+    }
+
+    const previousAngle = previousBeamAngleRef.current
+    const angleDelta = getClockwiseRadarDelta(previousAngle, beamAngle)
+
+    previousBeamAngleRef.current = beamAngle
+    totalBeamRotationRef.current += angleDelta
+
+    if (angleDelta <= 0) {
+      return
+    }
+
+    const currentRotation = totalBeamRotationRef.current
+    const liveSignals = dynamicSignals.filter(
+      (signal) =>
+        currentRotation - signal.createdAtRotation <
+        RADAR_DYNAMIC_SIGNAL_FADE_START + RADAR_DYNAMIC_SIGNAL_FADE_DISTANCE
+    )
+    const nextSignals: DynamicRadarSignal[] = []
+
+    while (
+      currentRotation >= nextSignalRotationRef.current &&
+      nextSignals.length < 1 &&
+      liveSignals.length + nextSignals.length < RADAR_DYNAMIC_SIGNAL_MAX_COUNT
+    ) {
+      const targetAngle = beamFocusAngle
+      const occupiedNodeIds = new Set([
+        ...liveSignals.map((signal) => signal.node.id),
+        ...nextSignals.map((signal) => signal.node.id),
+      ])
+      let node = RADAR_NODES[nextSignalNodeIndexRef.current % RADAR_NODES.length]
+
+      for (let offset = 0; offset < RADAR_NODES.length; offset += 1) {
+        const candidateIndex =
+          (nextSignalNodeIndexRef.current + offset) % RADAR_NODES.length
+        const candidate = RADAR_NODES[candidateIndex]
+
+        if (!occupiedNodeIds.has(candidate.id)) {
+          node = candidate
+          nextSignalNodeIndexRef.current =
+            (candidateIndex + 1) % RADAR_NODES.length
+          break
+        }
+      }
+
+      const { left, top } = getSignalPositionOnBeam(targetAngle)
+
+      dynamicSignalSequenceRef.current += 1
+      nextSignals.push({
+        id: `${node.id}-${currentRotation.toFixed(2)}-${dynamicSignalSequenceRef.current}`,
+        node,
+        left,
+        top,
+        targetAngle,
+        createdAtRotation: currentRotation,
+      })
+
+      nextSignalRotationRef.current =
+        currentRotation + getNormallyBiasedSignalSpacing()
+    }
+
+    setDynamicSignals((current) => {
+      const currentLiveSignals = current.filter(
+        (signal) =>
+          currentRotation - signal.createdAtRotation <
+          RADAR_DYNAMIC_SIGNAL_FADE_START +
+            RADAR_DYNAMIC_SIGNAL_FADE_DISTANCE
+      )
+
+      if (
+        nextSignals.length === 0 &&
+        currentLiveSignals.length === current.length
+      ) {
+        return current
+      }
+
+      const combined = [...currentLiveSignals, ...nextSignals]
+
+      return combined.slice(
+        Math.max(0, combined.length - RADAR_DYNAMIC_SIGNAL_MAX_COUNT)
+      )
+    })
+  }, [beamAngle, beamFocusAngle, beamOpacity, dynamicSignals])
 
   const measureSignalPortalLayout = (node: RadarNode) => {
     const triggerRect = signalNodeRefs.current[node.id]?.getBoundingClientRect()
@@ -482,6 +670,10 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
             <HomeRadarAvatar avatarSrc={avatarSrc} />
 
             {RADAR_NODES.map((node) => {
+              if (!staticFallbackNodeIds.has(node.id)) {
+                return null
+              }
+
               const nodeAngle = getRadarNodeAngle(node)
               const isNodeActive = activeNodeId === node.id
               const isNodePortalActive = signalPortalState?.node.id === node.id
@@ -605,7 +797,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                     height: dotSize,
                     opacity: nodeOpacity,
                     scale: nodeScale,
-                    pointerEvents: nodeOpacity < 0.98 ? 'none' : 'auto',
+                    pointerEvents: nodeOpacity >= 0.98 ? 'auto' : 'none',
                   }}
                 >
                   <span
@@ -695,6 +887,260 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                           node.color,
                           0.48
                         )} 0%, ${withAlpha(node.color, 0.18)} 44%, ${withAlpha(
+                          node.color,
+                          0
+                        )} 74%)`,
+                      }}
+                    />
+
+                    <span
+                      aria-hidden="true"
+                      className={styles.signalIconFrame}
+                      style={{
+                        left: 0,
+                        top: 0,
+                        borderRadius: dotSize,
+                        background: signalIconFrameBackground,
+                        borderColor: signalIconFrameBorderColor,
+                        boxShadow: signalIconFrameShadow,
+                        scale: signalIconFrameScale,
+                      }}
+                    >
+                      <span
+                        className={styles.signalIconFrameInner}
+                        style={{ padding: `${iconInsetPercent}%` }}
+                      >
+                        <img
+                          src={node.faviconSrc}
+                          alt=""
+                          className={styles.signalIconImage}
+                          loading="lazy"
+                          decoding="async"
+                          style={{ scale: faviconScale }}
+                        />
+                      </span>
+                    </span>
+
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        styles.signalCopy,
+                        styles.signalCopyInactive
+                      )}
+                    >
+                      <span className={styles.signalCopyHeader}>
+                        <span className={styles.signalCopySpacer} />
+                        <span className={styles.signalCopyTitleBlock}>
+                          <span
+                            className={styles.signalCardEyebrow}
+                            style={{ color: cardMutedTextColor }}
+                          >
+                            {nodeEyebrow}
+                          </span>
+                          <span
+                            className={styles.signalCardTitle}
+                            style={{ color: cardTextColor }}
+                          >
+                            {nodeLabel}
+                          </span>
+                        </span>
+                      </span>
+                      <span
+                        className={styles.signalCardDescription}
+                        style={{ color: cardMutedTextColor }}
+                      >
+                        {nodeDescription}
+                      </span>
+                    </span>
+                  </span>
+                </a>
+              )
+            })}
+
+            {dynamicSignals.map((signal) => {
+              const node = signal.node
+              const nodeLabel = isZh ? node.label.zh : node.label.en
+              const nodeEyebrow = isZh ? node.eyebrow.zh : node.eyebrow.en
+              const nodeDescription = isZh
+                ? node.description.zh
+                : node.description.en
+              const dotSize = getNodeDotSize(node)
+              const pulseFieldSize = dotSize + 56
+              const useDarkCardText = isLightHexColor(node.color)
+              const cardTextColor = useDarkCardText ? '#0F172A' : '#FFFFFF'
+              const cardMutedTextColor = useDarkCardText
+                ? 'rgba(15,23,42,0.72)'
+                : 'rgba(255,255,255,0.8)'
+              const iconInsetPercent = Math.max(
+                4,
+                10 - (node.dotScaleSteps ?? 0) * 2
+              )
+              const faviconScale = 1.12 + (node.dotScaleSteps ?? 0) * 0.08
+              const { shiftX, shiftY } = getSignalShellShift(
+                node,
+                SIGNAL_CARD_SIZE_PX,
+                dotSize
+              )
+              const shellOffset = (dotSize - SIGNAL_CARD_SIZE_PX) / 2
+              const hoverPadLeft = shellOffset + shiftX
+              const hoverPadTop = shellOffset + shiftY
+              const signalShellBackground = 'transparent'
+              const signalShellBorderColor = 'transparent'
+              const signalIconFrameBackground = '#FFFFFF'
+              const signalIconFrameBorderColor = '#E2E8F0'
+              const signalIconFrameScale = 1
+              const signalIconFrameShadow =
+                '0 12px 18px -14px rgba(15,23,42,0.14)'
+              const signalAge =
+                totalBeamRotationRef.current - signal.createdAtRotation
+              const enterProgress = easeOutBack(
+                Math.min(
+                  1,
+                  Math.max(
+                    0,
+                    signalAge / RADAR_DYNAMIC_SIGNAL_ENTER_DISTANCE
+                  )
+                )
+              )
+              const hitGlowProgress = Math.max(
+                0,
+                1 - signalAge / RADAR_DYNAMIC_SIGNAL_HIT_GLOW_DISTANCE
+              )
+              const fadeProgress = Math.min(
+                1,
+                Math.max(
+                  0,
+                  (signalAge - RADAR_DYNAMIC_SIGNAL_FADE_START) /
+                  RADAR_DYNAMIC_SIGNAL_FADE_DISTANCE
+                )
+              )
+              const signalOpacity = enterProgress * (1 - fadeProgress)
+              const signalScale =
+                mix(0.42, 1, enterProgress) * mix(1, 0.88, fadeProgress)
+              const pulseOpacity =
+                Math.max(0, 0.86 - fadeProgress * 0.92) *
+                Math.max(0.18, enterProgress)
+              const pulseScale =
+                mix(0.7, 1.08, enterProgress) + fadeProgress * 0.2
+              const hitGlowOpacity = hitGlowProgress * (1 - fadeProgress)
+              const hitGlowScale = mix(0.72, 1.28, easeOutCubic(hitGlowProgress))
+              const rippleDelay = `-${(signal.createdAtRotation % 1.8).toFixed(2)}s`
+
+              return (
+                <a
+                  key={signal.id}
+                  ref={(element) => {
+                    signalNodeRefs.current[node.id] = element
+                  }}
+                  href={node.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={nodeLabel}
+                  title={nodeLabel}
+                  className={cn(
+                    styles.signalLink,
+                    activeNodeId === node.id && styles.signalLinkActive
+                  )}
+                  onPointerEnter={() => activateSignalNode(node.id)}
+                  onPointerLeave={() => scheduleSignalNodeDeactivate(node.id)}
+                  onFocus={() => activateSignalNode(node.id)}
+                  onBlur={() => scheduleSignalNodeDeactivate(node.id)}
+                  style={{
+                    left: signal.left,
+                    top: signal.top,
+                    width: dotSize,
+                    height: dotSize,
+                    opacity: signalOpacity,
+                    scale: signalScale,
+                    pointerEvents: signalOpacity >= 0.85 ? 'auto' : 'none',
+                  }}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={styles.signalHoverPad}
+                    style={{
+                      left: hoverPadLeft,
+                      top: hoverPadTop,
+                      width: SIGNAL_CARD_SIZE_PX,
+                      height: SIGNAL_CARD_SIZE_PX,
+                      pointerEvents: 'none',
+                    }}
+                  />
+
+                  <span
+                    aria-hidden="true"
+                    className={styles.signalPulseField}
+                    style={{
+                      width: pulseFieldSize,
+                      height: pulseFieldSize,
+                      opacity: pulseOpacity,
+                    }}
+                  >
+                    <span
+                      className={styles.signalPulseHalo}
+                      style={{
+                        opacity: pulseOpacity * 0.8,
+                        scale: pulseScale,
+                        background: `radial-gradient(circle, ${withAlpha(
+                          node.color,
+                          0.22
+                        )} 0%, ${withAlpha(node.color, 0.1)} 34%, ${withAlpha(
+                          node.color,
+                          0
+                        )} 60%)`,
+                      }}
+                    />
+                    <span
+                      className={cn(
+                        styles.signalPulseRing,
+                        styles.signalPulseRipple
+                      )}
+                      style={{
+                        opacity: pulseOpacity * 0.7,
+                        scale: pulseScale + 0.08,
+                        borderColor: withAlpha(node.color, 0.3),
+                        boxShadow: `0 0 20px ${withAlpha(node.color, 0.16)}`,
+                        animationDelay: rippleDelay,
+                      }}
+                    />
+                    <span
+                      className={cn(
+                        styles.signalPulseEcho,
+                        styles.signalPulseRippleSlow
+                      )}
+                      style={{
+                        opacity: pulseOpacity * 0.42,
+                        scale: pulseScale + 0.24,
+                        borderColor: withAlpha(node.color, 0.12),
+                        animationDelay: rippleDelay,
+                      }}
+                    />
+                  </span>
+
+                  <span
+                    aria-hidden="true"
+                    className={styles.signalShell}
+                    style={{
+                      width: dotSize,
+                      height: dotSize,
+                      opacity: activeNodeId === node.id ? 0 : signalOpacity,
+                      borderRadius: dotSize,
+                      background: signalShellBackground,
+                      borderColor: signalShellBorderColor,
+                      boxShadow: 'none',
+                      ['--signal-shell-translate' as string]: '0 0',
+                    }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={styles.signalScanGlow}
+                      style={{
+                        opacity: 0.18 + hitGlowOpacity * 0.58,
+                        scale: Math.max(1.02, hitGlowScale),
+                        background: `radial-gradient(circle, ${withAlpha(
+                          node.color,
+                          0.42 + hitGlowOpacity * 0.18
+                        )} 0%, ${withAlpha(node.color, 0.16)} 44%, ${withAlpha(
                           node.color,
                           0
                         )} 74%)`,
@@ -1073,6 +1519,10 @@ const styles = {
     'absolute inset-0 rounded-full border transition-[opacity,scale,border-color,box-shadow] duration-[120ms] ease-out',
   signalPulseEcho:
     'absolute inset-0 rounded-full border transition-[opacity,scale,border-color] duration-[160ms] ease-out',
+  signalPulseRipple:
+    '[animation:radar-signal-ripple_1.8s_cubic-bezier(0.16,1,0.3,1)_both] [@media(prefers-reduced-motion:reduce)]:[animation:none]',
+  signalPulseRippleSlow:
+    '[animation:radar-signal-ripple_2.35s_cubic-bezier(0.16,1,0.3,1)_both] [@media(prefers-reduced-motion:reduce)]:[animation:none]',
   signalScanGlow:
     'pointer-events-none absolute inset-0 rounded-full transition-[opacity,scale] duration-[180ms] ease-out',
   signalShell:

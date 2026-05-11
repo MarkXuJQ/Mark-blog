@@ -637,6 +637,7 @@ export function useHomeRadarScene() {
     activateSignalNode,
     activeNodeId,
     ambienceReveal,
+    beamAngle,
     beamFocusAngle,
     beamFocusSweepAngle,
     beamLoopActive,
