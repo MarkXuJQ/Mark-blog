@@ -38,9 +38,7 @@ export function BlogPost() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const post = slug
-    ? getPostBySlug(slug, i18n.language)
-    : undefined
+  const post = slug ? getPostBySlug(slug, i18n.language) : undefined
   const adjacentPosts = slug
     ? getAdjacentPosts(slug, i18n.language)
     : { prev: undefined, next: undefined }
@@ -277,7 +275,12 @@ export function BlogPost() {
               </div>
             </section>
 
-            <article className={cn(styles.article, 'px-4 pb-4 pt-3 sm:px-6 sm:pb-6 sm:pt-4')}>
+            <article
+              className={cn(
+                styles.article,
+                'px-4 pt-3 pb-4 sm:px-6 sm:pt-4 sm:pb-6'
+              )}
+            >
               <div
                 ref={contentRef}
                 className="markdown-body"
@@ -285,7 +288,10 @@ export function BlogPost() {
               />
 
               <Copyright />
-              <PostNavigation prev={adjacentPosts.prev} next={adjacentPosts.next} />
+              <PostNavigation
+                prev={adjacentPosts.prev}
+                next={adjacentPosts.next}
+              />
             </article>
           </>
         ) : (
@@ -324,7 +330,7 @@ export function BlogPost() {
                 {post.updated && post.updated !== post.date ? (
                   <div className={styles.updatedText}>
                     <Clock className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline text-[0.7rem]">
+                    <span className="hidden text-[0.7rem] sm:inline">
                       {t('blog.updatedOn')}
                     </span>
                     <span className="text-[0.7rem]">: {post.updated}</span>
@@ -344,7 +350,10 @@ export function BlogPost() {
               />
 
               <Copyright />
-              <PostNavigation prev={adjacentPosts.prev} next={adjacentPosts.next} />
+              <PostNavigation
+                prev={adjacentPosts.prev}
+                next={adjacentPosts.next}
+              />
             </article>
           </>
         )}
