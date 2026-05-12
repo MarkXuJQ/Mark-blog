@@ -30,7 +30,10 @@ const markdownFiles = import.meta.glob<MarkdownPost>(
 
 type PostsCache = Record<PostLanguage, BlogPost[] | null>
 const cachedPosts: PostsCache = { zh: null, en: null }
-let cachedAllPosts: BlogPost[] | null = null
+let cachedAllPostMatches: Array<{
+  post: BlogPost
+  language: PostLanguage
+}> | null = null
 
 function parsePost(path: string, module: MarkdownPost): BlogPost | null {
   const fileSlug = path.split('/').pop()?.replace('.md', '') || ''
@@ -80,10 +83,13 @@ export function getAllPosts(language?: string): BlogPost[] {
   return posts
 }
 
-function getAllPostsAcrossLanguages(): BlogPost[] {
-  if (cachedAllPosts) return cachedAllPosts
+function getAllPostMatchesAcrossLanguages(): Array<{
+  post: BlogPost
+  language: PostLanguage
+}> {
+  if (cachedAllPostMatches) return cachedAllPostMatches
 
-  cachedAllPosts = Object.entries(markdownFiles)
+  cachedAllPostMatches = Object.entries(markdownFiles)
     .map(([path, module]) => {
       const post = parsePost(path, module)
       if (!post) return null
@@ -103,9 +109,43 @@ function getAllPostsAcrossLanguages(): BlogPost[] {
       }
       return left.post.slug.localeCompare(right.post.slug)
     })
-    .map((item) => item.post)
 
-  return cachedAllPosts
+  return cachedAllPostMatches
+}
+
+function findPostMatch(
+  slug: string,
+  language?: string,
+  options?: { fallback?: boolean }
+): { post: BlogPost; language: PostLanguage } | undefined {
+  const normalizedLanguage = resolveLanguage(language)
+  const fallbackEnabled = options?.fallback !== false
+  const languagePosts = getAllPosts(normalizedLanguage)
+
+  const exactLanguageMatch = languagePosts.find((post) => post.slug === slug)
+  if (exactLanguageMatch) {
+    return { post: exactLanguageMatch, language: normalizedLanguage }
+  }
+
+  if (fallbackEnabled) {
+    const exactFallbackMatch = getAllPostMatchesAcrossLanguages().find(
+      (item) => item.post.slug === slug
+    )
+    if (exactFallbackMatch) return exactFallbackMatch
+  }
+
+  const aliasLanguageMatch = languagePosts.find((post) =>
+    post.aliases?.includes(slug)
+  )
+  if (aliasLanguageMatch) {
+    return { post: aliasLanguageMatch, language: normalizedLanguage }
+  }
+
+  if (!fallbackEnabled) return undefined
+
+  return getAllPostMatchesAcrossLanguages().find((item) =>
+    item.post.aliases?.includes(slug)
+  )
 }
 
 export function getPostBySlug(
@@ -113,14 +153,7 @@ export function getPostBySlug(
   language?: string,
   options?: { fallback?: boolean }
 ): BlogPost | undefined {
-  const fallbackEnabled = options?.fallback !== false
-  const exactMatch = getAllPosts(language).find(
-    (post) => post.slug === slug || post.aliases?.includes(slug)
-  )
-  if (exactMatch || !fallbackEnabled) return exactMatch
-  return getAllPostsAcrossLanguages().find(
-    (post) => post.slug === slug || post.aliases?.includes(slug)
-  )
+  return findPostMatch(slug, language, options)?.post
 }
 
 export function getAdjacentPosts(
@@ -128,11 +161,11 @@ export function getAdjacentPosts(
   language?: string,
   options?: { fallback?: boolean }
 ): { prev?: BlogPost; next?: BlogPost } {
-  const fallbackEnabled = options?.fallback !== false
-  const languagePosts = getAllPosts(language)
-  const index = languagePosts.findIndex(
-    (post) => post.slug === slug || post.aliases?.includes(slug)
-  )
+  const match = findPostMatch(slug, language, options)
+  if (!match) return {}
+
+  const languagePosts = getAllPosts(match.language)
+  const index = languagePosts.findIndex((post) => post.slug === match.post.slug)
 
   if (index !== -1) {
     const next = index > 0 ? languagePosts[index - 1] : undefined
@@ -141,18 +174,48 @@ export function getAdjacentPosts(
 
     return { prev, next }
   }
+  return {}
+}
 
-  if (!fallbackEnabled) return {}
+export function getSharedPostCommentPath(post: BlogPost): string {
+  const legacyChineseSlug = findLegacyChineseSlug(post)
+  if (legacyChineseSlug) {
+    return toBlogPath(legacyChineseSlug)
+  }
 
-  const allPosts = getAllPostsAcrossLanguages()
-  const allIndex = allPosts.findIndex(
-    (post) => post.slug === slug || post.aliases?.includes(slug)
+  const pairedChinesePost = findPairedChinesePost(post)
+  const pairedLegacyChineseSlug = pairedChinesePost
+    ? findLegacyChineseSlug(pairedChinesePost)
+    : undefined
+
+  return toBlogPath(
+    pairedLegacyChineseSlug || pairedChinesePost?.slug || post.slug
   )
-  if (allIndex === -1) return {}
+}
 
-  const next = allIndex > 0 ? allPosts[allIndex - 1] : undefined
-  const prev =
-    allIndex < allPosts.length - 1 ? allPosts[allIndex + 1] : undefined
+function findPairedChinesePost(post: BlogPost): BlogPost | undefined {
+  return getAllPosts('zh').find((candidate) => {
+    if (candidate.slug === post.slug || candidate.aliases?.includes(post.slug)) {
+      return true
+    }
+    if (post.aliases?.includes(candidate.slug)) {
+      return true
+    }
+    if (
+      post.image &&
+      candidate.image === post.image &&
+      candidate.date === post.date
+    ) {
+      return true
+    }
+    return candidate.date === post.date && candidate.category === post.category
+  })
+}
 
-  return { prev, next }
+function findLegacyChineseSlug(post: BlogPost): string | undefined {
+  return post.aliases?.find((alias) => /[^\x00-\x7F]/.test(alias))
+}
+
+function toBlogPath(slug: string): string {
+  return `/blog/${encodeURIComponent(slug)}`
 }

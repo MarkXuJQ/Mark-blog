@@ -24,7 +24,11 @@ import { Card } from '@/components/ui/Card'
 import { useCodeBlockEnhancements } from '@/hooks/useCodeBlockEnhancements'
 import { useImageLightbox } from '@/hooks/useImageLightbox'
 import { decorateArticleLinkPreviews } from '@/lib/article'
-import { getAdjacentPosts, getPostBySlug } from '@/lib/content'
+import {
+  getAdjacentPosts,
+  getPostBySlug,
+  getSharedPostCommentPath,
+} from '@/lib/content'
 import { countWords } from '@/utils/readingTime'
 import { cn } from '@/lib/utils'
 import { getImageUrl, rewriteHtmlImageSrc } from '@/utils/image'
@@ -57,7 +61,11 @@ export function BlogPost() {
     {
       copy: t('codeBlock.copy'),
       copied: t('codeBlock.copied'),
+      collapse: t('codeBlock.collapse'),
+      expand: t('codeBlock.expand'),
       plainText: t('codeBlock.plainText'),
+      scroll: t('codeBlock.scroll'),
+      wrap: t('codeBlock.wrap'),
     },
     contentHtml
   )
@@ -125,6 +133,7 @@ export function BlogPost() {
   const encodedSlug = encodeURIComponent(post.slug)
   const postPath = `/blog/${encodedSlug}`
   const postUrl = toAbsoluteUrl(postPath, siteUrl)
+  const commentPath = getSharedPostCommentPath(post)
   const imageSource =
     coverImage || extractFirstImageFromHtml(post.content) || DEFAULT_IMAGE
   const postImageUrl = toAbsoluteUrl(imageSource, siteUrl)
@@ -343,8 +352,9 @@ export function BlogPost() {
 
       <Card className="p-6">
         <DeferredComments
-          key={slug}
+          key={commentPath}
           containerId="twikoo-container"
+          path={commentPath}
           eager
         />
       </Card>
