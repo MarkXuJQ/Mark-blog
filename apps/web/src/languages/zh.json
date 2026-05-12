@@ -38,7 +38,11 @@
   "codeBlock": {
     "copy": "复制",
     "copied": "已复制",
-    "plainText": "纯文本"
+    "plainText": "纯文本",
+    "wrap": "自动换行",
+    "scroll": "横向滚动",
+    "expand": "展开代码",
+    "collapse": "收起代码"
   },
   "home": {
     "title": "欢迎来到<1/><0>Mark</0>的自留地",

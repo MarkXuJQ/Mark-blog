@@ -24,7 +24,11 @@ import { Card } from '@/components/ui/Card'
 import { useCodeBlockEnhancements } from '@/hooks/useCodeBlockEnhancements'
 import { useImageLightbox } from '@/hooks/useImageLightbox'
 import { decorateArticleLinkPreviews } from '@/lib/article'
-import { getAdjacentPosts, getPostBySlug } from '@/lib/content'
+import {
+  getAdjacentPosts,
+  getPostBySlug,
+  getSharedPostCommentPath,
+} from '@/lib/content'
 import { countWords } from '@/utils/readingTime'
 import { cn } from '@/lib/utils'
 import { getImageUrl, rewriteHtmlImageSrc } from '@/utils/image'
@@ -34,9 +38,7 @@ export function BlogPost() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const post = slug
-    ? getPostBySlug(slug, i18n.language)
-    : undefined
+  const post = slug ? getPostBySlug(slug, i18n.language) : undefined
   const adjacentPosts = slug
     ? getAdjacentPosts(slug, i18n.language)
     : { prev: undefined, next: undefined }
@@ -57,7 +59,11 @@ export function BlogPost() {
     {
       copy: t('codeBlock.copy'),
       copied: t('codeBlock.copied'),
+      collapse: t('codeBlock.collapse'),
+      expand: t('codeBlock.expand'),
       plainText: t('codeBlock.plainText'),
+      scroll: t('codeBlock.scroll'),
+      wrap: t('codeBlock.wrap'),
     },
     contentHtml
   )
@@ -125,6 +131,7 @@ export function BlogPost() {
   const encodedSlug = encodeURIComponent(post.slug)
   const postPath = `/blog/${encodedSlug}`
   const postUrl = toAbsoluteUrl(postPath, siteUrl)
+  const commentPath = getSharedPostCommentPath(post)
   const imageSource =
     coverImage || extractFirstImageFromHtml(post.content) || DEFAULT_IMAGE
   const postImageUrl = toAbsoluteUrl(imageSource, siteUrl)
@@ -268,7 +275,12 @@ export function BlogPost() {
               </div>
             </section>
 
-            <article className={cn(styles.article, 'px-4 pb-4 pt-3 sm:px-6 sm:pb-6 sm:pt-4')}>
+            <article
+              className={cn(
+                styles.article,
+                'px-4 pt-3 pb-4 sm:px-6 sm:pt-4 sm:pb-6'
+              )}
+            >
               <div
                 ref={contentRef}
                 className="markdown-body"
@@ -276,7 +288,10 @@ export function BlogPost() {
               />
 
               <Copyright />
-              <PostNavigation prev={adjacentPosts.prev} next={adjacentPosts.next} />
+              <PostNavigation
+                prev={adjacentPosts.prev}
+                next={adjacentPosts.next}
+              />
             </article>
           </>
         ) : (
@@ -315,7 +330,7 @@ export function BlogPost() {
                 {post.updated && post.updated !== post.date ? (
                   <div className={styles.updatedText}>
                     <Clock className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline text-[0.7rem]">
+                    <span className="hidden text-[0.7rem] sm:inline">
                       {t('blog.updatedOn')}
                     </span>
                     <span className="text-[0.7rem]">: {post.updated}</span>
@@ -335,7 +350,10 @@ export function BlogPost() {
               />
 
               <Copyright />
-              <PostNavigation prev={adjacentPosts.prev} next={adjacentPosts.next} />
+              <PostNavigation
+                prev={adjacentPosts.prev}
+                next={adjacentPosts.next}
+              />
             </article>
           </>
         )}
@@ -343,8 +361,9 @@ export function BlogPost() {
 
       <Card className="p-6">
         <DeferredComments
-          key={slug}
+          key={commentPath}
           containerId="twikoo-container"
+          path={commentPath}
           eager
         />
       </Card>

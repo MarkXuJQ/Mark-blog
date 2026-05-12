@@ -38,7 +38,11 @@
   "codeBlock": {
     "copy": "Copy",
     "copied": "Copied",
-    "plainText": "Plain Text"
+    "plainText": "Plain Text",
+    "wrap": "Auto Wrap",
+    "scroll": "Horizontal Scroll",
+    "expand": "Expand Code",
+    "collapse": "Collapse Code"
   },
   "home": {
     "title": "Welcome to <0>Mark</0>'s Backyard",

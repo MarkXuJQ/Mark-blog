@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import 'highlight.js/styles/github-dark.css';
 @import 'katex/dist/katex.min.css';
 @import 'markdown-it-texmath/css/texmath.css';
 @plugin "@tailwindcss/typography";
@@ -48,12 +47,12 @@
     system-ui,
     -apple-system,
     BlinkMacSystemFont,
-    "Segoe UI",
-    "Alibaba PuHuiTi 3",
-    "PingFang SC",
-    "Hiragino Sans GB",
-    "Microsoft YaHei UI",
-    "Microsoft YaHei",
+    'Segoe UI',
+    'Alibaba PuHuiTi 3',
+    'PingFang SC',
+    'Hiragino Sans GB',
+    'Microsoft YaHei UI',
+    'Microsoft YaHei',
     sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -69,9 +68,17 @@
   --page-background: #fdf9f0;
   --border-color: rgba(15, 23, 42, 0.08);
   --radius-md: 0.75rem;
-  --shadow-card: 0 1px 2px rgba(2, 6, 23, 0.05), 0 8px 24px rgba(2, 6, 23, 0.06);
-  --font-heading: "Montserrat", "Alibaba PuHuiTi 3", "Nano Full Song", "Songti SC", "STSong", serif;
-  --font-pixel: "Uranus Pixel", "JetBrains Mono Nerd Web", "JetBrains Mono", monospace;
+  --shadow-card:
+    0 1px 2px rgba(2, 6, 23, 0.05), 0 8px 24px rgba(2, 6, 23, 0.06);
+  --font-heading:
+    'Montserrat', 'Alibaba PuHuiTi 3', 'Nano Full Song', 'Songti SC', 'STSong',
+    serif;
+  --font-code:
+    'JetBrains Mono Nerd Web', 'JetBrainsMono Nerd Font', 'JetBrains Mono',
+    'Symbols Nerd Font Mono', 'Symbols Nerd Font', 'SFMono-Regular', 'SF Mono',
+    Consolas, 'Liberation Mono', Menlo, monospace;
+  --font-pixel:
+    'Uranus Pixel', 'JetBrains Mono Nerd Web', 'JetBrains Mono', monospace;
   --letter-spacing-heading: 0;
 }
 
@@ -103,7 +110,9 @@ body {
   font-family: var(--font-heading);
   letter-spacing: normal !important;
 }
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: var(--font-heading);
   letter-spacing: var(--letter-spacing-heading) !important;
 }
@@ -195,16 +204,7 @@ i {
   min-width: max-content;
   font-size: 0.92rem;
   line-height: 1.75;
-  font-family:
-    "JetBrains Mono Nerd Web",
-    "JetBrainsMono Nerd Font",
-    "JetBrains Mono",
-    "SFMono-Regular",
-    "SF Mono",
-    Consolas,
-    "Liberation Mono",
-    Menlo,
-    monospace;
+  font-family: var(--font-code);
 }
 
 .article-rich .markdown-body {
@@ -229,13 +229,12 @@ i {
   font-weight: 700;
   color: color-mix(in srgb, var(--text-primary) 92%, #0f172a 8%);
   text-wrap: balance;
-  background-image:
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--brand-400) 34%, transparent),
-      color-mix(in srgb, var(--brand-500) 18%, transparent) 58%,
-      transparent 100%
-    );
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--brand-400) 34%, transparent),
+    color-mix(in srgb, var(--brand-500) 18%, transparent) 58%,
+    transparent 100%
+  );
   background-repeat: no-repeat;
   background-size: clamp(4.2rem, 10vw, 6.4rem) 0.62em;
   background-position: left calc(100% - 0.08em);
@@ -253,13 +252,16 @@ i {
   justify-content: center;
   border-radius: 999px;
   padding: 0 0.5rem;
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--brand-500) 22%, white), rgba(255, 255, 255, 0.94));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--brand-500) 22%, white),
+    rgba(255, 255, 255, 0.94)
+  );
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.8),
     0 10px 24px rgba(46, 126, 163, 0.12);
   color: color-mix(in srgb, var(--brand-600) 76%, #0f172a 24%);
-  font-family: "JetBrains Mono Nerd Web", "JetBrains Mono", monospace;
+  font-family: 'JetBrains Mono Nerd Web', 'JetBrains Mono', monospace;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -281,14 +283,18 @@ i {
 }
 
 .article-rich .markdown-body h3::before {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   top: 0.32em;
   width: 0.36rem;
   height: 0.95em;
   border-radius: 999px;
-  background: linear-gradient(180deg, var(--brand-500), color-mix(in srgb, var(--brand-400) 60%, white));
+  background: linear-gradient(
+    180deg,
+    var(--brand-500),
+    color-mix(in srgb, var(--brand-400) 60%, white)
+  );
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
@@ -316,14 +322,13 @@ i {
 .article-rich .markdown-body b {
   font-weight: 700;
   color: color-mix(in srgb, var(--text-primary) 84%, var(--brand-600) 16%);
-  background-image:
-    linear-gradient(
-      180deg,
-      transparent 56%,
-      color-mix(in srgb, var(--brand-400) 18%, transparent) 56%,
-      color-mix(in srgb, var(--brand-400) 18%, transparent) 88%,
-      transparent 88%
-    );
+  background-image: linear-gradient(
+    180deg,
+    transparent 56%,
+    color-mix(in srgb, var(--brand-400) 18%, transparent) 56%,
+    color-mix(in srgb, var(--brand-400) 18%, transparent) 88%,
+    transparent 88%
+  );
 }
 
 .dark .article-rich .markdown-body h2 {
@@ -331,8 +336,11 @@ i {
 }
 
 .dark .article-rich .markdown-body h2::before {
-  background:
-    linear-gradient(135deg, rgba(59, 130, 246, 0.24), rgba(15, 23, 42, 0.88));
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.24),
+    rgba(15, 23, 42, 0.88)
+  );
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     0 16px 28px rgba(15, 23, 42, 0.32);
@@ -340,13 +348,12 @@ i {
 }
 
 .dark .article-rich .markdown-body h2 {
-  background-image:
-    linear-gradient(
-      90deg,
-      rgba(96, 165, 250, 0.34),
-      rgba(96, 165, 250, 0.18) 58%,
-      transparent 100%
-    );
+  background-image: linear-gradient(
+    90deg,
+    rgba(96, 165, 250, 0.34),
+    rgba(96, 165, 250, 0.18) 58%,
+    transparent 100%
+  );
 }
 
 .dark .article-rich .markdown-body h3 {
@@ -360,224 +367,162 @@ i {
 .dark .article-rich .markdown-body strong,
 .dark .article-rich .markdown-body b {
   color: color-mix(in srgb, var(--text-primary) 92%, #bfdbfe 8%);
-  background-image:
-    linear-gradient(
-      180deg,
-      transparent 56%,
-      rgba(96, 165, 250, 0.2) 56%,
-      rgba(96, 165, 250, 0.2) 88%,
-      transparent 88%
-    );
+  background-image: linear-gradient(
+    180deg,
+    transparent 56%,
+    rgba(96, 165, 250, 0.2) 56%,
+    rgba(96, 165, 250, 0.2) 88%,
+    transparent 88%
+  );
 }
 
 .md-code-frame {
+  position: relative;
   margin: 1.7rem 0;
-  position: relative;
-  overflow: visible;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 1rem;
-  background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.03), rgba(15, 23, 42, 0.015)),
-    var(--surface-card);
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: #1e2227;
   box-shadow:
-    0 18px 42px rgba(15, 23, 42, 0.08),
-    0 2px 8px rgba(15, 23, 42, 0.04);
-}
-
-.dark .md-code-frame {
-  border-color: rgba(148, 163, 184, 0.16);
-  background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.86), rgba(15, 23, 42, 0.8)),
-    #0f172a;
-  box-shadow:
-    0 22px 48px rgba(2, 6, 23, 0.34),
-    0 2px 10px rgba(2, 6, 23, 0.18);
-}
-
-.md-code-header {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.8rem 0.9rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.42));
-}
-
-.dark .md-code-header {
-  border-bottom-color: rgba(148, 163, 184, 0.14);
-  background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.64), rgba(15, 23, 42, 0.38));
-}
-
-.md-code-header-left {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  min-width: 0;
-}
-
-.md-code-dots {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  flex: none;
-}
-
-.md-code-dot {
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 999px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
-
-.md-code-dot.is-red {
-  background: #ff5f57;
-}
-
-.md-code-dot.is-yellow {
-  background: #febc2e;
-}
-
-.md-code-dot.is-green {
-  background: #28c840;
-}
-
-.md-code-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  min-width: 0;
-}
-
-.md-code-language {
-  display: inline-block;
-  font-size: 0.72rem;
-  line-height: 1.2;
-  font-weight: 700;
-  color: #1d4ed8;
-}
-
-.dark .md-code-language {
-  color: #bfdbfe;
-}
-
-.md-code-copy {
-  appearance: none;
-  flex: none;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: var(--text-primary);
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.1rem;
-  line-height: 1;
-  cursor: pointer;
-  transition:
-    transform 140ms ease,
-    color 140ms ease;
-}
-
-.md-code-copy svg {
-  width: 1.05rem;
-  height: 1.05rem;
-}
-
-.md-code-copy-tooltip {
-  pointer-events: none;
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 0.7rem);
-  z-index: 80;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  border-radius: 0.375rem;
-  background: rgba(2, 6, 23, 0.9);
-  padding: 0.25rem 0.5rem;
-  font-size: 11px;
-  font-weight: 500;
-  color: #fff;
-  opacity: 0;
-  transition: opacity 150ms ease;
-  box-shadow:
-    0 8px 18px -10px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
-}
-
-.md-code-copy-tooltip-arrow-wrap {
-  position: absolute;
-  left: 50%;
-  top: 100%;
-  transform: translateX(-50%);
-}
-
-.md-code-copy-tooltip-arrow {
-  display: block;
-  width: 0.5rem;
-  height: 0.5rem;
-  transform: translateY(-0.25rem) rotate(45deg);
-  border-radius: 2px;
-  background: rgba(2, 6, 23, 0.9);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
-}
-
-.md-code-copy:hover {
-  transform: translateY(-1px);
-  color: #2563eb;
-}
-
-.md-code-copy:hover .md-code-copy-tooltip,
-.md-code-copy:focus-visible .md-code-copy-tooltip {
-  opacity: 1;
-}
-
-.md-code-copy[data-copy-state='copied'] {
-  color: #2563eb;
-}
-
-.md-code-copy:disabled {
-  opacity: 0.82;
-  cursor: default;
-  transform: none;
-}
-
-.dark .md-code-copy {
-  color: rgba(241, 245, 249, 0.96);
-}
-
-.dark .md-code-copy:hover {
-  color: #93c5fd;
-}
-
-.dark .md-code-copy[data-copy-state='copied'] {
-  color: #93c5fd;
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 18px 42px rgba(15, 23, 42, 0.12);
 }
 
 .md-code-body {
   position: relative;
-  z-index: 1;
-  overflow: auto;
-  max-height: calc(35 * 1.75em + 3rem);
-  background: #0d1117;
-  border-bottom-left-radius: 1rem;
-  border-bottom-right-radius: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: transparent;
+}
+
+.md-code-frame.is-collapsed .md-code-body {
+  max-height: calc(10 * 1.72em + 2.1rem);
+  overflow-y: hidden;
+}
+
+.md-code-frame.is-collapsed .md-code-body::after {
+  content: '';
+  pointer-events: none;
+  position: sticky;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  height: 3.4rem;
+  margin-top: -3.4rem;
+  background: linear-gradient(180deg, rgba(30, 34, 39, 0), #1e2227 82%);
+}
+
+.md-code-toolbar {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.78rem;
+  z-index: 4;
+  display: grid;
+  justify-items: end;
+  pointer-events: none;
+}
+
+.md-code-language,
+.md-code-actions {
+  grid-area: 1 / 1;
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+.md-code-language {
+  font-family: var(--font-code);
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: rgba(203, 213, 225, 0.46);
+}
+
+.md-code-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  opacity: 0;
+  transform: translateY(-0.2rem);
+  pointer-events: none;
+}
+
+.md-code-frame:hover .md-code-language,
+.md-code-frame:focus-within .md-code-language {
+  opacity: 0;
+  transform: translateY(0.2rem);
+}
+
+.md-code-frame:hover .md-code-actions,
+.md-code-frame:focus-within .md-code-actions {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.md-code-action,
+.md-code-expand {
+  appearance: none;
+  border: 0;
+  border-radius: 0.35rem;
+  background: rgba(15, 23, 42, 0.72);
+  color: rgba(226, 232, 240, 0.88);
+  font-size: 0.72rem;
+  font-weight: 650;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.md-code-action {
+  padding: 0.34rem 0.48rem;
+  white-space: nowrap;
+}
+
+.md-code-action:hover,
+.md-code-action:focus-visible,
+.md-code-expand:hover,
+.md-code-expand:focus-visible {
+  background: rgba(51, 65, 85, 0.92);
+  color: #ffffff;
+  outline: none;
+}
+
+.md-code-action:active,
+.md-code-expand:active {
+  transform: translateY(1px);
+}
+
+.md-code-action[data-copy-state='copied'] {
+  color: #93c5fd;
+}
+
+.md-code-action:disabled {
+  cursor: default;
+  opacity: 0.82;
+}
+
+.md-code-expand {
+  display: block;
+  width: 100%;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 0;
+  padding: 0.66rem 1rem;
+  background: #1a1e23;
+  color: rgba(203, 213, 225, 0.82);
 }
 
 .markdown-body .md-code-frame pre,
 .prose .md-code-frame pre {
   margin: 0 !important;
   max-height: none;
-  overflow: visible;
+  overflow: visible !important;
   border-radius: 0;
   background: transparent;
-  padding: 1rem 1.15rem;
+  padding: 1.05rem 3.85rem 1.05rem 1rem;
 }
 
 .markdown-body .md-code-frame pre::before,
@@ -587,33 +532,126 @@ i {
   content: none !important;
 }
 
-.md-code-pre code.hljs,
 .md-code-pre code {
   display: block;
   min-width: max-content;
   padding: 0;
   background: transparent;
-  color: #e6edf3;
+  color: #c9d1d9;
   font-size: 0.92rem;
-  line-height: 1.75;
-  font-family:
-    "JetBrains Mono Nerd Web",
-    "JetBrainsMono Nerd Font",
-    "JetBrains Mono",
-    "Symbols Nerd Font Mono",
-    "Symbols Nerd Font",
-    "SFMono-Regular",
-    "SF Mono",
-    Consolas,
-    "Liberation Mono",
-    Menlo,
-    monospace;
+  line-height: 1.72;
+  font-family: var(--font-code);
   font-variant-ligatures: none;
+  text-shadow: none;
 }
 
-.md-code-pre code .hljs-comment,
-.md-code-pre code .hljs-quote {
+.md-code-frame[data-wrap='true'] .md-code-body {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.md-code-frame[data-wrap='true'] .md-code-pre code {
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.md-code-frame[data-wrap='true'] .md-code-pre.line-numbers {
+  white-space: pre-wrap;
+}
+
+.md-code-pre.line-numbers {
+  position: relative;
+  padding-left: 4.85rem !important;
+  counter-reset: linenumber;
+  white-space: pre;
+}
+
+.md-code-pre.line-numbers > code {
+  position: relative;
+  white-space: inherit;
+}
+
+.md-code-pre.line-numbers .line-numbers-rows {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: -3.85rem;
+  width: 3rem;
+  border-right: 1px solid rgba(148, 163, 184, 0.18);
+  font-family: var(--font-code);
+  font-size: 100%;
+  line-height: inherit;
+  user-select: none;
+}
+
+.md-code-pre.line-numbers .line-numbers-rows > span {
+  display: block;
+  counter-increment: linenumber;
+}
+
+.md-code-pre.line-numbers .line-numbers-rows > span::before {
+  content: counter(linenumber);
+  display: block;
+  padding-right: 0.75rem;
+  color: rgba(148, 163, 184, 0.58);
+  text-align: right;
+}
+
+.md-code-pre .token.comment,
+.md-code-pre .token.prolog,
+.md-code-pre .token.doctype,
+.md-code-pre .token.cdata {
   color: #8b949e;
+}
+
+.md-code-pre .token.punctuation {
+  color: #a7b0bd;
+}
+
+.md-code-pre .token.property,
+.md-code-pre .token.tag,
+.md-code-pre .token.boolean,
+.md-code-pre .token.number,
+.md-code-pre .token.constant,
+.md-code-pre .token.symbol,
+.md-code-pre .token.deleted {
+  color: #ff7b91;
+}
+
+.md-code-pre .token.selector,
+.md-code-pre .token.attr-name,
+.md-code-pre .token.string,
+.md-code-pre .token.char,
+.md-code-pre .token.builtin,
+.md-code-pre .token.inserted {
+  color: #a5d6a7;
+}
+
+.md-code-pre .token.operator,
+.md-code-pre .token.entity,
+.md-code-pre .token.url,
+.md-code-pre .language-css .token.string,
+.md-code-pre .style .token.string {
+  color: #79c0ff;
+}
+
+.md-code-pre .token.atrule,
+.md-code-pre .token.attr-value,
+.md-code-pre .token.keyword {
+  color: #ff7b72;
+}
+
+.md-code-pre .token.function,
+.md-code-pre .token.class-name {
+  color: #d2a8ff;
+}
+
+.md-code-pre .token.regex,
+.md-code-pre .token.important,
+.md-code-pre .token.variable {
+  color: #ffa657;
 }
 
 @media (max-width: 640px) {
@@ -631,24 +669,23 @@ i {
     font-size: 0.88rem;
   }
 
-  .md-code-header {
-    padding: 0.72rem 0.78rem;
-  }
-
-  .md-code-copy {
-    padding: 0.12rem;
-  }
-
-  .md-code-gutter {
-    min-width: 2.75rem;
-    padding-left: 0.7rem;
-    padding-right: 0.55rem;
+  .md-code-toolbar {
+    top: 0.5rem;
+    right: 0.55rem;
   }
 
   .markdown-body .md-code-frame pre,
   .prose .md-code-frame pre {
-    padding-right: 0.85rem;
-    padding-left: 0.85rem;
+    padding-right: 3.2rem;
+  }
+
+  .md-code-pre.line-numbers {
+    padding-left: 4rem !important;
+  }
+
+  .md-code-pre.line-numbers .line-numbers-rows {
+    left: -3.15rem;
+    width: 2.55rem;
   }
 }
 
@@ -664,7 +701,10 @@ i {
   border: 1px solid var(--border-color);
   background: var(--surface-0);
   color: var(--text-primary);
-  transition: background-color 160ms ease, color 160ms ease, transform 80ms ease;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 80ms ease;
 }
 .btn-secondary:hover {
   background: color-mix(in srgb, var(--surface-0) 90%, var(--text-primary));
@@ -684,11 +724,10 @@ i {
   position: relative;
 }
 .card-paper::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
-  background-image:
-    radial-gradient(rgba(2, 6, 23, 0.015) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(2, 6, 23, 0.015) 1px, transparent 1px);
   background-size: 6px 6px;
   border-radius: inherit;
   pointer-events: none;
@@ -719,42 +758,46 @@ i {
 }
 
 @font-face {
-  font-family: "Alibaba PuHuiTi 3";
-  src: url("../fonts/AlibabaPuHuiTi-3-65-Medium-Subset.woff2") format("woff2");
+  font-family: 'Alibaba PuHuiTi 3';
+  src: url('../fonts/AlibabaPuHuiTi-3-65-Medium-Subset.woff2') format('woff2');
   font-weight: 400 500;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+2E80-2EFF,U+3000-303F,U+3400-4DBF,U+4E00-9FFF,U+F900-FAFF,U+FE10-FE1F,U+FE30-FE4F,U+FF00-FFEF;
+  unicode-range:
+    U+2E80-2EFF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
+    U+FE10-FE1F, U+FE30-FE4F, U+FF00-FFEF;
 }
 
 @font-face {
-  font-family: "Alibaba PuHuiTi 3";
-  src: url("../fonts/AlibabaPuHuiTi-3-75-SemiBold-Subset.woff2") format("woff2");
+  font-family: 'Alibaba PuHuiTi 3';
+  src: url('../fonts/AlibabaPuHuiTi-3-75-SemiBold-Subset.woff2') format('woff2');
   font-weight: 600 700;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+2E80-2EFF,U+3000-303F,U+3400-4DBF,U+4E00-9FFF,U+F900-FAFF,U+FE10-FE1F,U+FE30-FE4F,U+FF00-FFEF;
+  unicode-range:
+    U+2E80-2EFF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
+    U+FE10-FE1F, U+FE30-FE4F, U+FF00-FFEF;
 }
 
 @font-face {
-  font-family: "Nano Full Song";
-  src: url("../fonts/NanoFullSong-Subset.woff2") format("woff2");
+  font-family: 'Nano Full Song';
+  src: url('../fonts/NanoFullSong-Subset.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: optional;
 }
 
 @font-face {
-  font-family: "JetBrains Mono Nerd Web";
-  src: url("../fonts/JetBrainsMonoNerd-Subset.woff2") format("woff2");
+  font-family: 'JetBrains Mono Nerd Web';
+  src: url('../fonts/JetBrainsMonoNerd-Subset.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Uranus Pixel";
-  src: url("../fonts/UranusPixel-Subset.woff2") format("woff2");
+  font-family: 'Uranus Pixel';
+  src: url('../fonts/UranusPixel-Subset.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;

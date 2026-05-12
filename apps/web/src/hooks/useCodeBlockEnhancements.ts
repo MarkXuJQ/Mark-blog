@@ -1,69 +1,43 @@
-import { createElement, useEffect, type RefObject } from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
-import hljs from 'highlight.js/lib/core'
-import bash from 'highlight.js/lib/languages/bash'
-import c from 'highlight.js/lib/languages/c'
-import cpp from 'highlight.js/lib/languages/cpp'
-import css from 'highlight.js/lib/languages/css'
-import diff from 'highlight.js/lib/languages/diff'
-import go from 'highlight.js/lib/languages/go'
-import ini from 'highlight.js/lib/languages/ini'
-import java from 'highlight.js/lib/languages/java'
-import javascript from 'highlight.js/lib/languages/javascript'
-import json from 'highlight.js/lib/languages/json'
-import kotlin from 'highlight.js/lib/languages/kotlin'
-import markdown from 'highlight.js/lib/languages/markdown'
-import plaintext from 'highlight.js/lib/languages/plaintext'
-import python from 'highlight.js/lib/languages/python'
-import rust from 'highlight.js/lib/languages/rust'
-import sql from 'highlight.js/lib/languages/sql'
-import typescript from 'highlight.js/lib/languages/typescript'
-import xml from 'highlight.js/lib/languages/xml'
-import yaml from 'highlight.js/lib/languages/yaml'
-import { MdContentCopy } from 'react-icons/md'
+import { useEffect, type RefObject } from 'react'
+import Prism from 'prismjs'
+import 'prismjs/components/prism-bash'
+import 'prismjs/components/prism-c'
+import 'prismjs/components/prism-cpp'
+import 'prismjs/components/prism-css'
+import 'prismjs/components/prism-diff'
+import 'prismjs/components/prism-go'
+import 'prismjs/components/prism-ini'
+import 'prismjs/components/prism-java'
+import 'prismjs/components/prism-javascript'
+import 'prismjs/components/prism-json'
+import 'prismjs/components/prism-jsx'
+import 'prismjs/components/prism-kotlin'
+import 'prismjs/components/prism-markdown'
+import 'prismjs/components/prism-python'
+import 'prismjs/components/prism-rust'
+import 'prismjs/components/prism-sql'
+import 'prismjs/components/prism-toml'
+import 'prismjs/components/prism-tsx'
+import 'prismjs/components/prism-typescript'
+import 'prismjs/components/prism-yaml'
+import 'prismjs/plugins/line-numbers/prism-line-numbers'
 
-hljs.registerLanguage('bash', bash)
-hljs.registerLanguage('shell', bash)
-hljs.registerLanguage('sh', bash)
-hljs.registerLanguage('zsh', bash)
-hljs.registerLanguage('c', c)
-hljs.registerLanguage('cpp', cpp)
-hljs.registerLanguage('c++', cpp)
-hljs.registerLanguage('css', css)
-hljs.registerLanguage('diff', diff)
-hljs.registerLanguage('go', go)
-hljs.registerLanguage('ini', ini)
-hljs.registerLanguage('toml', ini)
-hljs.registerLanguage('java', java)
-hljs.registerLanguage('javascript', javascript)
-hljs.registerLanguage('js', javascript)
-hljs.registerLanguage('jsx', javascript)
-hljs.registerLanguage('json', json)
-hljs.registerLanguage('kotlin', kotlin)
-hljs.registerLanguage('markdown', markdown)
-hljs.registerLanguage('md', markdown)
-hljs.registerLanguage('plaintext', plaintext)
-hljs.registerLanguage('text', plaintext)
-hljs.registerLanguage('txt', plaintext)
-hljs.registerLanguage('python', python)
-hljs.registerLanguage('py', python)
-hljs.registerLanguage('rust', rust)
-hljs.registerLanguage('rs', rust)
-hljs.registerLanguage('sql', sql)
-hljs.registerLanguage('typescript', typescript)
-hljs.registerLanguage('ts', typescript)
-hljs.registerLanguage('tsx', typescript)
-hljs.registerLanguage('html', xml)
-hljs.registerLanguage('xml', xml)
-hljs.registerLanguage('yaml', yaml)
-hljs.registerLanguage('yml', yaml)
+const COLLAPSE_LINE_THRESHOLD = 10
 
-const COPY_ICON_MARKUP = renderToStaticMarkup(
-  createElement(MdContentCopy, {
-    'aria-hidden': 'true',
-    focusable: 'false',
-  })
-)
+const LANGUAGE_ALIASES: Record<string, string> = {
+  'c++': 'cpp',
+  html: 'markup',
+  md: 'markdown',
+  plaintext: 'plain',
+  py: 'python',
+  sh: 'bash',
+  shell: 'bash',
+  text: 'plain',
+  ts: 'typescript',
+  xml: 'markup',
+  yml: 'yaml',
+  zsh: 'bash',
+}
 
 function escapeHtml(value: string) {
   return value
@@ -79,17 +53,27 @@ function extractLanguage(code: HTMLElement) {
 }
 
 function normalizeLanguage(language: string) {
-  return language.toLowerCase()
+  const normalized = language.trim().toLowerCase()
+  return LANGUAGE_ALIASES[normalized] || normalized
 }
 
 function getLanguageLabel(language: string, plainTextLabel: string) {
   return language || plainTextLabel
 }
 
+function getCodeLineCount(value: string) {
+  const normalized = value.replace(/\r\n?/g, '\n').replace(/\n$/, '')
+  return normalized ? normalized.split('\n').length : 1
+}
+
 export interface CodeBlockEnhancementLabels {
   copy: string
   copied: string
   plainText: string
+  wrap: string
+  scroll: string
+  expand: string
+  collapse: string
 }
 
 async function copyToClipboard(value: string) {
@@ -109,14 +93,44 @@ async function copyToClipboard(value: string) {
   textarea.remove()
 }
 
+function updateWrapButton(
+  button: HTMLButtonElement,
+  isWrapped: boolean,
+  labels: CodeBlockEnhancementLabels
+) {
+  button.textContent = isWrapped ? labels.wrap : labels.scroll
+  button.setAttribute('aria-pressed', String(isWrapped))
+  button.setAttribute('aria-label', isWrapped ? labels.wrap : labels.scroll)
+}
+
+function updateExpandButton(
+  button: HTMLButtonElement,
+  isExpanded: boolean,
+  labels: CodeBlockEnhancementLabels
+) {
+  button.textContent = isExpanded ? labels.collapse : labels.expand
+  button.setAttribute('aria-expanded', String(isExpanded))
+}
+
 export function useCodeBlockEnhancements(
   containerRef: RefObject<HTMLElement | null>,
   labels: CodeBlockEnhancementLabels,
   contentKey?: string
 ) {
+  const { collapse, copied, copy, expand, plainText, scroll, wrap } = labels
+
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
+    const activeLabels = {
+      collapse,
+      copied,
+      copy,
+      expand,
+      plainText,
+      scroll,
+      wrap,
+    }
 
     const codeBlocks = Array.from(container.querySelectorAll('pre'))
 
@@ -128,94 +142,99 @@ export function useCodeBlockEnhancements(
       if (!(code instanceof HTMLElement)) return
 
       const rawCode = code.textContent || ''
-      const language = extractLanguage(code)
-      const normalizedLanguage = normalizeLanguage(language)
-      const languageLabel = getLanguageLabel(language, labels.plainText)
+      const originalLanguage = extractLanguage(code)
+      const prismLanguage = normalizeLanguage(originalLanguage)
+      const languageLabel = getLanguageLabel(
+        originalLanguage,
+        activeLabels.plainText
+      )
+      const lineCount = getCodeLineCount(rawCode)
 
-      if (normalizedLanguage && hljs.getLanguage(normalizedLanguage)) {
-        code.innerHTML = hljs.highlight(rawCode, { language: normalizedLanguage }).value
-        code.classList.add('hljs')
+      pre.classList.add('md-code-pre', 'line-numbers')
+      pre.classList.add(`language-${prismLanguage || 'plain'}`)
+      code.classList.add('md-code-content')
+
+      if (prismLanguage && Prism.languages[prismLanguage]) {
+        code.className = `md-code-content language-${prismLanguage}`
+        code.textContent = rawCode
       } else {
+        code.className = 'md-code-content language-plain'
         code.innerHTML = escapeHtml(rawCode)
       }
 
       const frame = document.createElement('div')
       frame.className = 'md-code-frame not-prose'
-      frame.setAttribute('data-code-language', normalizedLanguage || 'text')
+      frame.setAttribute('data-code-language', prismLanguage || 'plain')
+      frame.setAttribute('data-wrap', 'true')
 
-      const header = document.createElement('div')
-      header.className = 'md-code-header'
-
-      const terminalDots = document.createElement('div')
-      terminalDots.className = 'md-code-dots'
-      terminalDots.setAttribute('aria-hidden', 'true')
-
-      for (const className of ['is-red', 'is-yellow', 'is-green']) {
-        const dot = document.createElement('span')
-        dot.className = `md-code-dot ${className}`
-        terminalDots.appendChild(dot)
-      }
-
-      const meta = document.createElement('div')
-      meta.className = 'md-code-meta'
+      const toolbar = document.createElement('div')
+      toolbar.className = 'md-code-toolbar'
 
       const languageBadge = document.createElement('span')
       languageBadge.className = 'md-code-language'
       languageBadge.textContent = languageLabel
-      meta.append(languageBadge)
+
+      const actions = document.createElement('div')
+      actions.className = 'md-code-actions'
+
+      const wrapButton = document.createElement('button')
+      wrapButton.type = 'button'
+      wrapButton.className = 'md-code-action'
+      updateWrapButton(wrapButton, true, activeLabels)
 
       const copyButton = document.createElement('button')
       copyButton.type = 'button'
-      copyButton.className = 'md-code-copy'
-      copyButton.setAttribute('aria-label', labels.copy)
+      copyButton.className = 'md-code-action'
+      copyButton.setAttribute('aria-label', activeLabels.copy)
       copyButton.setAttribute('data-copy-state', 'idle')
-      copyButton.innerHTML = COPY_ICON_MARKUP
+      copyButton.textContent = activeLabels.copy
 
-      const copyTooltip = document.createElement('span')
-      copyTooltip.className = 'md-code-copy-tooltip'
-      copyTooltip.textContent = labels.copy
-
-      const copyTooltipArrowWrap = document.createElement('span')
-      copyTooltipArrowWrap.className = 'md-code-copy-tooltip-arrow-wrap'
-
-      const copyTooltipArrow = document.createElement('span')
-      copyTooltipArrow.className = 'md-code-copy-tooltip-arrow'
-
-      copyTooltipArrowWrap.append(copyTooltipArrow)
-      copyTooltip.append(copyTooltipArrowWrap)
-      copyButton.append(copyTooltip)
-
-      const headerLeft = document.createElement('div')
-      headerLeft.className = 'md-code-header-left'
-      headerLeft.append(terminalDots, meta)
-
-      header.append(headerLeft, copyButton)
+      actions.append(wrapButton, copyButton)
+      toolbar.append(languageBadge, actions)
 
       const body = document.createElement('div')
       body.className = 'md-code-body'
 
-      pre.classList.add('md-code-pre')
-      code.classList.add('md-code-content')
+      let expandButton: HTMLButtonElement | null = null
+      if (lineCount > COLLAPSE_LINE_THRESHOLD) {
+        frame.classList.add('is-collapsible', 'is-collapsed')
+        expandButton = document.createElement('button')
+        expandButton.type = 'button'
+        expandButton.className = 'md-code-expand'
+        updateExpandButton(expandButton, false, activeLabels)
+      }
 
       pre.replaceWith(frame)
       body.append(pre)
-      frame.append(header, body)
+      frame.append(toolbar, body)
+      if (expandButton) {
+        frame.append(expandButton)
+      }
+
+      if (prismLanguage && Prism.languages[prismLanguage]) {
+        Prism.highlightElement(code)
+      }
+      Prism.plugins.lineNumbers?.resize?.(pre)
+
+      const handleWrapToggle = () => {
+        const nextWrapped = frame.getAttribute('data-wrap') !== 'true'
+        frame.setAttribute('data-wrap', String(nextWrapped))
+        updateWrapButton(wrapButton, nextWrapped, activeLabels)
+        const lineNumbers = Prism.plugins.lineNumbers
+        lineNumbers?.resize?.(pre)
+      }
 
       const handleCopy = async () => {
         try {
           await copyToClipboard(rawCode)
-          copyButton.setAttribute('aria-label', labels.copied)
+          copyButton.setAttribute('aria-label', activeLabels.copied)
           copyButton.setAttribute('data-copy-state', 'copied')
-          copyTooltip.firstChild?.remove()
-          copyTooltip.textContent = labels.copied
-          copyTooltip.append(copyTooltipArrowWrap)
+          copyButton.textContent = activeLabels.copied
           copyButton.disabled = true
           window.setTimeout(() => {
-            copyButton.setAttribute('aria-label', labels.copy)
+            copyButton.setAttribute('aria-label', activeLabels.copy)
             copyButton.setAttribute('data-copy-state', 'idle')
-            copyTooltip.firstChild?.remove()
-            copyTooltip.textContent = labels.copy
-            copyTooltip.append(copyTooltipArrowWrap)
+            copyButton.textContent = activeLabels.copy
             copyButton.disabled = false
           }, 1500)
         } catch (error) {
@@ -223,13 +242,26 @@ export function useCodeBlockEnhancements(
         }
       }
 
+      const handleExpandToggle = () => {
+        if (!expandButton) return
+        const nextExpanded = frame.classList.contains('is-collapsed')
+        frame.classList.toggle('is-collapsed', !nextExpanded)
+        updateExpandButton(expandButton, nextExpanded, activeLabels)
+      }
+
+      wrapButton.addEventListener('click', handleWrapToggle)
       copyButton.addEventListener('click', handleCopy)
+      expandButton?.addEventListener('click', handleExpandToggle)
     })
   }, [
     containerRef,
     contentKey,
-    labels.copy,
-    labels.copied,
-    labels.plainText,
+    collapse,
+    copied,
+    copy,
+    expand,
+    plainText,
+    scroll,
+    wrap,
   ])
 }
