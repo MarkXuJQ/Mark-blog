@@ -194,10 +194,7 @@ const VerticalCutReveal = forwardRef<VerticalCutRevealRef, TextProps>(
             >
               {wordObj.characters.map((char, charIndex) => (
                 <span
-                  className={cn(
-                    elementLevelClassName,
-                    'relative whitespace-pre-wrap'
-                  )}
+                  className="relative whitespace-pre-wrap"
                   key={charIndex}
                 >
                   <motion.span
@@ -211,7 +208,7 @@ const VerticalCutReveal = forwardRef<VerticalCutRevealRef, TextProps>(
                         ? onComplete
                         : undefined
                     }
-                    className="inline-block"
+                    className={cn('inline-block', elementLevelClassName)}
                   >
                     {char}
                   </motion.span>

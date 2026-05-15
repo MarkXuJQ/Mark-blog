@@ -1,6 +1,7 @@
 import { motion, type MotionValue } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { VerticalCutReveal } from '../ui/vertical-cut-reveal'
+import { TextRotate } from '../ui/text-rotate'
 import { cn } from '@/lib/utils'
 import { getImageUrl } from '@/utils/image'
 import { HomeHeroAvatarScene } from './HomeHeroAvatarScene'
@@ -140,7 +141,10 @@ export function HomeHeroSection({
   const dotClass = isDarkMode ? styles.dotDark : styles.dotLight
   const titlePrefix = isZh ? '欢迎来到' : 'Welcome to '
   const titlePossessive = isZh ? '' : "'s"
-  const titleSuffix = isZh ? '的自留地' : 'Backyard'
+  const titleSuffixLead = isZh ? '的' : ''
+  const titleMorphTexts = isZh
+    ? ['自留地', '小站', '小屋', '小窝']
+    : ['Backyard', 'little site', 'tiny nook']
   const introText = t('home.intro')
   const descriptionText = t('home.description')
   const titleStagger = prefersReducedMotion ? 0 : 0.018
@@ -255,19 +259,42 @@ export function HomeHeroSection({
                         </span>
                       ) : null}
                     </span>
-                    <VerticalCutReveal
-                      splitBy="characters"
-                      staggerDuration={titleStagger}
+                    {titleSuffixLead ? (
+                      <VerticalCutReveal
+                        splitBy="characters"
+                        staggerDuration={titleStagger}
+                        staggerFrom="last"
+                        reverse
+                        transition={{
+                          ...HERO_TITLE_REVEAL_TRANSITION,
+                          delay: prefersReducedMotion ? 0 : 0.34,
+                        }}
+                        containerClassName="inline-flex"
+                      >
+                        {titleSuffixLead}
+                      </VerticalCutReveal>
+                    ) : null}
+                    <TextRotate
+                      texts={titleMorphTexts}
+                      auto={!prefersReducedMotion}
+                      rotationInterval={2300}
                       staggerFrom="last"
-                      reverse
+                      staggerDuration={0.018}
+                      initial={{ y: '105%', opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: '-105%', opacity: 0 }}
                       transition={{
-                        ...HERO_TITLE_REVEAL_TRANSITION,
-                        delay: prefersReducedMotion ? 0 : 0.34,
+                        type: 'spring',
+                        damping: 28,
+                        stiffness: 360,
                       }}
-                      containerClassName="inline-flex"
-                    >
-                      {titleSuffix}
-                    </VerticalCutReveal>
+                      mainClassName={cn(
+                        styles.titleRotateWrap,
+                        isZh ? 'min-w-[3.35em]' : 'min-w-[5.45em]'
+                      )}
+                      splitLevelClassName={styles.titleRotateSplit}
+                      elementLevelClassName={styles.titleRotateGlyph}
+                    />
                   </span>
                 </span>
               </h1>
@@ -367,6 +394,10 @@ const styles = {
     'inline-flex flex-wrap items-baseline justify-center lg:justify-start',
   titleNameGroup: 'inline-flex flex-nowrap items-baseline whitespace-nowrap',
   titleNameSpace: 'whitespace-pre',
+  titleRotateWrap:
+    'mx-1 inline-flex justify-center overflow-hidden align-baseline text-current',
+  titleRotateSplit: 'overflow-hidden pb-[0.04em]',
+  titleRotateGlyph: 'leading-none',
   titleLight: 'text-black',
   titleDark: 'text-white drop-shadow-[0_10px_30px_rgba(15,23,42,0.35)]',
   highlightText: cn(

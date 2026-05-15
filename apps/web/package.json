@@ -33,6 +33,7 @@
     "lenis": "^1.3.23",
     "lucide-react": "^0.575.0",
     "markdown-it-texmath": "^1.0.0",
+    "motion": "^12.38.0",
     "prismjs": "^1.30.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

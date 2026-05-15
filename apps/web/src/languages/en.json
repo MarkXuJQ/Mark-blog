@@ -46,8 +46,8 @@
   },
   "home": {
     "title": "Welcome to <0>Mark</0>'s Backyard",
-    "intro": "This is my personal corner for tech notes, life bits, and small projects.",
-    "description": "You'll find: posts, daily life & trips, plus movie and game logs — and whatever I get curious about next.",
+    "intro": "No need to be too formal here. Come sit for a while: tech notes, life bits, and small projects growing in public.",
+    "description": "Slowly updated, slowly polished: code, films, wandering around, and a few ordinary happy things worth keeping.",
     "readingTime": "Reading time: {{minutes}} min",
     "github": "My GitHub"
   },
