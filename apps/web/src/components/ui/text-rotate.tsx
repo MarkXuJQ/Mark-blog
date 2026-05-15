@@ -29,6 +29,7 @@ interface TextRotateProps {
   staggerDuration?: number
   staggerFrom?: 'first' | 'last' | 'center' | number | 'random'
   transition?: Transition
+  layoutTransition?: Transition
   loop?: boolean
   auto?: boolean
   splitBy?: 'words' | 'characters' | 'lines' | string
@@ -79,6 +80,7 @@ const TextRotate = forwardRef<TextRotateRef, TextRotateProps>(
       mainClassName,
       splitLevelClassName,
       elementLevelClassName,
+      layoutTransition,
       ...props
     },
     ref
@@ -206,10 +208,13 @@ const TextRotate = forwardRef<TextRotateRef, TextRotateProps>(
 
     return (
       <motion.span
-        className={cn('flex flex-wrap whitespace-pre-wrap', mainClassName)}
+        className={cn(
+          'inline-flex flex-nowrap whitespace-nowrap',
+          mainClassName
+        )}
         {...props}
         layout
-        transition={transition}
+        transition={layoutTransition ?? transition}
       >
         <span className="sr-only">{currentText}</span>
 
@@ -220,10 +225,11 @@ const TextRotate = forwardRef<TextRotateRef, TextRotateProps>(
           <motion.span
             key={currentTextIndex}
             className={cn(
-              'flex flex-wrap',
+              'flex flex-nowrap whitespace-nowrap',
               splitBy === 'lines' && 'w-full flex-col'
             )}
             layout
+            transition={layoutTransition ?? transition}
             aria-hidden="true"
           >
             {(splitBy === 'characters'

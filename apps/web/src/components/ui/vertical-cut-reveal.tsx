@@ -193,10 +193,7 @@ const VerticalCutReveal = forwardRef<VerticalCutRevealRef, TextProps>(
               className={cn('inline-flex overflow-hidden', wordLevelClassName)}
             >
               {wordObj.characters.map((char, charIndex) => (
-                <span
-                  className="relative whitespace-pre-wrap"
-                  key={charIndex}
-                >
+                <span className="relative whitespace-pre-wrap" key={charIndex}>
                   <motion.span
                     custom={previousCharsCount + charIndex}
                     initial="hidden"

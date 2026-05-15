@@ -143,7 +143,7 @@ export function HomeHeroSection({
   const titlePossessive = isZh ? '' : "'s"
   const titleSuffixLead = isZh ? '的' : ''
   const titleMorphTexts = isZh
-    ? ['自留地', '小站', '小屋', '小窝']
+    ? ['自留地', '小屋', '小破站', '内陆帝国']
     : ['Backyard', 'little site', 'tiny nook']
   const introText = t('home.intro')
   const descriptionText = t('home.description')
@@ -189,10 +189,7 @@ export function HomeHeroSection({
           style={{ opacity: heroContentOpacity, y: heroContentY }}
         >
           <div className={styles.heroContentInner}>
-            <div
-              data-home-reveal="hero-copy"
-              className={styles.heroCopy}
-            >
+            <div data-home-reveal="hero-copy" className={styles.heroCopy}>
               <h1
                 className={cn(
                   styles.title,
@@ -274,27 +271,38 @@ export function HomeHeroSection({
                         {titleSuffixLead}
                       </VerticalCutReveal>
                     ) : null}
-                    <TextRotate
-                      texts={titleMorphTexts}
-                      auto={!prefersReducedMotion}
-                      rotationInterval={2300}
-                      staggerFrom="last"
-                      staggerDuration={0.018}
-                      initial={{ y: '105%', opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: '-105%', opacity: 0 }}
-                      transition={{
-                        type: 'spring',
-                        damping: 28,
-                        stiffness: 360,
-                      }}
-                      mainClassName={cn(
-                        styles.titleRotateWrap,
-                        isZh ? 'min-w-[3.35em]' : 'min-w-[5.45em]'
-                      )}
-                      splitLevelClassName={styles.titleRotateSplit}
-                      elementLevelClassName={styles.titleRotateGlyph}
-                    />
+                    <span className={styles.titleRotateBadge}>
+                      <TextRotate
+                        texts={titleMorphTexts}
+                        auto={!prefersReducedMotion}
+                        rotationInterval={2300}
+                        staggerFrom="last"
+                        staggerDuration={0.018}
+                        initial={{ y: '105%', opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: '-105%', opacity: 0 }}
+                        transition={{
+                          type: 'spring',
+                          damping: 24,
+                          stiffness: 360,
+                          mass: 0.65,
+                        }}
+                        layoutTransition={{
+                          type: 'tween',
+                          duration: 0.46,
+                          ease: [0.33, 1, 0.68, 1],
+                        }}
+                        mainClassName={styles.titleRotateWrap}
+                        splitLevelClassName={styles.titleRotateSplit}
+                        elementLevelClassName={styles.titleRotateGlyph}
+                      />
+                      <span
+                        aria-hidden="true"
+                        className={styles.titleRotateStar}
+                      >
+                        *
+                      </span>
+                    </span>
                   </span>
                 </span>
               </h1>
@@ -394,10 +402,14 @@ const styles = {
     'inline-flex flex-wrap items-baseline justify-center lg:justify-start',
   titleNameGroup: 'inline-flex flex-nowrap items-baseline whitespace-nowrap',
   titleNameSpace: 'whitespace-pre',
+  titleRotateBadge:
+    'relative mx-[0.1em] inline-flex items-baseline align-baseline',
   titleRotateWrap:
-    'mx-1 inline-flex justify-center overflow-hidden align-baseline text-current',
-  titleRotateSplit: 'overflow-hidden pb-[0.04em]',
-  titleRotateGlyph: 'leading-none',
+    'inline-flex min-h-[1.12em] flex-nowrap items-center justify-center overflow-hidden whitespace-nowrap rounded-[0.18em] bg-[#ff5941] px-[0.25em] py-[0.07em] pr-[0.4em] align-baseline leading-none text-white shadow-[0_0.1em_0_rgba(190,55,34,0.28)]',
+  titleRotateSplit: 'overflow-hidden pb-[0.03em]',
+  titleRotateGlyph: 'leading-[0.98] text-white',
+  titleRotateStar:
+    'pointer-events-none absolute right-[0.18em] top-[0.14em] z-10 text-[0.42em] font-black leading-none text-white/95 drop-shadow-[0_1px_0_rgba(154,52,18,0.4)]',
   titleLight: 'text-black',
   titleDark: 'text-white drop-shadow-[0_10px_30px_rgba(15,23,42,0.35)]',
   highlightText: cn(
