@@ -9,6 +9,8 @@ interface DeferredCommentsProps {
   path?: string
   eager?: boolean
   layout?: 'auto' | 'stacked'
+  variant?: 'default' | 'compact'
+  className?: string
   onCommentLoaded?: () => void
 }
 
@@ -19,6 +21,8 @@ export function DeferredComments({
   path,
   eager,
   layout,
+  variant,
+  className,
   onCommentLoaded,
 }: DeferredCommentsProps) {
   const placeholderRef = useRef<HTMLDivElement>(null)
@@ -33,7 +37,11 @@ export function DeferredComments({
     }
 
     const node = placeholderRef.current
-    if (!node || typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+    if (
+      !node ||
+      typeof window === 'undefined' ||
+      !('IntersectionObserver' in window)
+    ) {
       setShouldRender(true)
       return
     }
@@ -41,7 +49,11 @@ export function DeferredComments({
     const observerRoot = observerRootRef?.current ?? null
     const observer = new IntersectionObserver(
       (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting || entry.intersectionRatio > 0)) {
+        if (
+          !entries.some(
+            (entry) => entry.isIntersecting || entry.intersectionRatio > 0
+          )
+        ) {
           return
         }
         preloadTwikooScript()
@@ -57,7 +69,13 @@ export function DeferredComments({
   }, [eager, observerRootRef, rootMargin, shouldRender])
 
   if (!shouldRender) {
-    return <div ref={placeholderRef} className="mt-12 mb-8 min-h-[160px]" aria-hidden="true" />
+    return (
+      <div
+        ref={placeholderRef}
+        className="mt-12 mb-8 min-h-[160px]"
+        aria-hidden="true"
+      />
+    )
   }
 
   return (
@@ -66,6 +84,8 @@ export function DeferredComments({
       path={path}
       eager={eager}
       layout={layout}
+      variant={variant}
+      className={className}
       onCommentLoaded={onCommentLoaded}
     />
   )

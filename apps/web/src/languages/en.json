@@ -238,7 +238,7 @@
     "featured": {
       "eyebrow": "Featured",
       "title": "Most Played",
-      "description": "The library's heaviest hitters, enriched with Steam store review snapshots.",
+      "description": "The library's heaviest hitters.",
       "reviewPositive": "{{percent}}% positive",
       "reviewCount": "{{count}} reviews",
       "noReview": "No review summary available",

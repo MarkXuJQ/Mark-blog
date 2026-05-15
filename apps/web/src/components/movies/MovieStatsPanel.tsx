@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Star } from 'lucide-react'
+import { Clapperboard, Star } from 'lucide-react'
 import { RiDoubanLine, RiMovie2Line } from 'react-icons/ri'
 import { cn } from '@/lib/utils'
 
@@ -42,9 +42,15 @@ export function MovieStatsPanel({
   }, [ratedValues])
 
   return (
-    <section className="rounded-[1.75rem] border border-slate-200/80 bg-white/72 p-5 shadow-[0_24px_56px_-36px_rgba(15,23,42,0.35)] backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c]/92 dark:shadow-[0_28px_56px_-34px_rgba(0,0,0,0.5)]">
+    <section className="relative overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white/72 p-5 shadow-[0_24px_56px_-36px_rgba(15,23,42,0.35)] backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c]/92 dark:shadow-[0_28px_56px_-34px_rgba(0,0,0,0.5)]">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-5 right-5 flex h-9 w-9 items-center justify-center rounded-full bg-[#ff5941] text-white shadow-[0_12px_28px_-18px_rgba(255,89,65,0.95)]"
+      >
+        <Clapperboard size={17} strokeWidth={1.9} />
+      </div>
       <div className="space-y-6">
-        <div className="border-b border-slate-200/80 pb-5 dark:border-[#2b2f36]">
+        <div className="border-b border-slate-200/80 pr-11 pb-5 dark:border-[#2b2f36]">
           <div className="text-[0.68rem] font-medium tracking-[0.22em] text-slate-500 uppercase dark:text-slate-400">
             {t('movies.stats.watchedCount')}
           </div>

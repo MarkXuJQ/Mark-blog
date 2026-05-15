@@ -30,7 +30,7 @@ function createReferencePanel(
     source,
     'description',
     isZh
-      ? '这里列出写作时用到的公开资料和论文线索，只作为背景补充，不属于正文叙事的一部分。'
+      ? '这里列出写作时用到的公开资料和论文线索，作为背景补充。'
       : 'Public sources and further reading used as background context.'
   )
 

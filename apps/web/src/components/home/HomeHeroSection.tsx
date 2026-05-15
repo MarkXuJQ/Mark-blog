@@ -144,7 +144,7 @@ export function HomeHeroSection({
   const titleSuffixLead = isZh ? '的' : ''
   const titleMorphTexts = isZh
     ? ['自留地', '小屋', '小破站', '内陆帝国']
-    : ['Backyard', 'little site', 'tiny nook']
+    : ['Backyard', 'little site', 'tiny nook','Inland Empire']
   const introText = t('home.intro')
   const descriptionText = t('home.description')
   const titleStagger = prefersReducedMotion ? 0 : 0.018

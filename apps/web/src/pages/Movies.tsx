@@ -3,15 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Clapperboard, Search, Star } from 'lucide-react'
 import { RiDoubanLine } from 'react-icons/ri'
+import { MovieGuestbook } from '@/components/movies/MovieGuestbook'
 import { MovieStatsPanel } from '@/components/movies/MovieStatsPanel'
 import { Seo } from '@/components/seo/Seo'
 import { Pagination } from '@/components/ui/Pagination'
 import { RevealText } from '@/components/ui/reveal-text'
 import { WatchActivityCalendar } from '@/components/movies/WatchActivityCalendar'
-import {
-  getMovieReviewBySlug,
-  getMovieReviewBySubjectId,
-} from '@/lib/content'
+import { getMovieReviewBySlug, getMovieReviewBySubjectId } from '@/lib/content'
 import { cn } from '@/lib/utils'
 import movieCsvRaw from '@content/movies/movie.csv?raw'
 import movieOverridesRaw from '@content/movies/movie-overrides.json'
@@ -945,6 +943,7 @@ export function Movies() {
               selectedRating={selectedRating}
               onSelectRating={setSelectedRating}
             />
+            <MovieGuestbook locale={locale} />
           </aside>
         </div>
       </div>

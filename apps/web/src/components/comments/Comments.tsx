@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LinkGuard } from './LinkGuard'
 import { getTwikooApi, loadTwikooScript } from './twikooLoader'
+import { cn } from '@/lib/utils'
 
 // Declare Twikoo on window
 declare global {
@@ -15,12 +16,16 @@ export function Comments({
   path,
   eager = false,
   layout = 'auto',
+  variant = 'default',
+  className,
   onCommentLoaded,
 }: {
   containerId?: string
   path?: string
   eager?: boolean
   layout?: 'auto' | 'stacked'
+  variant?: 'default' | 'compact'
+  className?: string
   onCommentLoaded?: () => void
 } = {}) {
   const { t } = useTranslation()
@@ -30,11 +35,16 @@ export function Comments({
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
 
   const TWIKOO_ENV_ID =
-    import.meta.env.VITE_TWIKOO_ENV_ID || 'https://comments.markxu.icu/api/twikoo'
+    import.meta.env.VITE_TWIKOO_ENV_ID ||
+    'https://comments.markxu.icu/api/twikoo'
 
   const hasRenderedTwikooContent = (target: HTMLElement | null) => {
     if (!target) return false
-    if (target.querySelector('.tk-comments, .tk-comments-container, .tk-submit, .tk-login')) {
+    if (
+      target.querySelector(
+        '.tk-comments, .tk-comments-container, .tk-submit, .tk-login'
+      )
+    ) {
       return true
     }
     return false
@@ -143,9 +153,10 @@ export function Comments({
     <section
       ref={commentRef}
       id={containerId === 'twikoo-container' ? 'twikoo' : undefined}
-      className="mt-12 mb-8"
+      className={cn('mt-12 mb-8', className)}
+      data-comment-variant={variant}
     >
-      <div className="flex items-center gap-2 mb-6">
+      <div className="mb-6 flex items-center gap-2">
         <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
           {t('comments.title', '评论区')}
         </h3>
@@ -157,6 +168,7 @@ export function Comments({
       <div
         className="twikoo-wrap"
         data-layout={layout}
+        data-variant={variant}
         data-status={TWIKOO_ENV_ID ? status : 'unconfigured'}
       >
         <p
@@ -172,11 +184,22 @@ export function Comments({
         </p>
         <div ref={mountHostRef} />
         {!TWIKOO_ENV_ID ? (
-          <div className="flex flex-col items-center justify-center py-12 text-slate-500 bg-slate-50 dark:bg-[#17191c] rounded-lg border border-dashed border-slate-300 dark:border-[#2b2f36] mx-4">
+          <div className="mx-4 flex flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 py-12 text-slate-500 dark:border-[#2b2f36] dark:bg-[#17191c]">
             <p className="mb-2 font-medium">评论区未配置</p>
-            <p className="text-sm text-center max-w-md px-4">
-              请在 <code className="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-xs">.env</code> 文件中配置 <code className="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-xs">VITE_TWIKOO_ENV_ID</code>，
-              或者在 <code className="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-xs">src/components/Comments.tsx</code> 中直接填入您的 Twikoo 环境 ID。
+            <p className="max-w-md px-4 text-center text-sm">
+              请在{' '}
+              <code className="rounded bg-slate-200 px-1 py-0.5 text-xs dark:bg-slate-700">
+                .env
+              </code>{' '}
+              文件中配置{' '}
+              <code className="rounded bg-slate-200 px-1 py-0.5 text-xs dark:bg-slate-700">
+                VITE_TWIKOO_ENV_ID
+              </code>
+              ， 或者在{' '}
+              <code className="rounded bg-slate-200 px-1 py-0.5 text-xs dark:bg-slate-700">
+                src/components/Comments.tsx
+              </code>{' '}
+              中直接填入您的 Twikoo 环境 ID。
             </p>
           </div>
         ) : null}
@@ -277,6 +300,115 @@ export function Comments({
         }
         .twikoo-wrap[data-layout="stacked"] .tk-footer {
           display: none !important;
+        }
+
+        [data-comment-variant="compact"] > .flex:first-child {
+          display: none !important;
+        }
+        .twikoo-wrap[data-variant="compact"] {
+          font-size: 0.875rem;
+        }
+        .twikoo-wrap[data-variant="compact"] > div,
+        .twikoo-wrap[data-variant="compact"] .tk-submit,
+        .twikoo-wrap[data-variant="compact"] .tk-input,
+        .twikoo-wrap[data-variant="compact"] .tk-meta-input,
+        .twikoo-wrap[data-variant="compact"] .tk-comments,
+        .twikoo-wrap[data-variant="compact"] .tk-comments-container {
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-submit {
+          margin: 0 !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-meta-input {
+          display: block !important;
+          margin: 0 0 0.55rem !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-meta-input .el-input {
+          width: 100% !important;
+          max-width: 100% !important;
+          margin: 0 !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-meta-input .el-input:nth-child(n + 2) {
+          display: none !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-meta-input input,
+        .twikoo-wrap[data-variant="compact"] .tk-input textarea {
+          border-radius: 0.9rem !important;
+          border: 1px solid rgba(148, 163, 184, 0.22) !important;
+          background: rgba(255, 255, 255, 0.72) !important;
+          box-shadow: none !important;
+        }
+        .dark .twikoo-wrap[data-variant="compact"] .tk-meta-input input,
+        .dark .twikoo-wrap[data-variant="compact"] .tk-input textarea {
+          border-color: rgba(71, 85, 105, 0.5) !important;
+          background: rgba(15, 23, 42, 0.36) !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-input textarea {
+          min-height: 5rem !important;
+          resize: vertical !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-row {
+          margin-top: 0.55rem !important;
+          gap: 0.5rem !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-row.actions {
+          justify-content: flex-end !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-submit-action-icon,
+        .twikoo-wrap[data-variant="compact"] .tk-action-icon,
+        .twikoo-wrap[data-variant="compact"] .tk-preview,
+        .twikoo-wrap[data-variant="compact"] .tk-owo-emotion,
+        .twikoo-wrap[data-variant="compact"] .tk-footer,
+        .twikoo-wrap[data-variant="compact"] .tk-comments-title,
+        .twikoo-wrap[data-variant="compact"] .tk-extras,
+        .twikoo-wrap[data-variant="compact"] .tk-time,
+        .twikoo-wrap[data-variant="compact"] .tk-avatar,
+        .twikoo-wrap[data-variant="compact"] .tk-expand,
+        .twikoo-wrap[data-variant="compact"] .tk-replies,
+        .twikoo-wrap[data-variant="compact"] .tk-reply,
+        .twikoo-wrap[data-variant="compact"] .tk-like,
+        .twikoo-wrap[data-variant="compact"] .tk-admin-config {
+          display: none !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .el-button {
+          min-height: 2.25rem !important;
+          border: 0 !important;
+          border-radius: 999px !important;
+          padding: 0 0.95rem !important;
+          background: #ff5941 !important;
+          color: #fff !important;
+          font-weight: 700 !important;
+          box-shadow: 0 0.6rem 1.2rem -0.9rem rgba(255, 89, 65, 0.8) !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-comments {
+          margin-top: 1rem !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-comment {
+          padding: 0.8rem 0 !important;
+          border-top: 1px solid rgba(148, 163, 184, 0.16) !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-main {
+          margin-left: 0 !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-nick {
+          color: #ff5941 !important;
+          font-size: 0.78rem !important;
+          font-weight: 800 !important;
+          letter-spacing: 0.08em !important;
+          text-transform: uppercase !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-content {
+          margin-top: 0.25rem !important;
+          color: #475569 !important;
+          font-size: 0.86rem !important;
+          line-height: 1.65 !important;
+        }
+        .dark .twikoo-wrap[data-variant="compact"] .tk-content {
+          color: #cbd5e1 !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-content p {
+          margin: 0 !important;
         }
 
         @keyframes twikoo-loading-shimmer {

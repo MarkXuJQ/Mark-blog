@@ -238,7 +238,7 @@
     "featured": {
       "eyebrow": "Featured",
       "title": "常玩游戏",
-      "description": "按照总游玩时长挑出最常玩的几款，并补充 Steam 商店的整体评测摘要。",
+      "description": "按照总游玩时长挑出最常玩的几款。",
       "reviewPositive": "{{percent}}% 好评",
       "reviewCount": "{{count}} 条评测",
       "noReview": "暂无商店评测摘要",
