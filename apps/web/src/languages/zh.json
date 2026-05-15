@@ -95,11 +95,11 @@
       "allCategories": "全部文章"
     },
     "categories": {
-      "essay": "生活杂谈",
-      "experience": "人生经历",
+      "essay": "杂谈",
+      "experience": "生活经验",
       "tech": "技术分享",
       "share": "资源分享",
-      "project": "项目介绍"
+      "project": "项目经历"
     },
     "sort": {
       "created": "创建日期",

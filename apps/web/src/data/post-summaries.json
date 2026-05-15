@@ -1,5 +1,19 @@
 [
   {
+    "id": "my-graduation-project",
+    "slug": "my-graduation-project",
+    "language": "zh",
+    "title": "从大创到毕设，我的“科研思想”进化之路",
+    "date": "2026-05-15",
+    "summary": "从一次大创项目、一套医疗管理系统，到骨盆骨折 CT 分割算法的复现与改进。这篇文章记录我的毕业设计，也记录一次从失败里慢慢摸到问题核心的经历。",
+    "tags": [
+      "Projects",
+      "Medical Image Segmentation",
+      "Algorithm"
+    ],
+    "category": "project"
+  },
+  {
     "id": "university-info-drawers-cn",
     "slug": "university-info-drawers-cn",
     "language": "zh",
@@ -124,7 +138,7 @@
       "Life",
       "Travel"
     ],
-    "category": "essay"
+    "category": "Experience"
   },
   {
     "id": "guangzhou-travel-notes",
@@ -154,7 +168,7 @@
       "Life",
       "Travel"
     ],
-    "category": "essay"
+    "category": "Experience"
   },
   {
     "id": "chaoshan-travel-notes",

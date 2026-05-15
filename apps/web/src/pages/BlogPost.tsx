@@ -23,7 +23,10 @@ import {
 import { Card } from '@/components/ui/Card'
 import { useCodeBlockEnhancements } from '@/hooks/useCodeBlockEnhancements'
 import { useImageLightbox } from '@/hooks/useImageLightbox'
-import { decorateArticleLinkPreviews } from '@/lib/article'
+import {
+  decorateArticleLinkPreviews,
+  decorateArticleReferences,
+} from '@/lib/article'
 import {
   getAdjacentPosts,
   getPostBySlug,
@@ -49,7 +52,10 @@ export function BlogPost() {
     }
 
     return decorateArticleLinkPreviews(
-      rewriteHtmlImageSrc(post.content),
+      decorateArticleReferences(
+        rewriteHtmlImageSrc(post.content),
+        i18n.language
+      ),
       i18n.language
     )
   }, [i18n.language, post])
