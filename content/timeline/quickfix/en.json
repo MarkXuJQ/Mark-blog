@@ -1,5 +1,14 @@
 [
   {
+    "id": "qf-20260515",
+    "date": "2026-05-15",
+    "content": [
+      "Added a compact movie-page guestbook powered by Twikoo",
+      "Refined the guestbook composer: comments stay visible by default",
+      "Polished the homepage title rotation with a width-aware animated color chip"
+    ]
+  },
+  {
     "id": "qf-20260511",
     "date": "2026-05-11",
     "content": [
