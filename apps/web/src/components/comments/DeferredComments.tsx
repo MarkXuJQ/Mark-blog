@@ -10,6 +10,7 @@ interface DeferredCommentsProps {
   eager?: boolean
   layout?: 'auto' | 'stacked'
   variant?: 'default' | 'compact'
+  composerState?: 'open' | 'collapsed'
   className?: string
   onCommentLoaded?: () => void
 }
@@ -22,6 +23,7 @@ export function DeferredComments({
   eager,
   layout,
   variant,
+  composerState,
   className,
   onCommentLoaded,
 }: DeferredCommentsProps) {
@@ -85,6 +87,7 @@ export function DeferredComments({
       eager={eager}
       layout={layout}
       variant={variant}
+      composerState={composerState}
       className={className}
       onCommentLoaded={onCommentLoaded}
     />

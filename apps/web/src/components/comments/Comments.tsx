@@ -17,6 +17,7 @@ export function Comments({
   eager = false,
   layout = 'auto',
   variant = 'default',
+  composerState = 'open',
   className,
   onCommentLoaded,
 }: {
@@ -25,6 +26,7 @@ export function Comments({
   eager?: boolean
   layout?: 'auto' | 'stacked'
   variant?: 'default' | 'compact'
+  composerState?: 'open' | 'collapsed'
   className?: string
   onCommentLoaded?: () => void
 } = {}) {
@@ -169,6 +171,7 @@ export function Comments({
         className="twikoo-wrap"
         data-layout={layout}
         data-variant={variant}
+        data-composer={composerState}
         data-status={TWIKOO_ENV_ID ? status : 'unconfigured'}
       >
         <p
@@ -320,6 +323,28 @@ export function Comments({
         .twikoo-wrap[data-variant="compact"] .tk-submit {
           margin: 0 !important;
         }
+        .twikoo-wrap[data-variant="compact"] .tk-submit {
+          transition:
+            max-height 360ms cubic-bezier(0.33, 1, 0.68, 1),
+            opacity 220ms ease,
+            transform 320ms cubic-bezier(0.33, 1, 0.68, 1),
+            margin 320ms ease !important;
+          will-change: max-height, opacity, transform;
+        }
+        .twikoo-wrap[data-variant="compact"][data-composer="collapsed"] .tk-submit {
+          max-height: 0 !important;
+          margin: 0 !important;
+          opacity: 0 !important;
+          overflow: hidden !important;
+          pointer-events: none !important;
+          transform: translateY(-0.4rem) scale(0.985) !important;
+        }
+        .twikoo-wrap[data-variant="compact"][data-composer="open"] .tk-submit {
+          max-height: 28rem !important;
+          opacity: 1 !important;
+          overflow: hidden !important;
+          transform: translateY(0) scale(1) !important;
+        }
         .twikoo-wrap[data-variant="compact"] .tk-meta-input {
           display: block !important;
           margin: 0 0 0.55rem !important;
@@ -364,7 +389,6 @@ export function Comments({
         .twikoo-wrap[data-variant="compact"] .tk-extras,
         .twikoo-wrap[data-variant="compact"] .tk-time,
         .twikoo-wrap[data-variant="compact"] .tk-avatar,
-        .twikoo-wrap[data-variant="compact"] .tk-expand,
         .twikoo-wrap[data-variant="compact"] .tk-replies,
         .twikoo-wrap[data-variant="compact"] .tk-reply,
         .twikoo-wrap[data-variant="compact"] .tk-like,
@@ -409,6 +433,13 @@ export function Comments({
         }
         .twikoo-wrap[data-variant="compact"] .tk-content p {
           margin: 0 !important;
+        }
+        .twikoo-wrap[data-variant="compact"] .tk-expand,
+        .twikoo-wrap[data-variant="compact"] .tk-pagination {
+          margin-top: 0.8rem !important;
+          color: #ff5941 !important;
+          font-size: 0.78rem !important;
+          font-weight: 700 !important;
         }
 
         @keyframes twikoo-loading-shimmer {
