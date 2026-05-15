@@ -17,13 +17,27 @@
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
     <entry>
+        <title type="html"><![CDATA[从 MEME 的视角看 AI：死亡搁浅2 游玩启发]]></title>
+        <id>https://markxu.icu/blog/ai-through-meme-death-stranding-2-cn</id>
+        <link href="https://markxu.icu/blog/ai-through-meme-death-stranding-2-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img69e8647962c8ab32d1d0e0fbf1e40b61.png" type="image/png"/>
+        <updated>2026-05-15T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[通关死亡搁浅2之后，我开始理解 MEME：作为人类文化基因继续生长的方式。AI 可以复用这些文化基因，但新的文化基因，或许仍然要从人的经验里长出来。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img69e8647962c8ab32d1d0e0fbf1e40b61.png" alt="从 MEME 的视角看 AI：死亡搁浅2 游玩启发" /> <p>通关死亡搁浅2之后，我开始理解 MEME：作为人类文化基因继续生长的方式。AI 可以复用这些文化基因，但新的文化基因，或许仍然要从人的经验里长出来。</p> <a class="view-full" href="https://markxu.icu/blog/ai-through-meme-death-stranding-2-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[从大创到毕设，我的“科研思想”进化之路]]></title>
-        <id>https://markxu.icu/blog/my-graduation-project</id>
-        <link href="https://markxu.icu/blog/my-graduation-project"/>
+        <id>https://markxu.icu/blog/my-graduation-project-cn</id>
+        <link href="https://markxu.icu/blog/my-graduation-project-cn"/>
         <link rel="enclosure" href="https://img.markxu.icu/img20260515191007353.png" type="image/png"/>
         <updated>2026-05-15T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[从一次大创项目、一套医疗管理系统，到骨盆骨折 CT 分割算法的复现与改进。这篇文章记录我的毕业设计，也记录一次从失败里慢慢摸到问题核心的经历。]]></summary>
-        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img20260515191007353.png" alt="从大创到毕设，我的“科研思想”进化之路" /> <p>从一次大创项目、一套医疗管理系统，到骨盆骨折 CT 分割算法的复现与改进。这篇文章记录我的毕业设计，也记录一次从失败里慢慢摸到问题核心的经历。</p> <a class="view-full" href="https://markxu.icu/blog/my-graduation-project" target="_blank">点击查看全文</a>]]></content>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img20260515191007353.png" alt="从大创到毕设，我的“科研思想”进化之路" /> <p>从一次大创项目、一套医疗管理系统，到骨盆骨折 CT 分割算法的复现与改进。这篇文章记录我的毕业设计，也记录一次从失败里慢慢摸到问题核心的经历。</p> <a class="view-full" href="https://markxu.icu/blog/my-graduation-project-cn" target="_blank">点击查看全文</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>
