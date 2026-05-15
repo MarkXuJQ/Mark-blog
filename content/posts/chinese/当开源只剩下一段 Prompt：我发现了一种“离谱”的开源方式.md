@@ -33,7 +33,7 @@ image: "https://img.markxu.icu/imgvoiceinput.jpeg"
 
 ### **2. Prompt 即源码（哈哈哈）**
 
-传统的开源是“人读代码，编译器执行”，而这个项目是“人读Prompt，AI 执行”。作者 yetone 甚至专门建立了一个 [voice-input-dist的repo](https://github.com/yetone/voice-input-dist) 来存放他利用ai最终构建出的 App源码，以方便将“源”与“产物”彻底分离（小巧思说是），也方便用户进行对比。
+传统的开源是“人读代码，编译器执行”，而这个项目是“人读Prompt，AI 执行”。作者 yetone 甚至专门建立了一个 [voice-input-dist的repo](https://github.com/yetone/voice-input-dist) 来存放他利用ai最终构建出的 App源码，以方便将“源”与“产物”彻底分离*（小巧思说是）*，也方便用户进行对比。
 
 ## Prompt 里藏了什么？
 
@@ -58,7 +58,7 @@ image: "https://img.markxu.icu/imgvoiceinput.jpeg"
 ### **1. 环境**
 
 - **Mac** ：我的2021款的 M1 pro，系统是Tahoe 26.3.1
-- **AI 工具** ：Codex，调用的是GPT 5.4 Extra High（想要试试与作者不一样的ai能否成功）。
+- **AI 工具** ：Codex，调用的是GPT 5.4 Extra High*（想要试试与作者不一样的ai能否成功）*。
 
 下面是我的设备配置图：
 
