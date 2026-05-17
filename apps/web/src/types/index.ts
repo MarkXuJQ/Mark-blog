@@ -6,6 +6,7 @@ export interface BlogPostSummary {
   date: string
   updated?: string
   summary: string
+  wordCount?: number
   image?: string
   tags?: string[]
   category?: string

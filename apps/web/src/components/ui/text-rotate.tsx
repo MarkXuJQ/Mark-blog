@@ -14,7 +14,7 @@ import {
   type AnimatePresenceProps,
   type MotionProps,
   type Transition,
-} from 'motion/react'
+} from 'framer-motion'
 
 import { cn } from '@/lib/utils'
 

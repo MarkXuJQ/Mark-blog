@@ -51,6 +51,10 @@ const alibabaSemiBoldTextPath = path.join(
 )
 const pixelTextPath = path.join(generatedDir, 'font-pixel-chars.txt')
 const nerdFontTextPath = path.join(generatedDir, 'font-nerd-chars.txt')
+const fontSafelistPath = path.join(
+  projectRoot,
+  'src/assets/fonts/font-safelist.txt'
+)
 
 const alibabaMediumFontSource = resolveFontSource({
   envVar: 'ALIBABA_MEDIUM_FONT_SOURCE',
@@ -231,8 +235,14 @@ function readProjectText() {
   return readTextFiles(getProjectTextFiles())
 }
 
+function readFontSafelist() {
+  return fs.existsSync(fontSafelistPath)
+    ? fs.readFileSync(fontSafelistPath, 'utf8')
+    : ''
+}
+
 function buildChineseText() {
-  return uniqueGlyphText(readProjectText() + safeChineseExtras)
+  return uniqueGlyphText(readProjectText() + readFontSafelist() + safeChineseExtras)
 }
 
 function buildAlibabaSemiBoldText() {
@@ -242,13 +252,14 @@ function buildAlibabaSemiBoldText() {
       path.join(projectRoot, 'index.html'),
     ]) +
     readProjectText() +
+    readFontSafelist() +
     safeChineseExtras
 
   return uniqueGlyphText(combined)
 }
 
 function buildNerdFontText() {
-  return uniqueGlyphText(readProjectText() + safeCodeExtras)
+  return uniqueGlyphText(readProjectText() + readFontSafelist() + safeCodeExtras)
 }
 
 function ensureDir(dirPath) {

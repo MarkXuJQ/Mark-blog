@@ -1,0 +1,29 @@
+# Extra glyphs that may not appear in source/content yet but should be kept in
+# generated webfont subsets. Add missing visible characters here, then run:
+# pnpm --dir apps/web run generate:fonts
+
+中文常用补充字库：
+〇
+
+中文标点：
+，。、？！；：“”‘’（）《》〈〉【】「」『』〔〕—…·～￥
+
+全角字符：
+１２３４５６７８９０
+ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ
+ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ
+
+技术与 UI 符号：
+→ ← ↑ ↓ ↔ ↕ ↗ ↘ ↙ ↖
+✓ ✔ ✕ × · • ◦ ※ ★ ☆
+⌘ ⌥ ⌃ ⇧ ⏎ ⌫
+℃ ℉ №
+
+日文假名补充：
+あいうえおかきくけこさしすせそたちつてとなにぬねの
+はひふへほまみむめもやゆよらりるれろわをん
+アイウエオカキクケコサシスセソタチツテトナニヌネノ
+ハヒフヘホマミムメモヤユヨラリルレロワヲン
+
+评论与运行时文案：
+评论区 正在加载评论 评论区加载失败 请稍后重试 未配置 恢复链接 访问 打开 关闭 复制 已复制 展开 收起 搜索
