@@ -42,7 +42,7 @@
 }
 
 :root {
-  font-family:
+  --font-body:
     ui-sans-serif,
     system-ui,
     -apple-system,
@@ -54,6 +54,7 @@
     'Microsoft YaHei UI',
     'Microsoft YaHei',
     sans-serif;
+  font-family: var(--font-body);
   line-height: 1.5;
   font-weight: 400;
   --brand-500: #2e7ea3;
@@ -208,6 +209,7 @@ i {
 
 .article-rich .markdown-body {
   counter-reset: article-h2;
+  font-family: var(--font-body);
   overflow-wrap: break-word;
 }
 
@@ -338,14 +340,15 @@ i {
 
 .article-rich .markdown-body strong,
 .article-rich .markdown-body b {
-  font-weight: 700;
-  color: color-mix(in srgb, var(--text-primary) 84%, var(--brand-600) 16%);
+  font-family: inherit;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--text-primary) 88%, var(--brand-600) 12%);
   background-image: linear-gradient(
     180deg,
-    transparent 56%,
-    color-mix(in srgb, var(--brand-400) 18%, transparent) 56%,
-    color-mix(in srgb, var(--brand-400) 18%, transparent) 88%,
-    transparent 88%
+    transparent 50%,
+    color-mix(in srgb, var(--brand-400) 30%, transparent) 50%,
+    color-mix(in srgb, var(--brand-400) 30%, transparent) 90%,
+    transparent 90%
   );
 }
 
@@ -384,13 +387,13 @@ i {
 
 .dark .article-rich .markdown-body strong,
 .dark .article-rich .markdown-body b {
-  color: color-mix(in srgb, var(--text-primary) 92%, #bfdbfe 8%);
+  color: color-mix(in srgb, var(--text-primary) 94%, #bfdbfe 6%);
   background-image: linear-gradient(
     180deg,
-    transparent 56%,
-    rgba(96, 165, 250, 0.2) 56%,
-    rgba(96, 165, 250, 0.2) 88%,
-    transparent 88%
+    transparent 50%,
+    rgba(96, 165, 250, 0.34) 50%,
+    rgba(96, 165, 250, 0.34) 90%,
+    transparent 90%
   );
 }
 
