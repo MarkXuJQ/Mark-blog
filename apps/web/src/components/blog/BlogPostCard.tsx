@@ -2,19 +2,18 @@ import { Link } from 'react-router-dom'
 import { Calendar, FileText } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Card } from '../ui/Card'
-import { countWords } from '@/utils/readingTime'
 import { cn } from '@/lib/utils'
 import { getImageUrl } from '@/utils/image'
-import type { BlogPost } from '@/types'
+import type { BlogPostSummary } from '@/types'
 import { CategoryLabel } from './CategoryLabel'
 
 interface BlogPostCardProps {
-  post: BlogPost
+  post: BlogPostSummary
 }
 
 export function BlogPostCard({ post }: BlogPostCardProps) {
   const { t } = useTranslation()
-  const words = countWords(post.content)
+  const words = post.wordCount ?? 0
   const coverImage = post.image ? getImageUrl(post.image) : ''
   const titleClass = cn(
     'mb-2 line-clamp-2 text-2xl font-medium leading-snug transition-colors',

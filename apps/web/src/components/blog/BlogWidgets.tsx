@@ -8,8 +8,7 @@ import { Link } from 'react-router-dom'
 import { Calendar, Clock, FileText, Activity, Hash, Layers } from 'lucide-react'
 import { LuGithub } from 'react-icons/lu'
 import { RiBilibiliLine, RiTwitterXFill, RiInstagramLine } from 'react-icons/ri'
-import { countWords } from '@/utils/readingTime'
-import type { BlogPost } from '@/types'
+import type { BlogPostSummary } from '@/types'
 
 // --- Profile Content (Internal) ---
 function ProfileContent() {
@@ -195,7 +194,7 @@ export function LeftSidebarWidget() {
 
 // --- Stats Widget ---
 interface StatsWidgetProps {
-  posts: BlogPost[]
+  posts: BlogPostSummary[]
 }
 
 export function StatsWidget({ posts }: StatsWidgetProps) {
@@ -205,8 +204,7 @@ export function StatsWidget({ posts }: StatsWidgetProps) {
   const totalPosts = posts.length
 
   const totalWords = posts.reduce((acc, post) => {
-    // Assuming post.content is HTML string
-    return acc + countWords(post.content)
+    return acc + (post.wordCount ?? 0)
   }, 0)
 
   const siteStartDateString =

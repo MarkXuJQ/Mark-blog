@@ -71,8 +71,7 @@
   --shadow-card:
     0 1px 2px rgba(2, 6, 23, 0.05), 0 8px 24px rgba(2, 6, 23, 0.06);
   --font-heading:
-    'Montserrat', 'Alibaba PuHuiTi 3', 'Nano Full Song', 'Songti SC', 'STSong',
-    serif;
+    'Montserrat', 'Alibaba PuHuiTi 3', 'Songti SC', 'STSong', serif;
   --font-code:
     'JetBrains Mono Nerd Web', 'JetBrainsMono Nerd Font', 'JetBrains Mono',
     'Symbols Nerd Font Mono', 'Symbols Nerd Font', 'SFMono-Regular', 'SF Mono',
@@ -209,6 +208,7 @@ i {
 
 .article-rich .markdown-body {
   counter-reset: article-h2;
+  overflow-wrap: break-word;
 }
 
 .article-rich .markdown-body h2,
@@ -299,6 +299,8 @@ i {
 }
 
 .article-rich .markdown-body a {
+  overflow-wrap: anywhere;
+  word-break: break-word;
   text-decoration: none;
   transition: color 160ms ease;
 }
@@ -928,14 +930,6 @@ i {
   unicode-range:
     U+2E80-2EFF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
     U+FE10-FE1F, U+FE30-FE4F, U+FF00-FFEF;
-}
-
-@font-face {
-  font-family: 'Nano Full Song';
-  src: url('../fonts/NanoFullSong-Subset.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: optional;
 }
 
 @font-face {

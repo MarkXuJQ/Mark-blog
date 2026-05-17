@@ -5,27 +5,29 @@ import {
   compareBlogCategories,
   PREFERRED_BLOG_CATEGORIES,
 } from '@/components/blog/categoryMeta'
-import { getAllPosts } from '@/lib/content'
-import type { BlogPost } from '@/types'
+import { getAllPostSummaries } from '@/lib/content'
+import type { BlogPostSummary } from '@/types'
 import { useSearch } from './useSearch'
 
 export type SortBy = 'date' | 'updated'
 
 export function useBlogPosts() {
   const { i18n } = useTranslation()
-  const allPosts = useMemo(() => getAllPosts(i18n.language), [i18n.language])
+  const allPosts = useMemo(
+    () => getAllPostSummaries(i18n.language),
+    [i18n.language]
+  )
 
   // State
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<SortBy>('date')
 
   // Search Logic
-  const searchFn = useCallback((post: BlogPost, query: string) => {
+  const searchFn = useCallback((post: BlogPostSummary, query: string) => {
     const lowerQuery = query.toLowerCase()
     return (
       post.title.toLowerCase().includes(lowerQuery) ||
       post.summary?.toLowerCase().includes(lowerQuery) ||
-      post.content.toLowerCase().includes(lowerQuery) ||
       post.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery)) ||
       post.category?.toLowerCase().includes(lowerQuery) ||
       false

@@ -1,3 +1,5 @@
+import process from 'node:process'
+
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3'
 const DEFAULT_LANGUAGE = 'en-US'
 const LANGUAGE_PATTERN = /^[a-z]{2}-[A-Z]{2}$/
@@ -28,9 +30,24 @@ function getTmdbAuthHeaders(token) {
   }
 }
 
-function json(res, status, body) {
+function getCacheControl(request) {
+  if (!request) return 'no-store'
+
+  if (request.endpoint.startsWith('movie/')) {
+    return 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400'
+  }
+
+  if (request.endpoint === 'search/movie') {
+    return 'public, max-age=600, s-maxage=3600, stale-while-revalidate=86400'
+  }
+
+  return 'no-store'
+}
+
+function json(res, status, body, cacheControl = 'no-store') {
   res.statusCode = status
   res.setHeader('Content-Type', 'application/json; charset=utf-8')
+  res.setHeader('Cache-Control', cacheControl)
   res.end(JSON.stringify(body))
 }
 
@@ -174,7 +191,7 @@ export default async function handler(req, res) {
       token,
       apiKey,
     })
-    return json(res, 200, payload)
+    return json(res, 200, payload, getCacheControl(request))
   } catch (error) {
     if (error instanceof TmdbHttpError) {
       const status = error.status

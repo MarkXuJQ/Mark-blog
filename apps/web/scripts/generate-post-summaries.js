@@ -51,6 +51,16 @@ function normalizeOptionalStringArray(value) {
     : undefined
 }
 
+function countWords(text) {
+  const plainText = text.replace(/<[^>]*>?/gm, '')
+  const cjkMatches = plainText.match(/[\u4e00-\u9fa5]/g) || []
+  const cjkCount = cjkMatches.length
+  const nonCjkText = plainText.replace(/[\u4e00-\u9fa5]/g, ' ')
+  const nonCjkCount = nonCjkText.trim().split(/\s+/).filter(Boolean).length
+
+  return cjkCount + nonCjkCount
+}
+
 function resolvePostSlug(filePath, data) {
   const fileSlug = path.basename(filePath, '.md')
   return normalizeOptionalString(data.slug) || fileSlug
@@ -64,7 +74,7 @@ function buildPostSummaries() {
   const files = collectMarkdownFiles(POSTS_DIR)
   const summaries = files.map((filePath) => {
     const rawContent = fs.readFileSync(filePath, 'utf-8')
-    const { data } = matter(rawContent)
+    const { data, content } = matter(rawContent)
     const slug = resolvePostSlug(filePath, data)
 
     return {
@@ -75,6 +85,7 @@ function buildPostSummaries() {
       date: String(data.date || ''),
       updated: normalizeOptionalString(data.updated),
       summary: String(data.summary || ''),
+      wordCount: countWords(content),
       image: normalizeOptionalString(data.image),
       tags: normalizeOptionalStringArray(data.tags),
       category: normalizeOptionalString(data.category),
