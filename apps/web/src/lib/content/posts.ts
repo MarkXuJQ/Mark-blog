@@ -54,6 +54,7 @@ function parsePost(path: string, module: MarkdownPost): BlogPost | null {
   return {
     id: slug,
     slug,
+    sourceSlug: fileSlug,
     aliases: aliases.size > 0 ? Array.from(aliases) : undefined,
     title: attributes.title,
     date: attributes.date,
@@ -178,19 +179,8 @@ export function getAdjacentPosts(
 }
 
 export function getSharedPostCommentPath(post: BlogPost): string {
-  const legacyChineseSlug = findLegacyChineseSlug(post)
-  if (legacyChineseSlug) {
-    return toBlogPath(legacyChineseSlug)
-  }
-
   const pairedChinesePost = findPairedChinesePost(post)
-  const pairedLegacyChineseSlug = pairedChinesePost
-    ? findLegacyChineseSlug(pairedChinesePost)
-    : undefined
-
-  return toBlogPath(
-    pairedLegacyChineseSlug || pairedChinesePost?.slug || post.slug
-  )
+  return toBlogPath(getCanonicalCommentSlug(post, pairedChinesePost))
 }
 
 function findPairedChinesePost(post: BlogPost): BlogPost | undefined {
@@ -212,8 +202,28 @@ function findPairedChinesePost(post: BlogPost): BlogPost | undefined {
   })
 }
 
-function findLegacyChineseSlug(post: BlogPost): string | undefined {
-  return post.aliases?.find((alias) => /[^\x00-\x7F]/.test(alias))
+function getCanonicalCommentSlug(
+  post: BlogPost,
+  pairedChinesePost?: BlogPost
+): string {
+  const languageNeutralSlug = stripLanguageSuffix(post.slug)
+  if (languageNeutralSlug !== post.slug) return languageNeutralSlug
+
+  const pairedLanguageNeutralSlug = pairedChinesePost
+    ? stripLanguageSuffix(pairedChinesePost.slug)
+    : undefined
+  if (
+    pairedLanguageNeutralSlug &&
+    pairedLanguageNeutralSlug !== pairedChinesePost?.slug
+  ) {
+    return pairedLanguageNeutralSlug
+  }
+
+  return pairedChinesePost?.aliases?.[0] || post.aliases?.[0] || post.slug
+}
+
+function stripLanguageSuffix(slug: string): string {
+  return slug.replace(/-(cn|en)$/i, '')
 }
 
 function toBlogPath(slug: string): string {

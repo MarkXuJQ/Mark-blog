@@ -41,14 +41,26 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://markxu.icu/blog/ai-through-meme-death-stranding-2-cn</loc>
+    <loc>https://markxu.icu/blog/why-I-recommend-everyone-to-write-blog-cn</loc>
+    <lastmod>2026-05-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://markxu.icu/blog/websurf-tools-recommendation-cn</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://markxu.icu/blog/ai-through-meme-death-stranding-2-cn</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://markxu.icu/blog/my-graduation-project-cn</loc>
-    <lastmod>2026-05-15</lastmod>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -65,7 +77,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://markxu.icu/blog/mac-terminal-setup-notes</loc>
+    <loc>https://markxu.icu/blog/5.mac-terminal-setup-notes</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -77,7 +89,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://markxu.icu/blog/prompt-only-open-source</loc>
+    <loc>https://markxu.icu/blog/4.prompt-only-open-source</loc>
     <lastmod>2026-04-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -89,7 +101,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://markxu.icu/blog/My-first-blog</loc>
+    <loc>https://markxu.icu/blog/3.My-first-blog</loc>
     <lastmod>2026-03-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -101,7 +113,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://markxu.icu/blog/guangzhou-travel-notes</loc>
+    <loc>https://markxu.icu/blog/2.guangzhou-travel-notes</loc>
     <lastmod>2026-03-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -113,7 +125,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://markxu.icu/blog/chaoshan-travel-notes</loc>
+    <loc>https://markxu.icu/blog/1.chaoshan-travel-notes</loc>
     <lastmod>2026-02-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>

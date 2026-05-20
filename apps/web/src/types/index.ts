@@ -2,6 +2,7 @@ export interface BlogPostSummary {
   id: string
   title: string
   slug: string
+  sourceSlug?: string
   aliases?: string[]
   date: string
   updated?: string
