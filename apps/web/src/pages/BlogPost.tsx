@@ -40,7 +40,12 @@ import {
 } from '@/lib/content'
 import { countWords } from '@/utils/readingTime'
 import { cn } from '@/lib/utils'
-import { getImageUrl, getOptimizedImageUrl, rewriteHtmlImageSrc } from '@/utils/image'
+import {
+  extractOptimizedImageUrlsFromHtml,
+  getImageUrl,
+  getOptimizedImageUrl,
+  rewriteHtmlImageSrc,
+} from '@/utils/image'
 import type { BlogPostOutletContext } from '@/layouts/BlogPostLayout'
 
 export function BlogPost() {
@@ -120,6 +125,26 @@ export function BlogPost() {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     })
   }, [slug])
+
+  useEffect(() => {
+    if (!post) return
+
+    const urls = extractOptimizedImageUrlsFromHtml(post.content)
+    const links = urls.map((url) => {
+      const link = document.createElement('link')
+      link.rel = 'preload'
+      link.as = 'image'
+      link.href = url
+      link.fetchPriority = 'low'
+      link.referrerPolicy = 'no-referrer'
+      document.head.appendChild(link)
+      return link
+    })
+
+    return () => {
+      links.forEach((link) => link.remove())
+    }
+  }, [post])
 
   if (!post) {
     return (
@@ -224,6 +249,15 @@ export function BlogPost() {
           key={`simple-${post.slug}`}
           ref={contentRef}
           html={contentHtml}
+        />
+
+        <DeferredComments
+          key={`simple-comments-${commentPath}`}
+          containerId="twikoo-container"
+          path={commentPath}
+          eager
+          showTitle={false}
+          className={styles.simpleReadingComments}
         />
       </article>
     )
@@ -487,4 +521,5 @@ const styles = {
     'mb-4 text-4xl font-bold tracking-tight text-slate-950 md:text-5xl dark:text-slate-50',
   simpleReadingSummary:
     'max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-400',
+  simpleReadingComments: 'mt-16 mb-4',
 }

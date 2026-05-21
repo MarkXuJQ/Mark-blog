@@ -19,6 +19,7 @@ export function Comments({
   variant = 'default',
   composerState = 'open',
   className,
+  showTitle = true,
   onCommentLoaded,
 }: {
   containerId?: string
@@ -28,6 +29,7 @@ export function Comments({
   variant?: 'default' | 'compact'
   composerState?: 'open' | 'collapsed'
   className?: string
+  showTitle?: boolean
   onCommentLoaded?: () => void
 } = {}) {
   const { t } = useTranslation()
@@ -158,12 +160,14 @@ export function Comments({
       className={cn('mt-12 mb-8', className)}
       data-comment-variant={variant}
     >
-      <div className="mb-6 flex items-center gap-2">
-        <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
-          {t('comments.title', '评论区')}
-        </h3>
-        <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800"></div>
-      </div>
+      {showTitle ? (
+        <div className="mb-6 flex items-center gap-2">
+          <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
+            {t('comments.title', '评论区')}
+          </h3>
+          <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800"></div>
+        </div>
+      ) : null}
 
       <LinkGuard containerRef={commentRef} />
 

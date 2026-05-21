@@ -41,7 +41,7 @@ export function setupToc(
 ): { toc: TocItem[]; destroy: () => void } {
   const {
     topOffset = 96,
-    headingSelector = 'article h1, article h2, article h3',
+    headingSelector = 'h1, h2, h3',
     minLevel = 1,
     maxLevel = 3,
   } = options
@@ -116,7 +116,7 @@ export function setupTocTree(
 ): { tree: TocNode[]; flat: TocItem[]; destroy: () => void } {
   const {
     topOffset = 96,
-    headingSelector = 'article h1, article h2, article h3',
+    headingSelector = 'h1, h2, h3',
     minLevel = 1,
     maxLevel = 3,
     trackActive = true,
@@ -166,10 +166,7 @@ export function setupTocTree(
         return
       }
 
-      const activationLine = Math.min(
-        Math.max(topOffset, window.innerHeight * 0.28),
-        window.innerHeight * 0.45
-      )
+      const activationLine = topOffset + 12
       let active = headings[0]
 
       for (const heading of headings) {

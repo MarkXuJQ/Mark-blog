@@ -100,11 +100,11 @@ export function ReaderModeToggle({
         }}
         className={cn(
           'flex h-20 w-8 cursor-grab items-center justify-center active:cursor-grabbing',
-          'border border-slate-200 bg-white/92 px-1 py-2 text-xs font-semibold text-slate-600 shadow-sm backdrop-blur',
-          'transition-colors hover:bg-slate-50 hover:text-slate-900',
+          'border border-slate-200/70 bg-white/80 px-1 py-2 text-xs font-semibold text-[var(--text-secondary)] shadow-sm backdrop-blur',
+          'transition-colors hover:bg-white/90 hover:text-[var(--text-primary)]',
           '[writing-mode:vertical-rl] [text-orientation:mixed]',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60',
-          'dark:border-slate-700 dark:bg-slate-900/92 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-slate-50',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--brand-400)_72%,transparent)]',
+          'dark:border-[#2b2f36] dark:bg-[#17191c] dark:hover:bg-[#1c1a18]',
           side === 'left'
             ? 'rounded-r-md border-l-0'
             : 'rounded-l-md border-r-0'

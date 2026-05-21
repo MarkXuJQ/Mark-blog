@@ -98,14 +98,26 @@ export function rewriteHtmlImageSrc(html: string): string {
     const src = img.getAttribute('src') || ''
     const original = getImageUrl(src)
     const optimized = getOptimizedImageUrl(original, 'content')
-    const isFirstContentImage = index === 0
-
     img.setAttribute('src', optimized)
     img.setAttribute('data-original-src', original)
-    img.setAttribute('loading', isFirstContentImage ? 'eager' : 'lazy')
-    img.setAttribute('fetchpriority', isFirstContentImage ? 'high' : 'auto')
+    img.setAttribute('loading', 'eager')
+    img.setAttribute('fetchpriority', index === 0 ? 'high' : 'low')
     img.setAttribute('decoding', 'async')
     img.setAttribute('referrerpolicy', 'no-referrer')
   })
   return doc.body.innerHTML
+}
+
+export function extractOptimizedImageUrlsFromHtml(html: string): string[] {
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(html, 'text/html')
+  const urls = new Set<string>()
+
+  doc.querySelectorAll('img').forEach((img) => {
+    const src = img.getAttribute('src') || ''
+    if (!src) return
+    urls.add(getOptimizedImageUrl(src, 'content'))
+  })
+
+  return Array.from(urls)
 }
