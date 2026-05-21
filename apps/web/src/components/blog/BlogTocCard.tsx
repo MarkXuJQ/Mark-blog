@@ -1,7 +1,13 @@
 import { ArrowUpCircle, MessageSquareText } from 'lucide-react'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Card } from '../ui/Card'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip'
 import { cn } from '@/lib/utils'
 import '../../i18n'
 import { X } from 'lucide-react'
@@ -15,21 +21,28 @@ interface TocItem {
 interface BlogTocCardProps {
   toc?: TocItem[]
   title?: string
+  activeId?: string
+  variant?: 'card' | 'plain'
 }
 interface BlogTocDrawerProps {
   toc?: TocItem[]
   title?: string
+  activeId?: string
   open: boolean
   onClose: () => void
 }
 
 const styles = {
-  tocCard: 'p-4',
+  tocCard: 'overflow-visible p-4',
+  tocPlainCard:
+    'border-0 bg-transparent p-0 shadow-none backdrop-blur-0 dark:bg-transparent',
   tocHeader:
     'mb-3 flex items-center justify-between gap-2 text-sm font-semibold text-[var(--text-secondary)]',
   tocActions: 'flex items-center gap-2 text-[var(--text-disabled)]',
-  tocActionLink:
-    'transition-colors hover:text-[var(--text-primary)]',
+  tocActionLink: cn(
+    'inline-flex transition-colors hover:text-[var(--text-primary)]',
+    'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60'
+  ),
   tocBody: 'relative',
   tocRail: 'relative pl-4',
   tocRailLine:
@@ -68,20 +81,36 @@ const styles = {
     'before:bg-blue-300 dark:before:bg-blue-500/70',
 }
 
-function handleLinkClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
+function handleLinkClick(
+  e: React.MouseEvent<HTMLAnchorElement>,
+  id: string,
+  text?: string
+) {
   e.preventDefault()
   if (id === 'page-top') {
     window.scrollTo({ top: 0, behavior: 'smooth' })
     window.history.pushState({}, '', window.location.pathname)
     return
   }
-  const element = document.getElementById(id)
+  const element = document.getElementById(id) || findHeadingByText(text)
   if (element) {
     const top = element.getBoundingClientRect().top + window.scrollY - 100 // Offset for sticky header
     window.scrollTo({ top, behavior: 'smooth' })
     // Update URL hash without scrolling
     window.history.pushState({}, '', `#${id}`)
   }
+}
+
+function findHeadingByText(text?: string) {
+  if (!text) return null
+  const normalized = text.trim()
+  if (!normalized) return null
+
+  return (
+    Array.from(document.querySelectorAll<HTMLElement>('article h1, article h2, article h3')).find(
+      (heading) => heading.textContent?.trim() === normalized
+    ) ?? null
+  )
 }
 
 function TocList({
@@ -180,10 +209,10 @@ function TocList({
         >
           <a
             href={`#${n.id}`}
-            onClick={(e) => {
-              onItemClick(n.id)
-              handleLinkClick(e, n.id)
-            }}
+              onClick={(e) => {
+                onItemClick(n.id)
+                handleLinkClick(e, n.id, n.text)
+              }}
             data-toc-id={n.id}
             className={linkClassName(n)}
             style={
@@ -230,7 +259,7 @@ function TocList({
               href="#page-top"
               onClick={(e) => {
                 onItemClick('page-top')
-                handleLinkClick(e, 'page-top')
+                handleLinkClick(e, 'page-top', title)
               }}
               data-toc-id="page-top"
               className={cn(
@@ -249,78 +278,59 @@ function TocList({
   )
 }
 
-function useActiveTocId(toc: TocItem[]) {
-  const [activeId, setActiveId] = useState<string>('page-top')
-  const manualUntilRef = useRef<number>(0)
-
-  const setActiveIdManual = (id: string) => {
-    manualUntilRef.current = Date.now() + 800
-    setActiveId(id)
-  }
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (Date.now() < manualUntilRef.current) return
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id)
-          }
-        })
-      },
-      {
-        rootMargin: '-100px 0px -66% 0px',
-        threshold: 0,
-      }
-    )
-
-    // Observe the main title or top of the article
-    const articleTitle = document.querySelector('h1')
-    if (articleTitle) {
-      // Ensure the title has an ID if we want to track it
-      if (!articleTitle.id) articleTitle.id = 'page-top'
-      observer.observe(articleTitle)
-    }
-
-    toc.forEach((item) => {
-      const element = document.getElementById(item.id)
-      if (element) observer.observe(element)
-    })
-
-    return () => observer.disconnect()
-  }, [toc])
-
-  return { activeId, setActiveIdManual }
-}
-
-export function BlogTocCard({ toc = [], title }: BlogTocCardProps) {
+export function BlogTocCard({
+  toc = [],
+  title,
+  activeId = 'page-top',
+  variant = 'card',
+}: BlogTocCardProps) {
   const { t } = useTranslation()
-  const { activeId, setActiveIdManual } = useActiveTocId(toc)
 
   return (
-    <Card className={styles.tocCard}>
+    <Card
+      className={cn(
+        styles.tocCard,
+        variant === 'plain' && styles.tocPlainCard
+      )}
+    >
       <div className={styles.tocHeader}>
         <span>{t('blog.toc.title')}</span>
-        <div className={styles.tocActions}>
-          <a
-            href="#page-top"
-            aria-label={t('blog.toc.backToTop')}
-            className={styles.tocActionLink}
-            onClick={(e) => handleLinkClick(e, 'page-top')}
-          >
-            <ArrowUpCircle size={18} />
-          </a>
-          <a
-            href="#twikoo"
-            aria-label={t('blog.toc.comments')}
-            className={styles.tocActionLink}
-            onClick={(e) => handleLinkClick(e, 'twikoo')}
-          >
-            <MessageSquareText size={18} />
-          </a>
-        </div>
+        {variant === 'card' ? (
+          <div className={styles.tocActions}>
+            <TooltipProvider delayDuration={120}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href="#page-top"
+                    aria-label={t('blog.toc.backToTop')}
+                    className={styles.tocActionLink}
+                    onClick={(e) => handleLinkClick(e, 'page-top')}
+                  >
+                    <ArrowUpCircle size={18} />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent side="top" showArrow className="text-xs">
+                  {t('blog.toc.backToTop')}
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href="#twikoo"
+                    aria-label={t('blog.toc.comments')}
+                    className={styles.tocActionLink}
+                    onClick={(e) => handleLinkClick(e, 'twikoo')}
+                  >
+                    <MessageSquareText size={18} />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent side="top" showArrow className="text-xs">
+                  {t('blog.toc.comments')}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        ) : null}
       </div>
       <div className={styles.tocBody}>
         <div className={styles.tocList}>
@@ -332,7 +342,7 @@ export function BlogTocCard({ toc = [], title }: BlogTocCardProps) {
             <TocList
               toc={toc}
               activeId={activeId}
-              onItemClick={setActiveIdManual}
+              onItemClick={() => undefined}
               title={title}
             />
           )}
@@ -345,11 +355,11 @@ export function BlogTocCard({ toc = [], title }: BlogTocCardProps) {
 export function BlogTocDrawer({
   toc = [],
   title,
+  activeId = 'page-top',
   open,
   onClose,
 }: BlogTocDrawerProps) {
   const { t } = useTranslation()
-  const { activeId, setActiveIdManual } = useActiveTocId(toc)
 
   return (
     <>
@@ -391,7 +401,7 @@ export function BlogTocDrawer({
             <TocList
               toc={toc}
               activeId={activeId}
-              onItemClick={setActiveIdManual}
+              onItemClick={() => undefined}
               title={title}
             />
           )}

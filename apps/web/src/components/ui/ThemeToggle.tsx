@@ -1,5 +1,11 @@
 import { Monitor, Sun } from 'lucide-react'
 import { type ThemeMode } from '../../hooks/useTheme'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './tooltip'
 
 export type ThemeToggleProps = {
   mode: ThemeMode
@@ -48,86 +54,89 @@ export function ThemeToggle({ mode, onModeChange }: ThemeToggleProps) {
           }}
         />
 
-        {themes.map((m) => (
-          <button
-            key={m}
-            type="button"
-            role="radio"
-            aria-checked={mode === m}
-            className={`group relative z-10 flex h-7 w-9 items-center justify-center rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
-              mode === m
-                ? activeTextClassNameByMode[m]
-                : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
-            }`}
-            onClick={() => onModeChange(m)}
-            aria-label={`${m.charAt(0).toUpperCase() + m.slice(1)} mode`}
-          >
-            <span className="pointer-events-none absolute -top-9 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-950/90 px-2 py-1 text-[11px] font-medium text-white opacity-0 shadow-lg ring-1 ring-white/10 transition-opacity duration-150 group-hover:opacity-100">
-              {tooltipByMode[m]}
-              <span className="absolute left-1/2 top-full -translate-x-1/2">
-                <span className="block h-2 w-2 -translate-y-1 rotate-45 rounded-[2px] bg-slate-950/90 ring-1 ring-white/10" />
-              </span>
-            </span>
-
-            {m === 'light' && (
-              <Sun
-                size={14}
-                className={`transition-transform duration-500 ${
-                  mode === 'light' ? '-rotate-12 scale-110' : ''
-                } group-hover:rotate-180`}
-              />
-            )}
-
-            {m === 'system' && (
-              <span className="relative inline-flex h-[14px] w-[14px] items-center justify-center">
-                <Monitor
-                  size={14}
-                  className={`transition-transform duration-300 ${
-                    mode === 'system' ? 'scale-110 -rotate-2' : ''
-                  } group-hover:scale-110 group-hover:rotate-3`}
-                />
-                <span
-                  className={`pointer-events-none absolute left-0 right-0 h-px rounded-full bg-current shadow-[0_0_10px_currentColor] transition-all duration-500 ${
-                    mode === 'system'
-                      ? 'top-[25%] opacity-60'
-                      : 'top-[55%] opacity-0 group-hover:top-[25%] group-hover:opacity-60'
+        <TooltipProvider delayDuration={120}>
+          {themes.map((m) => (
+            <Tooltip key={m}>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={mode === m}
+                  className={`group relative z-10 flex h-7 w-9 items-center justify-center rounded-full transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
+                    mode === m
+                      ? activeTextClassNameByMode[m]
+                      : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
                   }`}
-                />
-              </span>
-            )}
+                  onClick={() => onModeChange(m)}
+                  aria-label={`${m.charAt(0).toUpperCase() + m.slice(1)} mode`}
+                >
+                  {m === 'light' && (
+                    <Sun
+                      size={14}
+                      className={`transition-transform duration-500 ${
+                        mode === 'light' ? '-rotate-12 scale-110' : ''
+                      } group-hover:rotate-180`}
+                    />
+                  )}
 
-            {m === 'dark' && (
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-                className="overflow-visible"
-              >
-                <path
-                  d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"
-                  className={`origin-center transition-transform duration-500 ${
-                    mode === 'dark' ? '-rotate-[10deg]' : ''
-                  } group-hover:-rotate-[10deg]`}
-                />
-                <path
-                  d="M 18 2 Q 18 5.5 21.5 5.5 Q 18 5.5 18 9 Q 18 5.5 14.5 5.5 Q 18 5.5 18 2 Z"
-                  fill="currentColor"
-                  stroke="none"
-                  className={`origin-[18px_5.5px] transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
-                    mode === 'dark' ? 'scale-100' : 'scale-0 group-hover:scale-100'
-                  }`}
-                />
-              </svg>
-            )}
-          </button>
-        ))}
+                  {m === 'system' && (
+                    <span className="relative inline-flex h-[14px] w-[14px] items-center justify-center">
+                      <Monitor
+                        size={14}
+                        className={`transition-transform duration-300 ${
+                          mode === 'system' ? 'scale-110 -rotate-2' : ''
+                        } group-hover:scale-110 group-hover:rotate-3`}
+                      />
+                      <span
+                        className={`pointer-events-none absolute left-0 right-0 h-px rounded-full bg-current shadow-[0_0_10px_currentColor] transition-all duration-500 ${
+                          mode === 'system'
+                            ? 'top-[25%] opacity-60'
+                            : 'top-[55%] opacity-0 group-hover:top-[25%] group-hover:opacity-60'
+                        }`}
+                      />
+                    </span>
+                  )}
+
+                  {m === 'dark' && (
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                      className="overflow-visible"
+                    >
+                      <path
+                        d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"
+                        className={`origin-center transition-transform duration-500 ${
+                          mode === 'dark' ? '-rotate-[10deg]' : ''
+                        } group-hover:-rotate-[10deg]`}
+                      />
+                      <path
+                        d="M 18 2 Q 18 5.5 21.5 5.5 Q 18 5.5 18 9 Q 18 5.5 14.5 5.5 Q 18 5.5 18 2 Z"
+                        fill="currentColor"
+                        stroke="none"
+                        className={`origin-[18px_5.5px] transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+                          mode === 'dark'
+                            ? 'scale-100'
+                            : 'scale-0 group-hover:scale-100'
+                        }`}
+                      />
+                    </svg>
+                  )}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top" showArrow className="text-xs">
+                {tooltipByMode[m]}
+              </TooltipContent>
+            </Tooltip>
+          ))}
+        </TooltipProvider>
       </div>
     </div>
   )

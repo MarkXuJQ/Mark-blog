@@ -1,5 +1,11 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './tooltip'
 
 type SegmentedToggleItem<T extends string> = {
   value: T
@@ -74,35 +80,42 @@ export function SegmentedToggle<T extends string>({
         }}
       />
 
-      {items.map((item) => (
-        <button
-          key={item.value}
-          type="button"
-          role="radio"
-          aria-checked={value === item.value}
-          aria-label={item.ariaLabel}
-          className={cn(
-            'group relative z-10 inline-flex items-center justify-center rounded-full font-medium tracking-tight transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:focus-visible:ring-slate-600',
-            sizeStyles[size].button,
-            value === item.value
-              ? item.activeTextClassName ?? 'text-slate-900 dark:text-slate-100'
-              : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200',
-            buttonClassName
-          )}
-          onClick={() => onValueChange(item.value)}
-        >
-          {item.tooltip ? (
-            <span className="pointer-events-none absolute -top-9 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-950/90 px-2 py-1 text-[11px] font-medium text-white opacity-0 shadow-lg ring-1 ring-white/10 transition-opacity duration-150 group-hover:opacity-100">
-              {item.tooltip}
-              <span className="absolute left-1/2 top-full -translate-x-1/2">
-                <span className="block h-2 w-2 -translate-y-1 rotate-45 rounded-[2px] bg-slate-950/90 ring-1 ring-white/10" />
-              </span>
-            </span>
-          ) : null}
+      <TooltipProvider delayDuration={120}>
+        {items.map((item) => {
+          const button = (
+            <button
+              key={item.value}
+              type="button"
+              role="radio"
+              aria-checked={value === item.value}
+              aria-label={item.ariaLabel}
+              className={cn(
+                'group relative z-10 inline-flex items-center justify-center rounded-full font-medium tracking-tight transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:focus-visible:ring-slate-600',
+                sizeStyles[size].button,
+                value === item.value
+                  ? item.activeTextClassName ??
+                      'text-slate-900 dark:text-slate-100'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200',
+                buttonClassName
+              )}
+              onClick={() => onValueChange(item.value)}
+            >
+              {item.content}
+            </button>
+          )
 
-          {item.content}
-        </button>
-      ))}
+          if (!item.tooltip) return button
+
+          return (
+            <Tooltip key={item.value}>
+              <TooltipTrigger asChild>{button}</TooltipTrigger>
+              <TooltipContent side="top" showArrow className="text-xs">
+                {item.tooltip}
+              </TooltipContent>
+            </Tooltip>
+          )
+        })}
+      </TooltipProvider>
     </div>
   )
 }

@@ -8,6 +8,32 @@ type SetupTocOptions = {
   trackActive?: boolean
 }
 
+const HEADING_ID_ATTRIBUTE = 'data-generated-heading-id'
+
+function createHeadingId(text: string, usedIds: Record<string, number>) {
+  let base = text
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\u4e00-\u9fa5-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+
+  if (!base) base = 'heading'
+
+  const count = (usedIds[base] ?? -1) + 1
+  usedIds[base] = count
+  return count === 0 ? base : `${base}-${count}`
+}
+
+function ensureHeadingId(heading: HTMLElement, text: string, usedIds: Record<string, number>) {
+  const existingGeneratedId = heading.getAttribute(HEADING_ID_ATTRIBUTE)
+  const candidateId = heading.id || existingGeneratedId || createHeadingId(text, usedIds)
+  heading.id = candidateId
+  heading.setAttribute(HEADING_ID_ATTRIBUTE, candidateId)
+  usedIds[candidateId] = Math.max(usedIds[candidateId] ?? 0, 0)
+  return candidateId
+}
+
 export function setupToc(
   root: HTMLElement,
   onActiveChange: (id: string) => void,
@@ -34,22 +60,7 @@ export function setupToc(
     .map((h) => {
       const text = (h.textContent || '').trim()
       if (!text) return null
-      let id = h.id
-      if (!id) {
-        let base = text
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/[^\w\u4e00-\u9fa5-]/g, '')
-          .replace(/-+/g, '-')
-          .replace(/^-|-$/g, '')
-
-        if (!base) base = 'heading'
-
-        const count = (usedIds[base] ?? -1) + 1
-        usedIds[base] = count
-        id = count === 0 ? base : `${base}-${count}`
-        h.id = id
-      }
+      const id = ensureHeadingId(h, text, usedIds)
       const level = h.tagName === 'H1' ? 1 : h.tagName === 'H2' ? 2 : 3
       return { id, text, level }
     })
@@ -124,22 +135,7 @@ export function setupTocTree(
     .map((h) => {
       const text = (h.textContent || '').trim()
       if (!text) return null
-      let id = h.id
-      if (!id) {
-        let base = text
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/[^\w\u4e00-\u9fa5-]/g, '')
-          .replace(/-+/g, '-')
-          .replace(/^-|-$/g, '')
-
-        if (!base) base = 'heading'
-
-        const count = (usedIds[base] ?? -1) + 1
-        usedIds[base] = count
-        id = count === 0 ? base : `${base}-${count}`
-        h.id = id
-      }
+      const id = ensureHeadingId(h, text, usedIds)
       const level = h.tagName === 'H1' ? 1 : h.tagName === 'H2' ? 2 : 3
       return { id, text, level }
     })
@@ -165,16 +161,31 @@ export function setupTocTree(
   if (trackActive) {
     let raf = 0
     const detectActive = () => {
-      let activeId = flat[0]?.id || ''
-      for (let index = 0; index < headings.length; index += 1) {
-        const rect = headings[index].getBoundingClientRect()
-        if (rect.top - topOffset <= 0) {
-          activeId = headings[index].id
-        } else {
-          break
-        }
+      if (headings.length === 0) {
+        onActiveChange('')
+        return
       }
-      onActiveChange(activeId)
+
+      const activationLine = Math.min(
+        Math.max(topOffset, window.innerHeight * 0.28),
+        window.innerHeight * 0.45
+      )
+      let active = headings[0]
+
+      for (const heading of headings) {
+        const rect = heading.getBoundingClientRect()
+        if (rect.top <= activationLine) {
+          active = heading
+          continue
+        }
+
+        if (active === headings[0] && rect.top < window.innerHeight * 0.72) {
+          active = heading
+        }
+        break
+      }
+
+      onActiveChange(active.id)
     }
 
     const onScroll = () => {
@@ -187,9 +198,15 @@ export function setupTocTree(
 
     detectActive()
     window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    window.addEventListener('hashchange', onScroll)
+    window.addEventListener('pageshow', onScroll)
 
     destroy = () => {
       window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      window.removeEventListener('hashchange', onScroll)
+      window.removeEventListener('pageshow', onScroll)
       if (raf) {
         window.cancelAnimationFrame(raf)
         raf = 0

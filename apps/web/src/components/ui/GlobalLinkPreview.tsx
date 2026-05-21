@@ -32,6 +32,10 @@ function shouldEnableGlobalPreview() {
     return false
   }
 
+  if (document.documentElement.hasAttribute('data-simple-reading')) {
+    return false
+  }
+
   return window.matchMedia('(hover: hover) and (pointer: fine)').matches
 }
 
@@ -145,10 +149,22 @@ export function GlobalLinkPreview() {
     setEnabled(shouldEnableGlobalPreview())
 
     const media = window.matchMedia('(hover: hover) and (pointer: fine)')
-    const handleChange = () => setEnabled(media.matches)
-    media.addEventListener('change', handleChange)
+    const handleChange = () => setEnabled(shouldEnableGlobalPreview())
+    const handleSimpleReadingChange = () => {
+      setEnabled(shouldEnableGlobalPreview())
+    }
+    const observer = new MutationObserver(handleSimpleReadingChange)
 
-    return () => media.removeEventListener('change', handleChange)
+    media.addEventListener('change', handleChange)
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-simple-reading'],
+    })
+
+    return () => {
+      media.removeEventListener('change', handleChange)
+      observer.disconnect()
+    }
   }, [])
 
   useEffect(() => {
