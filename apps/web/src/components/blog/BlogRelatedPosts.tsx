@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { getImageUrl } from '@/utils/image'
+import { getOptimizedImageUrl } from '@/utils/image'
 import { cn } from '@/lib/utils'
 import type { BlogPost, BlogPostSummary } from '@/types'
 
@@ -61,7 +61,7 @@ export function BlogRelatedPosts({
                   {hasImage && post.image ? (
                     <>
                       <img
-                        src={getImageUrl(post.image)}
+                        src={getOptimizedImageUrl(post.image, 'thumbnail')}
                         alt=""
                         className={styles.image}
                         loading="lazy"

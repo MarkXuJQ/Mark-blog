@@ -1,5 +1,12 @@
 [
   {
+    "id": "qf-20260521",
+    "date": "2026-05-21",
+    "content": [
+      "调整 Cloudflare Image Transformations 图片压缩策略：文章封面改用更轻的 1200px 版本，卡片和缩略图进一步降低尺寸，并在免费转换额度用尽时通过 onerror=redirect 自动回退原图"
+    ]
+  },
+  {
     "id": "qf-20260515",
     "date": "2026-05-15",
     "content": [

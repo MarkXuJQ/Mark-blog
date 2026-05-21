@@ -40,15 +40,32 @@ const styles = {
     'dark:bg-blue-400'
   ),
   tocList: 'space-y-1 list-none pl-0',
+  tocItemBase: cn(
+    'relative block overflow-hidden rounded-md py-1 text-sm leading-5 truncate',
+    'cursor-pointer transition-[color,background-color,transform] duration-150'
+  ),
   tocItem: cn(
-    'relative block overflow-hidden rounded-md px-2 py-1 text-sm leading-5 truncate',
-    'text-[var(--text-secondary)] hover:text-blue-600 cursor-pointer transition-colors',
-    'dark:hover:text-blue-400'
+    'text-[var(--text-secondary)] hover:bg-slate-100/65 hover:text-blue-600',
+    'dark:hover:bg-slate-800/50 dark:hover:text-blue-400'
   ),
   tocItemActive: cn(
-    'relative text-blue-600 font-semibold',
-    'dark:text-blue-400'
+    'bg-blue-50/80 text-blue-600 font-semibold',
+    'dark:bg-blue-950/30 dark:text-blue-400'
   ),
+  tocLevel1: 'px-2 font-semibold',
+  tocLevel2: 'px-2 font-medium',
+  tocLevel3: 'px-2',
+  tocGroup:
+    'relative mt-1 list-none rounded-lg py-0.5',
+  tocGroupActive:
+    'bg-slate-50/70 dark:bg-slate-900/35',
+  tocChildList: cn(
+    'relative mt-1 space-y-0.5 list-none pl-4',
+    'before:absolute before:left-2 before:top-1 before:bottom-1 before:w-px before:rounded-full',
+    'before:bg-slate-200 dark:before:bg-slate-700/80'
+  ),
+  tocChildListActive:
+    'before:bg-blue-300 dark:before:bg-blue-500/70',
 }
 
 function handleLinkClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
@@ -133,30 +150,65 @@ function TocList({
     setIndicatorHeight(nextHeight)
   }, [activeId, toc, title])
 
+  function containsActive(node: Node): boolean {
+    return node.id === activeId || node.children.some(containsActive)
+  }
+
+  function linkClassName(node: Node) {
+    return cn(
+      styles.tocItemBase,
+      node.id === activeId ? styles.tocItemActive : styles.tocItem,
+      node.level <= 1 && styles.tocLevel1,
+      node.level === 2 && styles.tocLevel2,
+      node.level >= 3 && styles.tocLevel3
+    )
+  }
+
   function render(nodes: Node[]) {
-    return nodes.map((n) => (
-      <li key={n.id} className="list-none">
-        <a
-          href={`#${n.id}`}
-          onClick={(e) => {
-            onItemClick(n.id)
-            handleLinkClick(e, n.id)
-          }}
-          data-toc-id={n.id}
+    return nodes.map((n) => {
+      const hasChildren = n.children.length > 0
+      const isGroupedSection = n.level === 2 && hasChildren
+      const isActiveGroup = containsActive(n)
+
+      return (
+        <li
+          key={n.id}
           className={cn(
-            n.id === activeId ? styles.tocItemActive : styles.tocItem
+            isGroupedSection ? styles.tocGroup : 'list-none',
+            isGroupedSection && isActiveGroup && styles.tocGroupActive
           )}
-          style={{ paddingLeft: `${(n.level - 1) * 14}px` }}
         >
-          {n.text}
-        </a>
-        {n.children.length > 0 && (
-          <ol className="mt-1 space-y-1 list-none pl-0">
-            {render(n.children)}
-          </ol>
-        )}
-      </li>
-    ))
+          <a
+            href={`#${n.id}`}
+            onClick={(e) => {
+              onItemClick(n.id)
+              handleLinkClick(e, n.id)
+            }}
+            data-toc-id={n.id}
+            className={linkClassName(n)}
+            style={
+              !isGroupedSection
+                ? { marginLeft: `${Math.max(n.level - 2, 0) * 12}px` }
+                : undefined
+            }
+          >
+            {n.text}
+          </a>
+          {n.children.length > 0 && (
+            <ol
+              className={cn(
+                isGroupedSection
+                  ? styles.tocChildList
+                  : 'mt-1 space-y-1 list-none pl-0',
+                isGroupedSection && isActiveGroup && styles.tocChildListActive
+              )}
+            >
+              {render(n.children)}
+            </ol>
+          )}
+        </li>
+      )
+    })
   }
 
   return (
@@ -182,8 +234,9 @@ function TocList({
               }}
               data-toc-id="page-top"
               className={cn(
+                styles.tocItemBase,
                 activeId === 'page-top' ? styles.tocItemActive : styles.tocItem,
-                'font-semibold'
+                styles.tocLevel1
               )}
             >
               {title}

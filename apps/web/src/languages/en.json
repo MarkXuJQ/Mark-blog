@@ -46,8 +46,8 @@
   },
   "home": {
     "title": "Welcome to <0>Mark</0>'s Backyard",
-    "intro": "No need to be too formal here. Come sit for a while: tech notes, life bits, and small projects growing in public.",
-    "description": "Slowly updated, slowly polished: code, films, wandering around, and a few ordinary happy things worth keeping.",
+    "intro": "No need to be formal here. Come sit for a while: I'll update my tech notes📒, life bits, and small projects growing in public.",
+    "description": "Slowly updated and polished: code, films, wandering around, a few ordinary happy things worth keeping, and some thoughts not that deep🤔.",
     "readingTime": "Reading time: {{minutes}} min",
     "github": "My GitHub"
   },

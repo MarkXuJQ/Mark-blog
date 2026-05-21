@@ -34,7 +34,7 @@ import {
 } from '@/lib/content'
 import { countWords } from '@/utils/readingTime'
 import { cn } from '@/lib/utils'
-import { getImageUrl, rewriteHtmlImageSrc } from '@/utils/image'
+import { getImageUrl, getOptimizedImageUrl, rewriteHtmlImageSrc } from '@/utils/image'
 
 export function BlogPost() {
   const { slug } = useParams()
@@ -130,7 +130,10 @@ export function BlogPost() {
   }
 
   const words = countWords(post.content)
-  const coverImage = post.image ? getImageUrl(post.image) : ''
+  const originalCoverImage = post.image ? getImageUrl(post.image) : ''
+  const coverImage = originalCoverImage
+    ? getOptimizedImageUrl(originalCoverImage, 'cover')
+    : ''
   const hasCoverImage = Boolean(coverImage)
   const siteUrl = getSiteUrl()
   const blogUrl = toAbsoluteUrl('/blog', siteUrl)
@@ -139,7 +142,7 @@ export function BlogPost() {
   const postUrl = toAbsoluteUrl(postPath, siteUrl)
   const commentPath = getSharedPostCommentPath(post)
   const imageSource =
-    coverImage || extractFirstImageFromHtml(post.content) || DEFAULT_IMAGE
+    originalCoverImage || extractFirstImageFromHtml(post.content) || DEFAULT_IMAGE
   const postImageUrl = toAbsoluteUrl(imageSource, siteUrl)
   const publishedAt = toIsoDateTime(post.date)
   const modifiedAt = toIsoDateTime(post.updated || post.date)
@@ -209,6 +212,7 @@ export function BlogPost() {
                 <img
                   src={coverImage}
                   alt={post.title}
+                  data-original-src={originalCoverImage}
                   loading="eager"
                   decoding="async"
                   fetchPriority="high"
