@@ -1,8 +1,10 @@
 import { useState, useMemo, useEffect } from 'react'
+import { Link, useOutletContext } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BlogFilter } from '@/components/blog/BlogFilter'
 import { BlogPostCard } from '@/components/blog/BlogPostCard'
 import { SearchStatus } from '@/components/search/SearchStatus'
+import { SearchTriggerInput } from '@/components/search/SearchTriggerInput'
 import { Seo } from '@/components/seo/Seo'
 import {
   buildBreadcrumbSchema,
@@ -12,11 +14,14 @@ import {
 } from '@/components/seo/shared'
 import { Pagination } from '@/components/ui/Pagination'
 import { useBlogPosts } from '@/hooks/useBlogPosts'
+import type { BlogListOutletContext } from '@/layouts/BlogListLayout'
+import type { BlogPostSummary } from '@/types'
 
 const ITEMS_PER_PAGE = 10
 
 export function Blog() {
   const { t } = useTranslation()
+  const { simpleMode = false } = useOutletContext<BlogListOutletContext>()
   const siteUrl = getSiteUrl()
   const blogUrl = toAbsoluteUrl('/blog', siteUrl)
   const pageTitle = t('blog.title')
@@ -74,9 +79,21 @@ export function Blog() {
         noindex={Boolean(searchQuery)}
         jsonLd={[collectionPageSchema, breadcrumbSchema]}
       />
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div
+        className={
+          simpleMode
+            ? 'mb-8 flex flex-col gap-5'
+            : 'mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'
+        }
+      >
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+          <h1
+            className={
+              simpleMode
+                ? 'text-3xl font-bold text-[var(--text-primary)]'
+                : 'text-3xl font-bold text-slate-900 dark:text-slate-100'
+            }
+          >
             {pageTitle}
           </h1>
           <SearchStatus
@@ -86,20 +103,50 @@ export function Blog() {
           />
         </div>
 
-        <BlogFilter
-          allCategories={allCategories}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-          sortBy={sortBy}
-          onToggleSort={toggleSort}
-        />
+        {simpleMode ? (
+          <div className="flex flex-col gap-4">
+            <SearchTriggerInput
+              placeholder={t('blog.sidebar.search.placeholder')}
+              query={searchQuery}
+            />
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+              <Link
+                to="/archive"
+                className="font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+              >
+                {t('blog.sidebar.archive.title')}
+              </Link>
+              <BlogFilter
+                allCategories={allCategories}
+                selectedCategory={selectedCategory}
+                onSelectCategory={setSelectedCategory}
+                sortBy={sortBy}
+                onToggleSort={toggleSort}
+                simple
+                hideSort
+              />
+            </div>
+          </div>
+        ) : (
+          <BlogFilter
+            allCategories={allCategories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+            sortBy={sortBy}
+            onToggleSort={toggleSort}
+          />
+        )}
       </div>
 
-      <div className="space-y-6">
+      <div className={simpleMode ? 'space-y-0' : 'space-y-6'}>
         {currentPosts.length > 0 ? (
           <>
             {currentPosts.map((post) => (
-              <BlogPostCard key={post.id} post={post} />
+              simpleMode ? (
+                <SimpleBlogPostItem key={post.id} post={post} />
+              ) : (
+                <BlogPostCard key={post.id} post={post} />
+              )
             ))}
 
             <Pagination
@@ -115,5 +162,22 @@ export function Blog() {
         )}
       </div>
     </>
+  )
+}
+
+function SimpleBlogPostItem({ post }: { post: BlogPostSummary }) {
+  return (
+    <article className="py-6 first:pt-0">
+      <Link to={`/blog/${post.slug}`} className="group block">
+        <h2 className="text-2xl font-bold leading-snug text-[var(--text-primary)] transition-colors group-hover:text-[color-mix(in_srgb,var(--brand-400)_72%,var(--text-primary)_28%)]">
+          {post.title}
+        </h2>
+        {post.summary ? (
+          <p className="mt-3 text-[0.98rem] leading-7 text-[var(--text-secondary)]">
+            {post.summary}
+          </p>
+        ) : null}
+      </Link>
+    </article>
   )
 }

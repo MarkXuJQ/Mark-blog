@@ -1,5 +1,42 @@
 [
   {
+    "date": "2026-05-22",
+    "title": "Blog Reading and Homepage Experience Upgrade",
+    "description": "Completed the simplified blog mode replacement and the second-pass homepage polish, making reading, search, and content entry points calmer and clearer.",
+    "categories": [
+      {
+        "title": "Simplified Blog Mode",
+        "items": [
+          {
+            "id": "blog-20260522-1",
+            "content": "Added a persistent, draggable rich/simple reading mode switch for article pages, with simple mode focused on the article body, TOC, and comments",
+            "date": "2026-05-22"
+          },
+          {
+            "id": "blog-20260522-2",
+            "content": "Extended simple mode to the blog index, keeping only search, archive access, category filtering, titles, and summaries for a quieter reading entry",
+            "date": "2026-05-22"
+          },
+          {
+            "id": "blog-20260522-3",
+            "content": "Improved TOC active tracking, code block rendering, image preloading, and Cloudflare transformed-image loading for a steadier article experience",
+            "date": "2026-05-22"
+          }
+        ]
+      },
+      {
+        "title": "Homepage V2 Polish",
+        "items": [
+          {
+            "id": "home-20260522-1",
+            "content": "Completed the second-pass homepage polish, refining content structure, visual hierarchy, and interaction rhythm so the homepage feels more mature as the site entry",
+            "date": "2026-05-22"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-04-18",
     "title": "Movie Page Polished and Repaired in a New Pass",
     "description": "The movie page received another focused round of cleanup across information density, visual hierarchy, and responsive behavior, resulting in a calmer structure and more reliable layout scaling.",

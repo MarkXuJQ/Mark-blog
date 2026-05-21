@@ -1,7 +1,13 @@
 import { ArrowUpCircle, MessageSquareText } from 'lucide-react'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Card } from '../ui/Card'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip'
 import { cn } from '@/lib/utils'
 import '../../i18n'
 import { X } from 'lucide-react'
@@ -15,21 +21,28 @@ interface TocItem {
 interface BlogTocCardProps {
   toc?: TocItem[]
   title?: string
+  activeId?: string
+  variant?: 'card' | 'plain'
 }
 interface BlogTocDrawerProps {
   toc?: TocItem[]
   title?: string
+  activeId?: string
   open: boolean
   onClose: () => void
 }
 
 const styles = {
-  tocCard: 'p-4',
+  tocCard: 'overflow-visible p-4',
+  tocPlainCard:
+    'border-0 bg-transparent p-0 shadow-none backdrop-blur-0 dark:bg-transparent',
   tocHeader:
     'mb-3 flex items-center justify-between gap-2 text-sm font-semibold text-[var(--text-secondary)]',
   tocActions: 'flex items-center gap-2 text-[var(--text-disabled)]',
-  tocActionLink:
-    'transition-colors hover:text-[var(--text-primary)]',
+  tocActionLink: cn(
+    'inline-flex transition-colors hover:text-[var(--text-primary)]',
+    'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60'
+  ),
   tocBody: 'relative',
   tocRail: 'relative pl-4',
   tocRailLine:
@@ -40,31 +53,64 @@ const styles = {
     'dark:bg-blue-400'
   ),
   tocList: 'space-y-1 list-none pl-0',
+  tocItemBase: cn(
+    'relative block overflow-hidden rounded-md py-1 text-sm leading-5 truncate',
+    'cursor-pointer transition-[color,background-color,transform] duration-150'
+  ),
   tocItem: cn(
-    'relative block overflow-hidden rounded-md px-2 py-1 text-sm leading-5 truncate',
-    'text-[var(--text-secondary)] hover:text-blue-600 cursor-pointer transition-colors',
-    'dark:hover:text-blue-400'
+    'text-[var(--text-secondary)] hover:bg-slate-100/65 hover:text-blue-600',
+    'dark:hover:bg-slate-800/50 dark:hover:text-blue-400'
   ),
   tocItemActive: cn(
-    'relative text-blue-600 font-semibold',
-    'dark:text-blue-400'
+    'bg-blue-50/80 text-blue-600 font-semibold',
+    'dark:bg-blue-950/30 dark:text-blue-400'
   ),
+  tocLevel1: 'px-2 font-semibold',
+  tocLevel2: 'px-2 font-medium',
+  tocLevel3: 'px-2',
+  tocGroup:
+    'relative mt-1 list-none rounded-lg py-0.5',
+  tocGroupActive:
+    'bg-slate-50/70 dark:bg-slate-900/35',
+  tocChildList: cn(
+    'relative mt-1 space-y-0.5 list-none pl-4',
+    'before:absolute before:left-2 before:top-1 before:bottom-1 before:w-px before:rounded-full',
+    'before:bg-slate-200 dark:before:bg-slate-700/80'
+  ),
+  tocChildListActive:
+    'before:bg-blue-300 dark:before:bg-blue-500/70',
 }
 
-function handleLinkClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
+function handleLinkClick(
+  e: React.MouseEvent<HTMLAnchorElement>,
+  id: string,
+  text?: string
+) {
   e.preventDefault()
   if (id === 'page-top') {
     window.scrollTo({ top: 0, behavior: 'smooth' })
     window.history.pushState({}, '', window.location.pathname)
     return
   }
-  const element = document.getElementById(id)
+  const element = document.getElementById(id) || findHeadingByText(text)
   if (element) {
     const top = element.getBoundingClientRect().top + window.scrollY - 100 // Offset for sticky header
     window.scrollTo({ top, behavior: 'smooth' })
     // Update URL hash without scrolling
     window.history.pushState({}, '', `#${id}`)
   }
+}
+
+function findHeadingByText(text?: string) {
+  if (!text) return null
+  const normalized = text.trim()
+  if (!normalized) return null
+
+  return (
+    Array.from(document.querySelectorAll<HTMLElement>('article h1, article h2, article h3')).find(
+      (heading) => heading.textContent?.trim() === normalized
+    ) ?? null
+  )
 }
 
 function TocList({
@@ -133,30 +179,65 @@ function TocList({
     setIndicatorHeight(nextHeight)
   }, [activeId, toc, title])
 
+  function containsActive(node: Node): boolean {
+    return node.id === activeId || node.children.some(containsActive)
+  }
+
+  function linkClassName(node: Node) {
+    return cn(
+      styles.tocItemBase,
+      node.id === activeId ? styles.tocItemActive : styles.tocItem,
+      node.level <= 1 && styles.tocLevel1,
+      node.level === 2 && styles.tocLevel2,
+      node.level >= 3 && styles.tocLevel3
+    )
+  }
+
   function render(nodes: Node[]) {
-    return nodes.map((n) => (
-      <li key={n.id} className="list-none">
-        <a
-          href={`#${n.id}`}
-          onClick={(e) => {
-            onItemClick(n.id)
-            handleLinkClick(e, n.id)
-          }}
-          data-toc-id={n.id}
+    return nodes.map((n) => {
+      const hasChildren = n.children.length > 0
+      const isGroupedSection = n.level === 2 && hasChildren
+      const isActiveGroup = containsActive(n)
+
+      return (
+        <li
+          key={n.id}
           className={cn(
-            n.id === activeId ? styles.tocItemActive : styles.tocItem
+            isGroupedSection ? styles.tocGroup : 'list-none',
+            isGroupedSection && isActiveGroup && styles.tocGroupActive
           )}
-          style={{ paddingLeft: `${(n.level - 1) * 14}px` }}
         >
-          {n.text}
-        </a>
-        {n.children.length > 0 && (
-          <ol className="mt-1 space-y-1 list-none pl-0">
-            {render(n.children)}
-          </ol>
-        )}
-      </li>
-    ))
+          <a
+            href={`#${n.id}`}
+              onClick={(e) => {
+                onItemClick(n.id)
+                handleLinkClick(e, n.id, n.text)
+              }}
+            data-toc-id={n.id}
+            className={linkClassName(n)}
+            style={
+              !isGroupedSection
+                ? { marginLeft: `${Math.max(n.level - 2, 0) * 12}px` }
+                : undefined
+            }
+          >
+            {n.text}
+          </a>
+          {n.children.length > 0 && (
+            <ol
+              className={cn(
+                isGroupedSection
+                  ? styles.tocChildList
+                  : 'mt-1 space-y-1 list-none pl-0',
+                isGroupedSection && isActiveGroup && styles.tocChildListActive
+              )}
+            >
+              {render(n.children)}
+            </ol>
+          )}
+        </li>
+      )
+    })
   }
 
   return (
@@ -178,12 +259,13 @@ function TocList({
               href="#page-top"
               onClick={(e) => {
                 onItemClick('page-top')
-                handleLinkClick(e, 'page-top')
+                handleLinkClick(e, 'page-top', title)
               }}
               data-toc-id="page-top"
               className={cn(
+                styles.tocItemBase,
                 activeId === 'page-top' ? styles.tocItemActive : styles.tocItem,
-                'font-semibold'
+                styles.tocLevel1
               )}
             >
               {title}
@@ -196,78 +278,59 @@ function TocList({
   )
 }
 
-function useActiveTocId(toc: TocItem[]) {
-  const [activeId, setActiveId] = useState<string>('page-top')
-  const manualUntilRef = useRef<number>(0)
-
-  const setActiveIdManual = (id: string) => {
-    manualUntilRef.current = Date.now() + 800
-    setActiveId(id)
-  }
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (Date.now() < manualUntilRef.current) return
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id)
-          }
-        })
-      },
-      {
-        rootMargin: '-100px 0px -66% 0px',
-        threshold: 0,
-      }
-    )
-
-    // Observe the main title or top of the article
-    const articleTitle = document.querySelector('h1')
-    if (articleTitle) {
-      // Ensure the title has an ID if we want to track it
-      if (!articleTitle.id) articleTitle.id = 'page-top'
-      observer.observe(articleTitle)
-    }
-
-    toc.forEach((item) => {
-      const element = document.getElementById(item.id)
-      if (element) observer.observe(element)
-    })
-
-    return () => observer.disconnect()
-  }, [toc])
-
-  return { activeId, setActiveIdManual }
-}
-
-export function BlogTocCard({ toc = [], title }: BlogTocCardProps) {
+export function BlogTocCard({
+  toc = [],
+  title,
+  activeId = 'page-top',
+  variant = 'card',
+}: BlogTocCardProps) {
   const { t } = useTranslation()
-  const { activeId, setActiveIdManual } = useActiveTocId(toc)
 
   return (
-    <Card className={styles.tocCard}>
+    <Card
+      className={cn(
+        styles.tocCard,
+        variant === 'plain' && styles.tocPlainCard
+      )}
+    >
       <div className={styles.tocHeader}>
         <span>{t('blog.toc.title')}</span>
-        <div className={styles.tocActions}>
-          <a
-            href="#page-top"
-            aria-label={t('blog.toc.backToTop')}
-            className={styles.tocActionLink}
-            onClick={(e) => handleLinkClick(e, 'page-top')}
-          >
-            <ArrowUpCircle size={18} />
-          </a>
-          <a
-            href="#twikoo"
-            aria-label={t('blog.toc.comments')}
-            className={styles.tocActionLink}
-            onClick={(e) => handleLinkClick(e, 'twikoo')}
-          >
-            <MessageSquareText size={18} />
-          </a>
-        </div>
+        {variant === 'card' ? (
+          <div className={styles.tocActions}>
+            <TooltipProvider delayDuration={120}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href="#page-top"
+                    aria-label={t('blog.toc.backToTop')}
+                    className={styles.tocActionLink}
+                    onClick={(e) => handleLinkClick(e, 'page-top')}
+                  >
+                    <ArrowUpCircle size={18} />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent side="top" showArrow className="text-xs">
+                  {t('blog.toc.backToTop')}
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href="#twikoo"
+                    aria-label={t('blog.toc.comments')}
+                    className={styles.tocActionLink}
+                    onClick={(e) => handleLinkClick(e, 'twikoo')}
+                  >
+                    <MessageSquareText size={18} />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent side="top" showArrow className="text-xs">
+                  {t('blog.toc.comments')}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        ) : null}
       </div>
       <div className={styles.tocBody}>
         <div className={styles.tocList}>
@@ -279,7 +342,7 @@ export function BlogTocCard({ toc = [], title }: BlogTocCardProps) {
             <TocList
               toc={toc}
               activeId={activeId}
-              onItemClick={setActiveIdManual}
+              onItemClick={() => undefined}
               title={title}
             />
           )}
@@ -292,11 +355,11 @@ export function BlogTocCard({ toc = [], title }: BlogTocCardProps) {
 export function BlogTocDrawer({
   toc = [],
   title,
+  activeId = 'page-top',
   open,
   onClose,
 }: BlogTocDrawerProps) {
   const { t } = useTranslation()
-  const { activeId, setActiveIdManual } = useActiveTocId(toc)
 
   return (
     <>
@@ -338,7 +401,7 @@ export function BlogTocDrawer({
             <TocList
               toc={toc}
               activeId={activeId}
-              onItemClick={setActiveIdManual}
+              onItemClick={() => undefined}
               title={title}
             />
           )}

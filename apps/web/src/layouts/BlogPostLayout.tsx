@@ -1,13 +1,21 @@
 import { Outlet, useLocation, useParams } from 'react-router-dom'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { BlogRelatedPosts } from '@/components/blog/BlogRelatedPosts'
 import { BlogTocCard, BlogTocDrawer } from '@/components/blog/BlogTocCard'
 import { LeftSidebarWidget } from '@/components/blog/BlogWidgets'
+import { ReaderModeToggle } from '@/components/blog/ReaderModeToggle'
 import { useToc } from '@/hooks/useToc'
 import { getAllPostSummaries } from '@/lib/content'
 import { getPostBySlug } from '@/lib/content'
+import { cn } from '@/lib/utils'
+
+export type BlogPostOutletContext = {
+  simpleMode: boolean
+}
+
+const READER_MODE_STORAGE_KEY = 'blog-reader-mode'
 
 export function BlogPostLayout() {
   const { t, i18n } = useTranslation()
@@ -15,13 +23,18 @@ export function BlogPostLayout() {
   const { slug } = useParams()
   const [isMobileTocOpen, setIsMobileTocOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const [simpleMode, setSimpleMode] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return window.localStorage.getItem(READER_MODE_STORAGE_KEY) === 'simple'
+  })
 
   const mainRef = useRef<HTMLElement | null>(null)
-  const { toc } = useToc(
+  const { toc, activeId } = useToc(
     mainRef as React.RefObject<HTMLElement>,
     pathname + hash,
     {
-      trackActive: false,
+      trackActive: true,
+      refreshKey: simpleMode,
     }
   )
   const postLanguage = resolvePostLanguage(slug, i18n.language)
@@ -29,6 +42,10 @@ export function BlogPostLayout() {
   const currentPost = slug
     ? getPostBySlug(slug, postLanguage, { fallback: false }) ?? null
     : null
+  const outletContext = useMemo(
+    () => ({ simpleMode }) satisfies BlogPostOutletContext,
+    [simpleMode]
+  )
 
   useEffect(() => {
     setIsMobileTocOpen(false)
@@ -38,24 +55,67 @@ export function BlogPostLayout() {
     setIsMounted(true)
   }, [])
 
+  useEffect(() => {
+    document.documentElement.toggleAttribute(
+      'data-simple-reading',
+      simpleMode
+    )
+    window.localStorage.setItem(
+      READER_MODE_STORAGE_KEY,
+      simpleMode ? 'simple' : 'rich'
+    )
+
+    return () => {
+      document.documentElement.removeAttribute('data-simple-reading')
+    }
+  }, [simpleMode])
+
   return (
     <div className={styles.container}>
       <span id="page-top" />
-      <div className={styles.layoutGrid}>
-        <aside className={styles.leftSidebar}>
+      <div
+        className={cn(
+          styles.layoutGrid,
+          simpleMode && styles.simpleLayoutGrid
+        )}
+      >
+        <aside className={cn(styles.leftSidebar, simpleMode && '!hidden')}>
           <div className={styles.stickyWrapper}>
             <LeftSidebarWidget />
           </div>
         </aside>
 
-        <main id="main-content" ref={mainRef} className={styles.mainContent}>
-          <Outlet />
+        <main
+          id="main-content"
+          ref={mainRef}
+          className={cn(
+            styles.mainContent,
+            simpleMode && styles.simpleMainContent
+          )}
+        >
+          <Outlet context={outletContext} />
         </main>
 
-        <aside className={styles.rightSidebar}>
-          <div className={styles.stickyWrapper}>
-            <BlogTocCard toc={toc} />
-            <BlogRelatedPosts currentPost={currentPost} posts={posts} />
+        <aside
+          className={cn(
+            styles.rightSidebar,
+            simpleMode && styles.simpleRightSidebar
+          )}
+        >
+          <div
+            className={cn(
+              styles.stickyWrapper,
+              simpleMode && styles.simpleStickyWrapper
+            )}
+          >
+            <BlogTocCard
+              toc={toc}
+              activeId={activeId}
+              variant={simpleMode ? 'plain' : 'card'}
+            />
+            {!simpleMode && (
+              <BlogRelatedPosts currentPost={currentPost} posts={posts} />
+            )}
           </div>
         </aside>
       </div>
@@ -63,6 +123,11 @@ export function BlogPostLayout() {
       {isMounted
         ? createPortal(
             <>
+              <ReaderModeToggle
+                simpleMode={simpleMode}
+                onToggle={() => setSimpleMode((prev) => !prev)}
+              />
+
               <button
                 type="button"
                 onClick={() => setIsMobileTocOpen((prev) => !prev)}
@@ -86,6 +151,7 @@ export function BlogPostLayout() {
 
               <BlogTocDrawer
                 toc={toc}
+                activeId={activeId}
                 open={isMobileTocOpen}
                 onClose={() => setIsMobileTocOpen(false)}
               />
@@ -100,12 +166,18 @@ export function BlogPostLayout() {
 const styles = {
   container: 'mx-auto flex w-full max-w-[1400px] flex-1 flex-col px-4',
   layoutGrid: 'flex flex-1 items-stretch justify-center gap-8',
+  simpleLayoutGrid: 'gap-10 xl:gap-12',
   leftSidebar: 'hidden w-[280px] shrink-0 lg:hidden xl:block',
   rightSidebar: 'hidden w-[280px] shrink-0 lg:block',
+  simpleRightSidebar: 'w-[240px] xl:w-[260px]',
   stickyWrapper:
     'sticky top-[86px] h-[calc(100vh-8rem)] space-y-6 overflow-y-auto pb-10 scrollbar-hide',
+  simpleStickyWrapper:
+    'h-[calc(100vh-7rem)] space-y-0 overflow-y-auto rounded-none bg-transparent pb-8',
   mainContent:
     'flex w-full min-w-0 max-w-[640px] flex-1 flex-col md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px]',
+  simpleMainContent:
+    'max-w-[720px] md:max-w-[760px] lg:max-w-[780px] xl:max-w-[820px]',
 }
 
 function resolvePostLanguage(slug: string | undefined, fallback: string) {

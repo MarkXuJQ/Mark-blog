@@ -7,7 +7,7 @@ import { getTwikooApi, loadTwikooScript } from '@/components/comments/twikooLoad
 import { Seo } from '@/components/seo/Seo'
 import { Dropdown, DropdownContent, DropdownTrigger } from '@/components/ui/Dropdown'
 import { useLightbox } from '@/components/ui/Lightbox'
-import { getImageUrl } from '@/utils/image'
+import { getImageUrl, getOptimizedImageUrl } from '@/utils/image'
 import { cn } from '@/lib/utils'
 
 type ImageInput = string | { src: string; alt?: string }
@@ -24,7 +24,13 @@ type RawLifePost = {
 }
 
 type LifePost = Omit<RawLifePost, 'image' | 'images'> & {
-  images: string[]
+  images: LifeImage[]
+}
+
+type LifeImage = {
+  original: string
+  preview: string
+  thumbnail: string
 }
 
 const lifeYearFiles = import.meta.glob<{ default: RawLifePost[] }>(
@@ -37,6 +43,15 @@ function normalizeImageSrc(input: ImageInput): string {
   const trimmed = src.trim().replace(/[)）]+$/, '')
   if (/^https?:\/\//i.test(trimmed)) return trimmed
   return getImageUrl(trimmed)
+}
+
+function normalizeLifeImage(input: ImageInput): LifeImage {
+  const original = normalizeImageSrc(input)
+  return {
+    original,
+    preview: getOptimizedImageUrl(original, 'preview'),
+    thumbnail: getOptimizedImageUrl(original, 'thumbnail'),
+  }
 }
 
 function parseCityFromMeta(meta: string): string | undefined {
@@ -57,7 +72,7 @@ export function Life() {
     const normalized: LifePost[] = merged
       .map((post) => {
         const rawImages = Array.isArray(post.images) ? post.images : post.image ? [post.image] : []
-        const images = rawImages.map(normalizeImageSrc)
+        const images = rawImages.map(normalizeLifeImage)
         const city = post.city ?? parseCityFromMeta(post.meta)
         return { ...post, images, city }
       })
@@ -115,7 +130,8 @@ export function Life() {
   const loadedImagesRef = useRef<Set<string>>(new Set())
   const imageSwitchRequestRef = useRef(0)
   const [, forceRerender] = useState(0)
-  const currentImageSrc = activeImages[activeImageIndex] ?? activeImages[0] ?? ''
+  const currentImage = activeImages[activeImageIndex] ?? activeImages[0] ?? null
+  const currentImageSrc = currentImage?.preview ?? ''
 
   const handleCardMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     const target = event.currentTarget
@@ -176,8 +192,8 @@ export function Life() {
   useEffect(() => {
     if (!activePost) return
     if (activeImages.length === 0) return
-    const next = activeImages[(activeImageIndex + 1) % activeImages.length]
-    const prev = activeImages[(activeImageIndex - 1 + activeImages.length) % activeImages.length]
+    const next = activeImages[(activeImageIndex + 1) % activeImages.length]?.preview
+    const prev = activeImages[(activeImageIndex - 1 + activeImages.length) % activeImages.length]?.preview
     for (const src of [next, prev]) {
       if (!src) continue
       const img = new Image()
@@ -203,7 +219,7 @@ export function Life() {
     if (activeImages.length === 0) return
     if (!options?.force && nextIndex === activeImageIndex) return
 
-    const nextSrc = activeImages[nextIndex]
+    const nextSrc = activeImages[nextIndex]?.preview
     if (!nextSrc) return
 
     if (loadedImagesRef.current.has(nextSrc)) {
@@ -505,7 +521,7 @@ export function Life() {
                     </div>
                   ) : (
                     <img
-                      src={post.images[0]}
+                      src={post.images[0]?.thumbnail}
                       alt={post.title}
                       className="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                       loading="lazy"
@@ -657,7 +673,7 @@ export function Life() {
                             onClick={() =>
                               openLightbox(
                                 activeImages.map((img) => ({
-                                  src: img,
+                                  src: img.original,
                                   alt: activePost.title,
                                   description: activePost.meta,
                                 })),
@@ -693,7 +709,7 @@ export function Life() {
                           onClick={() =>
                             openLightbox(
                               activeImages.map((img) => ({
-                                src: img,
+                                src: img.original,
                                 alt: activePost.title,
                                 description: activePost.meta,
                               })),
@@ -709,9 +725,9 @@ export function Life() {
 
                   {activeImages.length > 1 && (
                     <div className="absolute bottom-3 left-3 right-3 z-[20] flex gap-2 overflow-x-auto rounded-xl bg-black/25 p-2 backdrop-blur">
-                      {activeImages.map((src, idx) => (
+                      {activeImages.map((image, idx) => (
                         <button
-                          key={`${src}-${idx}`}
+                          key={`${image.original}-${idx}`}
                           type="button"
                           onClick={() => switchToImage(idx)}
                           className={cn(
@@ -723,7 +739,7 @@ export function Life() {
                           aria-label={`切换到第 ${idx + 1} 张`}
                         >
                           <img
-                            src={src}
+                            src={image.thumbnail}
                             alt=""
                             className="h-full w-full object-cover"
                             loading="lazy"

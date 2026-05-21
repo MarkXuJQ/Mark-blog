@@ -4,9 +4,9 @@ import { setupTocTree } from '@/lib/toc'
 export function useToc(
   mainRef: React.RefObject<HTMLElement>,
   pathname: string,
-  options: { trackActive?: boolean } = {}
+  options: { trackActive?: boolean; refreshKey?: string | number | boolean } = {}
 ) {
-  const { trackActive = true } = options
+  const { trackActive = true, refreshKey = '' } = options
   const isBlogPost = pathname.startsWith('/blog/')
   const [toc, setToc] = useState<
     Array<{ id: string; text: string; level: number }>
@@ -56,6 +56,7 @@ export function useToc(
       }
       setToc(flat)
       cleanup = destroy
+      attempts = 0
       return true
     }
 
@@ -63,21 +64,11 @@ export function useToc(
       if (raf) return
       raf = window.requestAnimationFrame(() => {
         raf = 0
-        if (buildToc()) {
-          if (observer) {
-            observer.disconnect()
-            observer = undefined
-          }
-          return
-        }
+        if (buildToc()) return
         attempts += 1
         if (attempts >= maxAttempts) {
           setToc([])
           setActiveId('')
-          if (observer) {
-            observer.disconnect()
-            observer = undefined
-          }
         }
       })
     }
@@ -99,7 +90,7 @@ export function useToc(
     return () => {
       teardown()
     }
-  }, [pathname, mainRef, isBlogPost, trackActive]) // Use pathname instead of isBlogPost to refresh on route change
+  }, [pathname, mainRef, isBlogPost, trackActive, refreshKey]) // Use pathname instead of isBlogPost to refresh on route change
 
   return { toc, activeId }
 }

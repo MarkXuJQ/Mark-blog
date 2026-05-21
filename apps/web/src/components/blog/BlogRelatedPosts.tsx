@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { getImageUrl } from '@/utils/image'
+import { getOptimizedImageUrl } from '@/utils/image'
 import { cn } from '@/lib/utils'
 import type { BlogPost, BlogPostSummary } from '@/types'
 
@@ -61,7 +61,7 @@ export function BlogRelatedPosts({
                   {hasImage && post.image ? (
                     <>
                       <img
-                        src={getImageUrl(post.image)}
+                        src={getOptimizedImageUrl(post.image, 'thumbnail')}
                         alt=""
                         className={styles.image}
                         loading="lazy"
@@ -100,25 +100,25 @@ const styles = {
   link: 'group block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--page-background)]',
   card: cn(
     'relative grid min-h-[74px] grid-cols-[4.25rem_1fr] items-stretch overflow-hidden rounded-xl border',
-    'border-[var(--border-color)] bg-[color-mix(in_srgb,var(--surface-card)_82%,transparent)]',
+    'border-slate-200/70 bg-white/80',
     'shadow-[0_12px_28px_-24px_rgba(15,23,42,0.45)] backdrop-blur-sm',
     'transition-[background-color,border-color,box-shadow,transform] duration-200 ease-out',
-    'group-hover:-translate-y-0.5 group-hover:border-[color-mix(in_srgb,var(--brand-400)_42%,var(--border-color))]',
-    'group-hover:bg-[color-mix(in_srgb,var(--surface-card)_92%,var(--brand-400)_8%)]',
+    'group-hover:-translate-y-0.5 group-hover:border-slate-200 group-hover:bg-white/90',
     'group-hover:shadow-[0_18px_34px_-26px_rgba(15,23,42,0.55)]',
+    'dark:border-[#2b2f36] dark:bg-[#17191c] dark:group-hover:border-[#34302c] dark:group-hover:bg-[#1c1a18]',
     'dark:shadow-[0_16px_34px_-26px_rgba(0,0,0,0.65)]'
   ),
   media: cn(
     'relative m-2 mr-0 flex min-h-[58px] overflow-hidden rounded-lg',
-    'bg-[color-mix(in_srgb,var(--surface-0)_76%,var(--brand-400)_24%)]',
-    'dark:bg-[color-mix(in_srgb,var(--surface-0)_78%,var(--brand-400)_22%)]'
+    'bg-slate-100/80',
+    'dark:bg-[#141210]'
   ),
   image:
     'absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105',
   imageOverlay: cn(
     'absolute inset-0',
-    'bg-gradient-to-br from-black/28 via-black/8 to-black/38',
-    'dark:from-black/44 dark:via-black/18 dark:to-black/52'
+    'bg-gradient-to-br from-black/24 via-black/6 to-black/34',
+    'dark:from-black/36 dark:via-black/12 dark:to-black/48'
   ),
   fallbackMark: cn(
     'relative z-10 m-auto font-[var(--font-code)] text-[0.72rem] font-semibold',

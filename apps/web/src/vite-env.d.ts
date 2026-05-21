@@ -2,6 +2,8 @@
 
 interface ImportMetaEnv {
   readonly VITE_IMAGE_BASE_URL: string
+  readonly VITE_CF_IMAGE_TRANSFORMATIONS_ENABLED?: string
+  readonly VITE_CF_IMAGE_TRANSFORM_HOSTS?: string
   // more env variables...
 }
 

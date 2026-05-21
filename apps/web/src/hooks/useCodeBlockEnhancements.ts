@@ -66,6 +66,13 @@ function getCodeLineCount(value: string) {
   return normalized ? normalized.split('\n').length : 1
 }
 
+function getDirectCodeElement(pre: HTMLPreElement) {
+  return Array.from(pre.children).find(
+    (child): child is HTMLElement =>
+      child instanceof HTMLElement && child.tagName === 'CODE'
+  )
+}
+
 export interface CodeBlockEnhancementLabels {
   copy: string
   copied: string
@@ -120,8 +127,11 @@ export function useCodeBlockEnhancements(
   const { collapse, copied, copy, expand, plainText, scroll, wrap } = labels
 
   useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
+    let raf = 0
+    let attempt = 0
+    const maxAttempts = 8
+    const timeouts: number[] = []
+    let observer: MutationObserver | undefined
     const activeLabels = {
       collapse,
       copied,
@@ -132,127 +142,168 @@ export function useCodeBlockEnhancements(
       wrap,
     }
 
-    const codeBlocks = Array.from(container.querySelectorAll('pre'))
+    const enhance = () => {
+      const container = containerRef.current
+      if (!container) return false
 
-    codeBlocks.forEach((pre) => {
-      if (!(pre instanceof HTMLPreElement)) return
-      if (pre.closest('.md-code-frame')) return
+      const codeBlocks = Array.from(container.querySelectorAll('pre'))
+      if (codeBlocks.length === 0) return false
 
-      const code = pre.querySelector(':scope > code')
-      if (!(code instanceof HTMLElement)) return
-
-      const rawCode = code.textContent || ''
-      const originalLanguage = extractLanguage(code)
-      const prismLanguage = normalizeLanguage(originalLanguage)
-      const languageLabel = getLanguageLabel(
-        originalLanguage,
-        activeLabels.plainText
-      )
-      const lineCount = getCodeLineCount(rawCode)
-
-      pre.classList.add('md-code-pre', 'line-numbers')
-      pre.classList.add(`language-${prismLanguage || 'plain'}`)
-      code.classList.add('md-code-content')
-
-      if (prismLanguage && Prism.languages[prismLanguage]) {
-        code.className = `md-code-content language-${prismLanguage}`
-        code.textContent = rawCode
-      } else {
-        code.className = 'md-code-content language-plain'
-        code.innerHTML = escapeHtml(rawCode)
-      }
-
-      const frame = document.createElement('div')
-      frame.className = 'md-code-frame not-prose'
-      frame.setAttribute('data-code-language', prismLanguage || 'plain')
-      frame.setAttribute('data-wrap', 'true')
-
-      const toolbar = document.createElement('div')
-      toolbar.className = 'md-code-toolbar'
-
-      const languageBadge = document.createElement('span')
-      languageBadge.className = 'md-code-language'
-      languageBadge.textContent = languageLabel
-
-      const actions = document.createElement('div')
-      actions.className = 'md-code-actions'
-
-      const wrapButton = document.createElement('button')
-      wrapButton.type = 'button'
-      wrapButton.className = 'md-code-action'
-      updateWrapButton(wrapButton, true, activeLabels)
-
-      const copyButton = document.createElement('button')
-      copyButton.type = 'button'
-      copyButton.className = 'md-code-action'
-      copyButton.setAttribute('aria-label', activeLabels.copy)
-      copyButton.setAttribute('data-copy-state', 'idle')
-      copyButton.textContent = activeLabels.copy
-
-      actions.append(wrapButton, copyButton)
-      toolbar.append(languageBadge, actions)
-
-      const body = document.createElement('div')
-      body.className = 'md-code-body'
-
-      let expandButton: HTMLButtonElement | null = null
-      if (lineCount > COLLAPSE_LINE_THRESHOLD) {
-        frame.classList.add('is-collapsible', 'is-collapsed')
-        expandButton = document.createElement('button')
-        expandButton.type = 'button'
-        expandButton.className = 'md-code-expand'
-        updateExpandButton(expandButton, false, activeLabels)
-      }
-
-      pre.replaceWith(frame)
-      body.append(pre)
-      frame.append(toolbar, body)
-      if (expandButton) {
-        frame.append(expandButton)
-      }
-
-      if (prismLanguage && Prism.languages[prismLanguage]) {
-        Prism.highlightElement(code)
-      }
-      Prism.plugins.lineNumbers?.resize?.(pre)
-
-      const handleWrapToggle = () => {
-        const nextWrapped = frame.getAttribute('data-wrap') !== 'true'
-        frame.setAttribute('data-wrap', String(nextWrapped))
-        updateWrapButton(wrapButton, nextWrapped, activeLabels)
-        const lineNumbers = Prism.plugins.lineNumbers
-        lineNumbers?.resize?.(pre)
-      }
-
-      const handleCopy = async () => {
-        try {
-          await copyToClipboard(rawCode)
-          copyButton.setAttribute('aria-label', activeLabels.copied)
-          copyButton.setAttribute('data-copy-state', 'copied')
-          copyButton.textContent = activeLabels.copied
-          copyButton.disabled = true
-          window.setTimeout(() => {
-            copyButton.setAttribute('aria-label', activeLabels.copy)
-            copyButton.setAttribute('data-copy-state', 'idle')
-            copyButton.textContent = activeLabels.copy
-            copyButton.disabled = false
-          }, 1500)
-        } catch (error) {
-          console.error('Failed to copy code block', error)
+      codeBlocks.forEach((pre) => {
+        if (!(pre instanceof HTMLPreElement)) return
+        if (pre.closest('.md-code-frame')) {
+          return
         }
-      }
 
-      const handleExpandToggle = () => {
-        if (!expandButton) return
-        const nextExpanded = frame.classList.contains('is-collapsed')
-        frame.classList.toggle('is-collapsed', !nextExpanded)
-        updateExpandButton(expandButton, nextExpanded, activeLabels)
-      }
+        const code = getDirectCodeElement(pre)
+        if (!code) return
 
-      wrapButton.addEventListener('click', handleWrapToggle)
-      copyButton.addEventListener('click', handleCopy)
-      expandButton?.addEventListener('click', handleExpandToggle)
-    })
+        try {
+          const rawCode = code.textContent || ''
+          const originalLanguage = extractLanguage(code)
+          const prismLanguage = normalizeLanguage(originalLanguage)
+          const languageLabel = getLanguageLabel(
+            originalLanguage,
+            activeLabels.plainText
+          )
+          const lineCount = getCodeLineCount(rawCode)
+
+          pre.classList.add('md-code-pre', 'line-numbers')
+          pre.classList.add(`language-${prismLanguage || 'plain'}`)
+          code.classList.add('md-code-content')
+
+          if (prismLanguage && Prism.languages[prismLanguage]) {
+            code.className = `md-code-content language-${prismLanguage}`
+            code.textContent = rawCode
+          } else {
+            code.className = 'md-code-content language-plain'
+            code.innerHTML = escapeHtml(rawCode)
+          }
+
+          const frame = document.createElement('div')
+          frame.className = 'md-code-frame not-prose'
+          frame.setAttribute('data-code-language', prismLanguage || 'plain')
+          frame.setAttribute('data-wrap', 'true')
+
+          const toolbar = document.createElement('div')
+          toolbar.className = 'md-code-toolbar'
+
+          const languageBadge = document.createElement('span')
+          languageBadge.className = 'md-code-language'
+          languageBadge.textContent = languageLabel
+
+          const actions = document.createElement('div')
+          actions.className = 'md-code-actions'
+
+          const wrapButton = document.createElement('button')
+          wrapButton.type = 'button'
+          wrapButton.className = 'md-code-action'
+          updateWrapButton(wrapButton, true, activeLabels)
+
+          const copyButton = document.createElement('button')
+          copyButton.type = 'button'
+          copyButton.className = 'md-code-action'
+          copyButton.setAttribute('aria-label', activeLabels.copy)
+          copyButton.setAttribute('data-copy-state', 'idle')
+          copyButton.textContent = activeLabels.copy
+
+          actions.append(wrapButton, copyButton)
+          toolbar.append(languageBadge, actions)
+
+          const body = document.createElement('div')
+          body.className = 'md-code-body'
+
+          let expandButton: HTMLButtonElement | null = null
+          if (lineCount > COLLAPSE_LINE_THRESHOLD) {
+            frame.classList.add('is-collapsible', 'is-collapsed')
+            expandButton = document.createElement('button')
+            expandButton.type = 'button'
+            expandButton.className = 'md-code-expand'
+            updateExpandButton(expandButton, false, activeLabels)
+          }
+
+          pre.replaceWith(frame)
+          body.append(pre)
+          frame.append(toolbar, body)
+          if (expandButton) {
+            frame.append(expandButton)
+          }
+
+          if (prismLanguage && Prism.languages[prismLanguage]) {
+            Prism.highlightElement(code)
+          }
+          Prism.plugins.lineNumbers?.resize?.(pre)
+
+          const handleWrapToggle = () => {
+            const nextWrapped = frame.getAttribute('data-wrap') !== 'true'
+            frame.setAttribute('data-wrap', String(nextWrapped))
+            updateWrapButton(wrapButton, nextWrapped, activeLabels)
+            Prism.plugins.lineNumbers?.resize?.(pre)
+          }
+
+          const handleCopy = async () => {
+            try {
+              await copyToClipboard(rawCode)
+              copyButton.setAttribute('aria-label', activeLabels.copied)
+              copyButton.setAttribute('data-copy-state', 'copied')
+              copyButton.textContent = activeLabels.copied
+              copyButton.disabled = true
+              window.setTimeout(() => {
+                copyButton.setAttribute('aria-label', activeLabels.copy)
+                copyButton.setAttribute('data-copy-state', 'idle')
+                copyButton.textContent = activeLabels.copy
+                copyButton.disabled = false
+              }, 1500)
+            } catch (error) {
+              console.error('Failed to copy code block', error)
+            }
+          }
+
+          const handleExpandToggle = () => {
+            if (!expandButton) return
+            const nextExpanded = frame.classList.contains('is-collapsed')
+            frame.classList.toggle('is-collapsed', !nextExpanded)
+            updateExpandButton(expandButton, nextExpanded, activeLabels)
+          }
+
+          wrapButton.addEventListener('click', handleWrapToggle)
+          copyButton.addEventListener('click', handleCopy)
+          expandButton?.addEventListener('click', handleExpandToggle)
+        } catch (error) {
+          console.error('Failed to enhance code block', error)
+        }
+      })
+
+      return true
+    }
+
+    const scheduleEnhance = () => {
+      raf = window.requestAnimationFrame(() => {
+        raf = 0
+        const didEnhance = enhance()
+        attempt += 1
+        if (!didEnhance && attempt < maxAttempts) {
+          timeouts.push(window.setTimeout(scheduleEnhance, 50))
+        }
+      })
+    }
+
+    scheduleEnhance()
+    if (containerRef.current) {
+      observer = new MutationObserver(() => {
+        attempt = 0
+        if (!raf) scheduleEnhance()
+      })
+      observer.observe(containerRef.current, {
+        childList: true,
+      })
+    }
+
+    return () => {
+      if (raf) window.cancelAnimationFrame(raf)
+      timeouts.forEach((timeout) => window.clearTimeout(timeout))
+      observer?.disconnect()
+    }
   }, [
     containerRef,
     contentKey,

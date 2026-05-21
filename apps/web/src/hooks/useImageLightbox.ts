@@ -23,7 +23,10 @@ export function useImageLightbox(deps: unknown[] = []) {
 
     if (zoomableImages.length === 0) return
 
-    const slides = zoomableImages.map((img) => ({ src: img.src, alt: img.alt }))
+    const slides = zoomableImages.map((img) => ({
+      src: img.dataset.originalSrc || img.currentSrc || img.src,
+      alt: img.alt,
+    }))
 
     const handlers: { element: HTMLImageElement; listener: () => void; caption?: HTMLElement }[] = []
 

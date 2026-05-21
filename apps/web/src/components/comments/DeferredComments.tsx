@@ -12,6 +12,7 @@ interface DeferredCommentsProps {
   variant?: 'default' | 'compact'
   composerState?: 'open' | 'collapsed'
   className?: string
+  showTitle?: boolean
   onCommentLoaded?: () => void
 }
 
@@ -25,6 +26,7 @@ export function DeferredComments({
   variant,
   composerState,
   className,
+  showTitle,
   onCommentLoaded,
 }: DeferredCommentsProps) {
   const placeholderRef = useRef<HTMLDivElement>(null)
@@ -89,6 +91,7 @@ export function DeferredComments({
       variant={variant}
       composerState={composerState}
       className={className}
+      showTitle={showTitle}
       onCommentLoaded={onCommentLoaded}
     />
   )

@@ -407,6 +407,42 @@ i {
   box-sizing: border-box;
 }
 
+.simple-reading .markdown-body {
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  overflow-wrap: break-word;
+}
+
+.simple-reading .markdown-body h2,
+.simple-reading .markdown-body h3 {
+  font-family: inherit;
+  letter-spacing: 0 !important;
+  scroll-margin-top: 7rem;
+  background-image: none;
+}
+
+.simple-reading .markdown-body h2::before,
+.simple-reading .markdown-body h3::before {
+  content: none;
+}
+
+.simple-reading .markdown-body :is(h1, h2, h3, h4, h5, h6) :is(strong, b) {
+  color: inherit;
+  font-weight: inherit;
+  background-image: none;
+}
+
+.simple-reading .markdown-body strong,
+.simple-reading .markdown-body b {
+  color: inherit;
+  font-weight: 700;
+  background-image: none;
+}
+
 .article-reference-panel__eyebrow {
   margin: 0 0 0.18rem;
   color: var(--text-secondary);

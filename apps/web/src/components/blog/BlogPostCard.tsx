@@ -3,7 +3,7 @@ import { Calendar, FileText } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Card } from '../ui/Card'
 import { cn } from '@/lib/utils'
-import { getImageUrl } from '@/utils/image'
+import { getOptimizedImageUrl } from '@/utils/image'
 import type { BlogPostSummary } from '@/types'
 import { CategoryLabel } from './CategoryLabel'
 
@@ -14,7 +14,7 @@ interface BlogPostCardProps {
 export function BlogPostCard({ post }: BlogPostCardProps) {
   const { t } = useTranslation()
   const words = post.wordCount ?? 0
-  const coverImage = post.image ? getImageUrl(post.image) : ''
+  const coverImage = post.image ? getOptimizedImageUrl(post.image, 'card') : ''
   const titleClass = cn(
     'mb-2 line-clamp-2 text-2xl font-medium leading-snug transition-colors',
     'text-slate-900 group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400'

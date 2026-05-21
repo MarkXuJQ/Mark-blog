@@ -1,5 +1,12 @@
 [
   {
+    "id": "qf-20260521",
+    "date": "2026-05-21",
+    "content": [
+      "Tuned Cloudflare Image Transformations for blog and life images: article covers now reuse a lighter 1200px profile, cards and thumbnails use smaller variants, and all optimized images fall back to originals with onerror=redirect when the free transformation quota is exceeded"
+    ]
+  },
+  {
     "id": "qf-20260515",
     "date": "2026-05-15",
     "content": [
