@@ -41,7 +41,8 @@ export function setupToc(
 ): { toc: TocItem[]; destroy: () => void } {
   const {
     topOffset = 96,
-    headingSelector = 'h1, h2, h3',
+    headingSelector =
+      '[data-article-heading="true"], [data-article-content="true"] h1, [data-article-content="true"] h2, [data-article-content="true"] h3',
     minLevel = 1,
     maxLevel = 3,
   } = options
@@ -116,7 +117,8 @@ export function setupTocTree(
 ): { tree: TocNode[]; flat: TocItem[]; destroy: () => void } {
   const {
     topOffset = 96,
-    headingSelector = 'h1, h2, h3',
+    headingSelector =
+      '[data-article-heading="true"], [data-article-content="true"] h1, [data-article-content="true"] h2, [data-article-content="true"] h3',
     minLevel = 1,
     maxLevel = 3,
     trackActive = true,

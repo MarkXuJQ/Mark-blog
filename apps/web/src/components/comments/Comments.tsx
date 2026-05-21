@@ -281,6 +281,23 @@ export function Comments({
         .twikoo-wrap .tk-submit-action-icon svg path {
             fill: currentColor;
         }
+        .twikoo-wrap .tk-avatar {
+          width: 2.5rem !important;
+          height: 2.5rem !important;
+          min-width: 2.5rem !important;
+          flex: 0 0 2.5rem !important;
+          overflow: hidden !important;
+          border-radius: 0.72rem !important;
+        }
+        .twikoo-wrap .tk-avatar img {
+          display: block !important;
+          width: 100% !important;
+          height: 100% !important;
+          max-width: none !important;
+          margin: 0 !important;
+          border-radius: inherit !important;
+          object-fit: cover !important;
+        }
 
         .twikoo-wrap[data-layout="stacked"] .tk-meta-input {
           display: flex !important;
@@ -482,6 +499,9 @@ export function Comments({
           .twikoo-wrap .tk-avatar {
             width: 2rem !important;
             height: 2rem !important;
+            min-width: 2rem !important;
+            flex-basis: 2rem !important;
+            border-radius: 0.58rem !important;
           }
           .twikoo-wrap .tk-content {
             overflow-wrap: anywhere;
