@@ -1,6 +1,5 @@
 import { Outlet, useLocation, useParams } from 'react-router-dom'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { BlogRelatedPosts } from '@/components/blog/BlogRelatedPosts'
 import { BlogTocCard, BlogTocDrawer } from '@/components/blog/BlogTocCard'
@@ -120,45 +119,42 @@ export function BlogPostLayout() {
         </aside>
       </div>
 
-      {isMounted
-        ? createPortal(
-            <>
-              <ReaderModeToggle
-                simpleMode={simpleMode}
-                onToggle={() => setSimpleMode((prev) => !prev)}
-              />
+      {isMounted ? (
+        <>
+          <ReaderModeToggle
+            simpleMode={simpleMode}
+            onToggle={() => setSimpleMode((prev) => !prev)}
+          />
 
-              <button
-                type="button"
-                onClick={() => setIsMobileTocOpen((prev) => !prev)}
-                className="fixed bottom-6 right-6 z-[80] inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:bg-slate-50 lg:hidden dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-300 dark:hover:bg-slate-900"
-                aria-label={t('blog.toc.title')}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  className="h-5 w-5"
-                  aria-hidden="true"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M4 17q-.425 0-.712-.288T3 16t.288-.712T4 15h12q.425 0 .713.288T17 16t-.288.713T16 17zm0-4q-.425 0-.712-.288T3 12t.288-.712T4 11h12q.425 0 .713.288T17 12t-.288.713T16 13zm0-4q-.425 0-.712-.288T3 8t.288-.712T4 7h12q.425 0 .713.288T17 8t-.288.713T16 9zm16 8q-.425 0-.712-.288T19 16t.288-.712T20 15t.713.288T21 16t-.288.713T20 17m0-4q-.425 0-.712-.288T19 12t.288-.712T20 11t.713.288T21 12t-.288.713T20 13m0-4q-.425 0-.712-.288T19 8t.288-.712T20 7t.713.288T21 8t-.288.713T20 9"
-                  />
-                </svg>
-              </button>
-
-              <BlogTocDrawer
-                toc={toc}
-                activeId={activeId}
-                open={isMobileTocOpen}
-                onClose={() => setIsMobileTocOpen(false)}
+          <button
+            type="button"
+            onClick={() => setIsMobileTocOpen((prev) => !prev)}
+            className="fixed bottom-6 right-6 z-[80] inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:bg-slate-50 lg:hidden dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-300 dark:hover:bg-slate-900"
+            aria-label={t('blog.toc.title')}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <path
+                fill="currentColor"
+                d="M4 17q-.425 0-.712-.288T3 16t.288-.712T4 15h12q.425 0 .713.288T17 16t-.288.713T16 17zm0-4q-.425 0-.712-.288T3 12t.288-.712T4 11h12q.425 0 .713.288T17 12t-.288.713T16 13zm0-4q-.425 0-.712-.288T3 8t.288-.712T4 7h12q.425 0 .713.288T17 8t-.288.713T16 9zm16 8q-.425 0-.712-.288T19 16t.288-.712T20 15t.713.288T21 16t-.288.713T20 17m0-4q-.425 0-.712-.288T19 12t.288-.712T20 11t.713.288T21 12t-.288.713T20 13m0-4q-.425 0-.712-.288T19 8t.288-.712T20 7t.713.288T21 8t-.288.713T20 9"
               />
-            </>,
-            document.body
-          )
-        : null}
+            </svg>
+          </button>
+
+          <BlogTocDrawer
+            toc={toc}
+            activeId={activeId}
+            open={isMobileTocOpen}
+            onClose={() => setIsMobileTocOpen(false)}
+          />
+        </>
+      ) : null}
     </div>
   )
 }

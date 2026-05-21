@@ -1,5 +1,4 @@
 import { Outlet } from 'react-router-dom'
-import { createPortal } from 'react-dom'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LeftSidebarWidget, StatsWidget } from '@/components/blog/BlogWidgets'
@@ -77,15 +76,12 @@ export function BlogListLayout() {
         </aside>
       </div>
 
-      {isMounted
-        ? createPortal(
-            <ReaderModeToggle
-              simpleMode={simpleMode}
-              onToggle={() => setSimpleMode((prev) => !prev)}
-            />,
-            document.body
-          )
-        : null}
+      {isMounted ? (
+        <ReaderModeToggle
+          simpleMode={simpleMode}
+          onToggle={() => setSimpleMode((prev) => !prev)}
+        />
+      ) : null}
     </div>
   )
 }

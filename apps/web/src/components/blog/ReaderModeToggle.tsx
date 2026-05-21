@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, useAnimation } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
@@ -12,6 +13,8 @@ type DockSide = 'left' | 'right'
 const EDGE_GAP = 0
 const DEFAULT_TOP_RATIO = 0.5
 const STORAGE_KEY = 'blog-reader-mode-toggle-position-v2'
+const PORTAL_ROOT_ID = 'reader-mode-toggle-root'
+const TOGGLE_MARKER = 'reader-mode-toggle'
 
 type StoredPosition = {
   side?: DockSide
@@ -28,8 +31,33 @@ export function ReaderModeToggle({
   const topRef = useRef(0)
   const [side, setSide] = useState<DockSide>('left')
   const [top, setTop] = useState(0)
+  const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null)
 
   useEffect(() => {
+    if (window.__PRERENDER__) return
+
+    document
+      .querySelectorAll<HTMLElement>(
+        `[data-reader-mode-toggle="${TOGGLE_MARKER}"]`
+      )
+      .forEach((node) => {
+        if (!node.closest(`#${PORTAL_ROOT_ID}`)) {
+          node.remove()
+        }
+      })
+
+    let root = document.getElementById(PORTAL_ROOT_ID)
+    if (!root) {
+      root = document.createElement('div')
+      root.id = PORTAL_ROOT_ID
+      document.body.appendChild(root)
+    }
+    setPortalRoot(root)
+  }, [])
+
+  useEffect(() => {
+    if (!portalRoot) return
+
     const saved = readStoredPosition()
     if (saved.side) {
       sideRef.current = saved.side
@@ -49,7 +77,7 @@ export function ReaderModeToggle({
     syncPosition()
     window.addEventListener('resize', syncPosition)
     return () => window.removeEventListener('resize', syncPosition)
-  }, [])
+  }, [portalRoot])
 
   const dockTo = (nextSide: DockSide, nextTop: number) => {
     sideRef.current = nextSide
@@ -65,7 +93,9 @@ export function ReaderModeToggle({
     })
   }
 
-  return (
+  if (!portalRoot) return null
+
+  return createPortal(
     <motion.div
       drag
       dragMomentum={false}
@@ -92,6 +122,7 @@ export function ReaderModeToggle({
         side === 'left' ? 'left-0' : 'right-0'
       )}
       style={{ top }}
+      data-reader-mode-toggle={TOGGLE_MARKER}
     >
       <button
         type="button"
@@ -115,7 +146,8 @@ export function ReaderModeToggle({
       >
         {simpleMode ? '丰富模式' : '简洁模式'}
       </button>
-    </motion.div>
+    </motion.div>,
+    portalRoot
   )
 }
 
