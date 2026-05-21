@@ -11,7 +11,7 @@ type DockSide = 'left' | 'right'
 
 const EDGE_GAP = 0
 const DEFAULT_TOP_RATIO = 0.5
-const STORAGE_KEY = 'blog-reader-mode-toggle-position'
+const STORAGE_KEY = 'blog-reader-mode-toggle-position-v2'
 
 type StoredPosition = {
   side?: DockSide
@@ -24,9 +24,9 @@ export function ReaderModeToggle({
 }: ReaderModeToggleProps) {
   const controls = useAnimation()
   const isDraggingRef = useRef(false)
-  const sideRef = useRef<DockSide>('right')
+  const sideRef = useRef<DockSide>('left')
   const topRef = useRef(0)
-  const [side, setSide] = useState<DockSide>('right')
+  const [side, setSide] = useState<DockSide>('left')
   const [top, setTop] = useState(0)
 
   useEffect(() => {

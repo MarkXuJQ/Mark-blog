@@ -239,7 +239,9 @@ export function BlogPost() {
         </Link>
 
         <header className={styles.simpleReadingHeader}>
-          <h1 className={styles.simpleReadingTitle}>{post.title}</h1>
+          <h1 className={styles.simpleReadingTitle} data-article-heading="true">
+            {post.title}
+          </h1>
           {post.summary ? (
             <p className={styles.simpleReadingSummary}>{post.summary}</p>
           ) : null}
@@ -321,7 +323,10 @@ export function BlogPost() {
                     ))}
                   </div>
 
-                  <h1 className="mt-4 max-w-3xl text-3xl font-medium tracking-tight text-white drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)] sm:text-4xl md:text-5xl">
+                  <h1
+                    className="mt-4 max-w-3xl text-3xl font-medium tracking-tight text-white drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)] sm:text-4xl md:text-5xl"
+                    data-article-heading="true"
+                  >
                     {post.title}
                   </h1>
 
@@ -390,7 +395,9 @@ export function BlogPost() {
             </Link>
 
             <article className={styles.article}>
-              <h1 className={styles.title}>{post.title}</h1>
+              <h1 className={styles.title} data-article-heading="true">
+                {post.title}
+              </h1>
 
               <div className={styles.metaContainer}>
                 {post.tags && post.tags.length > 0 ? (
@@ -470,6 +477,7 @@ const MarkdownContent = memo(function MarkdownContent({
     <div
       ref={ref}
       className="markdown-body"
+      data-article-content="true"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   )
@@ -521,5 +529,5 @@ const styles = {
     'mb-4 text-4xl font-bold tracking-tight text-slate-950 md:text-5xl dark:text-slate-50',
   simpleReadingSummary:
     'max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-400',
-  simpleReadingComments: 'mt-16 mb-4',
+  simpleReadingComments: 'not-prose mt-16 mb-4',
 }
