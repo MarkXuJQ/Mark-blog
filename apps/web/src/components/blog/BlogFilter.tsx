@@ -21,9 +21,17 @@ interface BlogFilterProps {
   onSelectCategory: (category: string | null) => void
   sortBy: SortBy
   onToggleSort: () => void
+  simple?: boolean
+  hideSort?: boolean
 }
 
-function CategoryMenuLabel({ category }: { category?: string | null }) {
+function CategoryMenuLabel({
+  category,
+  simple = false,
+}: {
+  category?: string | null
+  simple?: boolean
+}) {
   const { t } = useTranslation()
   const meta = getBlogCategoryMeta(category)
   const Icon = meta.icon
@@ -33,7 +41,12 @@ function CategoryMenuLabel({ category }: { category?: string | null }) {
 
   return (
     <span className="inline-flex items-center gap-2.5 text-[0.95rem] font-medium text-slate-700 dark:text-slate-200">
-      <Icon aria-hidden="true" className="h-[1.125rem] w-[1.125rem] shrink-0" />
+      {!simple && (
+        <Icon
+          aria-hidden="true"
+          className="h-[1.125rem] w-[1.125rem] shrink-0"
+        />
+      )}
       <span>{label}</span>
     </span>
   )
@@ -41,8 +54,10 @@ function CategoryMenuLabel({ category }: { category?: string | null }) {
 
 function FilterTrigger({
   selectedCategory,
+  simple = false,
 }: {
   selectedCategory: string | null
+  simple?: boolean
 }) {
   const { isOpen } = useDropdown()
   const { t } = useTranslation()
@@ -57,18 +72,24 @@ function FilterTrigger({
       className={cn(
         'flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[0.95rem] font-medium text-slate-700 transition-colors',
         'hover:bg-slate-50 hover:text-slate-900',
-        'dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100'
+        'dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100',
+        simple &&
+          'border-transparent bg-transparent px-0 py-0 text-[var(--text-secondary)] hover:bg-transparent hover:text-[var(--text-primary)] dark:border-transparent dark:bg-transparent dark:hover:bg-transparent'
       )}
     >
-      <Icon className={cn('h-[1.1rem] w-[1.1rem]', meta.textClassName)} />
-      <span className={meta.textClassName}>{label}</span>
-      <ChevronDown
-        size={14}
-        className={cn(
-          'transition-transform duration-200',
-          isOpen && 'rotate-180'
-        )}
-      />
+      {!simple && (
+        <Icon className={cn('h-[1.1rem] w-[1.1rem]', meta.textClassName)} />
+      )}
+      <span className={cn(!simple && meta.textClassName)}>{label}</span>
+      {!simple && (
+        <ChevronDown
+          size={14}
+          className={cn(
+            'transition-transform duration-200',
+            isOpen && 'rotate-180'
+          )}
+        />
+      )}
     </DropdownTrigger>
   )
 }
@@ -79,14 +100,16 @@ export function BlogFilter({
   onSelectCategory,
   sortBy,
   onToggleSort,
+  simple = false,
+  hideSort = false,
 }: BlogFilterProps) {
   const { t } = useTranslation()
 
   return (
-    <div className="flex items-center gap-3">
+    <div className={cn('flex items-center gap-3', simple && 'gap-4')}>
       {/* Filter Dropdown */}
       <Dropdown className="relative">
-        <FilterTrigger selectedCategory={selectedCategory} />
+        <FilterTrigger selectedCategory={selectedCategory} simple={simple} />
 
         <DropdownContent
           align="start"
@@ -96,7 +119,7 @@ export function BlogFilter({
             className="flex w-full items-center whitespace-nowrap px-3 py-2.5"
             onClick={() => onSelectCategory(null)}
           >
-            <CategoryMenuLabel />
+            <CategoryMenuLabel simple={simple} />
           </DropdownItem>
 
           {allCategories.map((category) => (
@@ -105,56 +128,61 @@ export function BlogFilter({
               className="flex w-full items-center whitespace-nowrap px-3 py-2.5"
               onClick={() => onSelectCategory(category)}
             >
-              <CategoryMenuLabel category={category} />
+              <CategoryMenuLabel category={category} simple={simple} />
             </DropdownItem>
           ))}
         </DropdownContent>
       </Dropdown>
 
-      {/* Sort Toggle Button (Elastic Animation) */}
-      <button
-        onClick={onToggleSort}
-        className={cn(
-          'flex cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors select-none active:scale-95',
-          'hover:bg-slate-50 hover:text-slate-900',
-          'dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100'
-        )}
-      >
-        <motion.div
-          layout
-          transition={{
-            type: 'spring',
-            stiffness: 700,
-            damping: 30,
-          }}
-          className="flex items-center gap-2"
+      {!hideSort && (
+        <button
+          onClick={onToggleSort}
+          className={cn(
+            'flex cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors select-none active:scale-95',
+            'hover:bg-slate-50 hover:text-slate-900',
+            'dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100',
+            simple &&
+              'border-transparent bg-transparent px-0 py-0 text-[var(--text-secondary)] hover:bg-transparent hover:text-[var(--text-primary)] dark:border-transparent dark:bg-transparent dark:hover:bg-transparent'
+          )}
         >
-          <div className="relative h-4 w-4 overflow-hidden">
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={sortBy}
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -20, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="absolute inset-0 flex items-center justify-center"
-              >
-                <ArrowDown
-                  size={16}
-                  className={cn(
-                    sortBy === 'date' ? 'text-blue-500' : 'text-green-500'
-                  )}
-                />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-          <span className="min-w-[4.5rem] text-left">
-            {sortBy === 'date'
-              ? t('blog.sort.created')
-              : t('blog.sort.updated')}
-          </span>
-        </motion.div>
-      </button>
+          <motion.div
+            layout
+            transition={{
+              type: 'spring',
+              stiffness: 700,
+              damping: 30,
+            }}
+            className="flex items-center gap-2"
+          >
+            {!simple && (
+              <div className="relative h-4 w-4 overflow-hidden">
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={sortBy}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -20, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <ArrowDown
+                      size={16}
+                      className={cn(
+                        sortBy === 'date' ? 'text-blue-500' : 'text-green-500'
+                      )}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            )}
+            <span className="min-w-[4.5rem] text-left">
+              {sortBy === 'date'
+                ? t('blog.sort.created')
+                : t('blog.sort.updated')}
+            </span>
+          </motion.div>
+        </button>
+      )}
     </div>
   )
 }
