@@ -7,7 +7,7 @@
     "date": "2026-05-20",
     "updated": "2026-05-20",
     "summary": "虽然写博客的概念已经优点过时了，但是我仍然推荐，可以在理清自己思路的同时，记录下自己成长的过程，些许还会认识到志同道合的朋友。",
-    "wordCount": 1928,
+    "wordCount": 2033,
     "tags": [
       "Blogs",
       "College",
@@ -99,8 +99,8 @@
     "category": "tech"
   },
   {
-    "id": "5.mac-terminal-setup-notes",
-    "slug": "5.mac-terminal-setup-notes",
+    "id": "mac-terminal-setup-notes-en",
+    "slug": "mac-terminal-setup-notes-en",
     "language": "en",
     "title": "Mac Terminal Setup Notes",
     "date": "2026-04-07",
@@ -135,8 +135,8 @@
     "category": "tech"
   },
   {
-    "id": "4.prompt-only-open-source",
-    "slug": "4.prompt-only-open-source",
+    "id": "prompt-only-open-source-en",
+    "slug": "prompt-only-open-source-en",
     "language": "en",
     "title": "When Open Source Is Only a Prompt: I Found a Ridiculous New Way to Open Source",
     "date": "2026-04-05",
@@ -169,8 +169,8 @@
     "category": "essay"
   },
   {
-    "id": "3.My-first-blog",
-    "slug": "3.My-first-blog",
+    "id": "first-blog-post-en",
+    "slug": "first-blog-post-en",
     "language": "en",
     "title": "My First Blog",
     "date": "2026-03-24",
@@ -200,8 +200,8 @@
     "category": "Experience"
   },
   {
-    "id": "2.guangzhou-travel-notes",
-    "slug": "2.guangzhou-travel-notes",
+    "id": "guangzhou-trip-notes-en",
+    "slug": "guangzhou-trip-notes-en",
     "language": "en",
     "title": "Guangzhou Travel Notes",
     "date": "2024-03-22",
@@ -232,8 +232,8 @@
     "category": "Experience"
   },
   {
-    "id": "1.chaoshan-travel-notes",
-    "slug": "1.chaoshan-travel-notes",
+    "id": "chaoshan-trip-notes-en",
+    "slug": "chaoshan-trip-notes-en",
     "language": "en",
     "title": "Chaoshan Travel Notes",
     "date": "2023-09-27",

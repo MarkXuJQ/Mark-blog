@@ -24,9 +24,10 @@ export function BlogPostLayout() {
       trackActive: false,
     }
   )
-  const posts = getAllPostSummaries(i18n.language)
+  const postLanguage = resolvePostLanguage(slug, i18n.language)
+  const posts = getAllPostSummaries(postLanguage)
   const currentPost = slug
-    ? getPostBySlug(slug, i18n.language, { fallback: false }) ?? null
+    ? getPostBySlug(slug, postLanguage, { fallback: false }) ?? null
     : null
 
   useEffect(() => {
@@ -105,4 +106,11 @@ const styles = {
     'sticky top-[86px] h-[calc(100vh-8rem)] space-y-6 overflow-y-auto pb-10 scrollbar-hide',
   mainContent:
     'flex w-full min-w-0 max-w-[640px] flex-1 flex-col md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px]',
+}
+
+function resolvePostLanguage(slug: string | undefined, fallback: string) {
+  if (!slug) return fallback
+  if (slug.endsWith('-cn') || /[^\x00-\x7F]/.test(slug)) return 'zh'
+  if (slug.endsWith('-en')) return 'en'
+  return fallback
 }

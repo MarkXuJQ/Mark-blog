@@ -7,7 +7,7 @@ import { getImageUrl } from '@/utils/image'
 import { Link } from 'react-router-dom'
 import { Calendar, Clock, FileText, Activity, Hash, Layers } from 'lucide-react'
 import { LuGithub } from 'react-icons/lu'
-import { RiBilibiliLine, RiTwitterXFill, RiInstagramLine } from 'react-icons/ri'
+import { RiBilibiliLine, RiTwitterXFill, RiZhihuFill } from 'react-icons/ri'
 import type { BlogPostSummary } from '@/types'
 
 // --- Profile Content (Internal) ---
@@ -130,14 +130,14 @@ function SocialLinks() {
         <span className="sr-only">X (Twitter)</span>
       </a>
       <a
-        href="https://www.instagram.com/mark_xu269/"
+        href="https://www.zhihu.com/people/mark-81-75"
         target="_blank"
         rel="noopener noreferrer"
         className={styles.socialBtn}
-        aria-label="Instagram"
+        aria-label="Zhihu"
       >
-        <RiInstagramLine size={20} />
-        <span className="sr-only">Instagram</span>
+        <RiZhihuFill size={20} />
+        <span className="sr-only">Zhihu</span>
       </a>
     </div>
   )

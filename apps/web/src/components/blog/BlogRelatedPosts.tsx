@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Card } from '../ui/Card'
 import { getImageUrl } from '@/utils/image'
 import { cn } from '@/lib/utils'
 import type { BlogPost, BlogPostSummary } from '@/types'
@@ -44,21 +43,6 @@ export function BlogRelatedPosts({
       .map((item) => item.post)
   }, [currentPost, posts, maxItems])
 
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    const target = event.currentTarget
-    const rect = target.getBoundingClientRect()
-    const x = (event.clientX - rect.left) / rect.width - 0.5
-    const y = (event.clientY - rect.top) / rect.height - 0.5
-    target.style.setProperty('--x-rotate', `${y * -16}deg`)
-    target.style.setProperty('--y-rotate', `${x * 16}deg`)
-  }
-
-  const handleMouseLeave = (event: React.MouseEvent<HTMLDivElement>) => {
-    const target = event.currentTarget
-    target.style.setProperty('--x-rotate', '0deg')
-    target.style.setProperty('--y-rotate', '0deg')
-  }
-
   if (recommendations.length === 0) return null
 
   return (
@@ -67,36 +51,36 @@ export function BlogRelatedPosts({
         <span className={styles.title}>{t('blog.recommend.title')}</span>
       </div>
       <ul className={styles.list}>
-        {recommendations.map((post) => {
+        {recommendations.map((post, index) => {
           const hasImage = Boolean(post.image)
           return (
             <li key={post.id} className={styles.item}>
-              <Link to={`/blog/${post.slug}`} className="block">
-                <Card
-                  className={cn(styles.card, hasImage && styles.cardWithImage)}
-                  onMouseMove={hasImage ? handleMouseMove : undefined}
-                  onMouseLeave={hasImage ? handleMouseLeave : undefined}
-                >
+              <Link to={`/blog/${post.slug}`} className={styles.link}>
+                <article className={styles.card}>
+                  <div className={styles.media} aria-hidden="true">
                   {hasImage && post.image ? (
                     <>
-                      <div className={styles.imageWrapper}>
-                        <img
-                          src={getImageUrl(post.image)}
-                          alt={post.title}
-                          className={styles.image}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      </div>
-                      <div className={styles.glassOverlay} aria-hidden="true" />
+                      <img
+                        src={getImageUrl(post.image)}
+                        alt=""
+                        className={styles.image}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <span className={styles.imageOverlay} />
                     </>
-                  ) : null}
+                  ) : (
+                    <span className={styles.fallbackMark}>
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                  )}
+                  </div>
 
                   <div className={styles.content}>
                     <h4 className={styles.postTitle}>{post.title}</h4>
                     <time className={styles.postMeta}>{post.date}</time>
                   </div>
-                </Card>
+                </article>
               </Link>
             </li>
           )
@@ -111,48 +95,44 @@ const styles = {
   header:
     'mb-3 flex items-center justify-between text-sm font-semibold text-[var(--text-secondary)]',
   title: 'tracking-[0.02em]',
-  list: 'space-y-4',
+  list: 'space-y-2.5',
   item: 'list-none',
+  link: 'group block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--page-background)]',
   card: cn(
-    'group relative flex min-h-[64px] h-[64px] w-full overflow-hidden border border-[var(--border-color)]',
-    'bg-[var(--surface-card)] transition-all duration-200 ease-out',
-    'has-[.line-clamp-3]:h-auto',
-    'p-4',
-    '[transform:rotateX(var(--x-rotate,0deg))_rotateY(var(--y-rotate,0deg))]',
-    'shadow-[0_16px_24px_-20px_rgba(15,23,42,0.5)]',
-    'hover:shadow-[0_10px_18px_-16px_rgba(15,23,42,0.45)]',
-    'dark:shadow-[0_20px_32px_-24px_rgba(0,0,0,0.72)]',
-    'dark:hover:shadow-[0_14px_24px_-20px_rgba(0,0,0,0.65)]',
-    'hover:border-slate-300 dark:hover:border-slate-700',
-    'will-change-transform,box-shadow'
+    'relative grid min-h-[74px] grid-cols-[4.25rem_1fr] items-stretch overflow-hidden rounded-xl border',
+    'border-[var(--border-color)] bg-[color-mix(in_srgb,var(--surface-card)_82%,transparent)]',
+    'shadow-[0_12px_28px_-24px_rgba(15,23,42,0.45)] backdrop-blur-sm',
+    'transition-[background-color,border-color,box-shadow,transform] duration-200 ease-out',
+    'group-hover:-translate-y-0.5 group-hover:border-[color-mix(in_srgb,var(--brand-400)_42%,var(--border-color))]',
+    'group-hover:bg-[color-mix(in_srgb,var(--surface-card)_92%,var(--brand-400)_8%)]',
+    'group-hover:shadow-[0_18px_34px_-26px_rgba(15,23,42,0.55)]',
+    'dark:shadow-[0_16px_34px_-26px_rgba(0,0,0,0.65)]'
   ),
-  cardWithImage: cn(
-    'h-[64px] min-h-[64px] p-0 bg-transparent border-transparent shadow-none'
-  ),
-  imageWrapper: cn(
-    'absolute inset-0 z-0',
-    '[mask-image:linear-gradient(70deg,transparent_10%,black_70%)]',
-    '[-webkit-mask-image:linear-gradient(70deg,transparent_10%,black_70%)]'
+  media: cn(
+    'relative m-2 mr-0 flex min-h-[58px] overflow-hidden rounded-lg',
+    'bg-[color-mix(in_srgb,var(--surface-0)_76%,var(--brand-400)_24%)]',
+    'dark:bg-[color-mix(in_srgb,var(--surface-0)_78%,var(--brand-400)_22%)]'
   ),
   image:
-    'absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105',
-  glassOverlay: cn(
-    'absolute inset-0 z-10 pointer-events-none',
-    'backdrop-blur-[12px] bg-gradient-to-tr from-slate-200/50 via-slate-200/12 to-transparent',
-    'dark:from-[#1f2328]/75 dark:via-[#2a313a]/40',
-    '[mask-image:linear-gradient(70deg,black_40%,black_55%,transparent_90%)]',
-    '[-webkit-mask-image:linear-gradient(70deg,black_40%,black_55%,transparent_90%)]'
+    'absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105',
+  imageOverlay: cn(
+    'absolute inset-0',
+    'bg-gradient-to-br from-black/28 via-black/8 to-black/38',
+    'dark:from-black/44 dark:via-black/18 dark:to-black/52'
+  ),
+  fallbackMark: cn(
+    'relative z-10 m-auto font-[var(--font-code)] text-[0.72rem] font-semibold',
+    'text-[color-mix(in_srgb,var(--text-primary)_62%,var(--brand-600)_38%)]',
+    'dark:text-[color-mix(in_srgb,var(--text-primary)_72%,var(--brand-400)_28%)]'
   ),
   content: cn(
-    'relative z-20 flex w-full flex-col justify-center py-2.5 pl-4 pr-[28%] text-left'
+    'flex min-w-0 flex-col justify-center px-3 py-2.5 text-left'
   ),
   postTitle: cn(
-    'text-sm font-semibold tracking-tight text-slate-800/90 dark:text-slate-100/90 transition-colors',
-    'group-hover:text-blue-600 dark:group-hover:text-blue-400',
-    'line-clamp-3 leading-snug',
-    'blur-[0.2px] drop-shadow-[0_1px_2px_rgba(15,23,42,0.35)]',
-    'dark:drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]'
+    'line-clamp-2 text-sm font-semibold leading-snug text-[var(--text-primary)] transition-colors',
+    'group-hover:text-[color-mix(in_srgb,var(--brand-600)_82%,var(--text-primary)_18%)]',
+    'dark:group-hover:text-[color-mix(in_srgb,var(--brand-400)_82%,var(--text-primary)_18%)]'
   ),
   postMeta:
-    'mt-1 text-[10px] font-semibold text-slate-500/80 dark:text-slate-400/80 flex items-center gap-1 blur-[0.2px]',
+    'mt-1.5 text-[10px] font-medium text-[var(--text-disabled)]',
 }

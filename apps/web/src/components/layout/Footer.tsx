@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 import { Trans, useTranslation } from 'react-i18next'
 import { LuGithub } from 'react-icons/lu'
-import { RiBilibiliLine, RiTwitterXFill, RiInstagramLine } from 'react-icons/ri'
+import { RiBilibiliLine, RiTwitterXFill, RiZhihuFill } from 'react-icons/ri'
 import { RiRssLine } from 'react-icons/ri'
 
 export function Footer({
@@ -70,7 +70,7 @@ export function Footer({
             <RiTwitterXFill size={20} />
           </a>
           <a
-            href="https://www.instagram.com/mark_xu269/"
+            href="https://www.zhihu.com/people/mark-81-75"
             target="_blank"
             rel="noopener noreferrer"
             className={cn(
@@ -79,9 +79,9 @@ export function Footer({
                 ? 'hover:text-white'
                 : 'hover:text-[var(--text-primary)]'
             )}
-            aria-label="Instagram"
+            aria-label="Zhihu"
           >
-            <RiInstagramLine size={20} />
+            <RiZhihuFill size={20} />
           </a>
           <a
             href={feedPath}
