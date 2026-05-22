@@ -94,6 +94,40 @@ function FilterTrigger({
   )
 }
 
+function SimpleCategoryOption({
+  category,
+  selectedCategory,
+  onSelectCategory,
+}: {
+  category?: string | null
+  selectedCategory: string | null
+  onSelectCategory: (category: string | null) => void
+}) {
+  const { t } = useTranslation()
+  const isActive = category
+    ? selectedCategory === category
+    : selectedCategory === null
+  const label = category
+    ? t(getBlogCategoryTranslationKey(category), category)
+    : t('blog.filter.allCategories')
+
+  return (
+    <button
+      type="button"
+      aria-pressed={isActive}
+      onClick={() => onSelectCategory(category ?? null)}
+      className={cn(
+        'cursor-pointer whitespace-nowrap border-b border-transparent pb-0.5 text-sm font-medium text-[var(--text-secondary)] transition-colors',
+        'hover:text-[var(--text-primary)]',
+        isActive &&
+          'border-[color-mix(in_srgb,var(--brand-400)_78%,transparent)] text-[var(--text-primary)]'
+      )}
+    >
+      {label}
+    </button>
+  )
+}
+
 export function BlogFilter({
   allCategories,
   selectedCategory,
@@ -105,8 +139,50 @@ export function BlogFilter({
 }: BlogFilterProps) {
   const { t } = useTranslation()
 
+  if (simple) {
+    return (
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+        <SimpleCategoryOption
+          selectedCategory={selectedCategory}
+          onSelectCategory={onSelectCategory}
+        />
+        {allCategories.map((category) => (
+          <SimpleCategoryOption
+            key={category}
+            category={category}
+            selectedCategory={selectedCategory}
+            onSelectCategory={onSelectCategory}
+          />
+        ))}
+
+        {!hideSort && (
+          <button
+            onClick={onToggleSort}
+            className="flex cursor-pointer items-center justify-center rounded-lg border border-transparent bg-transparent px-0 py-0 text-sm font-medium text-[var(--text-secondary)] transition-colors select-none hover:bg-transparent hover:text-[var(--text-primary)] active:scale-95 dark:border-transparent dark:bg-transparent dark:hover:bg-transparent"
+          >
+            <motion.div
+              layout
+              transition={{
+                type: 'spring',
+                stiffness: 700,
+                damping: 30,
+              }}
+              className="flex items-center gap-2"
+            >
+              <span className="min-w-[4.5rem] text-left">
+                {sortBy === 'date'
+                  ? t('blog.sort.created')
+                  : t('blog.sort.updated')}
+              </span>
+            </motion.div>
+          </button>
+        )}
+      </div>
+    )
+  }
+
   return (
-    <div className={cn('flex items-center gap-3', simple && 'gap-4')}>
+    <div className="flex items-center gap-3">
       {/* Filter Dropdown */}
       <Dropdown className="relative">
         <FilterTrigger selectedCategory={selectedCategory} simple={simple} />
