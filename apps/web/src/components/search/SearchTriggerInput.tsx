@@ -4,11 +4,15 @@ import { openGlobalSearch } from './openGlobalSearch'
 export function SearchTriggerInput({
   placeholder,
   containerClassName,
+  className,
+  iconClassName,
   query,
   onTrigger,
 }: {
   placeholder: string
   containerClassName?: string
+  className?: string
+  iconClassName?: string
   query?: string
   onTrigger?: () => void
 }) {
@@ -18,7 +22,8 @@ export function SearchTriggerInput({
       value=""
       placeholder={placeholder}
       containerClassName={containerClassName}
-      className="cursor-pointer"
+      iconClassName={iconClassName}
+      className={className ? `cursor-pointer ${className}` : 'cursor-pointer'}
       onFocus={() => {
         onTrigger?.()
         openGlobalSearch(query)

@@ -108,6 +108,8 @@ export function Blog() {
             <SearchTriggerInput
               placeholder={t('blog.sidebar.search.placeholder')}
               query={searchQuery}
+              iconClassName="left-0 text-[var(--text-secondary)]"
+              className="rounded-none border-0 border-b border-[var(--border-color)] bg-transparent px-0 py-2 pl-7 text-[var(--text-primary)] shadow-none placeholder:text-[var(--text-secondary)] focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)] focus:ring-0 dark:border-[var(--border-color)] dark:bg-transparent dark:text-[var(--text-primary)] dark:placeholder:text-[var(--text-secondary)] dark:focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)]"
             />
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
               <Link
