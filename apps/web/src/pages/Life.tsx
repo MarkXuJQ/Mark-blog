@@ -60,6 +60,14 @@ function parseCityFromMeta(meta: string): string | undefined {
   return maybe ? maybe : undefined
 }
 
+function splitLifeContent(content: string): string[][] {
+  return content
+    .trim()
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.split(/\n/).map((line) => line.trimEnd()))
+    .filter((paragraph) => paragraph.some((line) => line.trim().length > 0))
+}
+
 export function Life() {
   const { t } = useTranslation()
   const title = t('nav.life')
@@ -491,14 +499,11 @@ export function Life() {
             <motion.div
               key={post.id}
               className={cn(
-                'group relative mb-4 inline-block w-full overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-sm',
-                'text-left transition-[transform,box-shadow,border-color] duration-200 ease-out',
-                'hover:border-slate-300 dark:border-[#2b2f36] dark:bg-[#17191c] dark:hover:border-[#3a3f48]',
+                'group relative mb-4 inline-block w-full rounded-2xl',
+                'text-left transition-transform duration-200 ease-out',
                 '[transform:perspective(1200px)_rotateX(var(--x-rotate,0deg))_rotateY(var(--y-rotate,0deg))]',
-                'hover:shadow-[0_20px_32px_-24px_rgba(15,23,42,0.3)]',
-                'dark:hover:shadow-[0_24px_36px_-26px_rgba(0,0,0,0.55)]',
                 'will-change-transform',
-                'focus-within:ring-2 focus-within:ring-blue-500/60',
+                'focus-within:ring-2 focus-within:ring-blue-500/60 focus-within:ring-offset-2 focus-within:ring-offset-white dark:focus-within:ring-offset-[#101114]',
                 'break-inside-avoid'
               )}
               onMouseMove={handleCardMouseMove}
@@ -531,26 +536,18 @@ export function Life() {
                       }
                     />
                   )}
-                  <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/55 to-transparent" />
-
-                  {post.images.length > 1 && (
-                    <div className="absolute top-2 right-2 rounded-full bg-black/45 px-2 py-1 text-[11px] text-white/90 backdrop-blur">
-                      {post.images.length}
-                    </div>
-                  )}
-
-                  <div className="absolute inset-x-0 bottom-2 flex items-center justify-between px-3 text-xs text-white/90">
-                    <div>{post.date}</div>
-                    <div className="flex items-center gap-1">
-                      <MessageCircle size={14} />
-                      <span>{commentCounts[post.id] ?? 0}</span>
-                    </div>
-                  </div>
                 </motion.div>
 
-                <div className="p-3">
+                <div className="px-1.5 pt-2">
                   <div className="line-clamp-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
                     {post.title}
+                  </div>
+                  <div className="mt-1 flex items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+                    <time dateTime={post.date}>{post.date}</time>
+                    <div className="flex items-center gap-1">
+                      <MessageCircle size={13} />
+                      <span>{commentCounts[post.id] ?? 0}</span>
+                    </div>
                   </div>
                 </div>
                 </button>
@@ -775,8 +772,17 @@ export function Life() {
                     {activePost.meta}
                   </div>
 
-                  <div className="mb-6 text-base leading-relaxed text-slate-700 dark:text-slate-300">
-                    {activePost.content}
+                  <div className="mb-6 space-y-4 text-base leading-relaxed text-slate-700 dark:text-slate-300">
+                    {splitLifeContent(activePost.content).map((paragraph, paragraphIndex) => (
+                      <p key={`${activePost.id}-paragraph-${paragraphIndex}`}>
+                        {paragraph.map((line, lineIndex) => (
+                          <span key={`${activePost.id}-line-${paragraphIndex}-${lineIndex}`}>
+                            {line}
+                            {lineIndex < paragraph.length - 1 && <br />}
+                          </span>
+                        ))}
+                      </p>
+                    ))}
                   </div>
 
                   <div className="mt-auto flex items-center justify-end pt-4 text-sm text-slate-600 dark:text-slate-300">
