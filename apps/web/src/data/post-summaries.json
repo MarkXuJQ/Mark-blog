@@ -3,11 +3,27 @@
     "id": "why-I-recommend-everyone-to-write-blog-cn",
     "slug": "why-I-recommend-everyone-to-write-blog-cn",
     "language": "zh",
-    "title": "为什么推荐每一个大学生写博客？",
+    "title": "为什么会推荐大学生写博客？",
     "date": "2026-05-20",
-    "updated": "2026-05-20",
+    "updated": "2026-05-22",
     "summary": "虽然写博客的概念已经优点过时了，但是我仍然推荐，可以在理清自己思路的同时，记录下自己成长的过程，些许还会认识到志同道合的朋友。",
-    "wordCount": 2032,
+    "wordCount": 2730,
+    "tags": [
+      "Blogs",
+      "College",
+      "Writing"
+    ],
+    "category": "essay"
+  },
+  {
+    "id": "why-I-recommend-everyone-to-write-blog-en",
+    "slug": "why-I-recommend-everyone-to-write-blog-en",
+    "language": "en",
+    "title": "Why Do I Recommend College Students to Write Blogs?",
+    "date": "2026-05-20",
+    "updated": "2026-05-22",
+    "summary": "Although the idea of writing blogs already feels a little outdated, I still recommend it. It helps you clarify your thoughts, record the process of growing up, and maybe even meet like-minded people along the way.",
+    "wordCount": 1788,
     "tags": [
       "Blogs",
       "College",
@@ -43,8 +59,23 @@
     "tags": [
       "AI",
       "Game",
-      "Meme",
-      "Death Stranding"
+      "Culture"
+    ],
+    "category": "essay"
+  },
+  {
+    "id": "ai-through-meme-death-stranding-2-en",
+    "slug": "ai-through-meme-death-stranding-2-en",
+    "language": "en",
+    "title": "Looking at AI Through the Lens of Meme: Thoughts After Playing Death Stranding 2",
+    "date": "2026-05-16",
+    "summary": "After finishing the story of Death Stranding 2, I began to understand MEME as a way for the genes of human culture to keep growing. AI can reuse these cultural genes, but new cultural genes may still have to grow out of human experience.",
+    "wordCount": 2753,
+    "image": "https://img.markxu.icu/img69e8647962c8ab32d1d0e0fbf1e40b61.png",
+    "tags": [
+      "AI",
+      "Game",
+      "Culture"
     ],
     "category": "essay"
   },
@@ -57,6 +88,22 @@
     "updated": "2026-05-20",
     "summary": "从一次大创项目、一套医疗管理系统，到骨盆骨折 CT 分割算法的复现与改进。这篇文章记录我的毕业设计，也记录一次从失败里慢慢摸到问题核心的经历。",
     "wordCount": 4127,
+    "tags": [
+      "Projects",
+      "Image Segmentation",
+      "Algorithm"
+    ],
+    "category": "project"
+  },
+  {
+    "id": "my-graduation-project-en",
+    "slug": "my-graduation-project-en",
+    "language": "en",
+    "title": "From Student Innovation Project to Graduation Thesis: How My Research Thinking Evolved",
+    "date": "2026-05-15",
+    "updated": "2026-05-20",
+    "summary": "From a student innovation project and a medical management system to reproducing and improving a pelvic fracture CT segmentation algorithm, this post records my graduation project and how I slowly learned to find the real problem inside failure.",
+    "wordCount": 2560,
     "tags": [
       "Projects",
       "Image Segmentation",
