@@ -66,6 +66,28 @@ function isTransformableCloudflareImage(src: string): boolean {
   }
 }
 
+function unwrapCloudflareTransformationUrl(src: string): string {
+  if (!/^https?:\/\//i.test(src)) return src
+
+  try {
+    const url = new URL(src)
+    const pathParts = url.pathname.split('/')
+
+    if (
+      pathParts[1] !== 'cdn-cgi' ||
+      pathParts[2] !== 'image' ||
+      pathParts.length < 5
+    ) {
+      return src
+    }
+
+    url.pathname = `/${pathParts.slice(4).join('/')}`
+    return url.toString()
+  } catch {
+    return src
+  }
+}
+
 function buildCloudflareTransformationUrl(
   originalUrl: string,
   variant: ImageTransformVariant
@@ -76,11 +98,15 @@ function buildCloudflareTransformationUrl(
   return `${url.origin}/cdn-cgi/image/${options}${url.pathname}${url.search}`
 }
 
+export function getOriginalImageUrl(path: string): string {
+  return unwrapCloudflareTransformationUrl(getImageUrl(path))
+}
+
 export function getOptimizedImageUrl(
   path: string,
   variant: ImageTransformVariant = 'content'
 ): string {
-  const originalUrl = getImageUrl(path)
+  const originalUrl = getOriginalImageUrl(path)
   if (import.meta.env.VITE_CF_IMAGE_TRANSFORMATIONS_ENABLED === 'false') {
     return originalUrl
   }
@@ -96,7 +122,7 @@ export function rewriteHtmlImageSrc(html: string): string {
   const imgs = doc.querySelectorAll('img')
   imgs.forEach((img, index) => {
     const src = img.getAttribute('src') || ''
-    const original = getImageUrl(src)
+    const original = getOriginalImageUrl(src)
     const optimized = getOptimizedImageUrl(original, 'content')
     img.setAttribute('src', optimized)
     img.setAttribute('data-original-src', original)
@@ -116,7 +142,7 @@ export function extractOptimizedImageUrlsFromHtml(html: string): string[] {
   doc.querySelectorAll('img').forEach((img) => {
     const src = img.getAttribute('src') || ''
     if (!src) return
-    urls.add(getOptimizedImageUrl(src, 'content'))
+    urls.add(getOptimizedImageUrl(getOriginalImageUrl(src), 'content'))
   })
 
   return Array.from(urls)

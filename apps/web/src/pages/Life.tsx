@@ -7,7 +7,7 @@ import { getTwikooApi, loadTwikooScript } from '@/components/comments/twikooLoad
 import { Seo } from '@/components/seo/Seo'
 import { Dropdown, DropdownContent, DropdownTrigger } from '@/components/ui/Dropdown'
 import { useLightbox } from '@/components/ui/Lightbox'
-import { getImageUrl, getOptimizedImageUrl } from '@/utils/image'
+import { getOriginalImageUrl, getOptimizedImageUrl } from '@/utils/image'
 import { cn } from '@/lib/utils'
 
 type ImageInput = string | { src: string; alt?: string }
@@ -41,8 +41,7 @@ const lifeYearFiles = import.meta.glob<{ default: RawLifePost[] }>(
 function normalizeImageSrc(input: ImageInput): string {
   const src = typeof input === 'string' ? input : input.src
   const trimmed = src.trim().replace(/[)）]+$/, '')
-  if (/^https?:\/\//i.test(trimmed)) return trimmed
-  return getImageUrl(trimmed)
+  return getOriginalImageUrl(trimmed)
 }
 
 function normalizeLifeImage(input: ImageInput): LifeImage {
