@@ -7,6 +7,7 @@ import 'yet-another-react-lightbox/styles.css'
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import "yet-another-react-lightbox/plugins/captions.css";
+import { getOriginalImageUrl } from '@/utils/image'
 
 interface LightboxContextType {
   openLightbox: (slides: { src: string; alt?: string; description?: string }[], index?: number) => void
@@ -24,6 +25,7 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
     // Map alt to description for Captions plugin
     const processedSlides = newSlides.map(slide => ({
       ...slide,
+      src: getOriginalImageUrl(slide.src),
       description: slide.description || slide.alt // Use alt as description if description is missing
     }))
     setSlides(processedSlides)
