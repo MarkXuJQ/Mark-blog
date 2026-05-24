@@ -6,12 +6,15 @@ import { cn } from '@/lib/utils'
 import { getOptimizedImageUrl } from '@/utils/image'
 import type { BlogPostSummary } from '@/types'
 import { CategoryLabel } from './CategoryLabel'
+import type { CSSProperties } from 'react'
 
 interface BlogPostCardProps {
   post: BlogPostSummary
+  className?: string
+  style?: CSSProperties
 }
 
-export function BlogPostCard({ post }: BlogPostCardProps) {
+export function BlogPostCard({ post, className, style }: BlogPostCardProps) {
   const { t } = useTranslation()
   const words = post.wordCount ?? 0
   const coverImage = post.image ? getOptimizedImageUrl(post.image, 'card') : ''
@@ -27,9 +30,12 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
   // Layout A: no cover image, text-only card.
   if (!coverImage) {
     return (
-      <div key={post.id} className="animate-in fade-in duration-200">
+      <div
+        className={cn('animate-in fade-in duration-200', className)}
+        style={style}
+      >
         <Link to={`/blog/${post.slug}`} className="block">
-          <Card className="group block p-4 sm:p-5 transition-transform hover:-translate-y-1 hover:shadow-md">
+          <Card className="group block p-4 transition-transform hover:-translate-y-1 hover:shadow-md sm:p-5">
             <article>
               {/* Title */}
               <h2 className={titleClass}>{post.title}</h2>
@@ -42,9 +48,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
               {/* Meta info row: category + date + word count */}
               <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
                 <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
-                  {post.category && (
-                    <CategoryLabel category={post.category} />
-                  )}
+                  {post.category && <CategoryLabel category={post.category} />}
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
                     <span>{post.date}</span>
@@ -64,9 +68,12 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
 
   // Layout B: cover image present, split card (image + text).
   return (
-    <div key={post.id} className="animate-in fade-in duration-200">
+    <div
+      className={cn('animate-in fade-in duration-200', className)}
+      style={style}
+    >
       <Link to={`/blog/${post.slug}`} className="block">
-        <Card className="group block overflow-hidden p-0 sm:p-0 transition-transform hover:-translate-y-1 hover:shadow-md">
+        <Card className="group block overflow-hidden p-0 transition-transform hover:-translate-y-1 hover:shadow-md sm:p-0">
           {/* Mobile template */}
           <article className="flex min-h-[220px] flex-col sm:hidden">
             {/* Image (top, golden ratio portion) */}
@@ -84,15 +91,13 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
             </div>
 
             {/* Text (bottom, overlaps image for aesthetics) */}
-            <div className="-mt-10 flex min-w-0 flex-1 flex-col overflow-hidden bg-white p-3 pt-6 dark:bg-[#17191c] sm:mt-0">
+            <div className="-mt-10 flex min-w-0 flex-1 flex-col overflow-hidden bg-white p-3 pt-6 sm:mt-0 dark:bg-[#17191c]">
               <h2 className={titleClass}>{post.title}</h2>
 
               <p className={cn('mb-2 pb-4', summaryClass)}>{post.summary}</p>
 
               <div className={metaClass}>
-                {post.category && (
-                  <CategoryLabel category={post.category} />
-                )}
+                {post.category && <CategoryLabel category={post.category} />}
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
                   <span>{post.date}</span>
@@ -108,15 +113,13 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
           {/* Desktop template */}
           <article className="hidden min-h-[170px] sm:grid sm:grid-cols-[minmax(0,1.618fr)_minmax(0,1fr)] sm:grid-rows-1">
             {/* Text (left) */}
-            <div className="order-1 relative z-10 flex min-w-0 flex-col overflow-hidden p-4">
+            <div className="relative z-10 order-1 flex min-w-0 flex-col overflow-hidden p-4">
               <h2 className={titleClass}>{post.title}</h2>
 
               <p className={cn('mb-2 pb-6', summaryClass)}>{post.summary}</p>
 
               <div className={metaClass}>
-                {post.category && (
-                  <CategoryLabel category={post.category} />
-                )}
+                {post.category && <CategoryLabel category={post.category} />}
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
                   <span>{post.date}</span>
@@ -129,7 +132,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
             </div>
 
             {/* Image (right, golden ratio portion) */}
-            <div className="order-2 relative isolate overflow-visible">
+            <div className="relative isolate order-2 overflow-visible">
               <div className="absolute inset-0 -left-10 w-[calc(100%+2.5rem)] [mask-image:linear-gradient(to_left,black_0%,black_78%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_left,black_0%,black_78%,transparent_100%)]">
                 <img
                   src={coverImage}

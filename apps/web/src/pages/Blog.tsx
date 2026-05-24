@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, type CSSProperties } from 'react'
 import { Link, useOutletContext } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BlogFilter } from '@/components/blog/BlogFilter'
@@ -13,7 +13,9 @@ import {
   type JsonLd,
 } from '@/components/seo/shared'
 import { Pagination } from '@/components/ui/Pagination'
+import { StaggeredList } from '@/components/ui/StaggeredList'
 import { useBlogPosts } from '@/hooks/useBlogPosts'
+import { cn } from '@/lib/utils'
 import type { BlogListOutletContext } from '@/layouts/BlogListLayout'
 import type { BlogPostSummary } from '@/types'
 
@@ -66,6 +68,7 @@ export function Blog() {
     const start = (currentPage - 1) * ITEMS_PER_PAGE
     return posts.slice(start, start + ITEMS_PER_PAGE)
   }, [posts, currentPage])
+  const listMotionKey = `${simpleMode ? 'simple' : 'rich'}-${selectedCategory}-${sortBy}-${searchQuery}-${currentPage}`
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
@@ -87,15 +90,24 @@ export function Blog() {
         }
       >
         <div className="flex flex-col gap-2">
-          <h1
+          <div
             className={
               simpleMode
-                ? 'text-3xl font-bold text-[var(--text-primary)]'
-                : 'text-3xl font-bold text-slate-900 dark:text-slate-100'
+                ? 'flex flex-wrap items-baseline justify-between gap-x-5 gap-y-2'
+                : undefined
             }
           >
-            {pageTitle}
-          </h1>
+            <h1
+              className={
+                simpleMode
+                  ? 'text-3xl font-bold text-[var(--text-primary)]'
+                  : 'text-3xl font-bold text-slate-900 dark:text-slate-100'
+              }
+            >
+              {pageTitle}
+            </h1>
+            {simpleMode ? <SimpleBlogHeaderLinks /> : null}
+          </div>
           <SearchStatus
             query={searchQuery}
             count={posts.length}
@@ -112,12 +124,6 @@ export function Blog() {
               className="rounded-none border-0 border-b border-[var(--border-color)] bg-transparent px-0 py-2 pl-7 text-[var(--text-primary)] shadow-none placeholder:text-[var(--text-secondary)] focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)] focus:ring-0 dark:border-[var(--border-color)] dark:bg-transparent dark:text-[var(--text-primary)] dark:placeholder:text-[var(--text-secondary)] dark:focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)]"
             />
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
-              <Link
-                to="/archive"
-                className="font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
-              >
-                {t('blog.sidebar.archive.title')}
-              </Link>
               <BlogFilter
                 allCategories={allCategories}
                 selectedCategory={selectedCategory}
@@ -140,16 +146,21 @@ export function Blog() {
         )}
       </div>
 
-      <div className={simpleMode ? 'space-y-0' : 'space-y-6'}>
+      <div>
         {currentPosts.length > 0 ? (
           <>
-            {currentPosts.map((post) => (
-              simpleMode ? (
-                <SimpleBlogPostItem key={post.id} post={post} />
-              ) : (
-                <BlogPostCard key={post.id} post={post} />
-              )
-            ))}
+            <StaggeredList
+              key={listMotionKey}
+              className={simpleMode ? 'space-y-0' : 'space-y-6'}
+            >
+              {currentPosts.map((post) =>
+                simpleMode ? (
+                  <SimpleBlogPostItem key={post.id} post={post} />
+                ) : (
+                  <BlogPostCard key={post.id} post={post} />
+                )
+              )}
+            </StaggeredList>
 
             <Pagination
               currentPage={currentPage}
@@ -167,11 +178,44 @@ export function Blog() {
   )
 }
 
-function SimpleBlogPostItem({ post }: { post: BlogPostSummary }) {
+function SimpleBlogHeaderLinks() {
+  const { t, i18n } = useTranslation()
+  const linksLabel = i18n.language?.startsWith('zh') ? '友链' : 'Friends'
+
   return (
-    <article className="py-6 first:pt-0">
+    <nav
+      aria-label={i18n.language?.startsWith('zh') ? '博客入口' : 'Blog links'}
+      className="flex shrink-0 items-center gap-4 text-sm"
+    >
+      <Link
+        to="/archive"
+        className="font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+      >
+        {t('blog.sidebar.archive.title')}
+      </Link>
+      <Link
+        to="/links"
+        className="font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+      >
+        {linksLabel}
+      </Link>
+    </nav>
+  )
+}
+
+function SimpleBlogPostItem({
+  post,
+  className,
+  style,
+}: {
+  post: BlogPostSummary
+  className?: string
+  style?: CSSProperties
+}) {
+  return (
+    <article className={cn('py-6 first:pt-0', className)} style={style}>
       <Link to={`/blog/${post.slug}`} className="group block">
-        <h2 className="text-2xl font-bold leading-snug text-[var(--text-primary)] transition-colors group-hover:text-[color-mix(in_srgb,var(--brand-400)_72%,var(--text-primary)_28%)]">
+        <h2 className="text-2xl leading-snug font-bold text-[var(--text-primary)] transition-colors group-hover:text-[color-mix(in_srgb,var(--brand-400)_72%,var(--text-primary)_28%)]">
           {post.title}
         </h2>
         {post.summary ? (

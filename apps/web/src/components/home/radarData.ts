@@ -1,4 +1,5 @@
-import radarSites from '@content/Radar/sites.json'
+import radarConfig from '@content/Links/radar.json'
+import linkSites from '@content/Links/sites.json'
 import dbushellFavicon from '../../assets/home/radar/dbushell.png'
 import eventuallymakingFavicon from '../../assets/home/radar/eventuallymaking.png'
 import geokashFavicon from '../../assets/home/radar/geokash.png'
@@ -56,8 +57,44 @@ export interface RadarNode {
   dotScaleSteps?: number
 }
 
-interface RadarSiteContentItem extends Omit<RadarNode, 'faviconSrc'> {
+interface LinkSiteContentItem {
+  id: string
+  radarCategory: RadarNodeCategory
+  name: string
+  href: string
   faviconKey: keyof typeof RADAR_FAVICONS
+  eyebrow: {
+    zh: string
+    en: string
+  }
+  description: {
+    zh: string
+    en: string
+  }
+}
+
+interface RadarNodeConfigItem {
+  id: string
+  cardAlignX: RadarNode['cardAlignX']
+  cardAlignY: RadarNode['cardAlignY']
+  color: string
+  dotScaleSteps?: number
+}
+
+interface RadarConfig {
+  nodes: RadarNodeConfigItem[]
+}
+
+interface RadarSiteContentItem extends Omit<
+  RadarNode,
+  'faviconSrc' | 'label' | 'category'
+> {
+  faviconKey: keyof typeof RADAR_FAVICONS
+  category: RadarNodeCategory
+  label: {
+    zh: string
+    en: string
+  }
 }
 
 export interface SignalPortalState {
@@ -83,12 +120,37 @@ export const RADAR_CATEGORY_LABELS: Record<
   'interesting-site': { zh: '有意思的网站', en: 'Interesting sites' },
 }
 
-export const RADAR_NODES: RadarNode[] = (
-  radarSites as RadarSiteContentItem[]
-).map(({ faviconKey, ...site }) => ({
-  ...site,
-  faviconSrc: RADAR_FAVICONS[faviconKey] ?? RADAR_FAVICONS.ruanyifeng,
-}))
+const LINK_SITE_BY_ID = new Map(
+  (linkSites as LinkSiteContentItem[]).map((site) => [site.id, site])
+)
+
+export const RADAR_NODES: RadarNode[] = (radarConfig as RadarConfig).nodes
+  .map((nodeConfig): RadarSiteContentItem | null => {
+    const site = LINK_SITE_BY_ID.get(nodeConfig.id)
+    if (!site) return null
+
+    return {
+      id: site.id,
+      category: site.radarCategory,
+      href: site.href,
+      faviconKey: site.faviconKey,
+      label: {
+        zh: site.name,
+        en: site.name,
+      },
+      eyebrow: site.eyebrow,
+      description: site.description,
+      cardAlignX: nodeConfig.cardAlignX,
+      cardAlignY: nodeConfig.cardAlignY,
+      color: nodeConfig.color,
+      dotScaleSteps: nodeConfig.dotScaleSteps,
+    }
+  })
+  .filter((site): site is RadarSiteContentItem => site != null)
+  .map(({ faviconKey, ...site }) => ({
+    ...site,
+    faviconSrc: RADAR_FAVICONS[faviconKey] ?? RADAR_FAVICONS.ruanyifeng,
+  }))
 
 export const RING_INSETS = ['8%', '18%', '30%', '42%', '54%']
 export const NODE_REVEAL_ANGLE_WINDOW = 18

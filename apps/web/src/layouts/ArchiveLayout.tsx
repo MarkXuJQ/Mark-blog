@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LeftSidebarWidget, StatsWidget } from '@/components/blog/BlogWidgets'
@@ -14,7 +14,9 @@ const READER_MODE_STORAGE_KEY = 'blog-reader-mode'
 
 export function ArchiveLayout() {
   const { i18n } = useTranslation()
+  const { pathname } = useLocation()
   const posts = getAllPostSummaries(i18n.language)
+  const isLinksPage = pathname === '/links'
   const [isMounted, setIsMounted] = useState(false)
   const [simpleMode, setSimpleMode] = useState(() => {
     if (typeof window === 'undefined') return false
@@ -30,10 +32,7 @@ export function ArchiveLayout() {
   }, [])
 
   useEffect(() => {
-    document.documentElement.toggleAttribute(
-      'data-simple-reading',
-      simpleMode
-    )
+    document.documentElement.toggleAttribute('data-simple-reading', simpleMode)
     window.localStorage.setItem(
       READER_MODE_STORAGE_KEY,
       simpleMode ? 'simple' : 'rich'
@@ -48,10 +47,7 @@ export function ArchiveLayout() {
     <div className={styles.container}>
       <span id="page-top" />
       <div
-        className={cn(
-          styles.layoutGrid,
-          simpleMode && styles.simpleLayoutGrid
-        )}
+        className={cn(styles.layoutGrid, simpleMode && styles.simpleLayoutGrid)}
       >
         <aside className={cn(styles.leftSidebar, simpleMode && '!hidden')}>
           <div className={styles.stickyWrapper}>
@@ -63,17 +59,20 @@ export function ArchiveLayout() {
           id="main-content"
           className={cn(
             styles.mainContent,
+            isLinksPage && styles.linksMainContent,
             simpleMode && styles.simpleMainContent
           )}
         >
           <Outlet context={outletContext} />
         </main>
 
-        <aside className={cn(styles.rightSidebar, simpleMode && '!hidden')}>
-          <div className={styles.stickyWrapper}>
-            <StatsWidget posts={posts} />
-          </div>
-        </aside>
+        {!isLinksPage ? (
+          <aside className={cn(styles.rightSidebar, simpleMode && '!hidden')}>
+            <div className={styles.stickyWrapper}>
+              <StatsWidget posts={posts} />
+            </div>
+          </aside>
+        ) : null}
       </div>
 
       {isMounted ? (
@@ -96,6 +95,8 @@ const styles = {
     'sticky top-[86px] h-[calc(100vh-8rem)] space-y-6 overflow-y-auto pb-10 scrollbar-hide',
   mainContent:
     'flex w-full min-w-0 max-w-[640px] flex-1 flex-col md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px]',
+  linksMainContent:
+    'max-w-[760px] md:max-w-[820px] lg:max-w-[900px] xl:max-w-[980px]',
   simpleMainContent:
     'max-w-[720px] md:max-w-[760px] lg:max-w-[800px] xl:max-w-[840px]',
 }

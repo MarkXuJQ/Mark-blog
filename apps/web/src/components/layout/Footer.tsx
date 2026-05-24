@@ -135,9 +135,7 @@ export function Footer({
           <p
             className={cn(
               'text-xs',
-              isHomeVariant
-                ? 'text-white/34'
-                : 'text-[var(--text-disabled)]'
+              isHomeVariant ? 'text-white/34' : 'text-[var(--text-disabled)]'
             )}
           >
             {t('footer.builtWith')}

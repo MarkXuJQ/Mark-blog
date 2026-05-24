@@ -1,0 +1,212 @@
+[
+  {
+    "id": "ruanyifeng",
+    "radarCategory": "personal-blog",
+    "name": "阮一峰的网络日志",
+    "href": "https://www.ruanyifeng.com/blog/",
+    "faviconKey": "ruanyifeng",
+    "eyebrow": {
+      "zh": "科技写作 / 编程观察",
+      "en": "Tech essays / Programming notes"
+    },
+    "description": {
+      "zh": "长期更新的中文技术博客，围绕编程方法、工具趋势与科技周刊展开。",
+      "en": "A long-running Chinese tech blog about programming practice, tools, and weekly observations on the web."
+    }
+  },
+  {
+    "id": "eventuallymaking",
+    "radarCategory": "personal-blog",
+    "name": "Eventuallymaking",
+    "href": "https://eventuallymaking.io/",
+    "faviconKey": "eventuallymaking",
+    "eyebrow": {
+      "zh": "软件工程 / 创业笔记",
+      "en": "Software engineering / Startups"
+    },
+    "description": {
+      "zh": "一位资深软件工程师持续分享技术、产品和创业实践的个人站点。",
+      "en": "A veteran software engineer sharing notes on technology, product building, and startups."
+    }
+  },
+  {
+    "id": "joshwcomeau",
+    "radarCategory": "personal-blog",
+    "name": "Josh W. Comeau",
+    "href": "https://www.joshwcomeau.com/",
+    "faviconKey": "joshwcomeau",
+    "eyebrow": {
+      "zh": "React / CSS / Animation",
+      "en": "React / CSS / Animation"
+    },
+    "description": {
+      "zh": "面向开发者的友好教程站点，聚焦 React、CSS、动画与前端体验。",
+      "en": "Friendly tutorials for developers, focused on React, CSS, animation, and front-end craft."
+    }
+  },
+  {
+    "id": "pathos",
+    "radarCategory": "personal-blog",
+    "name": "Pathos.page",
+    "href": "https://pathos.page/",
+    "faviconKey": "pathos",
+    "eyebrow": {
+      "zh": "2750 words / 法哲学",
+      "en": "2750 words / Legal philosophy"
+    },
+    "description": {
+      "zh": "一位法哲学研究者的博客，记录学术写作、问题意识与社会观察。",
+      "en": "A blog by a legal philosophy researcher, documenting scholarship, writing, and social observation."
+    }
+  },
+  {
+    "id": "messenger",
+    "radarCategory": "interesting-site",
+    "name": "Messenger",
+    "href": "https://messenger.abeto.co/",
+    "faviconKey": "messenger",
+    "eyebrow": {
+      "zh": "独立网页游戏",
+      "en": "Indie web game"
+    },
+    "description": {
+      "zh": "一款气质很强的太空投递小游戏，小小星球里也有人需要送货。",
+      "en": "\"It's a small planet, but someone's gotta make the deliveries.\" A tiny space-delivery web game with attitude."
+    }
+  },
+  {
+    "id": "radiogarden",
+    "radarCategory": "interesting-site",
+    "name": "Radio Garden",
+    "href": "https://radio.garden/visit/washington-dc/DIlWBUQt",
+    "faviconKey": "radiogarden",
+    "eyebrow": {
+      "zh": "Washington DC / Live radio",
+      "en": "Washington DC / Live radio"
+    },
+    "description": {
+      "zh": "像旋转地球仪一样漫游全球电台，这个入口会直接落到 Washington DC 收听页。",
+      "en": "Drops straight into the Washington DC listening view, a globe-like way to wander through live radio stations."
+    }
+  },
+  {
+    "id": "tongliao",
+    "radarCategory": "interesting-site",
+    "name": "通辽宇宙知识库",
+    "href": "https://www.tongliaouniverse.cn/",
+    "faviconKey": "tongliao",
+    "eyebrow": {
+      "zh": "小国梗 / 历史狠人",
+      "en": "Microstates / History lore"
+    },
+    "description": {
+      "zh": "围绕奇葩小国、硬核历史人物与通辽宇宙梗文化展开的互动知识站。",
+      "en": "An interactive knowledge base about eccentric microstates, hard-core historical figures, and Tongliao Universe lore."
+    }
+  },
+  {
+    "id": "rleonardi",
+    "radarCategory": "interesting-site",
+    "name": "Robby Leonardi",
+    "href": "http://www.rleonardi.com/",
+    "faviconKey": "rleonardi",
+    "eyebrow": {
+      "zh": "交互式简历 / 设计师作品集",
+      "en": "Interactive resume / Design portfolio"
+    },
+    "description": {
+      "zh": "一位纽约自由职业者的个人站点，以交互式游戏简历和设计作品闻名。",
+      "en": "A New York-based freelancer's personal site, famous for the award-winning interactive game-style resume and design portfolio."
+    }
+  },
+  {
+    "id": "zhheo",
+    "radarCategory": "personal-blog",
+    "name": "张洪Heo",
+    "href": "https://blog.zhheo.com/",
+    "faviconKey": "zhheo",
+    "eyebrow": {
+      "zh": "设计与科技 / 开源工具",
+      "en": "Design & Tech / Open-source tools"
+    },
+    "description": {
+      "zh": "高产的技术博客，分享设计、前端开发、AI 应用与自研工具。",
+      "en": "A prolific tech blog about design, front-end development, AI applications, and self-built online tools."
+    }
+  },
+  {
+    "id": "zhilu",
+    "radarCategory": "personal-blog",
+    "name": "纸鹿摸鱼处",
+    "href": "https://blog.zhilu.site/",
+    "faviconKey": "zhilu",
+    "eyebrow": {
+      "zh": "前端技术 / 博客思考",
+      "en": "Front-end tech / Blogging thoughts"
+    },
+    "description": {
+      "zh": "关注前端开发细节、排版、深色模式和互联网产品思考的技术博客。",
+      "en": "A tech blog about front-end details, typography, dark mode, and reflections on internet products."
+    }
+  },
+  {
+    "id": "dbushell",
+    "radarCategory": "personal-blog",
+    "name": "dbushell.com",
+    "href": "https://dbushell.com/",
+    "faviconKey": "dbushell",
+    "eyebrow": {
+      "zh": "Web 标准 / 前端工程",
+      "en": "Web standards / Front-end engineering"
+    },
+    "description": {
+      "zh": "前端开发者的个人博客，分享 Web 平台、性能、可访问性和安全思考。",
+      "en": "A front-end developer's blog about the web platform, performance, accessibility, and security."
+    }
+  },
+  {
+    "id": "uselessweb",
+    "radarCategory": "interesting-site",
+    "name": "The Useless Web",
+    "href": "https://theuselessweb.com/",
+    "faviconKey": "uselessweb",
+    "eyebrow": {
+      "zh": "随机网站 / 网络漫游",
+      "en": "Random websites / Web wander"
+    },
+    "description": {
+      "zh": "一个纯粹的“无用”网站入口，每次点击都会把你带到随机、古怪但有趣的网站。",
+      "en": "A pure portal to the useless web. Each click takes you to a random, quirky, and fascinating site."
+    }
+  },
+  {
+    "id": "geokash",
+    "radarCategory": "interesting-site",
+    "name": "GEOKASH",
+    "href": "https://geokash.com/",
+    "faviconKey": "geokash",
+    "eyebrow": {
+      "zh": "创意档案 / 软硬件项目",
+      "en": "Creative archive / Hardware & software"
+    },
+    "description": {
+      "zh": "一个无广告、无目的的创意探索空间，存档了 Kash 的软件、硬件和 3D 打印等个人项目。",
+      "en": "An ad-free, purposeless space for creative exploration, archiving Kash's personal software, hardware, and 3D printing projects."
+    }
+  },
+  {
+    "id": "nineteen-hundred",
+    "radarCategory": "personal-blog",
+    "name": "1900.live",
+    "href": "https://1900.live/",
+    "faviconKey": "nineteen-hundred",
+    "eyebrow": {
+      "zh": "个人日志 / 生活杂记",
+      "en": "Personal journal / Life notes"
+    },
+    "description": {
+      "zh": "记录骑行、编程、观影、生活感想与健康观察的个人博客。",
+      "en": "A personal blog documenting cycling, programming, movies, life reflections, and health observations."
+    }
+  }
+]
