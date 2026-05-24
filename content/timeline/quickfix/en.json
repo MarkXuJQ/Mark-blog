@@ -5,7 +5,8 @@
     "content": [
       "Reworked the games page presentation: Most Played now uses an auto-scrolling rail, while All Games uses a Steam-style vertical-cover showcase with interactions",
       "Unified the card treatment across games, movies, blog, and links pages by softening outer borders and relying on backgrounds, shadows, and spacing for hierarchy",
-      "Removed outer border lines from the navbar and dropdown surfaces while keeping necessary internal dividers and keyboard focus feedback"
+      "Removed outer border lines from the navbar and dropdown surfaces while keeping necessary internal dividers and keyboard focus feedback",
+      "Added a curtain-style theme transition: the current theme drops down, the theme switches while covered, and the curtain pulls back up with a smoother motion curve"
     ]
   },
   {

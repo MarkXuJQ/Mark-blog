@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react'
 
 export type ThemeMode = 'light' | 'system' | 'dark'
 
+const THEME_TRANSITION_CLASS = 'theme-switching'
+const THEME_TRANSITION_DURATION = 280
+
 export function useTheme() {
-  // 从 localStorage 读取保存的主题，如果没有则默认为 'system'
   const [mode, setMode] = useState<ThemeMode>(() => {
     if (typeof window !== 'undefined' && window.localStorage) {
       const saved = window.localStorage.getItem('theme-mode')
@@ -16,20 +18,38 @@ export function useTheme() {
 
   useEffect(() => {
     const root = window.document.documentElement
-    // 移除之前的类名，防止冲突
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches
+
+    if (!prefersReducedMotion) {
+      root.classList.add(THEME_TRANSITION_CLASS)
+    }
+
     root.classList.remove('light', 'dark')
 
     if (mode === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
+        .matches
         ? 'dark'
         : 'light'
       root.classList.add(systemTheme)
     } else {
       root.classList.add(mode)
     }
-    
-    // 保存设置到 localStorage
+
     localStorage.setItem('theme-mode', mode)
+
+    if (prefersReducedMotion) return
+
+    const timeoutId = window.setTimeout(() => {
+      root.classList.remove(THEME_TRANSITION_CLASS)
+    }, THEME_TRANSITION_DURATION)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+      root.classList.remove(THEME_TRANSITION_CLASS)
+    }
   }, [mode])
 
   return { mode, setMode }
