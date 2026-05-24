@@ -1,5 +1,7 @@
+import type { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RiLinksLine } from 'react-icons/ri'
+import { StaggeredList } from '@/components/ui/StaggeredList'
 import { cn } from '@/lib/utils'
 import {
   FRIEND_LINK_CATEGORY_ORDER,
@@ -17,9 +19,13 @@ interface FriendLinksProps {
 function FriendLinkCard({
   link,
   simple = false,
+  className,
+  style,
 }: {
   link: FriendLink
   simple?: boolean
+  className?: string
+  style?: CSSProperties
 }) {
   const { i18n } = useTranslation()
   const labels = getFriendLinkLabels(Boolean(i18n.language?.startsWith('zh')))
@@ -31,8 +37,10 @@ function FriendLinkCard({
       rel="noopener noreferrer"
       className={cn(
         'group flex min-w-0 items-start',
-        simple ? styles.simpleCard : styles.card
+        simple ? styles.simpleCard : styles.card,
+        className
       )}
+      style={style}
       aria-label={`${labels.openLabel}: ${link.name}`}
     >
       <span
@@ -80,10 +88,12 @@ function FriendLinkSection({
   category,
   links,
   simple = false,
+  motionIndexOffset = 0,
 }: {
   category: FriendLinkCategory
   links: FriendLink[]
   simple?: boolean
+  motionIndexOffset?: number
 }) {
   const { i18n } = useTranslation()
   const labels = getFriendLinkLabels(Boolean(i18n.language?.startsWith('zh')))
@@ -109,17 +119,18 @@ function FriendLinkSection({
         </span>
       </div>
       {links.length > 0 ? (
-        <div
+        <StaggeredList
           className={cn(
             simple
               ? styles.simpleGrid
               : 'grid grid-cols-[repeat(auto-fit,minmax(min(100%,18rem),1fr))] gap-3'
           )}
+          startIndex={motionIndexOffset}
         >
           {links.map((link) => (
             <FriendLinkCard key={link.id} link={link} simple={simple} />
           ))}
-        </div>
+        </StaggeredList>
       ) : (
         <p
           className={cn(
@@ -160,19 +171,27 @@ const styles = {
 }
 
 export function FriendLinks({ className, simple = false }: FriendLinksProps) {
-  const groupedLinks = FRIEND_LINK_CATEGORY_ORDER.map((category) => ({
-    category,
-    links: FRIEND_LINKS.filter((link) => link.category === category),
-  }))
+  let motionIndexOffset = 0
+  const groupedLinks = FRIEND_LINK_CATEGORY_ORDER.map((category) => {
+    const links = FRIEND_LINKS.filter((link) => link.category === category)
+    const group = {
+      category,
+      links,
+      motionIndexOffset,
+    }
+    motionIndexOffset += links.length
+    return group
+  })
 
   return (
     <div className={cn(simple ? 'space-y-9' : 'space-y-10', className)}>
-      {groupedLinks.map(({ category, links }) => (
+      {groupedLinks.map(({ category, links, motionIndexOffset }) => (
         <FriendLinkSection
           key={category}
           category={category}
           links={links}
           simple={simple}
+          motionIndexOffset={motionIndexOffset}
         />
       ))}
     </div>

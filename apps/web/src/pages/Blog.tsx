@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, type CSSProperties } from 'react'
 import { Link, useOutletContext } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BlogFilter } from '@/components/blog/BlogFilter'
@@ -13,7 +13,9 @@ import {
   type JsonLd,
 } from '@/components/seo/shared'
 import { Pagination } from '@/components/ui/Pagination'
+import { StaggeredList } from '@/components/ui/StaggeredList'
 import { useBlogPosts } from '@/hooks/useBlogPosts'
+import { cn } from '@/lib/utils'
 import type { BlogListOutletContext } from '@/layouts/BlogListLayout'
 import type { BlogPostSummary } from '@/types'
 
@@ -66,6 +68,7 @@ export function Blog() {
     const start = (currentPage - 1) * ITEMS_PER_PAGE
     return posts.slice(start, start + ITEMS_PER_PAGE)
   }, [posts, currentPage])
+  const listMotionKey = `${simpleMode ? 'simple' : 'rich'}-${selectedCategory}-${sortBy}-${searchQuery}-${currentPage}`
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
@@ -143,16 +146,21 @@ export function Blog() {
         )}
       </div>
 
-      <div className={simpleMode ? 'space-y-0' : 'space-y-6'}>
+      <div>
         {currentPosts.length > 0 ? (
           <>
-            {currentPosts.map((post) =>
-              simpleMode ? (
-                <SimpleBlogPostItem key={post.id} post={post} />
-              ) : (
-                <BlogPostCard key={post.id} post={post} />
-              )
-            )}
+            <StaggeredList
+              key={listMotionKey}
+              className={simpleMode ? 'space-y-0' : 'space-y-6'}
+            >
+              {currentPosts.map((post) =>
+                simpleMode ? (
+                  <SimpleBlogPostItem key={post.id} post={post} />
+                ) : (
+                  <BlogPostCard key={post.id} post={post} />
+                )
+              )}
+            </StaggeredList>
 
             <Pagination
               currentPage={currentPage}
@@ -195,9 +203,17 @@ function SimpleBlogHeaderLinks() {
   )
 }
 
-function SimpleBlogPostItem({ post }: { post: BlogPostSummary }) {
+function SimpleBlogPostItem({
+  post,
+  className,
+  style,
+}: {
+  post: BlogPostSummary
+  className?: string
+  style?: CSSProperties
+}) {
   return (
-    <article className="py-6 first:pt-0">
+    <article className={cn('py-6 first:pt-0', className)} style={style}>
       <Link to={`/blog/${post.slug}`} className="group block">
         <h2 className="text-2xl leading-snug font-bold text-[var(--text-primary)] transition-colors group-hover:text-[color-mix(in_srgb,var(--brand-400)_72%,var(--text-primary)_28%)]">
           {post.title}
