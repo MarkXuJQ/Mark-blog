@@ -1,8 +1,5 @@
 import { cn } from '@/lib/utils'
-import {
-  LifeClockDisplay,
-  type LifeClockDisplayRow,
-} from './LifeClockDisplay'
+import { LifeClockDisplay, type LifeClockDisplayRow } from './LifeClockDisplay'
 import { useLifeClockMetrics } from './useLifeClockMetrics'
 
 export interface LifeSinceClockProps {
@@ -49,7 +46,12 @@ export function LifeSinceClock({
           bare && styles.displayWrapBare
         )}
       >
-        <div className={cn(styles.displayShell, compact && styles.displayShellCompact)}>
+        <div
+          className={cn(
+            styles.displayShell,
+            compact && styles.displayShellCompact
+          )}
+        >
           <LifeClockDisplay rows={rows} compact={compact} />
         </div>
       </div>
@@ -71,7 +73,7 @@ const styles = {
   titleCompact: 'mt-2 text-[0.95rem] leading-6 sm:text-[1rem]',
   displayWrap: 'mt-5 flex w-full justify-center',
   displayWrapCompact: 'mt-4',
-  displayWrapBare: 'mt-0 justify-center sm:justify-start',
+  displayWrapBare: 'mt-0 justify-center',
   displayShell:
     'w-full max-w-[30rem] [filter:drop-shadow(0_22px_38px_rgba(0,0,0,0.38))]',
   displayShellCompact: 'max-w-[26rem]',
