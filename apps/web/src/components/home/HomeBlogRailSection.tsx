@@ -484,10 +484,10 @@ function BlogRailItem({
       data-home-reveal={ariaHidden ? undefined : 'blog-card'}
       data-home-reveal-index={ariaHidden ? undefined : index}
       className={cn(
-        'group relative flex min-h-[19rem] shrink-0 flex-col justify-between overflow-hidden px-5 py-5 transition-[background-color,transform] duration-300 sm:min-h-[21rem] sm:px-7 sm:py-6 lg:min-h-[22rem] lg:px-8',
+        'group relative flex min-h-[19rem] shrink-0 flex-col justify-between overflow-hidden border border-slate-200/70 px-5 py-5 transition-[background-color,box-shadow,transform] duration-300 sm:min-h-[21rem] sm:px-7 sm:py-6 lg:min-h-[22rem] lg:px-8 dark:border-0',
         isFeatured
-          ? 'w-[20.5rem] bg-black/[0.03] shadow-[0_28px_54px_-42px_rgba(15,23,42,0.42)] sm:w-[28rem] lg:w-[32rem] dark:bg-white/[0.04] dark:shadow-[0_28px_56px_-44px_rgba(2,6,23,0.86)]'
-          : 'w-[18.5rem] sm:w-[24rem] lg:w-[28rem]'
+          ? 'w-[20.5rem] bg-black/[0.03] shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] hover:shadow-[0_28px_54px_-42px_rgba(15,23,42,0.42)] sm:w-[28rem] lg:w-[32rem] dark:bg-white/[0.04] dark:shadow-none dark:hover:shadow-[0_28px_56px_-44px_rgba(2,6,23,0.86)]'
+          : 'w-[18.5rem] shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] sm:w-[24rem] lg:w-[28rem] dark:shadow-none'
       )}
     >
       <div

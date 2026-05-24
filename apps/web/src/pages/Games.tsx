@@ -266,7 +266,7 @@ function StatTile(props: {
   const { label, value, hint, icon } = props
 
   return (
-    <div className="rounded-[1.4rem] border border-white/50 bg-white/75 p-3.5 shadow-[0_14px_30px_-22px_rgba(15,23,42,0.45)] backdrop-blur-sm sm:rounded-3xl sm:p-4 dark:border-[#2b2f36] dark:bg-[#17191c]">
+    <div className="rounded-[1.4rem] border border-slate-200/70 bg-white/75 p-3.5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur-sm sm:rounded-3xl sm:p-4 dark:border-0 dark:bg-[#17191c] dark:shadow-none">
       <div className="flex items-center justify-between gap-3">
         <p className="min-w-0 flex-1 text-[0.65rem] leading-snug font-semibold tracking-[0.16em] text-slate-500 uppercase sm:text-xs sm:tracking-[0.24em] dark:text-slate-400">
           {label}
@@ -301,7 +301,7 @@ function GameIcon(props: {
     return (
       <div
         className={cn(
-          'overflow-hidden rounded-2xl bg-slate-950/5 shadow-sm dark:bg-slate-900/50',
+          'overflow-hidden rounded-2xl bg-slate-950/5 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] dark:bg-slate-900/50 dark:shadow-none',
           className
         )}
       >
@@ -321,7 +321,7 @@ function GameIcon(props: {
   return (
     <div
       className={cn(
-        'flex items-center justify-center rounded-2xl bg-emerald-600 font-semibold text-white shadow-sm',
+        'flex items-center justify-center rounded-2xl bg-emerald-600 font-semibold text-white shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] dark:shadow-none',
         className
       )}
       aria-hidden="true"
@@ -359,7 +359,7 @@ function FeaturedGameCard(props: {
   return (
     <article
       aria-hidden={ariaHidden}
-      className="group relative min-h-[252px] w-[calc(100vw-3.25rem)] flex-none overflow-hidden rounded-[24px] bg-slate-950 text-white shadow-[0_22px_62px_-40px_rgba(15,23,42,0.8)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_28px_70px_-42px_rgba(15,23,42,0.9)] sm:w-[30rem] lg:w-[32rem]"
+      className="group relative min-h-[252px] w-[calc(100vw-3.25rem)] flex-none overflow-hidden rounded-[24px] bg-slate-950 text-white shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_28px_70px_-42px_rgba(15,23,42,0.9)] sm:w-[30rem] lg:w-[32rem] dark:shadow-none"
     >
       {game.headerImage ? (
         <img
@@ -764,7 +764,7 @@ function GameShowcaseTile({
       onPointerLeave={resetTilt}
       onPointerMove={handlePointerMove}
     >
-      <div className="relative aspect-[2/3] overflow-hidden rounded-[13px] bg-[linear-gradient(135deg,#0f172a_0%,#334155_48%,#0f766e_100%)] shadow-[0_18px_42px_-28px_rgba(15,23,42,0.75)]">
+      <div className="relative aspect-[2/3] overflow-hidden rounded-[13px] bg-[linear-gradient(135deg,#0f172a_0%,#334155_48%,#0f766e_100%)] shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-shadow duration-200 group-hover:shadow-[0_18px_42px_-28px_rgba(15,23,42,0.75)] dark:shadow-none">
         <div className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm font-semibold text-white/80">
           {game.name}
         </div>
@@ -990,11 +990,11 @@ export function Games() {
 
       <div>
         <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-10">
-          <section className="relative overflow-hidden rounded-[30px] bg-white/82 p-5 shadow-[0_24px_80px_-44px_rgba(15,23,42,0.36)] backdrop-blur-xl sm:p-6 dark:bg-[#17191c]">
+          <section className="relative overflow-hidden rounded-[30px] border border-slate-200/70 bg-white/82 p-5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur-xl sm:p-6 dark:border-0 dark:bg-[#17191c] dark:shadow-none">
             <div className="grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)] lg:items-stretch">
               <div className="flex min-w-0 flex-col justify-between gap-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-[22px] bg-slate-100 shadow-[0_16px_40px_-26px_rgba(15,23,42,0.7)] ring-1 ring-slate-200/80 sm:h-24 sm:w-24 dark:bg-[#101215] dark:ring-white/10">
+                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-[22px] bg-slate-100 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] ring-1 ring-slate-200/80 sm:h-24 sm:w-24 dark:bg-[#101215] dark:shadow-none dark:ring-white/10">
                     <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-px bg-white/70 dark:bg-white/20" />
                     {dashboard?.profile.avatarUrl ? (
                       <img
@@ -1107,7 +1107,7 @@ export function Games() {
           </section>
 
           {status === 'loading' ? (
-            <section className="mt-8 rounded-[28px] bg-white/80 p-6 shadow-sm backdrop-blur dark:bg-[#17191c]">
+            <section className="mt-8 rounded-[28px] border border-slate-200/70 bg-white/80 p-6 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur dark:border-0 dark:bg-[#17191c] dark:shadow-none">
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 {t('games.loading')}
               </p>
@@ -1123,7 +1123,7 @@ export function Games() {
           ) : null}
 
           {status === 'error' ? (
-            <section className="mt-8 rounded-[28px] bg-rose-50/90 p-6 shadow-sm dark:bg-rose-950/30">
+            <section className="mt-8 rounded-[28px] border border-rose-200/70 bg-rose-50/90 p-6 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] dark:border-0 dark:bg-rose-950/30 dark:shadow-none">
               <h2 className="text-xl font-semibold text-rose-950 dark:text-rose-100">
                 {t('games.empty.title')}
               </h2>
@@ -1165,13 +1165,13 @@ export function Games() {
                     }}
                   />
                 ) : (
-                  <div className="rounded-[28px] bg-white/80 p-6 text-sm text-slate-600 shadow-sm dark:bg-[#17191c] dark:text-slate-400">
+                  <div className="rounded-[28px] border border-slate-200/70 bg-white/80 p-6 text-sm text-slate-600 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] dark:border-0 dark:bg-[#17191c] dark:text-slate-400 dark:shadow-none">
                     {t('games.featured.noData')}
                   </div>
                 )}
               </section>
 
-              <section className="mt-10 rounded-[28px] bg-white/80 p-5 shadow-[0_24px_80px_-42px_rgba(15,23,42,0.28)] backdrop-blur sm:p-6 dark:bg-[#17191c]">
+              <section className="mt-10 rounded-[28px] border border-slate-200/70 bg-white/80 p-5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur sm:p-6 dark:border-0 dark:bg-[#17191c] dark:shadow-none">
                 <div className="relative">
                   <div className="hidden items-center justify-between gap-4 sm:flex">
                     <h2 className="min-w-0 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
@@ -1179,7 +1179,7 @@ export function Games() {
                     </h2>
 
                     <div className="flex shrink-0 items-center gap-2.5">
-                      <label className="flex h-11 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3.5 shadow-sm transition dark:border-[#2b2f36] dark:bg-[#17191c]">
+                      <label className="flex h-11 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3.5 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition dark:border-[#2b2f36] dark:bg-[#17191c] dark:shadow-none">
                         <Search className="h-4 w-4 shrink-0 text-slate-500 dark:text-slate-400" />
                         <input
                           type="search"
@@ -1236,7 +1236,7 @@ export function Games() {
                           aria-controls={searchInputId}
                           aria-expanded={isMobileSearchVisible}
                           aria-label={t('games.library.searchToggle')}
-                          className="inline-flex h-11 max-w-[6.5rem] items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3 text-sm font-medium text-slate-500 shadow-sm transition hover:border-slate-300 hover:text-slate-700 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-[#3a3f48] dark:hover:text-slate-100"
+                          className="inline-flex h-11 max-w-[6.5rem] items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3 text-sm font-medium text-slate-500 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition hover:border-slate-300 hover:text-slate-700 hover:shadow-sm dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:shadow-none dark:hover:border-[#3a3f48] dark:hover:text-slate-100"
                         >
                           <Search className="h-4 w-4 shrink-0" />
                           <span className="truncate">
@@ -1261,7 +1261,7 @@ export function Games() {
 
                     <label
                       className={cn(
-                        'absolute inset-0 flex h-11 min-w-0 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3 shadow-sm transition duration-200 dark:border-[#2b2f36] dark:bg-[#17191c]',
+                        'absolute inset-0 flex h-11 min-w-0 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition duration-200 dark:border-[#2b2f36] dark:bg-[#17191c] dark:shadow-none',
                         isMobileSearchVisible
                           ? 'translate-x-0 opacity-100'
                           : 'pointer-events-none translate-x-3 opacity-0'
@@ -1367,7 +1367,7 @@ export function Games() {
                     })}
                   </div>
                 ) : (
-                  <div className="mt-6 rounded-[24px] bg-slate-50/80 p-8 text-center text-sm text-slate-600 shadow-sm dark:bg-[#17191c] dark:text-slate-400">
+                  <div className="mt-6 rounded-[24px] border border-slate-200/70 bg-slate-50/80 p-8 text-center text-sm text-slate-600 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] dark:border-0 dark:bg-[#17191c] dark:text-slate-400 dark:shadow-none">
                     {t('games.library.noResults')}
                   </div>
                 )}

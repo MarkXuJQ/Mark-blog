@@ -147,16 +147,16 @@ function FriendLinkSection({
 
 const styles = {
   card: cn(
-    'gap-3 rounded-xl bg-white/75 p-4 shadow-[0_1px_0_rgba(15,23,42,0.06),0_12px_28px_rgba(15,23,42,0.06)]',
+    'gap-3 rounded-xl border border-slate-200/70 bg-white/75 p-4 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)]',
     'transition-[background-color,box-shadow,transform]',
     'hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_1px_0_rgba(59,130,246,0.16),0_16px_34px_rgba(15,23,42,0.10)]',
-    'dark:bg-[#17191c] dark:hover:bg-[#1d2025]'
+    'dark:border-0 dark:bg-[#17191c] dark:shadow-none dark:hover:bg-[#1d2025]'
   ),
   simpleCard:
     'grid grid-cols-[2.25rem_minmax(0,1fr)] gap-3 py-3 sm:grid-cols-[2.5rem_minmax(0,1fr)]',
   faviconFrame:
     'mt-0.5 flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-white dark:bg-slate-900',
-  richFaviconFrame: 'h-12 w-12 shadow-sm',
+  richFaviconFrame: 'h-12 w-12 shadow-none',
   simpleFaviconFrame: 'h-9 w-9',
   sectionHeader: cn(
     'relative pb-4',
@@ -166,7 +166,7 @@ const styles = {
   simpleSectionHeader: 'pb-1',
   simpleGrid: 'space-y-0',
   emptyState:
-    'rounded-xl bg-slate-50/80 px-4 py-5 shadow-sm dark:bg-slate-900/30',
+    'rounded-xl border border-slate-200/70 bg-slate-50/80 px-4 py-5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] dark:border-0 dark:bg-slate-900/30 dark:shadow-none',
 }
 
 export function FriendLinks({ className, simple = false }: FriendLinksProps) {

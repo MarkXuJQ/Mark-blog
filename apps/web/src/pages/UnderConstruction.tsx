@@ -16,19 +16,14 @@ export function UnderConstruction() {
         <div className={styles.iconContainer}>
           <Construction size={80} className={styles.icon} />
         </div>
-        <h1 className={styles.title}>
-          {t('underConstruction.title')}
-        </h1>
+        <h1 className={styles.title}>{t('underConstruction.title')}</h1>
         <p className={styles.description}>
           {t('underConstruction.description')}
         </p>
         <div className={styles.progressSection}>
           <LifeProgress />
         </div>
-        <Link
-          to="/"
-          className={styles.button}
-        >
+        <Link to="/" className={styles.button}>
           {t('underConstruction.backHome')}
         </Link>
       </Card>
@@ -37,14 +32,16 @@ export function UnderConstruction() {
 }
 
 const styles = {
-  card: "w-full max-w-3xl flex flex-col items-center justify-center text-center p-6 sm:p-12 shadow-2xl border-slate-200/50 dark:border-slate-700/50",
-  iconContainer: "mb-8 rounded-full bg-slate-100 p-8 dark:bg-slate-800",
-  icon: "text-slate-400 dark:text-slate-500",
-  title: "mb-6 text-4xl font-bold text-slate-800 dark:text-slate-200 tracking-tight",
-  description: "mb-8 text-xl text-slate-600 dark:text-slate-400 max-w-lg mx-auto",
-  progressSection: "mb-10 w-full max-w-2xl",
+  card: 'flex w-full max-w-3xl flex-col items-center justify-center border border-slate-200/70 p-6 text-center shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] sm:p-12 dark:border-0 dark:shadow-none',
+  iconContainer: 'mb-8 rounded-full bg-slate-100 p-8 dark:bg-slate-800',
+  icon: 'text-slate-400 dark:text-slate-500',
+  title:
+    'mb-6 text-4xl font-bold text-slate-800 dark:text-slate-200 tracking-tight',
+  description:
+    'mb-8 text-xl text-slate-600 dark:text-slate-400 max-w-lg mx-auto',
+  progressSection: 'mb-10 w-full max-w-2xl',
   button: cn(
-    "rounded-full bg-slate-900 px-8 py-4 text-base font-medium text-white transition-all hover:scale-105",
-    "hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 shadow-lg hover:shadow-xl"
-  )
+    'rounded-full bg-slate-900 px-8 py-4 text-base font-medium text-white transition-all hover:scale-105',
+    'hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 shadow-none hover:shadow-xl'
+  ),
 }

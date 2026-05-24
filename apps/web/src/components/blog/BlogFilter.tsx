@@ -70,8 +70,8 @@ function FilterTrigger({
   return (
     <DropdownTrigger
       className={cn(
-        'flex cursor-pointer items-center gap-2 rounded-lg bg-white px-3 py-2 text-[0.95rem] font-medium text-slate-700 shadow-sm transition-colors',
-        'hover:bg-slate-50 hover:text-slate-900',
+        'flex cursor-pointer items-center gap-2 rounded-lg bg-white px-3 py-2 text-[0.95rem] font-medium text-slate-700 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition-[background-color,color,box-shadow] dark:shadow-none',
+        'hover:bg-slate-50 hover:text-slate-900 hover:shadow-sm',
         'dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100',
         simple &&
           'border-transparent bg-transparent px-0 py-0 text-[var(--text-secondary)] hover:bg-transparent hover:text-[var(--text-primary)] dark:border-transparent dark:bg-transparent dark:hover:bg-transparent'
@@ -214,8 +214,8 @@ export function BlogFilter({
         <button
           onClick={onToggleSort}
           className={cn(
-            'flex cursor-pointer items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors select-none active:scale-95',
-            'hover:bg-slate-50 hover:text-slate-900',
+            'flex cursor-pointer items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition-[background-color,color,box-shadow] select-none active:scale-95 dark:shadow-none',
+            'hover:bg-slate-50 hover:text-slate-900 hover:shadow-sm',
             'dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100',
             simple &&
               'border-transparent bg-transparent px-0 py-0 text-[var(--text-secondary)] hover:bg-transparent hover:text-[var(--text-primary)] dark:border-transparent dark:bg-transparent dark:hover:bg-transparent'

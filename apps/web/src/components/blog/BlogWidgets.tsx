@@ -300,7 +300,7 @@ function StatItem({
 
 const styles = {
   widgetCard:
-    'border-0 p-6 shadow-[0_18px_42px_-32px_rgba(15,23,42,0.45)] transition-all hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] dark:border-0',
+    'border border-slate-200/70 p-6 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-all hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] dark:border-0 dark:shadow-none',
 
   // Profile
   profileContainer:

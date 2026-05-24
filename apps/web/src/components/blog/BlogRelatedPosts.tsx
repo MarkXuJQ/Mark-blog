@@ -100,13 +100,12 @@ const styles = {
   link: 'group block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--page-background)]',
   card: cn(
     'relative grid min-h-[74px] grid-cols-[4.25rem_1fr] items-stretch overflow-hidden rounded-xl',
-    'bg-white/80',
-    'shadow-[0_12px_28px_-24px_rgba(15,23,42,0.45)] backdrop-blur-sm',
+    'border border-slate-200/70 bg-white/80',
+    'shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur-sm',
     'transition-[background-color,box-shadow,transform] duration-200 ease-out',
     'group-hover:-translate-y-0.5 group-hover:bg-white/90',
     'group-hover:shadow-[0_18px_34px_-26px_rgba(15,23,42,0.55)]',
-    'dark:bg-[#17191c] dark:group-hover:bg-[#1c1a18]',
-    'dark:shadow-[0_16px_34px_-26px_rgba(0,0,0,0.65)]'
+    'dark:border-0 dark:bg-[#17191c] dark:shadow-none dark:group-hover:bg-[#1c1a18]'
   ),
   media: cn(
     'relative m-2 mr-0 flex min-h-[58px] overflow-hidden rounded-lg',

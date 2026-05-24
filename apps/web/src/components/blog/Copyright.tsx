@@ -10,7 +10,7 @@ export function Copyright() {
   const { t } = useTranslation()
 
   return (
-    <div className="relative my-10 overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-white to-slate-50/60 p-5 shadow-[0_16px_40px_-34px_rgba(15,23,42,0.35)] dark:from-[#17191c] dark:via-[#14171a] dark:to-[#17191c]">
+    <div className="relative my-10 overflow-hidden rounded-2xl border border-slate-200/70 bg-gradient-to-br from-slate-50 via-white to-slate-50/60 p-5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] dark:border-0 dark:from-[#17191c] dark:via-[#14171a] dark:to-[#17191c] dark:shadow-none">
       <div className="pointer-events-none absolute -top-16 -right-8 h-96 w-96 rotate-[-35deg] opacity-[0.08] dark:opacity-[0.12]">
         <div className="absolute top-2 left-0 text-slate-700 dark:text-slate-200">
           <FaCreativeCommonsBy className="h-48 w-48" />

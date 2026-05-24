@@ -28,7 +28,7 @@ export function WebsiteCard({
         target="_blank"
         rel="noopener noreferrer"
         className={cn(
-          'group flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3 shadow-sm transition-all hover:border-slate-300 hover:shadow-md dark:border-[#2b2f36] dark:bg-[#17191c] dark:hover:border-[#3a3f48]',
+          'group flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-all hover:border-slate-300 hover:shadow-md dark:border-0 dark:bg-[#17191c] dark:shadow-none',
           className
         )}
       >
@@ -67,7 +67,7 @@ export function WebsiteCard({
         target="_blank"
         rel="noopener noreferrer"
         className={cn(
-          'group flex h-32 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:border-slate-300 hover:shadow-md dark:border-[#2b2f36] dark:bg-[#17191c] dark:hover:border-[#3a3f48]',
+          'group flex h-32 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-all hover:border-slate-300 hover:shadow-md dark:border-0 dark:bg-[#17191c] dark:shadow-none',
           className
         )}
       >
@@ -112,8 +112,8 @@ export function WebsiteCard({
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-        className={cn(
-        'group block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:border-slate-300 hover:shadow-md dark:border-[#2b2f36] dark:bg-[#17191c] dark:hover:border-[#3a3f48]',
+      className={cn(
+        'group block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-all hover:border-slate-300 hover:shadow-md dark:border-0 dark:bg-[#17191c] dark:shadow-none',
         className
       )}
     >
