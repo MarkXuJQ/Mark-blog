@@ -12,7 +12,7 @@ interface StaggeredListProps {
   children: ReactNode
   className?: string
   itemClassName?: string
-  as?: 'div' | 'section'
+  as?: 'div' | 'section' | 'ul'
   startIndex?: number
 }
 

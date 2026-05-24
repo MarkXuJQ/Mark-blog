@@ -1,5 +1,42 @@
 [
   {
+    "date": "2026-05-24",
+    "title": "Blog Index, Archives, and Friends Page Polish",
+    "description": "Continued tightening the blog content entry points by shipping the friends page, simplifying archives, and adding lightweight staggered motion to list-heavy views.",
+    "categories": [
+      {
+        "title": "Content Entries and Friends Page",
+        "items": [
+          {
+            "id": "blog-20260524-1",
+            "content": "Shipped the friends page and sidebar entry, using a favicon, title, and author-info grid with Personal Picks and Web Neighbors categories",
+            "date": "2026-05-24"
+          },
+          {
+            "id": "blog-20260524-2",
+            "content": "Moved link data into content/Links so the friends page can use its own application format while the radar keeps sharing curated site data",
+            "date": "2026-05-24"
+          }
+        ]
+      },
+      {
+        "title": "Archives and List Motion",
+        "items": [
+          {
+            "id": "blog-20260524-4",
+            "content": "Reworked the archives page from a timeline into a scannable article index with the date placed before each title",
+            "date": "2026-05-24"
+          },
+          {
+            "id": "blog-20260524-5",
+            "content": "Extracted a reusable StaggeredList component and applied automatic item-entry motion to the blog list, archives, friends page, and timeline",
+            "date": "2026-05-24"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-05-22",
     "title": "Blog Reading and Homepage Experience Upgrade",
     "description": "Completed the simplified blog mode replacement and the second-pass homepage polish, making reading, search, and content entry points calmer and clearer.",

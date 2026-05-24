@@ -8,6 +8,7 @@ import zhQuickFixes from '@content/timeline/quickfix/zh.json'
 import enQuickFixes from '@content/timeline/quickfix/en.json'
 import { GitCommit, ChevronDown, ChevronRight } from 'lucide-react'
 import { Seo } from '@/components/seo/Seo'
+import { StaggeredList } from '@/components/ui/StaggeredList'
 import type { QuickFixGroup, TimelineEvent } from '@/types'
 
 // Cast the JSON data to the correct type
@@ -37,8 +38,7 @@ export function Timeline() {
     ? zhQuickFixItems
     : enQuickFixItems
   const quickFixGroups = useMemo(
-    () =>
-      [...quickFixes].sort((a, b) => b.date.localeCompare(a.date)),
+    () => [...quickFixes].sort((a, b) => b.date.localeCompare(a.date)),
     [quickFixes]
   )
 
@@ -105,7 +105,8 @@ export function Timeline() {
         pointerState.current.hasSwiped = false
       }}
       onPointerMove={(event) => {
-        if (!pointerState.current.isDown || pointerState.current.hasSwiped) return
+        if (!pointerState.current.isDown || pointerState.current.hasSwiped)
+          return
         const dx = event.clientX - pointerState.current.startX
         const dy = event.clientY - pointerState.current.startY
         const absX = Math.abs(dx)
@@ -156,9 +157,7 @@ export function Timeline() {
               type="button"
               role="tab"
               aria-selected={activeTab === tab.id}
-              className={
-                activeTab === tab.id ? styles.tabActive : styles.tab
-              }
+              className={activeTab === tab.id ? styles.tabActive : styles.tab}
               onClick={() =>
                 setActiveTab(tab.id as 'website' | 'quickfix' | 'life')
               }
@@ -177,7 +176,7 @@ export function Timeline() {
 
         {activeTab === 'website' && (
           <section className={styles.section}>
-            <div className={styles.timeline}>
+            <StaggeredList className={styles.timeline}>
               {events.map((event, index) => {
                 const isExpanded = expandedDates.includes(event.date)
                 const categoryCount =
@@ -241,7 +240,10 @@ export function Timeline() {
                                   {category.title}
                                 </h4>
 
-                                <ul className={styles.itemsList}>
+                                <StaggeredList
+                                  as="ul"
+                                  className={styles.itemsList}
+                                >
                                   {category.items.map((item) => (
                                     <li key={item.id} className={styles.item}>
                                       <ItemMarker />
@@ -275,7 +277,7 @@ export function Timeline() {
                                       </div>
                                     </li>
                                   ))}
-                                </ul>
+                                </StaggeredList>
                               </div>
                             ))}
                           </div>
@@ -285,13 +287,13 @@ export function Timeline() {
                   </div>
                 )
               })}
-            </div>
+            </StaggeredList>
           </section>
         )}
 
         {activeTab === 'quickfix' && (
           <section className={styles.section}>
-            <ul className={styles.quickfixList}>
+            <StaggeredList className={styles.quickfixList}>
               {quickFixGroups.map((group) => (
                 <li key={group.id} className={styles.quickfixGroup}>
                   <div className={styles.quickfixHeader}>
@@ -300,7 +302,10 @@ export function Timeline() {
                   </div>
                   <ul className={styles.quickfixItems}>
                     {group.content.map((entry, index) => (
-                      <li key={`${group.id}-${index}`} className={styles.quickfixItem}>
+                      <li
+                        key={`${group.id}-${index}`}
+                        className={styles.quickfixItem}
+                      >
                         <span className={styles.quickfixDot} />
                         <span className={styles.quickfixText}>{entry}</span>
                       </li>
@@ -308,7 +313,7 @@ export function Timeline() {
                   </ul>
                 </li>
               ))}
-            </ul>
+            </StaggeredList>
           </section>
         )}
 
@@ -388,8 +393,7 @@ const styles = {
     'font-mono text-sm font-semibold text-blue-600 dark:text-blue-400',
   quickfixItems: 'mt-3 space-y-2 pl-5',
   quickfixItem: 'flex items-start gap-2 text-sm',
-  quickfixDot:
-    'mt-2 h-1.5 w-1.5 rounded-full bg-slate-300 dark:bg-slate-700',
+  quickfixDot: 'mt-2 h-1.5 w-1.5 rounded-full bg-slate-300 dark:bg-slate-700',
   quickfixText: 'text-slate-600 dark:text-slate-400',
   lifePanel:
     'rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 p-5 text-sm text-slate-600 dark:border-slate-700/70 dark:bg-slate-900/40 dark:text-slate-400',
