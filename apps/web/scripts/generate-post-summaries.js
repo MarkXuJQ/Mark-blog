@@ -3,15 +3,13 @@ import path from 'node:path'
 import process from 'node:process'
 import matter from 'gray-matter'
 import { fileURLToPath } from 'node:url'
+import { countWords } from '../src/utils/readingTime.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
-const OUTPUT_FILE = path.resolve(
-  __dirname,
-  '../src/data/post-summaries.json'
-)
+const OUTPUT_FILE = path.resolve(__dirname, '../src/data/post-summaries.json')
 
 function collectMarkdownFiles(dirPath) {
   const entries = fs.readdirSync(dirPath, { withFileTypes: true })
@@ -45,20 +43,8 @@ function normalizeOptionalString(value) {
 
 function normalizeOptionalStringArray(value) {
   return Array.isArray(value)
-    ? value.filter(
-        (item) => typeof item === 'string' && item.trim().length > 0
-      )
+    ? value.filter((item) => typeof item === 'string' && item.trim().length > 0)
     : undefined
-}
-
-function countWords(text) {
-  const plainText = text.replace(/<[^>]*>?/gm, '')
-  const cjkMatches = plainText.match(/[\u4e00-\u9fa5]/g) || []
-  const cjkCount = cjkMatches.length
-  const nonCjkText = plainText.replace(/[\u4e00-\u9fa5]/g, ' ')
-  const nonCjkCount = nonCjkText.trim().split(/\s+/).filter(Boolean).length
-
-  return cjkCount + nonCjkCount
 }
 
 function resolvePostSlug(filePath, data) {
@@ -122,8 +108,6 @@ function main() {
 try {
   main()
 } catch (error) {
-  console.error(
-    error instanceof Error ? error.message : String(error)
-  )
+  console.error(error instanceof Error ? error.message : String(error))
   process.exitCode = 1
 }

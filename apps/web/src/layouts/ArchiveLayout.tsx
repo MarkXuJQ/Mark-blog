@@ -2,6 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LeftSidebarWidget, StatsWidget } from '@/components/blog/BlogWidgets'
+import { MobileBlogDrawer } from '@/components/blog/MobileBlogDrawer'
 import { ReaderModeToggle } from '@/components/blog/ReaderModeToggle'
 import { getAllPostSummaries } from '@/lib/content'
 import { cn } from '@/lib/utils'
@@ -76,10 +77,16 @@ export function ArchiveLayout() {
       </div>
 
       {isMounted ? (
-        <ReaderModeToggle
-          simpleMode={simpleMode}
-          onToggle={() => setSimpleMode((prev) => !prev)}
-        />
+        <>
+          <ReaderModeToggle
+            simpleMode={simpleMode}
+            onToggle={() => setSimpleMode((prev) => !prev)}
+          />
+          <MobileBlogDrawer
+            simpleMode={simpleMode}
+            onToggleMode={() => setSimpleMode((prev) => !prev)}
+          />
+        </>
       ) : null}
     </div>
   )

@@ -1,4 +1,5 @@
 import type { BlogPost, MarkdownPost } from '@/types'
+import { getAllPostSummaries } from './postSummaries'
 
 type PostLanguage = 'zh' | 'en'
 type PostFolder = 'chinese' | 'english'
@@ -25,7 +26,7 @@ function resolveFolderFromPath(path: string): PostFolder | null {
 
 const markdownFiles = import.meta.glob<MarkdownPost>(
   ['@content/posts/chinese/*.md', '@content/posts/english/*.md'],
-  { eager: true },
+  { eager: true }
 )
 
 type PostsCache = Record<PostLanguage, BlogPost[] | null>
@@ -40,6 +41,7 @@ function parsePost(path: string, module: MarkdownPost): BlogPost | null {
   const frontmatterSlug = module.attributes.slug?.trim()
   const slug = frontmatterSlug || fileSlug
   if (!slug) return null
+  const folder = resolveFolderFromPath(path)
 
   const { attributes, html } = module
   const aliases = new Set<string>()
@@ -64,7 +66,16 @@ function parsePost(path: string, module: MarkdownPost): BlogPost | null {
     content: html,
     tags: attributes.tags,
     category: attributes.category,
+    wordCount: getWordCountForSlug(
+      slug,
+      folder ? FOLDER_TO_LANGUAGE[folder] : undefined
+    ),
   }
+}
+
+function getWordCountForSlug(slug: string, language?: PostLanguage) {
+  return getAllPostSummaries(language).find((post) => post.slug === slug)
+    ?.wordCount
 }
 
 export function getAllPosts(language?: string): BlogPost[] {
@@ -185,7 +196,10 @@ export function getSharedPostCommentPath(post: BlogPost): string {
 
 function findPairedChinesePost(post: BlogPost): BlogPost | undefined {
   return getAllPosts('zh').find((candidate) => {
-    if (candidate.slug === post.slug || candidate.aliases?.includes(post.slug)) {
+    if (
+      candidate.slug === post.slug ||
+      candidate.aliases?.includes(post.slug)
+    ) {
       return true
     }
     if (post.aliases?.includes(candidate.slug)) {
