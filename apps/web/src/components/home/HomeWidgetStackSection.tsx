@@ -389,7 +389,7 @@ const styles = {
   keyframeAnchorGlow:
     'pointer-events-none absolute inset-[-22%] bg-[radial-gradient(circle_at_50%_18%,rgba(125,211,252,0.28)_0%,rgba(125,211,252,0.1)_32%,rgba(125,211,252,0)_72%)] blur-3xl',
   keyframeAnchorFrame:
-    'relative aspect-square w-full overflow-hidden rounded-[24px] border border-white/12 bg-slate-950/56 p-2 shadow-[0_22px_48px_-30px_rgba(0,0,0,0.74)] backdrop-blur-sm',
+    'relative aspect-square w-full overflow-hidden rounded-[24px] bg-slate-950/56 p-2 shadow-[0_22px_48px_-30px_rgba(0,0,0,0.74)] backdrop-blur-sm',
   keyframeAnchorMask:
     'h-full w-full overflow-hidden rounded-[22px] bg-[#0d1319]',
   keyframeAnchorImage: 'h-full w-full scale-[1.04] object-cover object-center',

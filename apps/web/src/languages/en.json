@@ -209,7 +209,7 @@
     }
   },
   "games": {
-    "description": "A Steam-powered page for browsing the public library, total playtime, and achievement completion.",
+    "description": "A Steam-powered page for browsing my steam library, total playtime, and achievement completion.",
     "loading": "Syncing Steam library data…",
     "hero": {
       "eyebrow": "Steam Library",

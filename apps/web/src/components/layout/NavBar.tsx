@@ -274,7 +274,7 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
 
 const styles = {
   header:
-    'relative mb-6 flex h-14 items-center justify-between rounded-full border border-slate-200/70 bg-white/80 px-4 py-3 backdrop-blur transition-colors duration-300 sm:px-6 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-100',
+    'relative mb-6 flex h-14 items-center justify-between rounded-full bg-white/80 px-4 py-3 shadow-sm backdrop-blur transition-colors duration-300 sm:px-6 dark:bg-[#17191c] dark:text-slate-100',
   logo: {
     link: 'heading-brand flex items-center gap-2 text-lg font-semibold transition-opacity hover:opacity-80',
     img: 'h-8 w-8 rounded-sm',
@@ -292,7 +292,7 @@ const styles = {
   mobile: {
     toggle:
       'flex p-1 text-slate-600 transition-colors hover:text-slate-900 md:hidden dark:text-slate-300 dark:hover:text-white',
-    menu: 'absolute top-full right-0 left-0 z-50 mt-2 flex flex-col gap-1 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl md:hidden dark:border-[#2b2f36] dark:bg-[#17191c]',
+    menu: 'absolute top-full right-0 left-0 z-50 mt-2 flex flex-col gap-1 rounded-2xl bg-white p-4 shadow-xl md:hidden dark:bg-[#17191c]',
     link: (isActive: boolean) =>
       cn(
         'block px-4 py-3 text-base transition-colors rounded-md',
@@ -326,7 +326,7 @@ const styles = {
           : 'font-normal text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
       ),
     label: 'inline-flex w-[3.75rem] justify-center truncate text-center',
-    menu: 'absolute top-full right-0 mt-2 w-max min-w-0 origin-top-right rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 dark:border-[#2b2f36] dark:bg-[#17191c] dark:ring-white/10',
+    menu: 'absolute top-full right-0 mt-2 w-max min-w-0 origin-top-right rounded-lg bg-white p-1 shadow-lg dark:bg-[#17191c]',
     item: (isActive: boolean) =>
       cn(
         'block whitespace-nowrap rounded-md px-4 py-2 text-sm transition-colors',

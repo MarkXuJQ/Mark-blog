@@ -35,7 +35,7 @@ export function BlogPostCard({ post, className, style }: BlogPostCardProps) {
         style={style}
       >
         <Link to={`/blog/${post.slug}`} className="block">
-          <Card className="group block p-4 transition-transform hover:-translate-y-1 hover:shadow-md sm:p-5">
+          <Card className="group block border border-slate-200/70 p-4 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-transform hover:-translate-y-1 hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] sm:p-5 dark:border-0 dark:shadow-none">
             <article>
               {/* Title */}
               <h2 className={titleClass}>{post.title}</h2>
@@ -73,7 +73,7 @@ export function BlogPostCard({ post, className, style }: BlogPostCardProps) {
       style={style}
     >
       <Link to={`/blog/${post.slug}`} className="block">
-        <Card className="group block overflow-hidden p-0 transition-transform hover:-translate-y-1 hover:shadow-md sm:p-0">
+        <Card className="group block overflow-hidden border border-slate-200/70 p-0 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-transform hover:-translate-y-1 hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] sm:p-0 dark:border-0 dark:shadow-none">
           {/* Mobile template */}
           <article className="flex min-h-[220px] flex-col sm:hidden">
             {/* Image (top, golden ratio portion) */}

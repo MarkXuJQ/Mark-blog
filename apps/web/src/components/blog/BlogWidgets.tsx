@@ -299,7 +299,8 @@ function StatItem({
 }
 
 const styles = {
-  widgetCard: 'p-6 transition-all hover:shadow-md',
+  widgetCard:
+    'border border-slate-200/70 p-6 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-all hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] dark:border-0 dark:shadow-none',
 
   // Profile
   profileContainer:

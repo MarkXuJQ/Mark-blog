@@ -123,7 +123,7 @@ export function BlogPostLayout() {
           <button
             type="button"
             onClick={() => setIsMobileTocOpen((prev) => !prev)}
-            className="fixed right-6 bottom-6 z-[80] inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:bg-slate-50 lg:hidden dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-300 dark:hover:bg-slate-900"
+            className="fixed right-6 bottom-6 z-[80] inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:bg-slate-50 lg:hidden dark:bg-slate-900/90 dark:text-slate-300 dark:hover:bg-slate-900"
             aria-label={t('blog.toc.title')}
           >
             <svg

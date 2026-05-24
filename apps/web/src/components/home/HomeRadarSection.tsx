@@ -257,9 +257,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     ? (RADAR_NODES.find((node) => node.id === activeNodeId) ?? null)
     : null
 
-  const [dynamicSignals, setDynamicSignals] = useState<DynamicRadarSignal[]>(
-    []
-  )
+  const [dynamicSignals, setDynamicSignals] = useState<DynamicRadarSignal[]>([])
   const previousBeamAngleRef = useRef(beamAngle)
   const totalBeamRotationRef = useRef(beamAngle)
   const nextSignalRotationRef = useRef(
@@ -329,7 +327,8 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
         ...liveSignals.map((signal) => signal.node.id),
         ...nextSignals.map((signal) => signal.node.id),
       ])
-      let node = RADAR_NODES[nextSignalNodeIndexRef.current % RADAR_NODES.length]
+      let node =
+        RADAR_NODES[nextSignalNodeIndexRef.current % RADAR_NODES.length]
 
       for (let offset = 0; offset < RADAR_NODES.length; offset += 1) {
         const candidateIndex =
@@ -363,8 +362,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
       const currentLiveSignals = current.filter(
         (signal) =>
           currentRotation - signal.createdAtRotation <
-          RADAR_DYNAMIC_SIGNAL_FADE_START +
-            RADAR_DYNAMIC_SIGNAL_FADE_DISTANCE
+          RADAR_DYNAMIC_SIGNAL_FADE_START + RADAR_DYNAMIC_SIGNAL_FADE_DISTANCE
       )
 
       if (
@@ -631,8 +629,24 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
             </div>
 
             <RadarMetaItem
-              value={isRadarManuallyPaused ? (isZh ? '暂停' : 'Paused') : isZh ? '扫描' : 'Sweep'}
-              label={isRadarManuallyPaused ? (isZh ? '继续' : 'Resume') : isZh ? '动态' : 'Live'}
+              value={
+                isRadarManuallyPaused
+                  ? isZh
+                    ? '暂停'
+                    : 'Paused'
+                  : isZh
+                    ? '扫描'
+                    : 'Sweep'
+              }
+              label={
+                isRadarManuallyPaused
+                  ? isZh
+                    ? '继续'
+                    : 'Resume'
+                  : isZh
+                    ? '动态'
+                    : 'Live'
+              }
               button
               pressed={isRadarManuallyPaused}
               onClick={() => setIsRadarManuallyPaused((paused) => !paused)}
@@ -743,10 +757,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
               const enterProgress = easeOutBack(
                 Math.min(
                   1,
-                  Math.max(
-                    0,
-                    signalAge / RADAR_DYNAMIC_SIGNAL_ENTER_DISTANCE
-                  )
+                  Math.max(0, signalAge / RADAR_DYNAMIC_SIGNAL_ENTER_DISTANCE)
                 )
               )
               const hitGlowProgress = Math.max(
@@ -758,7 +769,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                 Math.max(
                   0,
                   (signalAge - RADAR_DYNAMIC_SIGNAL_FADE_START) /
-                  RADAR_DYNAMIC_SIGNAL_FADE_DISTANCE
+                    RADAR_DYNAMIC_SIGNAL_FADE_DISTANCE
                 )
               )
               const signalOpacity = enterProgress * (1 - fadeProgress)
@@ -770,7 +781,11 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
               const pulseScale =
                 mix(0.7, 1.08, enterProgress) + fadeProgress * 0.2
               const hitGlowOpacity = hitGlowProgress * (1 - fadeProgress)
-              const hitGlowScale = mix(0.72, 1.28, easeOutCubic(hitGlowProgress))
+              const hitGlowScale = mix(
+                0.72,
+                1.28,
+                easeOutCubic(hitGlowProgress)
+              )
               const rippleDelay = `-${(signal.createdAtRotation % 1.8).toFixed(2)}s`
 
               return (
@@ -1233,20 +1248,20 @@ const styles = {
   metaItem:
     'flex items-baseline gap-2.5 border-l border-slate-300/55 pl-4 first:border-l-0 first:pl-0 dark:border-white/12',
   metaItemButton:
-    'pointer-events-auto -mx-3 -my-2 cursor-pointer rounded-full px-3 py-2 transition-colors duration-200 hover:bg-slate-200/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/45 dark:hover:bg-white/10 dark:focus-visible:ring-cyan-300/45',
+    'pointer-events-auto cursor-pointer transition-colors duration-200 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/45 dark:hover:text-white dark:focus-visible:ring-cyan-300/45',
   metaValue:
     'text-[1.08rem] font-semibold leading-none tracking-[0.02em] text-slate-900 dark:text-white/88',
   metaLabel:
     'text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-slate-500/78 dark:text-white/40',
   signalSourceList:
-    'pointer-events-auto z-[140] rounded-[24px] border border-slate-300/70 bg-white/88 p-3 shadow-[0_28px_64px_-36px_rgba(15,23,42,0.34)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/84',
+    'pointer-events-auto z-[140] rounded-[24px] bg-white/88 p-3 shadow-[0_28px_64px_-36px_rgba(15,23,42,0.34)] backdrop-blur-xl dark:bg-slate-950/84',
   signalSourceListHeader: 'flex items-center justify-between gap-4 px-1 pb-2',
   signalSourceListTitle:
     'text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-slate-500/82 dark:text-white/44',
   signalSourceListCount:
     'text-sm font-semibold tracking-[0.02em] text-slate-900 dark:text-white/88',
   signalSourceTabs:
-    'mb-2 grid grid-cols-2 gap-1 rounded-[18px] border border-slate-200/78 bg-slate-100/70 p-1 dark:border-white/10 dark:bg-white/[0.045]',
+    'mb-2 grid grid-cols-2 gap-1 rounded-[18px] bg-slate-100/70 p-1 dark:bg-white/[0.045]',
   signalSourceTab:
     'inline-flex min-w-0 items-center justify-center gap-2 rounded-[14px] px-2.5 py-2 text-[0.72rem] font-semibold text-slate-500/82 transition-[background-color,color,box-shadow,transform] duration-200 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/45 dark:text-white/46 dark:hover:text-white/88',
   signalSourceTabActive:
@@ -1258,7 +1273,7 @@ const styles = {
   signalSourceItem:
     'group flex items-center gap-3 rounded-[18px] px-3 py-2.5 text-left transition-colors duration-200 hover:bg-slate-100/84 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/45 dark:hover:bg-white/6 dark:focus-visible:ring-cyan-300/45',
   signalSourceIconWrap:
-    'flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] border border-slate-200/80 bg-white shadow-[0_10px_24px_-18px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-white',
+    'flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-white shadow-[0_10px_24px_-18px_rgba(15,23,42,0.18)] dark:bg-white',
   signalSourceIcon: 'h-6 w-6 object-contain object-center',
   signalSourceName:
     'min-w-0 text-sm font-medium leading-6 text-slate-900 dark:text-white/88',

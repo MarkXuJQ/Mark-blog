@@ -78,6 +78,30 @@ html {
   overflow-y: scroll;
 }
 
+html.theme-switching,
+html.theme-switching *:not([data-theme-curtain], [data-theme-curtain] *),
+html.theme-switching
+  *:not([data-theme-curtain], [data-theme-curtain] *)::before,
+html.theme-switching
+  *:not([data-theme-curtain], [data-theme-curtain] *)::after {
+  transition-property:
+    background-color, border-color, box-shadow, color, fill, opacity, stroke,
+    text-decoration-color;
+  transition-duration: 280ms;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-switching,
+  html.theme-switching *:not([data-theme-curtain], [data-theme-curtain] *),
+  html.theme-switching
+    *:not([data-theme-curtain], [data-theme-curtain] *)::before,
+  html.theme-switching
+    *:not([data-theme-curtain], [data-theme-curtain] *)::after {
+    transition-duration: 0ms !important;
+  }
+}
+
 body {
   margin: 0;
   min-width: 320px;

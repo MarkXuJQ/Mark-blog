@@ -31,9 +31,9 @@ export function MovieGuestbook({ locale }: MovieGuestbookProps) {
   return (
     <section
       className={cn(
-        'relative mt-5 overflow-hidden rounded-[1.75rem] border p-5 pb-16',
-        'border-slate-200/80 bg-white/72 shadow-[0_24px_56px_-36px_rgba(15,23,42,0.35)] backdrop-blur',
-        'dark:border-[#2b2f36] dark:bg-[#17191c]/92 dark:shadow-[0_28px_56px_-34px_rgba(0,0,0,0.5)]'
+        'relative mt-5 overflow-hidden rounded-[1.75rem] border border-slate-200/70 p-5 pb-16 dark:border-0',
+        'bg-white/72 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur',
+        'dark:bg-[#17191c]/92 dark:shadow-none'
       )}
     >
       <div
@@ -79,7 +79,7 @@ export function MovieGuestbook({ locale }: MovieGuestbookProps) {
         aria-expanded={isComposerOpen}
         className={cn(
           'absolute right-5 bottom-5 z-20 inline-flex h-9 items-center gap-1.5 rounded-full bg-[#ff5941] px-3 text-xs font-bold text-white',
-          'shadow-[0_14px_30px_-18px_rgba(255,89,65,0.95)] transition-[transform,box-shadow,background-color]',
+          'shadow-none transition-[transform,box-shadow,background-color]',
           'hover:-translate-y-0.5 hover:bg-[#ff6a55] hover:shadow-[0_18px_34px_-18px_rgba(255,89,65,1)]',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ff5941]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#17191c]'
         )}

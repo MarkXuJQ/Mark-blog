@@ -150,7 +150,7 @@ export function BlogPost() {
     return (
       <div className="mx-auto max-w-4xl">
         <Seo title="Post Not Found" noindex />
-        <Card>
+        <Card className="border border-slate-200/70 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] dark:border-0 dark:shadow-none">
           <div className={styles.notFoundContainer}>
             <h1 className={styles.notFoundTitle}>Post not found</h1>
             <Link to="/blog" className={styles.notFoundLink}>
@@ -456,7 +456,7 @@ export function BlogPost() {
         )}
       </Card>
 
-      <Card className="p-6">
+      <Card className="border border-slate-200/70 p-6 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] dark:border-0 dark:shadow-none">
         <DeferredComments
           key={commentPath}
           containerId="twikoo-container"
@@ -486,7 +486,8 @@ const MarkdownContent = memo(function MarkdownContent({
 })
 
 const styles = {
-  postCard: 'block w-full transition-transform',
+  postCard:
+    'block w-full border border-slate-200/70 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-transform dark:border-0 dark:shadow-none',
   notFoundContainer: 'flex flex-col items-center justify-center py-12',
   notFoundTitle: 'mb-4 text-2xl font-bold text-slate-900 dark:text-slate-100',
   notFoundLink: 'text-blue-600 hover:underline dark:text-blue-400',
