@@ -10,6 +10,8 @@ import {
 import {
   startTransition,
   type ReactNode,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
   useDeferredValue,
   useEffect,
   useMemo,
@@ -17,6 +19,7 @@ import {
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useReducedMotion } from 'framer-motion'
 import { Seo } from '@/components/seo/Seo'
 import { Pagination } from '@/components/ui/Pagination'
 import { SelectMenu } from '@/components/ui/SelectMenu'
@@ -100,6 +103,25 @@ class SteamDashboardError extends Error {
 }
 
 const ITEMS_PER_PAGE = 18
+const FEATURED_RAIL_DEFAULT_SPEED_PERCENT = 50
+const FEATURED_RAIL_FIXED_SPEED_PERCENT = 20
+const FEATURED_RAIL_BASE_DURATION_SECONDS = 42
+const FEATURED_RAIL_DRAG_CLICK_THRESHOLD = 6
+const GAME_SHOWCASE_TILT_MAX_DEGREES = 8.5
+
+interface FeaturedRailDragState {
+  pointerId: number
+  startX: number
+  startOffset: number
+  hasDragged: boolean
+}
+
+function normalizeRailOffset(offset: number, loopWidth: number) {
+  if (loopWidth <= 0) return 0
+
+  const positiveOffset = ((offset % loopWidth) + loopWidth) % loopWidth
+  return positiveOffset === 0 ? 0 : positiveOffset - loopWidth
+}
 
 async function fetchSteamDashboard() {
   const response = await fetch('/api/steam')
@@ -109,7 +131,9 @@ async function fetchSteamDashboard() {
     throw new SteamDashboardError({
       status: response.status,
       code:
-        typeof payload?.code === 'string' ? payload.code : 'STEAM_REQUEST_FAILED',
+        typeof payload?.code === 'string'
+          ? payload.code
+          : 'STEAM_REQUEST_FAILED',
       message:
         typeof payload?.error === 'string'
           ? payload.error
@@ -161,13 +185,14 @@ function formatDateTime(input: string, locale: string) {
   }).format(parsed)
 }
 
+function getSteamLibraryCoverUrl(appid: number) {
+  return `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${appid}/library_600x900.jpg`
+}
+
 function buildInitials(name: string) {
   const chars = Array.from(name.trim())
   if (chars.length === 0) return 'GM'
-  return chars
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
+  return chars.slice(0, 2).join('').toUpperCase()
 }
 
 function getAchievementProgress(game: SteamGame) {
@@ -222,15 +247,15 @@ function getAchievementProgress(game: SteamGame) {
     }
   }
 
-    return {
-      unlockedCount,
-      totalCount,
-      ratio,
-      widthPercent,
-      fillClassName:
-        'bg-[linear-gradient(90deg,#22c55e_0%,#06b6d4_32%,#3b82f6_64%,#f59e0b_100%)]',
-    }
+  return {
+    unlockedCount,
+    totalCount,
+    ratio,
+    widthPercent,
+    fillClassName:
+      'bg-[linear-gradient(90deg,#22c55e_0%,#06b6d4_32%,#3b82f6_64%,#f59e0b_100%)]',
   }
+}
 
 function StatTile(props: {
   label: string
@@ -241,9 +266,9 @@ function StatTile(props: {
   const { label, value, hint, icon } = props
 
   return (
-    <div className="rounded-[1.4rem] border border-white/50 bg-white/75 p-3.5 shadow-[0_14px_30px_-22px_rgba(15,23,42,0.45)] backdrop-blur-sm dark:border-[#2b2f36] dark:bg-[#17191c] sm:rounded-3xl sm:p-4">
+    <div className="rounded-[1.4rem] border border-white/50 bg-white/75 p-3.5 shadow-[0_14px_30px_-22px_rgba(15,23,42,0.45)] backdrop-blur-sm sm:rounded-3xl sm:p-4 dark:border-[#2b2f36] dark:bg-[#17191c]">
       <div className="flex items-center justify-between gap-3">
-        <p className="min-w-0 flex-1 text-[0.65rem] font-semibold uppercase leading-snug tracking-[0.16em] text-slate-500 dark:text-slate-400 sm:text-xs sm:tracking-[0.24em]">
+        <p className="min-w-0 flex-1 text-[0.65rem] leading-snug font-semibold tracking-[0.16em] text-slate-500 uppercase sm:text-xs sm:tracking-[0.24em] dark:text-slate-400">
           {label}
         </p>
         <span className="shrink-0 text-slate-500 dark:text-slate-400">
@@ -251,7 +276,7 @@ function StatTile(props: {
         </span>
       </div>
 
-      <p className="mt-2.5 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-50 sm:mt-3 sm:text-3xl">
+      <p className="mt-2.5 text-2xl font-semibold tracking-tight text-slate-950 sm:mt-3 sm:text-3xl dark:text-slate-50">
         {value}
       </p>
 
@@ -317,6 +342,7 @@ function FeaturedGameCard(props: {
   noAchievementsLabel: string
   releaseDateLabel: string
   openStoreLabel: string
+  ariaHidden?: boolean
 }) {
   const {
     game,
@@ -329,10 +355,14 @@ function FeaturedGameCard(props: {
     noAchievementsLabel,
     releaseDateLabel,
     openStoreLabel,
+    ariaHidden,
   } = props
 
   return (
-    <article className="group relative min-h-[238px] w-[calc(100vw-3.25rem)] flex-none snap-start overflow-hidden rounded-[28px] border border-slate-200/80 bg-slate-950 text-white shadow-[0_24px_70px_-38px_rgba(15,23,42,0.7)] dark:border-[#2b2f36] sm:w-[30rem] lg:w-[32rem]">
+    <article
+      aria-hidden={ariaHidden}
+      className="group relative min-h-[238px] w-[calc(100vw-3.25rem)] flex-none overflow-hidden rounded-[28px] border border-slate-200/80 bg-slate-950 text-white shadow-[0_24px_70px_-38px_rgba(15,23,42,0.7)] sm:w-[30rem] lg:w-[32rem] dark:border-[#2b2f36]"
+    >
       {game.headerImage ? (
         <img
           src={game.headerImage}
@@ -358,7 +388,7 @@ function FeaturedGameCard(props: {
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-200/90">
+                <p className="text-[11px] font-semibold tracking-[0.28em] text-cyan-200/90 uppercase">
                   Steam
                 </p>
                 <h3 className="mt-1.5 line-clamp-2 text-xl font-semibold tracking-tight text-white sm:text-2xl">
@@ -370,6 +400,7 @@ function FeaturedGameCard(props: {
                 href={game.storeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                tabIndex={ariaHidden ? -1 : undefined}
                 className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white/90 transition hover:bg-white/20"
                 aria-label={openStoreLabel}
               >
@@ -388,7 +419,7 @@ function FeaturedGameCard(props: {
         <div className="mt-4 space-y-3">
           <div className="grid grid-cols-2 gap-2.5 text-sm text-slate-100/90">
             <div className="rounded-2xl border border-white/10 bg-white/10 px-3.5 py-3 backdrop-blur-sm">
-              <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300">
+              <p className="text-[11px] tracking-[0.22em] text-slate-300 uppercase">
                 {lifetimeLabel}
               </p>
               <p className="mt-1.5 text-base font-semibold sm:text-lg">
@@ -397,7 +428,7 @@ function FeaturedGameCard(props: {
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/10 px-3.5 py-3 backdrop-blur-sm">
-              <p className="text-[11px] uppercase tracking-[0.22em] text-slate-300">
+              <p className="text-[11px] tracking-[0.22em] text-slate-300 uppercase">
                 {achievementLabel}
               </p>
               <p className="mt-1.5 text-base font-semibold sm:text-lg">
@@ -439,6 +470,383 @@ function FeaturedGameCard(props: {
         </div>
       </div>
     </article>
+  )
+}
+
+function FeaturedGameRail(props: {
+  games: SteamFeaturedGame[]
+  locale: string
+  labels: {
+    reviewLabel: string
+    reviewCountLabel: string
+    noReviewLabel: string
+    lifetimeLabel: string
+    achievementLabel: string
+    noAchievementsLabel: string
+    releaseDateLabel: string
+    openStoreLabel: string
+  }
+}) {
+  const { games, locale, labels } = props
+  const shouldReduceMotion = Boolean(useReducedMotion())
+  const railTrackRef = useRef<HTMLDivElement | null>(null)
+  const railOffsetRef = useRef(0)
+  const railLoopWidthRef = useRef(0)
+  const railLastFrameTimeRef = useRef<number | null>(null)
+  const railDragStateRef = useRef<FeaturedRailDragState | null>(null)
+  const suppressClickRef = useRef(false)
+  const [isDraggingRail, setIsDraggingRail] = useState(false)
+
+  useEffect(() => {
+    const railTrackNode = railTrackRef.current
+    if (!railTrackNode) return
+
+    let frameId = 0
+    let resizeFrameId = 0
+
+    const applyRailOffset = () => {
+      railTrackNode.style.transform = `translate3d(${railOffsetRef.current}px, 0, 0)`
+    }
+
+    const syncLoopWidth = () => {
+      window.cancelAnimationFrame(resizeFrameId)
+      resizeFrameId = window.requestAnimationFrame(() => {
+        const loopWidth = railTrackNode.scrollWidth / 2
+        railLoopWidthRef.current = loopWidth
+        railOffsetRef.current = normalizeRailOffset(
+          railOffsetRef.current,
+          loopWidth
+        )
+        applyRailOffset()
+      })
+    }
+
+    const tick = (timestamp: number) => {
+      const previousTimestamp = railLastFrameTimeRef.current
+      railLastFrameTimeRef.current = timestamp
+
+      if (
+        previousTimestamp != null &&
+        !shouldReduceMotion &&
+        !railDragStateRef.current
+      ) {
+        const loopWidth = railLoopWidthRef.current
+        const speedMultiplier =
+          FEATURED_RAIL_FIXED_SPEED_PERCENT /
+          FEATURED_RAIL_DEFAULT_SPEED_PERCENT
+        const distancePerMs =
+          loopWidth / (FEATURED_RAIL_BASE_DURATION_SECONDS * 1000)
+        const deltaMs = timestamp - previousTimestamp
+
+        railOffsetRef.current = normalizeRailOffset(
+          railOffsetRef.current - distancePerMs * speedMultiplier * deltaMs,
+          loopWidth
+        )
+        applyRailOffset()
+      }
+
+      frameId = window.requestAnimationFrame(tick)
+    }
+
+    syncLoopWidth()
+    frameId = window.requestAnimationFrame(tick)
+
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(syncLoopWidth)
+
+    resizeObserver?.observe(railTrackNode)
+    window.addEventListener('load', syncLoopWidth)
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      window.cancelAnimationFrame(resizeFrameId)
+      resizeObserver?.disconnect()
+      window.removeEventListener('load', syncLoopWidth)
+    }
+  }, [shouldReduceMotion])
+
+  const handleRailPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+
+    railDragStateRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startOffset: railOffsetRef.current,
+      hasDragged: false,
+    }
+    railLastFrameTimeRef.current = null
+    setIsDraggingRail(true)
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  const handleRailPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const dragState = railDragStateRef.current
+    if (!dragState || dragState.pointerId !== event.pointerId) return
+
+    const deltaX = event.clientX - dragState.startX
+    const loopWidth = railLoopWidthRef.current
+
+    if (Math.abs(deltaX) > FEATURED_RAIL_DRAG_CLICK_THRESHOLD) {
+      dragState.hasDragged = true
+      suppressClickRef.current = true
+    }
+
+    railOffsetRef.current = normalizeRailOffset(
+      dragState.startOffset + deltaX,
+      loopWidth
+    )
+
+    if (railTrackRef.current) {
+      railTrackRef.current.style.transform = `translate3d(${railOffsetRef.current}px, 0, 0)`
+    }
+
+    if (dragState.hasDragged) event.preventDefault()
+  }
+
+  const finishRailDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const dragState = railDragStateRef.current
+    if (!dragState || dragState.pointerId !== event.pointerId) return
+
+    if (dragState.hasDragged) {
+      suppressClickRef.current = true
+      window.setTimeout(() => {
+        suppressClickRef.current = false
+      }, 160)
+    }
+
+    railDragStateRef.current = null
+    railLastFrameTimeRef.current = null
+    setIsDraggingRail(false)
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+  }
+
+  const handleRailClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (!suppressClickRef.current) return
+
+    event.preventDefault()
+    event.stopPropagation()
+    suppressClickRef.current = false
+  }
+
+  return (
+    <div className="relative -mx-5 sm:mx-0">
+      <div
+        className={cn(
+          'relative cursor-grab touch-pan-y overflow-hidden select-none',
+          isDraggingRail && 'cursor-grabbing'
+        )}
+        onClickCapture={handleRailClickCapture}
+        onDragStart={(event) => event.preventDefault()}
+        onPointerCancel={finishRailDrag}
+        onPointerDown={handleRailPointerDown}
+        onPointerMove={handleRailPointerMove}
+        onPointerUp={finishRailDrag}
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 z-20 w-8 sm:w-12 lg:w-16"
+          style={{
+            background:
+              'linear-gradient(90deg, var(--page-background) 0%, transparent 100%)',
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 z-20 w-8 sm:w-12 lg:w-16"
+          style={{
+            background:
+              'linear-gradient(270deg, var(--page-background) 0%, transparent 100%)',
+          }}
+        />
+
+        <div
+          ref={railTrackRef}
+          className="flex w-max items-stretch will-change-transform"
+        >
+          <FeaturedGameRailSegment
+            games={games}
+            locale={locale}
+            labels={labels}
+          />
+          <FeaturedGameRailSegment
+            games={games}
+            locale={locale}
+            labels={labels}
+            ariaHidden
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function FeaturedGameRailSegment({
+  games,
+  locale,
+  labels,
+  ariaHidden,
+}: {
+  games: SteamFeaturedGame[]
+  locale: string
+  labels: {
+    reviewLabel: string
+    reviewCountLabel: string
+    noReviewLabel: string
+    lifetimeLabel: string
+    achievementLabel: string
+    noAchievementsLabel: string
+    releaseDateLabel: string
+    openStoreLabel: string
+  }
+  ariaHidden?: boolean
+}) {
+  return (
+    <div className="flex shrink-0 gap-3.5 pl-5 sm:gap-4 sm:pl-6 lg:pl-8">
+      {games.map((game) => (
+        <FeaturedGameCard
+          key={`${ariaHidden ? 'ghost' : 'live'}-${game.appid}`}
+          game={game}
+          locale={locale}
+          reviewLabel={labels.reviewLabel}
+          reviewCountLabel={labels.reviewCountLabel}
+          noReviewLabel={labels.noReviewLabel}
+          lifetimeLabel={labels.lifetimeLabel}
+          achievementLabel={labels.achievementLabel}
+          noAchievementsLabel={labels.noAchievementsLabel}
+          releaseDateLabel={labels.releaseDateLabel}
+          openStoreLabel={labels.openStoreLabel}
+          ariaHidden={ariaHidden}
+        />
+      ))}
+      <div aria-hidden="true" className="w-px shrink-0" />
+    </div>
+  )
+}
+
+function GameShowcaseTile({
+  game,
+  locale,
+  playtimeLabel,
+  statusLabel,
+  achievementLabel,
+  achievementMissingLabel,
+  openStoreLabel,
+}: {
+  game: SteamGame
+  locale: string
+  playtimeLabel: string
+  statusLabel: string | null
+  achievementLabel: string
+  achievementMissingLabel: string
+  openStoreLabel: string
+}) {
+  const achievementProgress = getAchievementProgress(game)
+  const achievementPercent =
+    achievementProgress.totalCount > 0
+      ? Math.round(achievementProgress.ratio * 100)
+      : 0
+  const tileRef = useRef<HTMLAnchorElement | null>(null)
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLAnchorElement>) => {
+    const tile = tileRef.current
+    if (!tile) return
+
+    const rect = tile.getBoundingClientRect()
+    const x = (event.clientX - rect.left) / rect.width - 0.5
+    const y = (event.clientY - rect.top) / rect.height - 0.5
+    const rotateX = -y * GAME_SHOWCASE_TILT_MAX_DEGREES
+    const rotateY = x * GAME_SHOWCASE_TILT_MAX_DEGREES
+
+    tile.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-3px)`
+  }
+
+  const resetTilt = () => {
+    const tile = tileRef.current
+    if (!tile) return
+
+    tile.style.transform =
+      'perspective(900px) rotateX(0deg) rotateY(0deg) translateY(0)'
+  }
+
+  return (
+    <a
+      ref={tileRef}
+      href={game.storeUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${openStoreLabel}: ${game.name}`}
+      className="group relative block rounded-[13px] transition-[filter,transform] duration-200 ease-out outline-none [transform-style:preserve-3d] hover:brightness-105 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#17191c]"
+      onPointerLeave={resetTilt}
+      onPointerMove={handlePointerMove}
+    >
+      <div className="relative aspect-[2/3] overflow-hidden rounded-[13px] bg-[linear-gradient(135deg,#0f172a_0%,#334155_48%,#0f766e_100%)] shadow-[0_18px_42px_-28px_rgba(15,23,42,0.75)]">
+        <div className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm font-semibold text-white/80">
+          {game.name}
+        </div>
+
+        <img
+          src={getSteamLibraryCoverUrl(game.appid)}
+          alt={game.name}
+          width={600}
+          height={900}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]"
+        />
+
+        <div className="absolute inset-x-2 top-2 translate-y-1 rounded-[10px] border border-white/15 bg-slate-950/78 p-2.5 text-white opacity-0 shadow-lg backdrop-blur-md transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+          <div className="flex items-start justify-between gap-2 text-[0.68rem] leading-tight font-semibold">
+            <span className="line-clamp-2 min-w-0">{game.name}</span>
+            <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 opacity-80" />
+          </div>
+
+          <div className="mt-2 flex items-center justify-between gap-2 text-[0.66rem] text-slate-200/90">
+            <span className="truncate">
+              {achievementProgress.totalCount > 0
+                ? achievementLabel
+                : achievementMissingLabel}
+            </span>
+            {achievementProgress.totalCount > 0 ? (
+              <span className="shrink-0 tabular-nums">
+                {formatInteger(achievementPercent, locale)}%
+              </span>
+            ) : null}
+          </div>
+
+          <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/15">
+            {achievementProgress.widthPercent > 0 ? (
+              <div
+                className={cn(
+                  'h-full rounded-full',
+                  achievementProgress.fillClassName
+                )}
+                style={{ width: `${achievementProgress.widthPercent}%` }}
+              />
+            ) : null}
+          </div>
+
+          {statusLabel ? (
+            <p className="mt-2 line-clamp-1 text-[0.62rem] font-medium text-cyan-100/95">
+              {statusLabel}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="absolute inset-x-2 bottom-2 flex justify-center">
+          <span
+            data-game-playtime-badge
+            className="max-w-full truncate rounded-[8px] bg-slate-950/74 px-2.5 py-1 text-[0.68rem] font-semibold text-white shadow backdrop-blur-md"
+          >
+            {playtimeLabel}
+          </span>
+        </div>
+      </div>
+    </a>
   )
 }
 
@@ -539,8 +947,14 @@ export function Games() {
     })
   }, [deferredSearch, sort])
 
-  const featuredGames = useMemo(() => dashboard?.featured ?? [], [dashboard?.featured])
-  const totalPages = Math.max(1, Math.ceil(filteredGames.length / ITEMS_PER_PAGE))
+  const featuredGames = useMemo(
+    () => dashboard?.featured ?? [],
+    [dashboard?.featured]
+  )
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredGames.length / ITEMS_PER_PAGE)
+  )
   const hasSearch = search.trim().length > 0
   const isMobileSearchVisible = isMobileSearchOpen || hasSearch
   const searchInputId = 'games-library-search'
@@ -567,7 +981,9 @@ export function Games() {
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   )
-  const generatedAt = dashboard ? formatDateTime(dashboard.generatedAt, locale) : ''
+  const generatedAt = dashboard
+    ? formatDateTime(dashboard.generatedAt, locale)
+    : ''
 
   const errorMessage = (() => {
     switch (errorCode) {
@@ -595,7 +1011,7 @@ export function Games() {
 
       <div>
         <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-10">
-          <section className="rounded-[32px] border border-slate-200/80 bg-white/75 p-6 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.35)] backdrop-blur-xl dark:border-[#2b2f36] dark:bg-[#17191c] sm:p-8">
+          <section className="rounded-[32px] border border-slate-200/80 bg-white/75 p-6 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.35)] backdrop-blur-xl sm:p-8 dark:border-[#2b2f36] dark:bg-[#17191c]">
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.95fr)]">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
                 <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-[28px] border border-white/70 bg-slate-100 shadow-lg dark:border-[#2b2f36] dark:bg-[#17191c]">
@@ -617,7 +1033,7 @@ export function Games() {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <h1 className="text-4xl font-semibold tracking-tight text-slate-950 dark:text-slate-50 sm:text-5xl">
+                  <h1 className="text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl dark:text-slate-50">
                     {dashboard
                       ? t('games.hero.title', {
                           name: dashboard.profile.personaName,
@@ -667,12 +1083,18 @@ export function Games() {
               <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
                 <StatTile
                   label={t('games.stats.totalGames')}
-                  value={formatInteger(dashboard?.summary.gameCount ?? 0, locale)}
+                  value={formatInteger(
+                    dashboard?.summary.gameCount ?? 0,
+                    locale
+                  )}
                   icon={<Gamepad2 className="h-5 w-5" />}
                 />
                 <StatTile
                   label={t('games.stats.totalHours')}
-                  value={formatHours(dashboard?.summary.totalMinutes ?? 0, locale)}
+                  value={formatHours(
+                    dashboard?.summary.totalMinutes ?? 0,
+                    locale
+                  )}
                   icon={<Clock3 className="h-5 w-5" />}
                 />
                 <StatTile
@@ -727,7 +1149,7 @@ export function Games() {
               <section className="mt-10">
                 <div className="mb-5 flex items-end justify-between gap-4">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-700 dark:text-cyan-300">
+                    <p className="text-xs font-semibold tracking-[0.28em] text-cyan-700 uppercase dark:text-cyan-300">
                       {t('games.featured.eyebrow')}
                     </p>
                     <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
@@ -740,25 +1162,20 @@ export function Games() {
                 </div>
 
                 {featuredGames.length > 0 ? (
-                  <div className="-mx-5 overflow-x-auto px-5 pb-2 scrollbar-hide sm:mx-0 sm:px-0">
-                    <div className="flex snap-x snap-mandatory gap-3.5 scroll-px-5 sm:gap-4 sm:scroll-px-0">
-                      {featuredGames.map((game) => (
-                        <FeaturedGameCard
-                          key={game.appid}
-                          game={game}
-                          locale={locale}
-                          reviewLabel={t('games.featured.reviewPositive')}
-                          reviewCountLabel={t('games.featured.reviewCount')}
-                          noReviewLabel={t('games.featured.noReview')}
-                          lifetimeLabel={t('games.featured.lifetimeHours')}
-                          achievementLabel={t('games.featured.achievements')}
-                          noAchievementsLabel={t('games.featured.noAchievements')}
-                          releaseDateLabel={t('games.featured.releaseDate')}
-                          openStoreLabel={t('games.actions.openStore')}
-                        />
-                      ))}
-                    </div>
-                  </div>
+                  <FeaturedGameRail
+                    games={featuredGames}
+                    locale={locale}
+                    labels={{
+                      reviewLabel: t('games.featured.reviewPositive'),
+                      reviewCountLabel: t('games.featured.reviewCount'),
+                      noReviewLabel: t('games.featured.noReview'),
+                      lifetimeLabel: t('games.featured.lifetimeHours'),
+                      achievementLabel: t('games.featured.achievements'),
+                      noAchievementsLabel: t('games.featured.noAchievements'),
+                      releaseDateLabel: t('games.featured.releaseDate'),
+                      openStoreLabel: t('games.actions.openStore'),
+                    }}
+                  />
                 ) : (
                   <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-6 text-sm text-slate-600 shadow-sm dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-400">
                     {t('games.featured.noData')}
@@ -766,7 +1183,7 @@ export function Games() {
                 )}
               </section>
 
-              <section className="mt-10 rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_24px_80px_-42px_rgba(15,23,42,0.28)] backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c] sm:p-6">
+              <section className="mt-10 rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_24px_80px_-42px_rgba(15,23,42,0.28)] backdrop-blur sm:p-6 dark:border-[#2b2f36] dark:bg-[#17191c]">
                 <div className="relative">
                   <div className="hidden items-center justify-between gap-4 sm:flex">
                     <h2 className="min-w-0 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
@@ -920,18 +1337,11 @@ export function Games() {
                 </div>
 
                 {visibleGames.length > 0 ? (
-                  <div className="mt-3 grid gap-2.5 md:grid-cols-2 xl:grid-cols-3 sm:mt-4 sm:gap-3">
+                  <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                     {visibleGames.map((game) => {
-                      const achievementProgress = getAchievementProgress(game)
-                      const achievementPercent =
-                        achievementProgress.totalCount > 0
-                          ? Math.round(achievementProgress.ratio * 100)
-                          : 0
                       const playtimeLabel = t('games.library.playtime', {
                         hours: formatHours(game.playtimeMinutes, locale),
                       })
-                      const playtimeHours = formatHours(game.playtimeMinutes, locale)
-                      const playtimeSuffix = playtimeLabel.replace(playtimeHours, '').trim()
                       const statusLabel =
                         game.playtimeMinutes <= 0
                           ? t('games.library.neverPlayed')
@@ -944,99 +1354,27 @@ export function Games() {
                               })
                             : null
                       const achievementLabel =
-                        achievementProgress.totalCount > 0
-                          ? formatAchievementValue(game.achievementStats, locale)
+                        game.achievementStats &&
+                        game.achievementStats.totalCount > 0
+                          ? formatAchievementValue(
+                              game.achievementStats,
+                              locale
+                            )
                           : t('games.library.achievementMissing')
 
                       return (
-                        <article
+                        <GameShowcaseTile
                           key={game.appid}
-                          className="group relative overflow-hidden rounded-[22px] border border-slate-200/80 bg-white/80 p-3.5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg dark:border-[#2b2f36] dark:bg-[#17191c] dark:hover:border-[#3a3f48] sm:rounded-[24px] sm:p-4"
-                        >
-                          <div className="pointer-events-none absolute inset-0 bg-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
-
-                          <div className="relative flex h-full flex-col">
-                            <div className="flex items-start gap-3">
-                              <GameIcon
-                                name={game.name}
-                                iconUrl={game.iconUrl}
-                                className="h-12 w-12 shrink-0 sm:h-14 sm:w-14"
-                              />
-
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-start justify-between gap-3">
-                                  <div className="min-w-0">
-                                    <h3 className="line-clamp-2 pr-1 text-[0.95rem] font-semibold leading-snug text-slate-950 dark:text-slate-50 sm:text-base">
-                                      {game.name}
-                                    </h3>
-                                  </div>
-
-                                  <a
-                                    href={game.storeUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-slate-300 hover:text-slate-950 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-200 dark:hover:border-[#3a3f48] dark:hover:text-white sm:h-9 sm:w-9"
-                                    aria-label={t('games.actions.openStore')}
-                                  >
-                                    <ExternalLink className="h-4 w-4" />
-                                  </a>
-                                </div>
-
-                                <div className="mt-2.5 flex flex-wrap gap-1.5">
-                                  <span className="inline-flex items-baseline gap-1">
-                                    <span className="text-base font-bold text-emerald-600 dark:text-emerald-300">
-                                      {playtimeHours}
-                                    </span>
-                                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                                      {playtimeSuffix}
-                                    </span>
-                                  </span>
-
-                                  {statusLabel ? (
-                                    <span
-                                      className={cn(
-                                        'inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium',
-                                        game.playtimeMinutes <= 0
-                                          ? 'bg-slate-100 text-slate-500 dark:bg-[#23262c] dark:text-slate-400'
-                                          : 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-200'
-                                      )}
-                                    >
-                                      {statusLabel}
-                                    </span>
-                                  ) : null}
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="mt-4 border-t border-slate-200/70 pt-3 dark:border-slate-800 sm:mt-5">
-                              <div className="flex items-center justify-between gap-3 text-sm">
-                                <p className="truncate font-medium text-slate-900 dark:text-slate-100">
-                                  {achievementLabel}
-                                </p>
-
-                                {achievementProgress.totalCount > 0 ? (
-                                  <p className="shrink-0 text-xs font-medium text-slate-500 dark:text-slate-400">
-                                    {formatInteger(achievementPercent, locale)}%
-                                  </p>
-                                ) : null}
-                              </div>
-
-                              <div className="relative mt-1.5 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-[#23262c] sm:mt-2 sm:h-2.5">
-                                {achievementProgress.widthPercent > 0 ? (
-                                  <div
-                                    className={cn(
-                                      'h-full rounded-full',
-                                      achievementProgress.fillClassName
-                                    )}
-                                    style={{
-                                      width: `${achievementProgress.widthPercent}%`,
-                                    }}
-                                  />
-                                ) : null}
-                              </div>
-                            </div>
-                          </div>
-                        </article>
+                          game={game}
+                          locale={locale}
+                          playtimeLabel={playtimeLabel}
+                          statusLabel={statusLabel}
+                          achievementLabel={achievementLabel}
+                          achievementMissingLabel={t(
+                            'games.library.achievementMissing'
+                          )}
+                          openStoreLabel={t('games.actions.openStore')}
+                        />
                       )
                     })}
                   </div>
@@ -1056,7 +1394,6 @@ export function Games() {
           ) : null}
         </div>
       </div>
-
     </>
   )
 }
