@@ -285,8 +285,7 @@ export function HomeBlogRailSection({
                     </h2>
                     <div
                       aria-hidden="true"
-                      className="pointer-events-none h-10 w-10 shrink-0 overflow-hidden rounded-full border shadow-[0_10px_28px_-18px_rgba(15,23,42,0.5)] sm:h-11 sm:w-11"
-                      style={{ borderColor: 'var(--border-color)' }}
+                      className="pointer-events-none h-10 w-10 shrink-0 overflow-hidden rounded-full shadow-[0_10px_28px_-18px_rgba(15,23,42,0.5)] sm:h-11 sm:w-11"
                     >
                       <img
                         src={avatarSrc}
@@ -490,7 +489,6 @@ function BlogRailItem({
           ? 'w-[20.5rem] bg-black/[0.03] shadow-[0_28px_54px_-42px_rgba(15,23,42,0.42)] sm:w-[28rem] lg:w-[32rem] dark:bg-white/[0.04] dark:shadow-[0_28px_56px_-44px_rgba(2,6,23,0.86)]'
           : 'w-[18.5rem] sm:w-[24rem] lg:w-[28rem]'
       )}
-      style={{ borderLeft: '1px solid var(--border-color)' }}
     >
       <div
         aria-hidden="true"

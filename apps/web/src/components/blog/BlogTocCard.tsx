@@ -33,7 +33,8 @@ interface BlogTocDrawerProps {
 }
 
 const styles = {
-  tocCard: 'overflow-visible p-4',
+  tocCard:
+    'overflow-visible border-0 p-4 shadow-[0_18px_42px_-32px_rgba(15,23,42,0.45)] dark:border-0',
   tocPlainCard:
     'border-0 bg-transparent p-0 shadow-none backdrop-blur-0 dark:bg-transparent',
   tocHeader:
@@ -68,17 +69,14 @@ const styles = {
   tocLevel1: 'px-2 font-semibold',
   tocLevel2: 'px-2 font-medium',
   tocLevel3: 'px-2',
-  tocGroup:
-    'relative mt-1 list-none rounded-lg py-0.5',
-  tocGroupActive:
-    'bg-slate-50/70 dark:bg-slate-900/35',
+  tocGroup: 'relative mt-1 list-none rounded-lg py-0.5',
+  tocGroupActive: 'bg-slate-50/70 dark:bg-slate-900/35',
   tocChildList: cn(
     'relative mt-1 space-y-0.5 list-none pl-4',
     'before:absolute before:left-2 before:top-1 before:bottom-1 before:w-px before:rounded-full',
     'before:bg-slate-200 dark:before:bg-slate-700/80'
   ),
-  tocChildListActive:
-    'before:bg-blue-300 dark:before:bg-blue-500/70',
+  tocChildListActive: 'before:bg-blue-300 dark:before:bg-blue-500/70',
 }
 
 function handleLinkClick(
@@ -107,9 +105,11 @@ function findHeadingByText(text?: string) {
   if (!normalized) return null
 
   return (
-    Array.from(document.querySelectorAll<HTMLElement>('article h1, article h2, article h3')).find(
-      (heading) => heading.textContent?.trim() === normalized
-    ) ?? null
+    Array.from(
+      document.querySelectorAll<HTMLElement>(
+        'article h1, article h2, article h3'
+      )
+    ).find((heading) => heading.textContent?.trim() === normalized) ?? null
   )
 }
 
@@ -165,8 +165,7 @@ function TocList({
     const last = items[items.length - 1]
     const firstRect = first.getBoundingClientRect()
     const lastRect = last.getBoundingClientRect()
-    const firstCenter =
-      firstRect.top - railRect.top + firstRect.height / 2
+    const firstCenter = firstRect.top - railRect.top + firstRect.height / 2
     const lastCenter = lastRect.top - railRect.top + lastRect.height / 2
 
     let nextHeight = baseHeight
@@ -209,10 +208,10 @@ function TocList({
         >
           <a
             href={`#${n.id}`}
-              onClick={(e) => {
-                onItemClick(n.id)
-                handleLinkClick(e, n.id, n.text)
-              }}
+            onClick={(e) => {
+              onItemClick(n.id)
+              handleLinkClick(e, n.id, n.text)
+            }}
             data-toc-id={n.id}
             className={linkClassName(n)}
             style={
@@ -228,7 +227,7 @@ function TocList({
               className={cn(
                 isGroupedSection
                   ? styles.tocChildList
-                  : 'mt-1 space-y-1 list-none pl-0',
+                  : 'mt-1 list-none space-y-1 pl-0',
                 isGroupedSection && isActiveGroup && styles.tocChildListActive
               )}
             >
@@ -252,7 +251,7 @@ function TocList({
             : { top: indicatorTop, height: indicatorHeight }
         }
       />
-      <ol className="space-y-1 list-none pl-0">
+      <ol className="list-none space-y-1 pl-0">
         {title && (
           <li className="list-none">
             <a
@@ -288,10 +287,7 @@ export function BlogTocCard({
 
   return (
     <Card
-      className={cn(
-        styles.tocCard,
-        variant === 'plain' && styles.tocPlainCard
-      )}
+      className={cn(styles.tocCard, variant === 'plain' && styles.tocPlainCard)}
     >
       <div className={styles.tocHeader}>
         <span>{t('blog.toc.title')}</span>
@@ -374,8 +370,8 @@ export function BlogTocDrawer({
 
       <div
         className={cn(
-          'fixed right-6 top-[10vh] z-50 w-[min(82vw,320px)] rounded-2xl border border-slate-200 bg-white/95 shadow-xl backdrop-blur-0 transition-all duration-200',
-          'dark:border-slate-800 dark:bg-slate-950/95',
+          'backdrop-blur-0 fixed top-[10vh] right-6 z-50 w-[min(82vw,320px)] rounded-2xl bg-white/95 shadow-xl transition-all duration-200',
+          'dark:bg-slate-950/95',
           open
             ? 'translate-x-0 opacity-100'
             : 'pointer-events-none translate-x-4 opacity-0'

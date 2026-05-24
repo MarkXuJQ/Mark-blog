@@ -293,7 +293,7 @@ export function Timeline() {
 
         {activeTab === 'quickfix' && (
           <section className={styles.section}>
-            <StaggeredList className={styles.quickfixList}>
+            <StaggeredList as="ul" className={styles.quickfixList}>
               {quickFixGroups.map((group) => (
                 <li key={group.id} className={styles.quickfixGroup}>
                   <div className={styles.quickfixHeader}>
@@ -306,7 +306,6 @@ export function Timeline() {
                         key={`${group.id}-${index}`}
                         className={styles.quickfixItem}
                       >
-                        <span className={styles.quickfixDot} />
                         <span className={styles.quickfixText}>{entry}</span>
                       </li>
                     ))}
@@ -383,7 +382,7 @@ const styles = {
   itemLink:
     'text-slate-700 hover:text-blue-600 hover:underline dark:text-slate-300 dark:hover:text-blue-400',
   itemText: 'text-slate-600 dark:text-slate-400',
-  quickfixList: 'space-y-5',
+  quickfixList: 'list-none space-y-5',
   quickfixGroup:
     'border-b border-slate-200/70 pb-5 last:border-b-0 dark:border-slate-800/70',
   quickfixHeader: 'flex items-center gap-3 text-sm',
@@ -391,9 +390,8 @@ const styles = {
     'h-2.5 w-2.5 rounded-full bg-slate-400 ring-2 ring-white dark:bg-slate-600 dark:ring-slate-950',
   quickfixDate:
     'font-mono text-sm font-semibold text-blue-600 dark:text-blue-400',
-  quickfixItems: 'mt-3 space-y-2 pl-5',
-  quickfixItem: 'flex items-start gap-2 text-sm',
-  quickfixDot: 'mt-2 h-1.5 w-1.5 rounded-full bg-slate-300 dark:bg-slate-700',
+  quickfixItems: 'mt-3 list-none space-y-2 pl-[1.375rem]',
+  quickfixItem: 'text-sm',
   quickfixText: 'text-slate-600 dark:text-slate-400',
   lifePanel:
     'rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 p-5 text-sm text-slate-600 dark:border-slate-700/70 dark:bg-slate-900/40 dark:text-slate-400',

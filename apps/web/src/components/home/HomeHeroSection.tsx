@@ -144,7 +144,7 @@ export function HomeHeroSection({
   const titleSuffixLead = isZh ? '的' : ''
   const titleMorphTexts = isZh
     ? ['自留地', '小屋', '小破站', '内陆帝国']
-    : ['Backyard', 'little site', 'tiny nook','Inland Empire']
+    : ['Backyard', 'little site', 'tiny nook', 'Inland Empire']
   const introText = t('home.intro')
   const descriptionText = t('home.description')
   const titleStagger = prefersReducedMotion ? 0 : 0.018
@@ -393,7 +393,7 @@ const styles = {
   heroCopy:
     'order-2 flex flex-col items-center text-center lg:order-1 lg:items-start lg:text-left',
   heroEyebrow:
-    'hidden items-center rounded-full border border-white/18 bg-white/10 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-white/78 backdrop-blur-xl lg:inline-flex',
+    'hidden items-center rounded-full bg-white/10 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-white/78 backdrop-blur-xl lg:inline-flex',
   title: cn(
     'mt-2 max-w-4xl text-center text-4xl font-semibold tracking-tight sm:text-6xl lg:mt-6 lg:text-left lg:text-7xl'
   ),
@@ -427,14 +427,12 @@ const styles = {
   primaryAction:
     'inline-flex items-center rounded-full px-5 py-3 text-sm font-semibold transition-transform duration-300 hover:-translate-y-0.5 hover:scale-[1.01]',
   primaryActionLight:
-    'bg-white/72 text-black shadow-[0_18px_40px_-24px_rgba(15,23,42,0.14)] ring-1 ring-white/48 backdrop-blur-xl hover:bg-white/84',
+    'bg-white/72 text-black shadow-[0_18px_40px_-24px_rgba(15,23,42,0.14)] backdrop-blur-xl hover:bg-white/84',
   primaryActionDark: 'bg-white text-slate-950',
   secondaryAction:
-    'inline-flex items-center rounded-full border px-5 py-3 text-sm font-semibold backdrop-blur-xl transition-transform duration-300 hover:-translate-y-0.5',
-  secondaryActionLight:
-    'border-white/42 bg-white/30 text-black hover:bg-white/46',
-  secondaryActionDark:
-    'border-white/18 bg-white/10 text-white hover:bg-white/14',
+    'inline-flex items-center rounded-full px-5 py-3 text-sm font-semibold backdrop-blur-xl transition-transform duration-300 hover:-translate-y-0.5',
+  secondaryActionLight: 'bg-white/30 text-black hover:bg-white/46',
+  secondaryActionDark: 'bg-white/10 text-white hover:bg-white/14',
   heroFooter: 'mt-10 hidden flex-col items-center gap-4 lg:flex lg:items-start',
   decorativeContainer: 'flex justify-center gap-2 opacity-70 lg:justify-start',
   dot: 'h-2 w-2 rounded-full',

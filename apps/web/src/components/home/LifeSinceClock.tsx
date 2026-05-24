@@ -62,8 +62,8 @@ export function LifeSinceClock({
 const styles = {
   root: 'w-full text-white',
   card: cn(
-    'relative isolate overflow-hidden rounded-[28px] border border-emerald-300/10 bg-[#07100c] p-5 text-white shadow-[0_28px_80px_-40px_rgba(3,9,5,0.88)]',
-    'dark:border-emerald-200/10 dark:bg-[#050b08]'
+    'relative isolate overflow-hidden rounded-[28px] bg-[#07100c] p-5 text-white shadow-[0_28px_80px_-40px_rgba(3,9,5,0.88)]',
+    'dark:bg-[#050b08]'
   ),
   cardCompact: 'p-4 sm:p-[1.125rem]',
   header: 'relative z-10',

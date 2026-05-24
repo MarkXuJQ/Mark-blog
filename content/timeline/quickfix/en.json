@@ -1,5 +1,14 @@
 [
   {
+    "id": "qf-20260525",
+    "date": "2026-05-25",
+    "content": [
+      "Reworked the games page presentation: Most Played now uses an auto-scrolling rail, while All Games uses a Steam-style vertical-cover showcase with interactions",
+      "Unified the card treatment across games, movies, blog, and links pages by softening outer borders and relying on backgrounds, shadows, and spacing for hierarchy",
+      "Removed outer border lines from the navbar and dropdown surfaces while keeping necessary internal dividers and keyboard focus feedback"
+    ]
+  },
+  {
     "id": "qf-20260521",
     "date": "2026-05-21",
     "content": [

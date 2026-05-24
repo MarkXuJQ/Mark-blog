@@ -562,7 +562,7 @@ const styles = {
     'max-w-[34rem] text-sm font-medium leading-6 text-cyan-50/58 text-balance lg:max-w-[32rem]',
   leftWidgetDescriptionZh: 'lg:max-w-[28rem]',
   panel:
-    'relative min-w-0 w-full overflow-hidden rounded-[30px] border border-white/9 bg-[linear-gradient(180deg,rgba(10,16,22,0.92)_0%,rgba(7,12,18,0.97)_100%)] p-4 text-white shadow-[0_34px_110px_-56px_rgba(2,6,23,0.86)] ring-1 ring-white/[0.025] will-change-transform sm:p-5',
+    'relative min-w-0 w-full overflow-hidden rounded-[30px] bg-[linear-gradient(180deg,rgba(10,16,22,0.92)_0%,rgba(7,12,18,0.97)_100%)] p-4 text-white shadow-[0_34px_110px_-56px_rgba(2,6,23,0.86)] will-change-transform sm:p-5',
   worldOverviewPanel: 'self-start p-3 sm:p-4',
   worldOverviewMap:
     'relative w-full self-start brightness-[1.08] saturate-[1.12]',
@@ -580,7 +580,7 @@ const styles = {
   cardHeader: 'flex items-start gap-2.5',
   panelHeaderSplit: 'mb-3 flex items-center border-b border-white/8 pb-3',
   cardIconWrap:
-    'mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[16px] border border-white/10 bg-white/[0.05] text-cyan-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]',
+    'mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[16px] bg-white/[0.05] text-cyan-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]',
   cardCopy: 'min-w-0',
   cardEyebrow:
     'text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-cyan-100/44',
@@ -591,11 +591,11 @@ const styles = {
   mapActionOverlay:
     'absolute right-5 top-5 z-20 flex flex-wrap justify-end gap-2 sm:right-6 sm:top-6',
   metricPill:
-    'inline-flex items-center rounded-full border border-cyan-300/16 bg-cyan-300/[0.08] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-cyan-50/88',
+    'inline-flex items-center rounded-full bg-cyan-300/[0.08] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-cyan-50/88',
   mapActionButton:
-    'group inline-flex items-center justify-center gap-2 rounded-full border border-cyan-200/18 bg-slate-950/64 px-3.5 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_14px_34px_-22px_rgba(0,0,0,0.82)] backdrop-blur-md transition-[transform,color,background-color,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-cyan-200/34 hover:bg-cyan-200/[0.12] hover:text-cyan-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/55 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 active:translate-y-0.5',
+    'group inline-flex items-center justify-center gap-2 rounded-full bg-slate-950/64 px-3.5 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_14px_34px_-22px_rgba(0,0,0,0.82)] backdrop-blur-md transition-[transform,color,background-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-cyan-200/[0.12] hover:text-cyan-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/55 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 active:translate-y-0.5',
   mapActionButtonActive:
-    'translate-y-0.5 border-cyan-200/42 bg-cyan-300/[0.16] text-cyan-50 shadow-[inset_0_2px_8px_rgba(8,47,73,0.36),0_0_28px_rgba(34,211,238,0.14)] hover:translate-y-0.5',
+    'translate-y-0.5 bg-cyan-300/[0.16] text-cyan-50 shadow-[inset_0_2px_8px_rgba(8,47,73,0.36),0_0_28px_rgba(34,211,238,0.14)] hover:translate-y-0.5',
   mapActionIcon:
     'h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:scale-105',
   mapViewport:
@@ -606,16 +606,16 @@ const styles = {
   mapHighlight:
     'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_32px_rgba(181,232,251,0.36)]',
   embedViewport:
-    'relative overflow-hidden rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,#0d141a_0%,#091016_100%)] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:p-2',
+    'relative overflow-hidden rounded-[24px] bg-[linear-gradient(180deg,#0d141a_0%,#091016_100%)] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:p-2',
   embedViewportInteractive:
-    'border-cyan-200/22 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_36px_rgba(34,211,238,0.08)]',
+    'shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_36px_rgba(34,211,238,0.08)]',
   embedFrame:
     'relative block aspect-square w-full rounded-[20px] border-0 bg-[#10161a] shadow-[0_18px_40px_-28px_rgba(0,0,0,0.78)] lg:aspect-[1/1.085]',
   embedFrameLocked: 'pointer-events-none saturate-[0.92]',
   embedInteractionVeil:
     'absolute inset-2 rounded-[20px] bg-[radial-gradient(circle_at_50%_42%,rgba(255,255,255,0.035)_0%,rgba(255,255,255,0)_48%)]',
   embedPlaceholder:
-    'flex items-center justify-center overflow-hidden border border-white/6 bg-[linear-gradient(180deg,#0f171d_0%,#101921_52%,#0d141a_100%)] text-center',
+    'flex items-center justify-center overflow-hidden bg-[linear-gradient(180deg,#0f171d_0%,#101921_52%,#0d141a_100%)] text-center',
   embedPlaceholderGlow:
     'pointer-events-none absolute inset-[14%] rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.16)_0%,rgba(34,211,238,0.06)_34%,rgba(34,211,238,0)_72%)] blur-3xl',
   embedPlaceholderGrid:
