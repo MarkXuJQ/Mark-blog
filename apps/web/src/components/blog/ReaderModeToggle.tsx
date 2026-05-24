@@ -15,6 +15,7 @@ const DEFAULT_TOP_RATIO = 0.5
 const STORAGE_KEY = 'blog-reader-mode-toggle-position-v2'
 const PORTAL_ROOT_ID = 'reader-mode-toggle-root'
 const TOGGLE_MARKER = 'reader-mode-toggle'
+const SNAP_TRANSITION = { type: 'spring', stiffness: 400, damping: 30 } as const
 
 type StoredPosition = {
   side?: DockSide
@@ -89,7 +90,7 @@ export function ReaderModeToggle({
     void controls.start({
       x: 0,
       y: 0,
-      transition: { type: 'spring', stiffness: 420, damping: 32 },
+      transition: SNAP_TRANSITION,
     })
   }
 
@@ -115,8 +116,10 @@ export function ReaderModeToggle({
         dockTo(nextSide, currentTop)
         window.setTimeout(() => {
           isDraggingRef.current = false
-        }, 80)
+        }, 50)
       }}
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.95 }}
       className={cn(
         'fixed z-[80] hidden lg:block',
         side === 'left' ? 'left-0' : 'right-0'
@@ -133,7 +136,7 @@ export function ReaderModeToggle({
           'flex h-20 w-8 cursor-grab items-center justify-center active:cursor-grabbing',
           'border border-slate-200/70 bg-white/80 px-1 py-2 text-xs font-semibold text-[var(--text-secondary)] shadow-sm backdrop-blur',
           'transition-colors hover:bg-white/90 hover:text-[var(--text-primary)]',
-          '[writing-mode:vertical-rl] [text-orientation:mixed]',
+          '[text-orientation:mixed] [writing-mode:vertical-rl]',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--brand-400)_72%,transparent)]',
           'dark:border-[#2b2f36] dark:bg-[#17191c] dark:hover:bg-[#1c1a18]',
           side === 'left'
@@ -174,7 +177,10 @@ function readStoredPosition(): StoredPosition {
     if (!raw) return {}
     const parsed = JSON.parse(raw) as StoredPosition
     return {
-      side: parsed.side === 'left' || parsed.side === 'right' ? parsed.side : undefined,
+      side:
+        parsed.side === 'left' || parsed.side === 'right'
+          ? parsed.side
+          : undefined,
       top: typeof parsed.top === 'number' ? parsed.top : undefined,
     }
   } catch {

@@ -162,7 +162,7 @@ export function BlogPost() {
     )
   }
 
-  const words = countWords(post.content)
+  const words = post.wordCount ?? countWords(post.content)
   const originalCoverImage = post.image ? getImageUrl(post.image) : ''
   const coverImage = originalCoverImage
     ? getOptimizedImageUrl(originalCoverImage, 'cover')
@@ -175,7 +175,9 @@ export function BlogPost() {
   const postUrl = toAbsoluteUrl(postPath, siteUrl)
   const commentPath = getSharedPostCommentPath(post)
   const imageSource =
-    originalCoverImage || extractFirstImageFromHtml(post.content) || DEFAULT_IMAGE
+    originalCoverImage ||
+    extractFirstImageFromHtml(post.content) ||
+    DEFAULT_IMAGE
   const postImageUrl = toAbsoluteUrl(imageSource, siteUrl)
   const publishedAt = toIsoDateTime(post.date)
   const modifiedAt = toIsoDateTime(post.updated || post.date)
@@ -524,7 +526,8 @@ const styles = {
     'text-slate-500 hover:text-slate-800',
     'dark:text-slate-400 dark:hover:text-slate-200'
   ),
-  simpleReadingHeader: 'mb-10 border-b border-slate-200/70 pb-8 dark:border-slate-800/80',
+  simpleReadingHeader:
+    'mb-10 border-b border-slate-200/70 pb-8 dark:border-slate-800/80',
   simpleReadingTitle:
     'mb-4 text-4xl font-bold tracking-tight text-slate-950 md:text-5xl dark:text-slate-50',
   simpleReadingSummary:

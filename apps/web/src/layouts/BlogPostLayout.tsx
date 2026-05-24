@@ -39,7 +39,7 @@ export function BlogPostLayout() {
   const postLanguage = resolvePostLanguage(slug, i18n.language)
   const posts = getAllPostSummaries(postLanguage)
   const currentPost = slug
-    ? getPostBySlug(slug, postLanguage, { fallback: false }) ?? null
+    ? (getPostBySlug(slug, postLanguage, { fallback: false }) ?? null)
     : null
   const outletContext = useMemo(
     () => ({ simpleMode }) satisfies BlogPostOutletContext,
@@ -55,10 +55,7 @@ export function BlogPostLayout() {
   }, [])
 
   useEffect(() => {
-    document.documentElement.toggleAttribute(
-      'data-simple-reading',
-      simpleMode
-    )
+    document.documentElement.toggleAttribute('data-simple-reading', simpleMode)
     window.localStorage.setItem(
       READER_MODE_STORAGE_KEY,
       simpleMode ? 'simple' : 'rich'
@@ -73,10 +70,7 @@ export function BlogPostLayout() {
     <div className={styles.container}>
       <span id="page-top" />
       <div
-        className={cn(
-          styles.layoutGrid,
-          simpleMode && styles.simpleLayoutGrid
-        )}
+        className={cn(styles.layoutGrid, simpleMode && styles.simpleLayoutGrid)}
       >
         <aside className={cn(styles.leftSidebar, simpleMode && '!hidden')}>
           <div className={styles.stickyWrapper}>
@@ -129,7 +123,7 @@ export function BlogPostLayout() {
           <button
             type="button"
             onClick={() => setIsMobileTocOpen((prev) => !prev)}
-            className="fixed bottom-6 right-6 z-[80] inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:bg-slate-50 lg:hidden dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-300 dark:hover:bg-slate-900"
+            className="fixed right-6 bottom-6 z-[80] inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:bg-slate-50 lg:hidden dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-300 dark:hover:bg-slate-900"
             aria-label={t('blog.toc.title')}
           >
             <svg
@@ -178,7 +172,11 @@ const styles = {
 
 function resolvePostLanguage(slug: string | undefined, fallback: string) {
   if (!slug) return fallback
-  if (slug.endsWith('-cn') || /[^\x00-\x7F]/.test(slug)) return 'zh'
+  if (slug.endsWith('-cn') || hasNonAscii(slug)) return 'zh'
   if (slug.endsWith('-en')) return 'en'
   return fallback
+}
+
+function hasNonAscii(value: string) {
+  return [...value].some((char) => char.charCodeAt(0) > 127)
 }

@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LeftSidebarWidget, StatsWidget } from '@/components/blog/BlogWidgets'
+import { MobileBlogDrawer } from '@/components/blog/MobileBlogDrawer'
 import { ReaderModeToggle } from '@/components/blog/ReaderModeToggle'
 import { getAllPostSummaries } from '@/lib/content'
 import { cn } from '@/lib/utils'
@@ -30,10 +31,7 @@ export function BlogListLayout() {
   }, [])
 
   useEffect(() => {
-    document.documentElement.toggleAttribute(
-      'data-simple-reading',
-      simpleMode
-    )
+    document.documentElement.toggleAttribute('data-simple-reading', simpleMode)
     window.localStorage.setItem(
       READER_MODE_STORAGE_KEY,
       simpleMode ? 'simple' : 'rich'
@@ -48,10 +46,7 @@ export function BlogListLayout() {
     <div className={styles.container}>
       <span id="page-top" />
       <div
-        className={cn(
-          styles.layoutGrid,
-          simpleMode && styles.simpleLayoutGrid
-        )}
+        className={cn(styles.layoutGrid, simpleMode && styles.simpleLayoutGrid)}
       >
         <aside className={cn(styles.leftSidebar, simpleMode && '!hidden')}>
           <div className={styles.stickyWrapper}>
@@ -77,10 +72,16 @@ export function BlogListLayout() {
       </div>
 
       {isMounted ? (
-        <ReaderModeToggle
-          simpleMode={simpleMode}
-          onToggle={() => setSimpleMode((prev) => !prev)}
-        />
+        <>
+          <ReaderModeToggle
+            simpleMode={simpleMode}
+            onToggle={() => setSimpleMode((prev) => !prev)}
+          />
+          <MobileBlogDrawer
+            simpleMode={simpleMode}
+            onToggleMode={() => setSimpleMode((prev) => !prev)}
+          />
+        </>
       ) : null}
     </div>
   )

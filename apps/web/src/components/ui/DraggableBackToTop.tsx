@@ -128,7 +128,7 @@ export function DraggableBackToTop() {
           'dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-300',
           'transition-colors hover:bg-slate-50'
         )}
-        aria-label="??????"
+        aria-label="回到顶部"
       >
         <IoArrowUpSharp size={20} />
       </button>

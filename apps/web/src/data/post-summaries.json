@@ -7,12 +7,8 @@
     "date": "2026-05-20",
     "updated": "2026-05-22",
     "summary": "虽然写博客的概念已经优点过时了，但是我仍然推荐，可以在理清自己思路的同时，记录下自己成长的过程，些许还会认识到志同道合的朋友。",
-    "wordCount": 2730,
-    "tags": [
-      "Blogs",
-      "College",
-      "Writing"
-    ],
+    "wordCount": 2468,
+    "tags": ["Blogs", "College", "Writing"],
     "category": "essay"
   },
   {
@@ -23,12 +19,8 @@
     "date": "2026-05-20",
     "updated": "2026-05-22",
     "summary": "Although the idea of writing blogs already feels a little outdated, I still recommend it. It helps you clarify your thoughts, record the process of growing up, and maybe even meet like-minded people along the way.",
-    "wordCount": 1788,
-    "tags": [
-      "Blogs",
-      "College",
-      "Writing"
-    ],
+    "wordCount": 1777,
+    "tags": ["Blogs", "College", "Writing"],
     "category": "essay"
   },
   {
@@ -39,12 +31,8 @@
     "date": "2026-05-17",
     "updated": "2026-05-17",
     "summary": "这里记录着我是如何使用浏览器的小插件，或者一些其他推荐的上网小工具",
-    "wordCount": 1784,
-    "tags": [
-      "Tools",
-      "Websites",
-      "Sources"
-    ],
+    "wordCount": 1198,
+    "tags": ["Tools", "Websites", "Sources"],
     "category": "Share"
   },
   {
@@ -54,13 +42,9 @@
     "title": "从 Meme 的视角看 AI：死亡搁浅2 游玩启发",
     "date": "2026-05-16",
     "summary": "通关死亡搁浅2之后，我开始理解 MEME：作为人类文化基因继续生长的方式。AI 可以复用这些文化基因，但新的文化基因，或许仍然要从人的经验里长出来。",
-    "wordCount": 4733,
+    "wordCount": 4176,
     "image": "https://img.markxu.icu/img69e8647962c8ab32d1d0e0fbf1e40b61.png",
-    "tags": [
-      "AI",
-      "Game",
-      "Culture"
-    ],
+    "tags": ["AI", "Game", "Culture"],
     "category": "essay"
   },
   {
@@ -70,13 +54,9 @@
     "title": "Looking at AI Through the Lens of Meme: Thoughts After Playing Death Stranding 2",
     "date": "2026-05-16",
     "summary": "After finishing the story of Death Stranding 2, I began to understand MEME as a way for the genes of human culture to keep growing. AI can reuse these cultural genes, but new cultural genes may still have to grow out of human experience.",
-    "wordCount": 2753,
+    "wordCount": 2678,
     "image": "https://img.markxu.icu/img69e8647962c8ab32d1d0e0fbf1e40b61.png",
-    "tags": [
-      "AI",
-      "Game",
-      "Culture"
-    ],
+    "tags": ["AI", "Game", "Culture"],
     "category": "essay"
   },
   {
@@ -87,12 +67,8 @@
     "date": "2026-05-15",
     "updated": "2026-05-20",
     "summary": "从一次大创项目、一套医疗管理系统，到骨盆骨折 CT 分割算法的复现与改进。这篇文章记录我的毕业设计，也记录一次从失败里慢慢摸到问题核心的经历。",
-    "wordCount": 4127,
-    "tags": [
-      "Projects",
-      "Image Segmentation",
-      "Algorithm"
-    ],
+    "wordCount": 3741,
+    "tags": ["Projects", "Image Segmentation", "Algorithm"],
     "category": "project"
   },
   {
@@ -103,12 +79,8 @@
     "date": "2026-05-15",
     "updated": "2026-05-20",
     "summary": "From a student innovation project and a medical management system to reproducing and improving a pelvic fracture CT segmentation algorithm, this post records my graduation project and how I slowly learned to find the real problem inside failure.",
-    "wordCount": 2560,
-    "tags": [
-      "Projects",
-      "Image Segmentation",
-      "Algorithm"
-    ],
+    "wordCount": 2512,
+    "tags": ["Projects", "Image Segmentation", "Algorithm"],
     "category": "project"
   },
   {
@@ -118,14 +90,9 @@
     "title": "大学四年，我的几个“小抽屉”",
     "date": "2026-05-11",
     "summary": "一直有搜集各种有趣的信息源的习惯，想要把我印象中高质量，经常更新且好玩好读的几个信息源记录下，留给未来的自己，也分享给大家。",
-    "wordCount": 1949,
+    "wordCount": 1703,
     "image": "https://img.markxu.icu/img06bdb9ed7cc5e8.png",
-    "tags": [
-      "News",
-      "Sources",
-      "Blogs",
-      "Websites"
-    ],
+    "tags": ["News", "Sources", "Blogs", "Websites"],
     "category": "Share"
   },
   {
@@ -135,14 +102,9 @@
     "title": "配置Mac终端日记",
     "date": "2026-04-07",
     "summary": "我以前的终端被 oh-my-zsh 和各类插件塞的满满的，界面还丑到自己都不愿意用。所以这次我打算从0开始，完整的重新构建一下我的终端。",
-    "wordCount": 2864,
+    "wordCount": 1595,
     "image": "https://img.markxu.icu/img4d29eab0f1dc8.jpeg",
-    "tags": [
-      "MacOS",
-      "Terminal",
-      "Tools",
-      "Beautify"
-    ],
+    "tags": ["MacOS", "Terminal", "Tools", "Beautify"],
     "category": "tech"
   },
   {
@@ -152,14 +114,9 @@
     "title": "Mac Terminal Setup Notes",
     "date": "2026-04-07",
     "summary": "My old terminal was packed with oh-my-zsh and plugins I could barely remember, and it looked ugly enough that I did not even want to use it. So I decided to rebuild my terminal from scratch.",
-    "wordCount": 1882,
+    "wordCount": 1062,
     "image": "https://img.markxu.icu/img4d29eab0f1dc8.jpeg",
-    "tags": [
-      "MacOS",
-      "Terminal",
-      "Tools",
-      "Beautify"
-    ],
+    "tags": ["MacOS", "Terminal", "Tools", "Beautify"],
     "category": "tech"
   },
   {
@@ -170,15 +127,9 @@
     "date": "2026-04-05",
     "updated": "2026-04-06",
     "summary": "最近在 GitHub 上看到了一个项目：voice-input-src。一个为mac写的语音输入软件。震惊的是打开仓库你会发现只有一段写给AI的Prompt。",
-    "wordCount": 2217,
+    "wordCount": 1927,
     "image": "https://img.markxu.icu/imgvoiceinput.jpeg",
-    "tags": [
-      "Github",
-      "Swift",
-      "MacOS",
-      "AI",
-      "Prompt"
-    ],
+    "tags": ["Github", "Swift", "MacOS", "AI", "Prompt"],
     "category": "tech"
   },
   {
@@ -189,15 +140,9 @@
     "date": "2026-04-05",
     "updated": "2026-04-06",
     "summary": "I recently found a GitHub project called voice-input-src, a voice input app for Mac. The surprising part is that the repository contains only one detailed prompt for AI.",
-    "wordCount": 1274,
+    "wordCount": 1162,
     "image": "https://img.markxu.icu/imgvoiceinput.jpeg",
-    "tags": [
-      "Github",
-      "Swift",
-      "MacOS",
-      "AI",
-      "Prompt"
-    ],
+    "tags": ["Github", "Swift", "MacOS", "AI", "Prompt"],
     "category": "tech"
   },
   {
@@ -208,11 +153,8 @@
     "date": "2026-03-24",
     "updated": "2026-03-26",
     "summary": "个人网站字面意义上的第一篇博客，分享下个人感受和经历。",
-    "wordCount": 1504,
-    "tags": [
-      "Life",
-      "Website"
-    ],
+    "wordCount": 1368,
+    "tags": ["Life", "Website"],
     "category": "essay"
   },
   {
@@ -223,11 +165,8 @@
     "date": "2026-03-24",
     "updated": "2026-03-26",
     "summary": "This is the literal first blog post on my personal site, sharing my thoughts and experiences.",
-    "wordCount": 990,
-    "tags": [
-      "Life",
-      "Website"
-    ],
+    "wordCount": 974,
+    "tags": ["Life", "Website"],
     "category": "essay"
   },
   {
@@ -238,12 +177,9 @@
     "date": "2024-03-22",
     "updated": "2026-03-03",
     "summary": "这是我在广州的游记，主要是流水账，但也记录了我和好兄弟在旅程中经历的小故事。",
-    "wordCount": 1817,
+    "wordCount": 1591,
     "image": "https://img.markxu.icu/imgIMG_20240323_广州tower.png",
-    "tags": [
-      "Life",
-      "Travel"
-    ],
+    "tags": ["Life", "Travel"],
     "category": "Experience"
   },
   {
@@ -254,12 +190,9 @@
     "date": "2024-03-22",
     "updated": "2026-03-03",
     "summary": "This is my travel note in Guangzhou. (translated by ai)",
-    "wordCount": 1151,
+    "wordCount": 1097,
     "image": "https://img.markxu.icu/imgIMG_20240323_广州tower.png",
-    "tags": [
-      "Life",
-      "Travel"
-    ],
+    "tags": ["Life", "Travel"],
     "category": "essay"
   },
   {
@@ -270,12 +203,9 @@
     "date": "2023-09-27",
     "updated": "2026-02-25",
     "summary": "这是我在潮汕的游记，记录了大二第一次独自出去玩的经历。",
-    "wordCount": 2313,
+    "wordCount": 1979,
     "image": "https://img.markxu.icu/imgIMG_20230922_汕头.png",
-    "tags": [
-      "Life",
-      "Travel"
-    ],
+    "tags": ["Life", "Travel"],
     "category": "Experience"
   },
   {
@@ -286,12 +216,9 @@
     "date": "2023-09-27",
     "updated": "2026-02-25",
     "summary": "This is my travel note in Chaoshan. Tracked my first experience of travelling by myself. (translated by ai)",
-    "wordCount": 1504,
+    "wordCount": 1427,
     "image": "https://img.markxu.icu/imgIMG_20230922_汕头.png",
-    "tags": [
-      "Life",
-      "Travel"
-    ],
+    "tags": ["Life", "Travel"],
     "category": "essay"
   }
 ]
