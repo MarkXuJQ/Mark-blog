@@ -1,0 +1,88 @@
+{
+  "nodes": [
+    {
+      "id": "ruanyifeng",
+      "cardAlignX": "right",
+      "cardAlignY": "bottom",
+      "color": "#FF6F43"
+    },
+    {
+      "id": "eventuallymaking",
+      "cardAlignX": "left",
+      "cardAlignY": "bottom",
+      "color": "#7670E8"
+    },
+    {
+      "id": "joshwcomeau",
+      "cardAlignX": "center",
+      "cardAlignY": "bottom",
+      "color": "#7670E8"
+    },
+    {
+      "id": "pathos",
+      "cardAlignX": "right",
+      "cardAlignY": "top",
+      "color": "#F4C433"
+    },
+    {
+      "id": "messenger",
+      "cardAlignX": "left",
+      "cardAlignY": "top",
+      "color": "#10A64B"
+    },
+    {
+      "id": "radiogarden",
+      "cardAlignX": "center",
+      "cardAlignY": "top",
+      "color": "#10A64B"
+    },
+    {
+      "id": "tongliao",
+      "cardAlignX": "right",
+      "cardAlignY": "top",
+      "color": "#7670E8"
+    },
+    {
+      "id": "rleonardi",
+      "cardAlignX": "right",
+      "cardAlignY": "bottom",
+      "color": "#FF6F43"
+    },
+    {
+      "id": "zhheo",
+      "cardAlignX": "center",
+      "cardAlignY": "top",
+      "color": "#10A64B"
+    },
+    {
+      "id": "zhilu",
+      "cardAlignX": "left",
+      "cardAlignY": "bottom",
+      "color": "#7670E8"
+    },
+    {
+      "id": "dbushell",
+      "cardAlignX": "left",
+      "cardAlignY": "top",
+      "color": "#F4C433"
+    },
+    {
+      "id": "uselessweb",
+      "cardAlignX": "right",
+      "cardAlignY": "top",
+      "color": "#10A64B"
+    },
+    {
+      "id": "geokash",
+      "cardAlignX": "center",
+      "cardAlignY": "top",
+      "color": "#7670E8"
+    },
+    {
+      "id": "nineteen-hundred",
+      "cardAlignX": "right",
+      "cardAlignY": "bottom",
+      "color": "#FF6F43"
+    }
+  ]
+}

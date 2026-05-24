@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom'
 import { Calendar, Clock, FileText, Activity, Hash, Layers } from 'lucide-react'
 import { LuGithub } from 'react-icons/lu'
 import { RiBilibiliLine, RiTwitterXFill, RiZhihuFill } from 'react-icons/ri'
+import { RiLinksLine } from 'react-icons/ri'
 import type { BlogPostSummary } from '@/types'
 
 // --- Profile Content (Internal) ---
@@ -30,7 +31,8 @@ function ProfileContent() {
       ? Math.floor(Math.random() * signatureOptions.length)
       : 0
   )
-  const signature = signatureOptions[signatureIndex] ?? signatureOptions[0] ?? ''
+  const signature =
+    signatureOptions[signatureIndex] ?? signatureOptions[0] ?? ''
   const normalizedSignature = (() => {
     if (signature.includes('\n')) return signature
 
@@ -172,6 +174,18 @@ function ArchiveContent() {
   )
 }
 
+function FriendLinksContent() {
+  const { i18n } = useTranslation()
+  const label = i18n.language?.startsWith('zh') ? '友链' : 'Friends'
+
+  return (
+    <Link to="/links" className={styles.widgetHeader}>
+      <RiLinksLine size={20} className="text-blue-500" />
+      <h3 className={styles.widgetTitle}>{label}</h3>
+    </Link>
+  )
+}
+
 // --- Archive Widget (Wrapper) ---
 export function ArchiveWidget() {
   return (
@@ -188,6 +202,7 @@ export function LeftSidebarWidget() {
       <ProfileContent />
       <div className="my-6 border-t border-slate-100 dark:border-slate-800" />
       <ArchiveContent />
+      <FriendLinksContent />
     </Card>
   )
 }
@@ -317,7 +332,7 @@ const styles = {
   // Common Widget
   widgetHeader:
     'mb-4 flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-800',
-  widgetTitle: 'font-bold text-slate-800 dark:text-slate-100',
+  widgetTitle: 'font-medium text-slate-800 dark:text-slate-100',
 
   // Archive
   archiveYearGroup:

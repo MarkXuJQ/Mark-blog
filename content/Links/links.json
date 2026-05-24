@@ -1,0 +1,53 @@
+{
+  "recommended": [
+    {
+      "name": "阮一峰的网络日志",
+      "url": "https://www.ruanyifeng.com/blog/",
+      "avatar": "ruanyifeng",
+      "description": "阮一峰老师的长期技术写作站点，记录编程、互联网、科技观察和每周分享。"
+    },
+    {
+      "name": "Eventuallymaking",
+      "url": "https://eventuallymaking.io/",
+      "avatar": "eventuallymaking",
+      "description": "一位软件工程师的个人网站，分享工程实践、产品构建和创业相关的思考。"
+    },
+    {
+      "name": "Josh W. Comeau",
+      "url": "https://www.joshwcomeau.com/",
+      "avatar": "joshwcomeau",
+      "description": "Josh W. Comeau 的前端教学网站，内容围绕 React、CSS、动画和交互体验展开。"
+    },
+    {
+      "name": "Pathos.page",
+      "url": "https://pathos.page/",
+      "avatar": "pathos",
+      "description": "一位法哲学研究者的博客，记录学术写作、问题意识和社会观察。"
+    },
+    {
+      "name": "张洪Heo",
+      "url": "https://blog.zhheo.com/",
+      "avatar": "zhheo",
+      "description": "张洪Heo 的个人博客，分享设计、前端开发、AI 应用和自研工具。"
+    },
+    {
+      "name": "纸鹿摸鱼处",
+      "url": "https://blog.zhilu.site/",
+      "avatar": "zhilu",
+      "description": "纸鹿至麓不知路，支炉制露不止漉。"
+    },
+    {
+      "name": "dbushell.com",
+      "url": "https://dbushell.com/",
+      "avatar": "dbushell",
+      "description": "David Bushell 的个人网站，内容涉及 Web 标准、前端工程、性能、可访问性和安全。"
+    },
+    {
+      "name": "1900.live",
+      "url": "https://1900.live/",
+      "avatar": "nineteen-hundred",
+      "description": "1900 的个人博客，记录骑行、编程、观影、生活感想和健康观察。"
+    }
+  ],
+  "neighbors": []
+}

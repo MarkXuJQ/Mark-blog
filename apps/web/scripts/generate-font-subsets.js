@@ -224,11 +224,29 @@ function readTextFiles(files) {
 
   for (const filePath of files) {
     if (!fs.existsSync(filePath)) continue
-    combined += fs.readFileSync(filePath, 'utf8')
+    const rawText = fs.readFileSync(filePath, 'utf8')
+    combined += rawText
+    combined += decodeUnicodeEscapes(rawText)
     combined += '\n'
   }
 
   return combined
+}
+
+function decodeUnicodeEscapes(input) {
+  return input.replace(
+    /\\u\{([0-9a-fA-F]+)\}|\\u([0-9a-fA-F]{4})/g,
+    (_, codePoint, codeUnit) => {
+      const value = Number.parseInt(codePoint || codeUnit, 16)
+      if (!Number.isFinite(value)) return ''
+
+      try {
+        return String.fromCodePoint(value)
+      } catch {
+        return ''
+      }
+    }
+  )
 }
 
 function readProjectText() {
@@ -242,7 +260,9 @@ function readFontSafelist() {
 }
 
 function buildChineseText() {
-  return uniqueGlyphText(readProjectText() + readFontSafelist() + safeChineseExtras)
+  return uniqueGlyphText(
+    readProjectText() + readFontSafelist() + safeChineseExtras
+  )
 }
 
 function buildAlibabaSemiBoldText() {
@@ -259,7 +279,9 @@ function buildAlibabaSemiBoldText() {
 }
 
 function buildNerdFontText() {
-  return uniqueGlyphText(readProjectText() + readFontSafelist() + safeCodeExtras)
+  return uniqueGlyphText(
+    readProjectText() + readFontSafelist() + safeCodeExtras
+  )
 }
 
 function ensureDir(dirPath) {
@@ -311,9 +333,18 @@ function findPyftsubset() {
     'pyftsubset',
     path.join(userHome, 'anaconda3/envs/pelvis_seg/bin/pyftsubset'),
     path.join(userHome, 'miniconda3/Scripts/pyftsubset.exe'),
-    path.join(userHome, 'AppData/Roaming/Python/Python313/Scripts/pyftsubset.exe'),
-    path.join(userHome, 'AppData/Roaming/Python/Python312/Scripts/pyftsubset.exe'),
-    path.join(userHome, 'AppData/Roaming/Python/Python311/Scripts/pyftsubset.exe'),
+    path.join(
+      userHome,
+      'AppData/Roaming/Python/Python313/Scripts/pyftsubset.exe'
+    ),
+    path.join(
+      userHome,
+      'AppData/Roaming/Python/Python312/Scripts/pyftsubset.exe'
+    ),
+    path.join(
+      userHome,
+      'AppData/Roaming/Python/Python311/Scripts/pyftsubset.exe'
+    ),
   ].filter(Boolean)
 
   for (const candidate of candidates) {

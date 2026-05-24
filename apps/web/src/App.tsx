@@ -38,11 +38,6 @@ const Blog = lazy(() =>
 const BlogPost = lazy(() =>
   import('./pages/BlogPost').then((module) => ({ default: module.BlogPost }))
 )
-const UnderConstruction = lazy(() =>
-  import('./pages/UnderConstruction').then((module) => ({
-    default: module.UnderConstruction,
-  }))
-)
 const Timeline = lazy(() =>
   import('./pages/Timeline').then((module) => ({ default: module.Timeline }))
 )
@@ -68,6 +63,9 @@ const Games = lazy(() =>
 )
 const Search = lazy(() =>
   import('./pages/Search').then((module) => ({ default: module.Search }))
+)
+const Links = lazy(() =>
+  import('./pages/Links').then((module) => ({ default: module.Links }))
 )
 const NotFound = lazy(() =>
   import('./pages/NotFound').then((module) => ({ default: module.NotFound }))
@@ -230,13 +228,21 @@ function App() {
               }
             />
             <Route
-              path="links"
               element={
                 <LazyRoute>
-                  <UnderConstruction />
+                  <ArchiveLayout />
                 </LazyRoute>
               }
-            />
+            >
+              <Route
+                path="links"
+                element={
+                  <LazyRoute>
+                    <Links />
+                  </LazyRoute>
+                }
+              />
+            </Route>
             <Route
               path="*"
               element={

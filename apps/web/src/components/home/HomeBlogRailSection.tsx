@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+} from 'react'
 import { motion, type MotionValue, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
@@ -21,10 +28,32 @@ const BLOG_POST_LIMIT = 7
 const BLOG_RAIL_DEFAULT_SPEED_PERCENT = 50
 const BLOG_RAIL_MIN_SPEED_PERCENT = 20
 const BLOG_RAIL_MAX_SPEED_PERCENT = 100
+const BLOG_RAIL_BASE_DURATION_SECONDS = 54
+const BLOG_RAIL_DRAG_CLICK_THRESHOLD = 6
+const HOME_PAGER_SUPPRESS_EVENT = 'home:pager-suppress'
 
-const styles = {
-  autoRailTrack:
-    '[animation:home-blog-rail-marquee_54s_linear_infinite] [@media(prefers-reduced-motion:reduce)]:[animation:none]',
+interface BlogRailDragState {
+  pointerId: number
+  startX: number
+  startOffset: number
+  hasDragged: boolean
+}
+
+function normalizeRailOffset(offset: number, loopWidth: number) {
+  if (loopWidth <= 0) return 0
+
+  const positiveOffset = ((offset % loopWidth) + loopWidth) % loopWidth
+  return positiveOffset === 0 ? 0 : positiveOffset - loopWidth
+}
+
+function suppressHomePager(durationMs = 900) {
+  if (typeof window === 'undefined') return
+
+  window.dispatchEvent(
+    new CustomEvent(HOME_PAGER_SUPPRESS_EVENT, {
+      detail: { durationMs },
+    })
+  )
 }
 
 export function HomeBlogRailSection({
@@ -37,6 +66,12 @@ export function HomeBlogRailSection({
   const { t, i18n } = useTranslation()
   const shouldReduceMotion = Boolean(useReducedMotion())
   const railTrackRef = useRef<HTMLDivElement | null>(null)
+  const railOffsetRef = useRef(0)
+  const railLoopWidthRef = useRef(0)
+  const railLastFrameTimeRef = useRef<number | null>(null)
+  const railDragStateRef = useRef<BlogRailDragState | null>(null)
+  const suppressClickRef = useRef(false)
+  const [isDraggingRail, setIsDraggingRail] = useState(false)
   const [scrollSpeed, setScrollSpeed] = useState([
     BLOG_RAIL_DEFAULT_SPEED_PERCENT,
   ])
@@ -80,22 +115,142 @@ export function HomeBlogRailSection({
 
   useEffect(() => {
     const railTrackNode = railTrackRef.current
-    if (!railTrackNode || shouldReduceMotion) return
+    if (!railTrackNode) return
 
     let frameId = 0
+    let resizeFrameId = 0
 
-    const syncPlaybackRate = () => {
-      const playbackRate = speedPercent / BLOG_RAIL_DEFAULT_SPEED_PERCENT
-      railTrackNode.getAnimations().forEach((animation) => {
-        animation.updatePlaybackRate(playbackRate)
+    const applyRailOffset = () => {
+      railTrackNode.style.transform = `translate3d(${railOffsetRef.current}px, 0, 0)`
+    }
+
+    const syncLoopWidth = () => {
+      window.cancelAnimationFrame(resizeFrameId)
+      resizeFrameId = window.requestAnimationFrame(() => {
+        const loopWidth = railTrackNode.scrollWidth / 2
+        railLoopWidthRef.current = loopWidth
+        railOffsetRef.current = normalizeRailOffset(
+          railOffsetRef.current,
+          loopWidth
+        )
+        applyRailOffset()
       })
     }
 
-    syncPlaybackRate()
-    frameId = requestAnimationFrame(syncPlaybackRate)
+    const tick = (timestamp: number) => {
+      const previousTimestamp = railLastFrameTimeRef.current
+      railLastFrameTimeRef.current = timestamp
 
-    return () => cancelAnimationFrame(frameId)
+      if (
+        previousTimestamp != null &&
+        !shouldReduceMotion &&
+        !railDragStateRef.current
+      ) {
+        const loopWidth = railLoopWidthRef.current
+        const speedMultiplier = speedPercent / BLOG_RAIL_DEFAULT_SPEED_PERCENT
+        const distancePerMs =
+          loopWidth / (BLOG_RAIL_BASE_DURATION_SECONDS * 1000)
+        const deltaMs = timestamp - previousTimestamp
+
+        railOffsetRef.current = normalizeRailOffset(
+          railOffsetRef.current - distancePerMs * speedMultiplier * deltaMs,
+          loopWidth
+        )
+        applyRailOffset()
+      }
+
+      frameId = window.requestAnimationFrame(tick)
+    }
+
+    syncLoopWidth()
+    frameId = window.requestAnimationFrame(tick)
+
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(syncLoopWidth)
+
+    resizeObserver?.observe(railTrackNode)
+    window.addEventListener('load', syncLoopWidth)
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      window.cancelAnimationFrame(resizeFrameId)
+      resizeObserver?.disconnect()
+      window.removeEventListener('load', syncLoopWidth)
+    }
   }, [shouldReduceMotion, speedPercent])
+
+  const handleRailPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+
+    railDragStateRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startOffset: railOffsetRef.current,
+      hasDragged: false,
+    }
+    railLastFrameTimeRef.current = null
+    setIsDraggingRail(true)
+    event.currentTarget.setPointerCapture(event.pointerId)
+    suppressHomePager()
+  }
+
+  const handleRailPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const dragState = railDragStateRef.current
+    if (!dragState || dragState.pointerId !== event.pointerId) return
+
+    const deltaX = event.clientX - dragState.startX
+    const loopWidth = railLoopWidthRef.current
+
+    if (Math.abs(deltaX) > BLOG_RAIL_DRAG_CLICK_THRESHOLD) {
+      dragState.hasDragged = true
+      suppressClickRef.current = true
+    }
+
+    railOffsetRef.current = normalizeRailOffset(
+      dragState.startOffset + deltaX,
+      loopWidth
+    )
+
+    if (railTrackRef.current) {
+      railTrackRef.current.style.transform = `translate3d(${railOffsetRef.current}px, 0, 0)`
+    }
+
+    if (dragState.hasDragged) {
+      event.preventDefault()
+      suppressHomePager()
+    }
+  }
+
+  const finishRailDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const dragState = railDragStateRef.current
+    if (!dragState || dragState.pointerId !== event.pointerId) return
+
+    if (dragState.hasDragged) {
+      suppressClickRef.current = true
+      suppressHomePager()
+      window.setTimeout(() => {
+        suppressClickRef.current = false
+      }, 160)
+    }
+
+    railDragStateRef.current = null
+    railLastFrameTimeRef.current = null
+    setIsDraggingRail(false)
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+  }
+
+  const handleRailClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (!suppressClickRef.current) return
+
+    event.preventDefault()
+    event.stopPropagation()
+    suppressClickRef.current = false
+  }
 
   if (posts.length === 0) return null
 
@@ -122,10 +277,7 @@ export function HomeBlogRailSection({
           <div className="relative flex h-full flex-col justify-center gap-16 py-12 sm:py-14">
             <div className="flex flex-col gap-6 px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                <div
-                  data-home-reveal="blog-header"
-                  className="space-y-3"
-                >
+                <div data-home-reveal="blog-header" className="space-y-3">
                   <div className="h-px w-14 bg-black/12 dark:bg-white/16" />
                   <div className="flex items-center gap-4">
                     <h2 className="heading-display text-[1.95rem] leading-none font-medium tracking-[0.08em] text-black/88 sm:text-[2.2rem] lg:text-[2.6rem] dark:text-white/90">
@@ -173,7 +325,19 @@ export function HomeBlogRailSection({
               />
             </div>
             <div className="relative w-full">
-              <div className="relative overflow-hidden">
+              <div
+                data-home-no-pager="true"
+                className={cn(
+                  'relative cursor-grab touch-pan-y overflow-hidden select-none',
+                  isDraggingRail && 'cursor-grabbing'
+                )}
+                onClickCapture={handleRailClickCapture}
+                onDragStart={(event) => event.preventDefault()}
+                onPointerCancel={finishRailDrag}
+                onPointerDown={handleRailPointerDown}
+                onPointerMove={handleRailPointerMove}
+                onPointerUp={finishRailDrag}
+              >
                 <div
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-y-0 left-0 z-20 w-10 sm:w-16 lg:w-24"
@@ -193,22 +357,17 @@ export function HomeBlogRailSection({
 
                 <div
                   ref={railTrackRef}
-                  className={cn(
-                    'flex w-max items-stretch',
-                    !shouldReduceMotion && styles.autoRailTrack
-                  )}
+                  className="flex w-max items-stretch will-change-transform"
                 >
                   <BlogRailSegment
                     posts={posts}
                     dateFormatter={dateFormatter}
                   />
-                  {shouldReduceMotion ? null : (
-                    <BlogRailSegment
-                      posts={posts}
-                      dateFormatter={dateFormatter}
-                      ariaHidden
-                    />
-                  )}
+                  <BlogRailSegment
+                    posts={posts}
+                    dateFormatter={dateFormatter}
+                    ariaHidden
+                  />
                 </div>
               </div>
 
