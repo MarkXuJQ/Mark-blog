@@ -655,7 +655,7 @@ export function Movies() {
       <Seo title={title} description={description} />
 
       <div className="mx-auto w-full max-w-6xl px-4 py-8 xl:max-w-[70vw]">
-        <section className="mb-8 border-b border-slate-200/80 pb-8 dark:border-[#2b2f36]">
+        <section className="mb-8 pb-8">
           <div className="max-w-3xl">
             <div
               aria-hidden="true"
@@ -736,7 +736,7 @@ export function Movies() {
             </section>
 
             {movieItems.length === 0 ? (
-              <section className="rounded-2xl border border-dashed border-slate-300 bg-white/70 p-8 text-center dark:border-slate-700 dark:bg-slate-900/70">
+              <section className="rounded-2xl bg-white/70 p-8 text-center shadow-sm dark:bg-slate-900/70">
                 <Clapperboard
                   size={34}
                   className="mx-auto mb-3 text-slate-400 dark:text-slate-500"
@@ -749,7 +749,7 @@ export function Movies() {
                 </p>
               </section>
             ) : filteredMovies.length === 0 ? (
-              <section className="rounded-2xl border border-dashed border-slate-300 bg-white/70 p-8 text-center text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-400">
+              <section className="rounded-2xl bg-white/70 p-8 text-center text-sm text-slate-600 shadow-sm dark:bg-slate-900/70 dark:text-slate-400">
                 {t('movies.noResults')}
               </section>
             ) : (
@@ -809,10 +809,10 @@ export function Movies() {
                             : undefined
                         }
                         className={cn(
-                          'group relative flex h-full w-full flex-col overflow-hidden rounded-[1.4rem] border p-3 shadow-[0_24px_56px_-40px_rgba(15,23,42,0.34)] backdrop-blur transition-[transform,border-color,box-shadow,background-color] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_68px_-40px_rgba(15,23,42,0.4)]',
+                          'group relative flex h-full w-full flex-col overflow-hidden rounded-[1.4rem] p-3 shadow-[0_24px_56px_-40px_rgba(15,23,42,0.34)] backdrop-blur transition-[transform,box-shadow,background-color] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_68px_-40px_rgba(15,23,42,0.4)]',
                           hasReview
-                            ? 'border-emerald-200/90 bg-white/84 dark:border-emerald-500/30 dark:bg-[#17191c]/96'
-                            : 'border-slate-200/70 bg-white/78 dark:border-[#2b2f36] dark:bg-[#17191c]/92',
+                            ? 'bg-white/88 shadow-[0_24px_60px_-38px_rgba(16,185,129,0.34)] dark:bg-[#17191c]/96 dark:shadow-[0_28px_64px_-42px_rgba(16,185,129,0.28)]'
+                            : 'bg-white/78 dark:bg-[#17191c]/92',
                           canOpenReview
                             ? 'cursor-pointer focus:ring-2 focus:ring-emerald-300 focus:outline-none dark:focus:ring-emerald-700'
                             : 'cursor-default',
@@ -873,7 +873,7 @@ export function Movies() {
                                   onClick={(event) => event.stopPropagation()}
                                   aria-label={t('movies.actions.openDouban')}
                                   title={t('movies.actions.openDouban')}
-                                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white/88 text-slate-600 transition hover:border-emerald-300 hover:text-emerald-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:hover:border-emerald-500 dark:hover:text-emerald-300"
+                                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/88 text-slate-600 shadow-sm transition hover:text-emerald-600 dark:bg-[#17191c] dark:text-slate-300 dark:hover:text-emerald-300"
                                 >
                                   <RiDoubanLine size={16} />
                                 </a>

@@ -31,9 +31,9 @@ export function MovieGuestbook({ locale }: MovieGuestbookProps) {
   return (
     <section
       className={cn(
-        'relative mt-5 overflow-hidden rounded-[1.75rem] border p-5 pb-16',
-        'border-slate-200/80 bg-white/72 shadow-[0_24px_56px_-36px_rgba(15,23,42,0.35)] backdrop-blur',
-        'dark:border-[#2b2f36] dark:bg-[#17191c]/92 dark:shadow-[0_28px_56px_-34px_rgba(0,0,0,0.5)]'
+        'relative mt-5 overflow-hidden rounded-[1.75rem] p-5 pb-16',
+        'bg-white/72 shadow-[0_24px_56px_-36px_rgba(15,23,42,0.35)] backdrop-blur',
+        'dark:bg-[#17191c]/92 dark:shadow-[0_28px_56px_-34px_rgba(0,0,0,0.5)]'
       )}
     >
       <div

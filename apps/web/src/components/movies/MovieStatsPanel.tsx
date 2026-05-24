@@ -42,7 +42,7 @@ export function MovieStatsPanel({
   }, [ratedValues])
 
   return (
-    <section className="relative overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white/72 p-5 shadow-[0_24px_56px_-36px_rgba(15,23,42,0.35)] backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c]/92 dark:shadow-[0_28px_56px_-34px_rgba(0,0,0,0.5)]">
+    <section className="relative overflow-hidden rounded-[1.75rem] bg-white/72 p-5 shadow-[0_24px_56px_-36px_rgba(15,23,42,0.35)] backdrop-blur dark:bg-[#17191c]/92 dark:shadow-[0_28px_56px_-34px_rgba(0,0,0,0.5)]">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute top-5 right-5 flex h-9 w-9 items-center justify-center rounded-full bg-[#ff5941] text-white shadow-[0_12px_28px_-18px_rgba(255,89,65,0.95)]"

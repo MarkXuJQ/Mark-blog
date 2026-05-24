@@ -190,7 +190,7 @@ const styles = {
   applyGrid:
     'grid gap-5 xl:grid-cols-[minmax(18rem,0.82fr)_minmax(28rem,1.18fr)]',
   rulesBox:
-    'mt-6 rounded-xl bg-white/70 p-5 shadow-[0_1px_0_rgba(15,23,42,0.06),0_12px_28px_rgba(15,23,42,0.06)] ring-1 ring-slate-200/70 dark:bg-[#17191c]/70 dark:ring-white/8',
+    'mt-6 rounded-xl bg-white/70 p-5 shadow-[0_1px_0_rgba(15,23,42,0.06),0_12px_28px_rgba(15,23,42,0.06)] dark:bg-[#17191c]/70',
   ownInfoCode:
     'min-w-0 [&_.md-code-action]:text-[0.68rem] [&_.md-code-frame]:m-0 [&_.md-code-frame]:shadow-[0_12px_28px_rgba(15,23,42,0.12)] [&_.md-code-language]:text-[0.78rem] [&_.md-code-pre]:!py-4 [&_.md-code-pre]:text-[0.82rem] [&_.md-code-pre_code]:text-[0.82rem] [&_.md-code-toolbar]:top-3',
   formatHint: 'mb-3 text-sm leading-6 text-slate-500 dark:text-slate-400',

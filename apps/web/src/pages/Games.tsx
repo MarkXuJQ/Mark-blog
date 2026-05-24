@@ -301,7 +301,7 @@ function GameIcon(props: {
     return (
       <div
         className={cn(
-          'overflow-hidden rounded-2xl border border-white/60 bg-slate-950/5 shadow-sm dark:border-slate-700/60 dark:bg-slate-900/50',
+          'overflow-hidden rounded-2xl bg-slate-950/5 shadow-sm dark:bg-slate-900/50',
           className
         )}
       >
@@ -341,7 +341,6 @@ function FeaturedGameCard(props: {
   achievementLabel: string
   noAchievementsLabel: string
   releaseDateLabel: string
-  openStoreLabel: string
   ariaHidden?: boolean
 }) {
   const {
@@ -354,14 +353,13 @@ function FeaturedGameCard(props: {
     achievementLabel,
     noAchievementsLabel,
     releaseDateLabel,
-    openStoreLabel,
     ariaHidden,
   } = props
 
   return (
     <article
       aria-hidden={ariaHidden}
-      className="group relative min-h-[238px] w-[calc(100vw-3.25rem)] flex-none overflow-hidden rounded-[28px] border border-slate-200/80 bg-slate-950 text-white shadow-[0_24px_70px_-38px_rgba(15,23,42,0.7)] sm:w-[30rem] lg:w-[32rem] dark:border-[#2b2f36]"
+      className="group relative min-h-[252px] w-[calc(100vw-3.25rem)] flex-none overflow-hidden rounded-[24px] bg-slate-950 text-white shadow-[0_22px_62px_-40px_rgba(15,23,42,0.8)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_28px_70px_-42px_rgba(15,23,42,0.9)] sm:w-[30rem] lg:w-[32rem]"
     >
       {game.headerImage ? (
         <img
@@ -371,67 +369,52 @@ function FeaturedGameCard(props: {
           height={430}
           loading="lazy"
           decoding="async"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035]"
         />
       ) : null}
 
-      <div className="absolute inset-0 bg-black/60" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.18)_0%,rgba(2,6,23,0.42)_48%,rgba(2,6,23,0.88)_100%)]" />
 
       <div className="relative flex h-full flex-col justify-between p-4 sm:p-5">
         <div className="flex items-start gap-3">
           <GameIcon
             name={game.name}
             iconUrl={game.iconUrl}
-            className="h-12 w-12 shrink-0 border-white/20 bg-white/10 sm:h-14 sm:w-14"
+            className="h-11 w-11 shrink-0 bg-white/10 sm:h-12 sm:w-12"
           />
 
           <div className="min-w-0 flex-1">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-[11px] font-semibold tracking-[0.28em] text-cyan-200/90 uppercase">
-                  Steam
-                </p>
-                <h3 className="mt-1.5 line-clamp-2 text-xl font-semibold tracking-tight text-white sm:text-2xl">
-                  {game.name}
-                </h3>
-              </div>
-
-              <a
-                href={game.storeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                tabIndex={ariaHidden ? -1 : undefined}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white/90 transition hover:bg-white/20"
-                aria-label={openStoreLabel}
-              >
-                <ExternalLink className="h-4 w-4" />
-              </a>
-            </div>
+            <p className="text-[10px] font-semibold tracking-[0.26em] text-cyan-100/85 uppercase">
+              Steam
+            </p>
+            <h3 className="mt-1.5 line-clamp-2 text-xl leading-tight font-semibold tracking-tight text-white sm:text-2xl">
+              {game.name}
+            </h3>
 
             {game.shortDescription ? (
-              <p className="mt-3 line-clamp-2 max-w-[28rem] text-sm leading-relaxed text-slate-200/85">
+              <p className="mt-2.5 line-clamp-2 max-w-[28rem] text-sm leading-relaxed text-slate-200/82">
                 {game.shortDescription}
               </p>
             ) : null}
           </div>
         </div>
 
-        <div className="mt-4 space-y-3">
-          <div className="grid grid-cols-2 gap-2.5 text-sm text-slate-100/90">
-            <div className="rounded-2xl border border-white/10 bg-white/10 px-3.5 py-3 backdrop-blur-sm">
-              <p className="text-[11px] tracking-[0.22em] text-slate-300 uppercase">
+        <div className="mt-4 space-y-2.5">
+          <div className="grid grid-cols-2 gap-2 text-sm text-slate-100/90">
+            <div className="rounded-[14px] bg-white/11 px-3 py-2.5 backdrop-blur-md">
+              <p className="text-[10px] tracking-[0.2em] text-slate-300 uppercase">
                 {lifetimeLabel}
               </p>
-              <p className="mt-1.5 text-base font-semibold sm:text-lg">
+              <p className="mt-1 text-base font-semibold tabular-nums sm:text-lg">
                 {formatHours(game.playtimeMinutes, locale)}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/10 px-3.5 py-3 backdrop-blur-sm">
-              <p className="text-[11px] tracking-[0.22em] text-slate-300 uppercase">
+            <div className="rounded-[14px] bg-white/11 px-3 py-2.5 backdrop-blur-md">
+              <p className="text-[10px] tracking-[0.2em] text-slate-300 uppercase">
                 {achievementLabel}
               </p>
-              <p className="mt-1.5 text-base font-semibold sm:text-lg">
+              <p className="mt-1 text-base font-semibold tabular-nums sm:text-lg">
                 {game.achievementStats
                   ? formatAchievementValue(game.achievementStats, locale)
                   : noAchievementsLabel}
@@ -442,13 +425,13 @@ function FeaturedGameCard(props: {
           <div className="flex flex-wrap gap-2 text-[11px] text-slate-100/85">
             {game.reviewSummary ? (
               <>
-                <span className="rounded-full border border-emerald-300/25 bg-emerald-400/20 px-3 py-1.5 font-medium text-emerald-100">
+                <span className="rounded-[9px] bg-emerald-400/18 px-2.5 py-1.5 font-medium text-emerald-100 backdrop-blur-md">
                   {reviewLabel.replace(
                     '{{percent}}',
                     formatInteger(game.reviewSummary.positivePercent, locale)
                   )}
                 </span>
-                <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 font-medium">
+                <span className="rounded-[9px] bg-white/10 px-2.5 py-1.5 font-medium backdrop-blur-md">
                   {reviewCountLabel.replace(
                     '{{count}}',
                     formatInteger(game.reviewSummary.totalReviews, locale)
@@ -456,13 +439,13 @@ function FeaturedGameCard(props: {
                 </span>
               </>
             ) : (
-              <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 font-medium">
+              <span className="rounded-[9px] bg-white/10 px-2.5 py-1.5 font-medium backdrop-blur-md">
                 {noReviewLabel}
               </span>
             )}
 
             {game.releaseDate ? (
-              <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 font-medium">
+              <span className="rounded-[9px] bg-white/10 px-2.5 py-1.5 font-medium backdrop-blur-md">
                 {releaseDateLabel.replace('{{date}}', game.releaseDate)}
               </span>
             ) : null}
@@ -484,7 +467,6 @@ function FeaturedGameRail(props: {
     achievementLabel: string
     noAchievementsLabel: string
     releaseDateLabel: string
-    openStoreLabel: string
   }
 }) {
   const { games, locale, labels } = props
@@ -701,7 +683,6 @@ function FeaturedGameRailSegment({
     achievementLabel: string
     noAchievementsLabel: string
     releaseDateLabel: string
-    openStoreLabel: string
   }
   ariaHidden?: boolean
 }) {
@@ -719,7 +700,6 @@ function FeaturedGameRailSegment({
           achievementLabel={labels.achievementLabel}
           noAchievementsLabel={labels.noAchievementsLabel}
           releaseDateLabel={labels.releaseDateLabel}
-          openStoreLabel={labels.openStoreLabel}
           ariaHidden={ariaHidden}
         />
       ))}
@@ -799,11 +779,10 @@ function GameShowcaseTile({
           className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]"
         />
 
-        <div className="absolute inset-x-2 top-2 translate-y-1 rounded-[10px] border border-white/15 bg-slate-950/78 p-2.5 text-white opacity-0 shadow-lg backdrop-blur-md transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
-          <div className="flex items-start justify-between gap-2 text-[0.68rem] leading-tight font-semibold">
-            <span className="line-clamp-2 min-w-0">{game.name}</span>
-            <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 opacity-80" />
-          </div>
+        <div className="absolute inset-x-2 top-2 translate-y-1 rounded-[10px] bg-slate-950/78 p-2.5 text-white opacity-0 shadow-lg backdrop-blur-md transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+          <p className="line-clamp-2 text-[0.68rem] leading-tight font-semibold">
+            {game.name}
+          </p>
 
           <div className="mt-2 flex items-center justify-between gap-2 text-[0.66rem] text-slate-200/90">
             <span className="truncate">
@@ -1011,69 +990,79 @@ export function Games() {
 
       <div>
         <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-10">
-          <section className="rounded-[32px] border border-slate-200/80 bg-white/75 p-6 shadow-[0_24px_80px_-40px_rgba(15,23,42,0.35)] backdrop-blur-xl sm:p-8 dark:border-[#2b2f36] dark:bg-[#17191c]">
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.95fr)]">
-              <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-                <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-[28px] border border-white/70 bg-slate-100 shadow-lg dark:border-[#2b2f36] dark:bg-[#17191c]">
-                  {dashboard?.profile.avatarUrl ? (
-                    <img
-                      src={dashboard.profile.avatarUrl}
-                      alt={dashboard.profile.personaName}
-                      width={96}
-                      height={96}
-                      loading="eager"
-                      decoding="async"
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-emerald-600 text-2xl font-semibold text-white">
-                      M
-                    </div>
-                  )}
+          <section className="relative overflow-hidden rounded-[30px] bg-white/82 p-5 shadow-[0_24px_80px_-44px_rgba(15,23,42,0.36)] backdrop-blur-xl sm:p-6 dark:bg-[#17191c]">
+            <div className="grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)] lg:items-stretch">
+              <div className="flex min-w-0 flex-col justify-between gap-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-[22px] bg-slate-100 shadow-[0_16px_40px_-26px_rgba(15,23,42,0.7)] ring-1 ring-slate-200/80 sm:h-24 sm:w-24 dark:bg-[#101215] dark:ring-white/10">
+                    <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-px bg-white/70 dark:bg-white/20" />
+                    {dashboard?.profile.avatarUrl ? (
+                      <img
+                        src={dashboard.profile.avatarUrl}
+                        alt={dashboard.profile.personaName}
+                        width={96}
+                        height={96}
+                        loading="eager"
+                        decoding="async"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-emerald-600 text-2xl font-semibold text-white">
+                        M
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[0.68rem] font-semibold tracking-[0.28em] text-cyan-700 uppercase dark:text-cyan-300">
+                      Steam Collection
+                    </p>
+                    <h1 className="mt-2 text-4xl leading-none font-semibold tracking-tight text-slate-950 sm:text-5xl dark:text-slate-50">
+                      {dashboard
+                        ? t('games.hero.title', {
+                            name: dashboard.profile.personaName,
+                          })
+                        : title}
+                    </h1>
+                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                      {description}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="min-w-0 flex-1">
-                  <h1 className="text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl dark:text-slate-50">
-                    {dashboard
-                      ? t('games.hero.title', {
-                          name: dashboard.profile.personaName,
-                        })
-                      : title}
-                  </h1>
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <a
+                    href={dashboard?.profile.profileUrl || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(
+                      'inline-flex h-10 items-center gap-2 rounded-[12px] px-3.5 text-sm font-semibold transition',
+                      dashboard
+                        ? 'bg-slate-950 text-white hover:bg-slate-800 dark:bg-slate-50 dark:text-slate-950 dark:hover:bg-white'
+                        : 'pointer-events-none bg-slate-100 text-slate-400 dark:bg-[#23262c] dark:text-slate-500'
+                    )}
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    {t('games.profile.openProfile')}
+                  </a>
 
-                  <div className="mt-5 flex flex-wrap gap-3">
-                    <a
-                      href={dashboard?.profile.profileUrl || '#'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={cn(
-                        'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition',
-                        dashboard
-                          ? 'border-slate-200 bg-white text-slate-900 hover:border-slate-300 hover:bg-slate-50 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-100 dark:hover:border-[#3a3f48] dark:hover:bg-[#23262c]'
-                          : 'pointer-events-none border-slate-200/80 bg-slate-100 text-slate-400 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-500'
-                      )}
-                    >
-                      {t('games.profile.openProfile')}
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
+                  <a
+                    href={dashboard?.profile.reviewsUrl || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(
+                      'inline-flex h-10 items-center gap-2 rounded-[12px] border px-3.5 text-sm font-semibold transition',
+                      dashboard
+                        ? 'border-slate-200 bg-white/70 text-slate-800 hover:border-slate-300 hover:bg-white dark:border-[#2b2f36] dark:bg-[#101215] dark:text-slate-100 dark:hover:border-[#3a3f48]'
+                        : 'pointer-events-none border-slate-200/80 bg-slate-100 text-slate-400 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-500'
+                    )}
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    {t('games.profile.openReviews')}
+                  </a>
 
-                    <a
-                      href={dashboard?.profile.reviewsUrl || '#'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={cn(
-                        'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition',
-                        dashboard
-                          ? 'border-emerald-200 bg-emerald-50 text-emerald-900 hover:border-emerald-300 hover:bg-emerald-100 dark:border-emerald-900/70 dark:bg-emerald-950/50 dark:text-emerald-100 dark:hover:border-emerald-800 dark:hover:bg-emerald-950/80'
-                          : 'pointer-events-none border-slate-200/80 bg-slate-100 text-slate-400 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-500'
-                      )}
-                    >
-                      {t('games.profile.openReviews')}
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </div>
                   {generatedAt ? (
-                    <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
                       {t('games.hero.updatedAt', { date: generatedAt })}
                     </p>
                   ) : null}
@@ -1118,7 +1107,7 @@ export function Games() {
           </section>
 
           {status === 'loading' ? (
-            <section className="mt-8 rounded-[28px] border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c]">
+            <section className="mt-8 rounded-[28px] bg-white/80 p-6 shadow-sm backdrop-blur dark:bg-[#17191c]">
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 {t('games.loading')}
               </p>
@@ -1134,7 +1123,7 @@ export function Games() {
           ) : null}
 
           {status === 'error' ? (
-            <section className="mt-8 rounded-[28px] border border-rose-200 bg-rose-50/90 p-6 shadow-sm dark:border-rose-950/70 dark:bg-rose-950/30">
+            <section className="mt-8 rounded-[28px] bg-rose-50/90 p-6 shadow-sm dark:bg-rose-950/30">
               <h2 className="text-xl font-semibold text-rose-950 dark:text-rose-100">
                 {t('games.empty.title')}
               </h2>
@@ -1173,17 +1162,16 @@ export function Games() {
                       achievementLabel: t('games.featured.achievements'),
                       noAchievementsLabel: t('games.featured.noAchievements'),
                       releaseDateLabel: t('games.featured.releaseDate'),
-                      openStoreLabel: t('games.actions.openStore'),
                     }}
                   />
                 ) : (
-                  <div className="rounded-[28px] border border-slate-200/80 bg-white/80 p-6 text-sm text-slate-600 shadow-sm dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-400">
+                  <div className="rounded-[28px] bg-white/80 p-6 text-sm text-slate-600 shadow-sm dark:bg-[#17191c] dark:text-slate-400">
                     {t('games.featured.noData')}
                   </div>
                 )}
               </section>
 
-              <section className="mt-10 rounded-[28px] border border-slate-200/80 bg-white/80 p-5 shadow-[0_24px_80px_-42px_rgba(15,23,42,0.28)] backdrop-blur sm:p-6 dark:border-[#2b2f36] dark:bg-[#17191c]">
+              <section className="mt-10 rounded-[28px] bg-white/80 p-5 shadow-[0_24px_80px_-42px_rgba(15,23,42,0.28)] backdrop-blur sm:p-6 dark:bg-[#17191c]">
                 <div className="relative">
                   <div className="hidden items-center justify-between gap-4 sm:flex">
                     <h2 className="min-w-0 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
@@ -1379,7 +1367,7 @@ export function Games() {
                     })}
                   </div>
                 ) : (
-                  <div className="mt-6 rounded-[24px] border border-dashed border-slate-300 bg-slate-50/80 p-8 text-center text-sm text-slate-600 dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-400">
+                  <div className="mt-6 rounded-[24px] bg-slate-50/80 p-8 text-center text-sm text-slate-600 shadow-sm dark:bg-[#17191c] dark:text-slate-400">
                     {t('games.library.noResults')}
                   </div>
                 )}

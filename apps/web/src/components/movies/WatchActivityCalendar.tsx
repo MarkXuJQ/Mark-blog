@@ -350,7 +350,7 @@ export function WatchActivityCalendar({
   }, [])
 
   return (
-    <section className="mb-8 border-b border-slate-200/80 pb-6 dark:border-[#2b2f36]">
+    <section className="mb-8 pb-6">
       <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 gap-y-3">
         <div className="min-w-0 pr-1">
           <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">

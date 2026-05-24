@@ -209,12 +209,12 @@
     }
   },
   "games": {
-    "description": "把公开的 Steam 游戏库、总时长和成就完成度整理成一个可以浏览与统计的页面。",
+    "description": "这里存放着通过Steam API获取的游戏库数据。真得感谢Valve吧！",
     "loading": "正在同步 Steam 游戏库数据…",
     "hero": {
       "eyebrow": "Steam Library",
       "title": "{{name}} 的游戏库",
-      "subtitle": "把公开库存、游玩时长和商店口碑整理到一个页面里，像电影清单一样更直观地回看自己玩过什么。",
+      "subtitle": "把公开库存、游玩时长和商店口碑整理到一个页面里，分享出来，大家可以看到我都玩过什么。",
       "topGameLabel": "时长最高",
       "topGameValue": "累计 {{hours}} 小时",
       "topGameEmpty": "还没有可展示的游玩记录。",
