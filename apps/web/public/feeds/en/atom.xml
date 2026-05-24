@@ -3,7 +3,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://markxu.icu</id>
     <title>Mark's Space</title>
-    <updated>2026-04-07T00:00:00.000Z</updated>
+    <updated>2026-05-20T00:00:00.000Z</updated>
     <generator>Mark Xu Blog Generator</generator>
     <author>
         <name>Mark Xu</name>
@@ -16,6 +16,48 @@
     <logo>https://markxu.icu/images/IMG_1766.JPG</logo>
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
+    <entry>
+        <title type="html"><![CDATA[Why Do I Recommend College Students to Write Blogs?]]></title>
+        <id>https://markxu.icu/blog/why-I-recommend-everyone-to-write-blog-en</id>
+        <link href="https://markxu.icu/blog/why-I-recommend-everyone-to-write-blog-en"/>
+        <link rel="enclosure" href="https://img.markxu.icu/imgflcl.gif" type="image/gif"/>
+        <updated>2026-05-20T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Although the idea of writing blogs already feels a little outdated, I still recommend it. It helps you clarify your thoughts, record the process of growing up, and maybe even meet like-minded people along the way.]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgflcl.gif" alt="Why Do I Recommend College Students to Write Blogs?" /> <p>Although the idea of writing blogs already feels a little outdated, I still recommend it. It helps you clarify your thoughts, record the process of growing up, and maybe even meet like-minded people along the way.</p> <a class="view-full" href="https://markxu.icu/blog/why-I-recommend-everyone-to-write-blog-en" target="_blank">Read full article</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Looking at AI Through the Lens of Meme: Thoughts After Playing Death Stranding 2]]></title>
+        <id>https://markxu.icu/blog/ai-through-meme-death-stranding-2-en</id>
+        <link href="https://markxu.icu/blog/ai-through-meme-death-stranding-2-en"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img69e8647962c8ab32d1d0e0fbf1e40b61.png" type="image/png"/>
+        <updated>2026-05-16T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[After finishing the story of Death Stranding 2, I began to understand MEME as a way for the genes of human culture to keep growing. AI can reuse these cultural genes, but new cultural genes may still have to grow out of human experience.]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img69e8647962c8ab32d1d0e0fbf1e40b61.png" alt="Looking at AI Through the Lens of Meme: Thoughts After Playing Death Stranding 2" /> <p>After finishing the story of Death Stranding 2, I began to understand MEME as a way for the genes of human culture to keep growing. AI can reuse these cultural genes, but new cultural genes may still have to grow out of human experience.</p> <a class="view-full" href="https://markxu.icu/blog/ai-through-meme-death-stranding-2-en" target="_blank">Read full article</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[From Student Innovation Project to Graduation Thesis: How My Research Thinking Evolved]]></title>
+        <id>https://markxu.icu/blog/my-graduation-project-en</id>
+        <link href="https://markxu.icu/blog/my-graduation-project-en"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img20260515191007353.png" type="image/png"/>
+        <updated>2026-05-15T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[From a student innovation project and a medical management system to reproducing and improving a pelvic fracture CT segmentation algorithm, this post records my graduation project and how I slowly learned to find the real problem inside failure.]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img20260515191007353.png" alt="From Student Innovation Project to Graduation Thesis: How My Research Thinking Evolved" /> <p>From a student innovation project and a medical management system to reproducing and improving a pelvic fracture CT segmentation algorithm, this post records my graduation project and how I slowly learned to find the real problem inside failure.</p> <a class="view-full" href="https://markxu.icu/blog/my-graduation-project-en" target="_blank">Read full article</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Mac Terminal Setup Notes]]></title>
         <id>https://markxu.icu/blog/mac-terminal-setup-notes-en</id>
