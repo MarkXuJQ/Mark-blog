@@ -70,9 +70,7 @@ export function BlogRelatedPosts({
                         <span className={styles.imageOverlay} />
                       </>
                     ) : (
-                      <span className={styles.fallbackMark}>
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
+                      <DefaultRelatedPostCover index={index} />
                     )}
                   </div>
 
@@ -87,6 +85,61 @@ export function BlogRelatedPosts({
         })}
       </ul>
     </aside>
+  )
+}
+
+function DefaultRelatedPostCover({ index }: { index: number }) {
+  return (
+    <svg
+      viewBox="0 0 160 112"
+      aria-hidden="true"
+      className={styles.fallbackCover}
+      preserveAspectRatio="xMidYMid slice"
+    >
+      <defs>
+        <linearGradient
+          id={`related-cover-bg-${index}`}
+          x1="0"
+          y1="0"
+          x2="1"
+          y2="1"
+        >
+          <stop offset="0%" stopColor="var(--surface-card)" />
+          <stop
+            offset="100%"
+            stopColor="color-mix(in srgb, var(--surface-card) 70%, var(--brand-500) 30%)"
+          />
+        </linearGradient>
+      </defs>
+      <rect
+        width="160"
+        height="112"
+        rx="14"
+        fill={`url(#related-cover-bg-${index})`}
+      />
+      <path
+        d="M35 32h58c10 0 18 8 18 18v30H53c-10 0-18-8-18-18V32Z"
+        fill="color-mix(in srgb, var(--brand-400) 18%, transparent)"
+      />
+      <path
+        d="M50 46h48M50 58h38M50 70h28"
+        fill="none"
+        stroke="color-mix(in srgb, var(--text-primary) 34%, transparent)"
+        strokeLinecap="round"
+        strokeWidth="4"
+      />
+      <text
+        x="123"
+        y="88"
+        fill="color-mix(in srgb, var(--text-primary) 42%, transparent)"
+        fontFamily="var(--font-code)"
+        fontSize="18"
+        fontWeight="700"
+        textAnchor="middle"
+      >
+        {String(index + 1).padStart(2, '0')}
+      </text>
+    </svg>
   )
 }
 
@@ -105,7 +158,7 @@ const styles = {
     'transition-[background-color,box-shadow,transform] duration-200 ease-out',
     'group-hover:-translate-y-0.5 group-hover:bg-white/90',
     'group-hover:shadow-[0_18px_34px_-26px_rgba(15,23,42,0.55)]',
-    'dark:border-0 dark:bg-[#17191c] dark:shadow-none dark:group-hover:bg-[#1c1a18]'
+    'dark:border-0 dark:bg-[#17191c] dark:shadow-none dark:group-hover:bg-[#1b2026]'
   ),
   media: cn(
     'relative m-2 mr-0 flex min-h-[58px] overflow-hidden rounded-lg',
@@ -119,11 +172,8 @@ const styles = {
     'bg-gradient-to-br from-black/24 via-black/6 to-black/34',
     'dark:from-black/36 dark:via-black/12 dark:to-black/48'
   ),
-  fallbackMark: cn(
-    'relative z-10 m-auto font-[var(--font-code)] text-[0.72rem] font-semibold',
-    'text-[color-mix(in_srgb,var(--text-primary)_62%,var(--brand-600)_38%)]',
-    'dark:text-[color-mix(in_srgb,var(--text-primary)_72%,var(--brand-400)_28%)]'
-  ),
+  fallbackCover:
+    'absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105',
   content: cn('flex min-w-0 flex-col justify-center px-3 py-2.5 text-left'),
   postTitle: cn(
     'line-clamp-2 text-sm font-semibold leading-snug text-[var(--text-primary)] transition-colors',

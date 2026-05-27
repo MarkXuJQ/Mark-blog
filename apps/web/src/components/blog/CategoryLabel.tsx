@@ -28,9 +28,10 @@ export function CategoryLabel({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 text-sm font-semibold leading-none',
+        'inline-flex items-center gap-1.5 text-sm font-semibold',
         meta.textClassName,
-        className
+        className,
+        'leading-none'
       )}
     >
       <Icon

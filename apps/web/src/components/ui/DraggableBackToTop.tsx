@@ -103,7 +103,7 @@ export function DraggableBackToTop() {
           cy={ringSize / 2}
           r={ringRadius}
           strokeWidth={ringStroke}
-          className="stroke-slate-200/80 dark:stroke-slate-700/70"
+          className="stroke-slate-200/80 dark:stroke-[var(--border-color)]"
           fill="none"
         />
         <circle
@@ -125,8 +125,8 @@ export function DraggableBackToTop() {
         onClick={handleClick}
         className={cn(
           'absolute inset-[2px] flex items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur',
-          'dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-300',
-          'transition-colors hover:bg-slate-50'
+          'dark:border-[var(--border-color)] dark:bg-[color-mix(in_srgb,var(--surface-card)_92%,transparent)] dark:text-[var(--text-secondary)]',
+          'transition-colors hover:bg-slate-50 dark:hover:bg-[var(--surface-card)] dark:hover:text-[var(--text-primary)]'
         )}
         aria-label="回到顶部"
       >

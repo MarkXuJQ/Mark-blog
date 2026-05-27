@@ -56,6 +56,14 @@
   --text-primary: rgba(15, 23, 42, 0.87);
   --text-secondary: rgba(15, 23, 42, 0.6);
   --text-disabled: rgba(15, 23, 42, 0.38);
+  --article-text: color-mix(in srgb, var(--text-primary) 92%, #334155 8%);
+  --article-heading: color-mix(in srgb, var(--text-primary) 94%, #0f172a 6%);
+  --article-strong: color-mix(in srgb, var(--text-primary) 88%, var(--brand-600) 12%);
+  --article-muted: color-mix(in srgb, var(--text-primary) 58%, transparent);
+  --article-subtle: color-mix(in srgb, var(--text-primary) 46%, transparent);
+  --article-link: #2563eb;
+  --article-link-hover: #3b82f6;
+  --article-strong-highlight: color-mix(in srgb, var(--brand-400) 30%, transparent);
   --surface-0: #ffffff;
   --surface-card: #ffffff;
   --page-background: #fdf9f0;
@@ -111,14 +119,21 @@ body {
 }
 
 .dark {
-  /* Material text legibility tiers for text on dark surfaces: 100% / 70% / 50% */
-  --text-primary: rgba(236, 232, 225, 1);
-  --text-secondary: rgba(236, 232, 225, 0.7);
-  --text-disabled: rgba(236, 232, 225, 0.5);
-  --surface-0: #141210;
-  --surface-card: #1c1a18;
+  --text-primary: #e2e8f0;
+  --text-secondary: #a8b3c1;
+  --text-disabled: #7d8794;
+  --article-text: #d8dee6;
+  --article-heading: #e6ebf1;
+  --article-strong: #e8edf3;
+  --article-muted: #a8b3c1;
+  --article-subtle: #85909e;
+  --article-link: #60a5fa;
+  --article-link-hover: #93c5fd;
+  --article-strong-highlight: color-mix(in srgb, var(--brand-400) 24%, transparent);
+  --surface-0: #141414;
+  --surface-card: #1c1d1f;
   --page-background: #141414;
-  --border-color: rgba(192, 176, 160, 0.2);
+  --border-color: #32363c;
   --shadow-card: 0 1px 2px rgba(6, 6, 5, 0.35), 0 8px 24px rgba(6, 6, 5, 0.45);
 }
 
@@ -181,8 +196,8 @@ i {
 .prose blockquote {
   font-style: normal;
   font-size: 0.95em;
-  color: var(--text-secondary);
-  opacity: 0.82;
+  color: var(--article-muted);
+  opacity: 1;
 }
 .markdown-body blockquote em,
 .markdown-body blockquote i,
@@ -227,6 +242,38 @@ i {
   counter-reset: article-h2;
   font-family: var(--font-body);
   overflow-wrap: break-word;
+}
+
+.article-rich.prose,
+.simple-reading.prose {
+  --tw-prose-body: var(--article-text);
+  --tw-prose-headings: var(--article-heading);
+  --tw-prose-lead: var(--article-muted);
+  --tw-prose-links: var(--article-link);
+  --tw-prose-bold: var(--article-strong);
+  --tw-prose-counters: var(--article-muted);
+  --tw-prose-bullets: var(--article-muted);
+  --tw-prose-hr: var(--border-color);
+  --tw-prose-quotes: var(--article-muted);
+  --tw-prose-quote-borders: var(--border-color);
+  --tw-prose-captions: var(--article-subtle);
+  --tw-prose-code: var(--article-strong);
+  --tw-prose-th-borders: var(--border-color);
+  --tw-prose-td-borders: var(--border-color);
+  --tw-prose-invert-body: var(--article-text);
+  --tw-prose-invert-headings: var(--article-heading);
+  --tw-prose-invert-lead: var(--article-muted);
+  --tw-prose-invert-links: var(--article-link);
+  --tw-prose-invert-bold: var(--article-strong);
+  --tw-prose-invert-counters: var(--article-muted);
+  --tw-prose-invert-bullets: var(--article-muted);
+  --tw-prose-invert-hr: var(--border-color);
+  --tw-prose-invert-quotes: var(--article-muted);
+  --tw-prose-invert-quote-borders: var(--border-color);
+  --tw-prose-invert-captions: var(--article-subtle);
+  --tw-prose-invert-code: var(--article-strong);
+  --tw-prose-invert-th-borders: var(--border-color);
+  --tw-prose-invert-td-borders: var(--border-color);
 }
 
 .article-rich .markdown-body h2,
@@ -331,17 +378,9 @@ i {
   .markdown-body
   :where(p, li, dd, figcaption)
   :where(em, i):not(.katex *) {
-  color: inherit;
+  color: var(--article-muted);
   font-style: normal !important;
-  opacity: 0.68;
-}
-
-.dark
-  .article-rich
-  .markdown-body
-  :where(p, li, dd, figcaption)
-  :where(em, i):not(.katex *) {
-  opacity: 0.74;
+  opacity: 1;
 }
 
 .article-rich .markdown-body :is(h1, h2, h3, h4, h5, h6) :is(strong, b) {
@@ -359,59 +398,50 @@ i {
 .article-rich .markdown-body b {
   font-family: inherit;
   font-weight: 800;
-  color: color-mix(in srgb, var(--text-primary) 88%, var(--brand-600) 12%);
+  color: var(--article-strong);
   background-image: linear-gradient(
     180deg,
     transparent 50%,
-    color-mix(in srgb, var(--brand-400) 30%, transparent) 50%,
-    color-mix(in srgb, var(--brand-400) 30%, transparent) 90%,
+    var(--article-strong-highlight) 50%,
+    var(--article-strong-highlight) 90%,
     transparent 90%
   );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 .dark .article-rich .markdown-body h2 {
-  color: color-mix(in srgb, var(--text-primary) 94%, white 6%);
-}
-
-.dark .article-rich .markdown-body h2::before {
-  background: linear-gradient(
-    135deg,
-    rgba(59, 130, 246, 0.24),
-    rgba(15, 23, 42, 0.88)
-  );
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 16px 28px rgba(15, 23, 42, 0.32);
-  color: #dbeafe;
-}
-
-.dark .article-rich .markdown-body h2 {
+  color: var(--article-heading);
   background-image: linear-gradient(
     90deg,
-    rgba(96, 165, 250, 0.34),
-    rgba(96, 165, 250, 0.18) 58%,
+    color-mix(in srgb, var(--brand-400) 24%, transparent),
+    color-mix(in srgb, var(--brand-500) 12%, transparent) 58%,
     transparent 100%
   );
 }
 
+.dark .article-rich .markdown-body h2::before {
+  background: color-mix(in srgb, var(--surface-card) 86%, var(--brand-500) 14%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 20px rgba(0, 0, 0, 0.18);
+  color: var(--article-muted);
+}
+
 .dark .article-rich .markdown-body h3 {
-  color: color-mix(in srgb, var(--text-primary) 90%, #93c5fd 10%);
+  color: var(--article-heading);
 }
 
 .dark .article-rich .markdown-body h3::before {
-  background: linear-gradient(180deg, #60a5fa, rgba(96, 165, 250, 0.45));
+  background: color-mix(in srgb, var(--article-muted) 72%, var(--brand-500) 28%);
 }
 
 .dark .article-rich .markdown-body strong,
 .dark .article-rich .markdown-body b {
-  color: color-mix(in srgb, var(--text-primary) 94%, #bfdbfe 6%);
-  background-image: linear-gradient(
-    180deg,
-    transparent 50%,
-    rgba(96, 165, 250, 0.34) 50%,
-    rgba(96, 165, 250, 0.34) 90%,
-    transparent 90%
-  );
+  color: var(--article-strong);
+  font-weight: 800;
 }
 
 .article-rich .markdown-body .article-reference-panel {

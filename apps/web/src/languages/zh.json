@@ -61,7 +61,7 @@
     "prevPost": "上一篇",
     "nextPost": "下一篇",
     "readingTime": "阅读时间 {{minutes}} 分钟",
-    "wordCount": "字数 {{count}} ",
+    "wordCount": "{{count}}字",
     "sidebar": {
       "profile": {
         "signature": "健身完顺路取快递，乔装成大神改简历。"

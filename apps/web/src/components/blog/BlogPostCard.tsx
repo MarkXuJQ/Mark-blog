@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { Calendar, FileText } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { LuHammer, LuPencilLine, LuWholeWord } from 'react-icons/lu'
 import { Card } from '../ui/Card'
 import { cn } from '@/lib/utils'
 import { getOptimizedImageUrl } from '@/utils/image'
@@ -12,12 +12,22 @@ interface BlogPostCardProps {
   post: BlogPostSummary
   className?: string
   style?: CSSProperties
+  sortBy?: 'date' | 'updated'
 }
 
-export function BlogPostCard({ post, className, style }: BlogPostCardProps) {
+export function BlogPostCard({
+  post,
+  className,
+  style,
+  sortBy = 'date',
+}: BlogPostCardProps) {
   const { t } = useTranslation()
   const words = post.wordCount ?? 0
   const coverImage = post.image ? getOptimizedImageUrl(post.image, 'card') : ''
+  const shouldShowUpdatedDate =
+    sortBy === 'updated' && Boolean(post.updated && post.updated !== post.date)
+  const displayDate = shouldShowUpdatedDate ? post.updated : post.date
+  const DateIcon = shouldShowUpdatedDate ? LuHammer : LuPencilLine
   const titleClass = cn(
     'mb-2 line-clamp-2 text-2xl font-medium leading-snug transition-colors',
     'text-slate-900 group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400'
@@ -26,6 +36,9 @@ export function BlogPostCard({ post, className, style }: BlogPostCardProps) {
     'text-sm leading-6 text-[var(--text-secondary)] sm:text-[0.95rem]'
   const metaClass =
     'mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-slate-100 pt-2 text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400'
+  const metaItemClass = 'inline-flex items-center gap-1.5 leading-none'
+  const categoryClass = 'text-sm'
+  const categoryIconClass = 'h-4 w-4'
 
   // Layout A: no cover image, text-only card.
   if (!coverImage) {
@@ -48,15 +61,21 @@ export function BlogPostCard({ post, className, style }: BlogPostCardProps) {
               {/* Meta info row: category + date + word count */}
               <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
                 <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
-                  {post.category && <CategoryLabel category={post.category} />}
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    <span>{post.date}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <FileText className="h-4 w-4" />
+                  {post.category && (
+                    <CategoryLabel
+                      category={post.category}
+                      className={categoryClass}
+                      iconClassName={categoryIconClass}
+                    />
+                  )}
+                  <span className={metaItemClass}>
+                    <DateIcon className="h-4 w-4" aria-hidden="true" />
+                    <span>{displayDate}</span>
+                  </span>
+                  <span className={metaItemClass}>
+                    <LuWholeWord className="h-4 w-4" aria-hidden="true" />
                     <span>{t('blog.wordCount', { count: words })}</span>
-                  </div>
+                  </span>
                 </div>
               </div>
             </article>
@@ -97,15 +116,21 @@ export function BlogPostCard({ post, className, style }: BlogPostCardProps) {
               <p className={cn('mb-2 pb-4', summaryClass)}>{post.summary}</p>
 
               <div className={metaClass}>
-                {post.category && <CategoryLabel category={post.category} />}
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  <span>{post.date}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <FileText className="h-4 w-4" />
+                {post.category && (
+                  <CategoryLabel
+                    category={post.category}
+                    className={categoryClass}
+                    iconClassName={categoryIconClass}
+                  />
+                )}
+                <span className={metaItemClass}>
+                  <DateIcon className="h-4 w-4" aria-hidden="true" />
+                  <span>{displayDate}</span>
+                </span>
+                <span className={metaItemClass}>
+                  <LuWholeWord className="h-4 w-4" aria-hidden="true" />
                   <span>{t('blog.wordCount', { count: words })}</span>
-                </div>
+                </span>
               </div>
             </div>
           </article>
@@ -119,15 +144,21 @@ export function BlogPostCard({ post, className, style }: BlogPostCardProps) {
               <p className={cn('mb-2 pb-6', summaryClass)}>{post.summary}</p>
 
               <div className={metaClass}>
-                {post.category && <CategoryLabel category={post.category} />}
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  <span>{post.date}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <FileText className="h-4 w-4" />
+                {post.category && (
+                  <CategoryLabel
+                    category={post.category}
+                    className={categoryClass}
+                    iconClassName={categoryIconClass}
+                  />
+                )}
+                <span className={metaItemClass}>
+                  <DateIcon className="h-4 w-4" aria-hidden="true" />
+                  <span>{displayDate}</span>
+                </span>
+                <span className={metaItemClass}>
+                  <LuWholeWord className="h-4 w-4" aria-hidden="true" />
                   <span>{t('blog.wordCount', { count: words })}</span>
-                </div>
+                </span>
               </div>
             </div>
 

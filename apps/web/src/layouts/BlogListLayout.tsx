@@ -88,15 +88,15 @@ export function BlogListLayout() {
 }
 
 const styles = {
-  container: 'mx-auto flex w-full max-w-[1400px] flex-1 flex-col px-4',
+  container: 'mx-auto flex w-full max-w-[1480px] flex-1 flex-col px-4',
   layoutGrid: 'flex flex-1 items-stretch justify-center gap-8',
   simpleLayoutGrid: 'gap-0',
-  leftSidebar: 'hidden w-[280px] shrink-0 lg:block',
-  rightSidebar: 'hidden w-[280px] shrink-0 xl:block',
+  leftSidebar: 'hidden w-[260px] shrink-0 lg:block',
+  rightSidebar: 'hidden w-[260px] shrink-0 xl:block',
   stickyWrapper:
     'sticky top-[86px] h-[calc(100vh-8rem)] space-y-6 overflow-y-auto pb-10 scrollbar-hide',
   mainContent:
-    'flex w-full min-w-0 max-w-[640px] flex-1 flex-col md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px]',
+    'flex w-full min-w-0 max-w-[660px] flex-1 flex-col md:max-w-[700px] lg:max-w-[760px] xl:max-w-[820px]',
   simpleMainContent:
-    'max-w-[720px] md:max-w-[760px] lg:max-w-[800px] xl:max-w-[840px]',
+    'max-w-[740px] md:max-w-[780px] lg:max-w-[820px] xl:max-w-[860px]',
 }

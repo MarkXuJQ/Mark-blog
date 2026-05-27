@@ -179,7 +179,7 @@ function OwnLinkInfoCodeBlock({
 }
 
 const styles = {
-  container: 'mx-auto w-full max-w-5xl flex-1 px-4 py-8',
+  container: 'w-full flex-1 py-8',
   simpleContainer: 'mx-auto w-full max-w-3xl flex-1 px-0 py-2',
   simpleHeader:
     'mb-8 flex flex-wrap items-baseline justify-between gap-x-5 gap-y-2 border-b border-[var(--border-color)] pb-4',
