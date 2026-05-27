@@ -157,7 +157,7 @@ export function Blog() {
                 simpleMode ? (
                   <SimpleBlogPostItem key={post.id} post={post} />
                 ) : (
-                  <BlogPostCard key={post.id} post={post} />
+                  <BlogPostCard key={post.id} post={post} sortBy={sortBy} />
                 )
               )}
             </StaggeredList>

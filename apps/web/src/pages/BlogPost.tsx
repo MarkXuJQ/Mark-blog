@@ -7,7 +7,7 @@ import {
   useOutletContext,
 } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Calendar, Clock, FileText } from 'lucide-react'
+import { LuHammer, LuPencilLine, LuWholeWord } from 'react-icons/lu'
 import { CategoryLabel } from '@/components/blog/CategoryLabel'
 import { Copyright } from '@/components/blog/Copyright'
 import { PostNavigation } from '@/components/blog/PostNavigation'
@@ -219,6 +219,7 @@ export function BlogPost() {
     { name: t('nav.blog'), url: blogUrl },
     { name: post.title, url: postUrl },
   ])
+  const metaItemClass = 'inline-flex items-center gap-1.5 leading-none'
 
   if (simpleMode) {
     return (
@@ -241,12 +242,31 @@ export function BlogPost() {
         </Link>
 
         <header className={styles.simpleReadingHeader}>
+          <div className={styles.simpleReadingMeta}>
+            {post.category ? (
+              <CategoryLabel category={post.category} />
+            ) : null}
+            <time dateTime={post.date} className={metaItemClass}>
+              <LuPencilLine className="h-4 w-4" aria-hidden="true" />
+              <span>{post.date}</span>
+            </time>
+
+            {post.updated && post.updated !== post.date ? (
+              <time dateTime={post.updated} className={metaItemClass}>
+                <LuHammer className="h-4 w-4" aria-hidden="true" />
+                <span>{post.updated}</span>
+              </time>
+            ) : null}
+
+            <span className={metaItemClass}>
+              <LuWholeWord className="h-4 w-4" aria-hidden="true" />
+              <span>{t('blog.wordCount', { count: words })}</span>
+            </span>
+          </div>
+
           <h1 className={styles.simpleReadingTitle} data-article-heading="true">
             {post.title}
           </h1>
-          {post.summary ? (
-            <p className={styles.simpleReadingSummary}>{post.summary}</p>
-          ) : null}
         </header>
 
         <MarkdownContent
@@ -290,7 +310,7 @@ export function BlogPost() {
         {hasCoverImage ? (
           <>
             <section className="relative isolate min-h-[22rem] sm:min-h-[26rem]">
-              <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,black_0%,black_60%,black_76%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_60%,black_76%,transparent_100%)]">
+              <div className="absolute inset-0">
                 <img
                   src={coverImage}
                   alt={post.title}
@@ -301,20 +321,19 @@ export function BlogPost() {
                   referrerPolicy="no-referrer"
                   className="h-full w-full object-cover object-center"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/35 via-slate-950/12 to-slate-950/55 dark:from-black/45 dark:via-slate-950/18 dark:to-black/65" />
               </div>
 
-              <div className="relative flex min-h-[22rem] flex-col gap-6 px-5 py-5 sm:min-h-[26rem] sm:justify-between sm:gap-0 sm:px-8 sm:py-8">
+              <div className="absolute top-5 right-5 left-5 z-10 flex items-center justify-between gap-4 sm:top-8 sm:right-8 sm:left-8">
                 <Link
                   to="/blog"
-                  className="inline-flex w-fit items-center rounded-full border border-white/18 bg-black/18 px-3 py-1.5 text-sm font-medium text-white/95 shadow-sm backdrop-blur transition-colors hover:bg-black/28"
+                  className="inline-flex w-fit shrink-0 items-center rounded-full border border-white/18 bg-black/18 px-3 py-1.5 text-sm font-medium text-white/95 shadow-sm backdrop-blur transition-colors hover:bg-black/28"
                 >
                   {'< '}
                   {t('blog.back')}
                 </Link>
 
-                <div className="max-w-3xl">
-                  <div className="flex flex-wrap items-center gap-2">
+                {post.tags && post.tags.length > 0 ? (
+                  <div className="flex max-w-[48%] shrink-0 flex-wrap justify-end gap-2">
                     {post.tags?.map((tag) => (
                       <span
                         key={tag}
@@ -324,48 +343,42 @@ export function BlogPost() {
                       </span>
                     ))}
                   </div>
+                ) : null}
+              </div>
+
+              <div className="relative flex min-h-[22rem] flex-col justify-end px-5 py-5 pt-24 sm:min-h-[26rem] sm:px-8 sm:py-8 sm:pt-28">
+                <div className="max-w-3xl translate-y-2 sm:translate-y-3">
+                  <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/90 drop-shadow-[0_2px_12px_rgba(15,23,42,0.58)]">
+                    {post.category ? (
+                      <CategoryLabel
+                        category={post.category}
+                        className="drop-shadow-[0_2px_10px_rgba(15,23,42,0.68)]"
+                      />
+                    ) : null}
+                    <time dateTime={post.date} className={metaItemClass}>
+                      <LuPencilLine className="h-4 w-4" aria-hidden="true" />
+                      <span>{post.date}</span>
+                    </time>
+
+                    {post.updated && post.updated !== post.date ? (
+                      <time dateTime={post.updated} className={metaItemClass}>
+                        <LuHammer className="h-4 w-4" aria-hidden="true" />
+                        <span>{post.updated}</span>
+                      </time>
+                    ) : null}
+
+                    <span className={metaItemClass}>
+                      <LuWholeWord className="h-4 w-4" aria-hidden="true" />
+                      <span>{t('blog.wordCount', { count: words })}</span>
+                    </span>
+                  </div>
 
                   <h1
-                    className="mt-4 max-w-3xl text-3xl font-medium tracking-tight text-white drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)] sm:text-4xl md:text-5xl"
+                    className="max-w-3xl text-3xl font-medium tracking-tight text-white drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)] sm:text-4xl md:text-5xl"
                     data-article-heading="true"
                   >
                     {post.title}
                   </h1>
-
-                  {post.summary ? (
-                    <p className="mt-4 max-w-2xl text-sm leading-7 text-white/90 drop-shadow-[0_2px_12px_rgba(15,23,42,0.4)] sm:text-base">
-                      {post.summary}
-                    </p>
-                  ) : null}
-
-                  <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/85 drop-shadow-[0_2px_12px_rgba(15,23,42,0.38)]">
-                    {post.category ? (
-                      <CategoryLabel
-                        category={post.category}
-                        className="drop-shadow-[0_2px_10px_rgba(15,23,42,0.5)]"
-                      />
-                    ) : null}
-                    <div className="inline-flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <time dateTime={post.date}>
-                        {t('blog.publishedOn')} {post.date}
-                      </time>
-                    </div>
-
-                    {post.updated && post.updated !== post.date ? (
-                      <div className="inline-flex items-center gap-2">
-                        <Clock className="h-4 w-4" />
-                        <span>
-                          {t('blog.updatedOn')}: {post.updated}
-                        </span>
-                      </div>
-                    ) : null}
-
-                    <div className="inline-flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      <span>{t('blog.wordCount', { count: words })}</span>
-                    </div>
-                  </div>
                 </div>
               </div>
             </section>
@@ -391,54 +404,54 @@ export function BlogPost() {
           </>
         ) : (
           <>
-            <Link to="/blog" className={styles.backLink}>
-              {'< '}
-              {t('blog.back')}
-            </Link>
-
             <article className={styles.article}>
-              <h1 className={styles.title} data-article-heading="true">
-                {post.title}
-              </h1>
+              <header className={styles.plainPostHeader}>
+                <div className={styles.plainPostTopRow}>
+                  <Link
+                    to="/blog"
+                    className={styles.backLink}
+                    data-link-preview="off"
+                  >
+                    {'< '}
+                    {t('blog.back')}
+                  </Link>
+                  {post.tags && post.tags.length > 0 ? (
+                    <div className={styles.plainPostTags}>
+                      {post.tags.map((tag) => (
+                        <span key={tag} className={styles.plainPostTag}>
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
 
-              <div className={styles.metaContainer}>
-                {post.tags && post.tags.length > 0 ? (
-                  <div className={styles.tagsContainer}>
-                    {post.tags.map((tag) => (
-                      <span key={tag} className={styles.tag}>
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-
-              <div className={styles.statsContainer}>
-                {post.category ? (
-                  <CategoryLabel category={post.category} />
-                ) : null}
-                <div className={styles.iconText}>
-                  <Calendar className="h-4 w-4" />
-                  <time dateTime={post.date}>
-                    {t('blog.publishedOn')} {post.date}
+                <div className={styles.plainPostMeta}>
+                  {post.category ? (
+                    <CategoryLabel category={post.category} />
+                  ) : null}
+                  <time dateTime={post.date} className={metaItemClass}>
+                    <LuPencilLine className="h-4 w-4" aria-hidden="true" />
+                    <span>{post.date}</span>
                   </time>
+
+                  {post.updated && post.updated !== post.date ? (
+                    <time dateTime={post.updated} className={metaItemClass}>
+                      <LuHammer className="h-4 w-4" aria-hidden="true" />
+                      <span>{post.updated}</span>
+                    </time>
+                  ) : null}
+
+                  <span className={metaItemClass}>
+                    <LuWholeWord className="h-4 w-4" aria-hidden="true" />
+                    <span>{t('blog.wordCount', { count: words })}</span>
+                  </span>
                 </div>
 
-                {post.updated && post.updated !== post.date ? (
-                  <div className={styles.updatedText}>
-                    <Clock className="h-3.5 w-3.5" />
-                    <span className="hidden text-[0.7rem] sm:inline">
-                      {t('blog.updatedOn')}
-                    </span>
-                    <span className="text-[0.7rem]">: {post.updated}</span>
-                  </div>
-                ) : null}
-
-                <div className={styles.iconText}>
-                  <FileText className="h-4 w-4" />
-                  <span>{t('blog.wordCount', { count: words })}</span>
-                </div>
-              </div>
+                <h1 className={styles.plainPostTitle} data-article-heading="true">
+                  {post.title}
+                </h1>
+              </header>
 
               <MarkdownContent
                 key={`rich-${post.slug}`}
@@ -492,7 +505,7 @@ const styles = {
   notFoundTitle: 'mb-4 text-2xl font-bold text-slate-900 dark:text-slate-100',
   notFoundLink: 'text-blue-600 hover:underline dark:text-blue-400',
   backLink: cn(
-    'mb-6 inline-flex items-center text-sm font-medium transition-colors',
+    'inline-flex h-5 items-center text-sm font-medium leading-none transition-colors',
     'text-slate-500 hover:text-slate-800',
     'dark:text-slate-400 dark:hover:text-slate-200'
   ),
@@ -502,19 +515,18 @@ const styles = {
     'dark:prose-a:text-blue-400 dark:hover:prose-a:text-blue-300',
     'prose-a:no-underline'
   ),
-  title:
-    'mb-4 text-3xl font-medium tracking-tight text-slate-900 md:text-4xl dark:text-slate-100',
-  metaContainer:
-    'mb-4 flex flex-wrap items-center gap-4 text-sm text-slate-500 dark:text-slate-400',
-  statsContainer:
-    'mb-8 flex flex-wrap items-center gap-4 text-sm text-slate-500 dark:text-slate-400',
-  iconText: 'flex items-center gap-1',
-  updatedText: 'flex items-center gap-1 text-slate-400',
-  tagsContainer: 'flex gap-2',
-  tag: cn(
-    'rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium',
-    'text-slate-600 dark:bg-slate-800 dark:text-slate-300'
-  ),
+  plainPostHeader:
+    'not-prose mb-10 border-b border-slate-200/70 pb-8 dark:border-slate-800/80',
+  plainPostTopRow:
+    'mb-8 flex items-start justify-between gap-4 sm:mb-9',
+  plainPostMeta:
+    'mb-4 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500 dark:text-slate-400',
+  plainPostTags:
+    'flex flex-wrap items-center gap-x-3 gap-y-1 sm:max-w-[42%] sm:shrink-0 sm:justify-end',
+  plainPostTag:
+    'inline-flex h-5 items-center text-sm font-medium leading-none text-slate-500 transition-colors dark:text-slate-400',
+  plainPostTitle:
+    'm-0 max-w-3xl text-3xl font-medium tracking-tight text-[var(--article-heading)] md:text-4xl',
   simpleReadingArticle: cn(
     'simple-reading mx-auto w-full max-w-none px-0 py-2',
     'prose prose-slate dark:prose-invert',
@@ -529,9 +541,9 @@ const styles = {
   ),
   simpleReadingHeader:
     'mb-10 border-b border-slate-200/70 pb-8 dark:border-slate-800/80',
+  simpleReadingMeta:
+    'not-prose mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[var(--article-muted)]',
   simpleReadingTitle:
-    'mb-4 text-4xl font-bold tracking-tight text-slate-950 md:text-5xl dark:text-slate-50',
-  simpleReadingSummary:
-    'max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-400',
+    'mb-4 text-4xl font-bold tracking-tight text-[var(--article-heading)] md:text-5xl',
   simpleReadingComments: 'not-prose mt-16 mb-4',
 }

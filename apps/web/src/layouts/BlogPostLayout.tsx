@@ -123,7 +123,7 @@ export function BlogPostLayout() {
           <button
             type="button"
             onClick={() => setIsMobileTocOpen((prev) => !prev)}
-            className="fixed right-6 bottom-6 z-[80] inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:bg-slate-50 lg:hidden dark:bg-slate-900/90 dark:text-slate-300 dark:hover:bg-slate-900"
+            className="fixed right-6 bottom-6 z-[80] inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:bg-slate-50 lg:hidden dark:border-[var(--border-color)] dark:bg-[color-mix(in_srgb,var(--surface-card)_92%,transparent)] dark:text-[var(--text-secondary)] dark:hover:bg-[var(--surface-card)] dark:hover:text-[var(--text-primary)]"
             aria-label={t('blog.toc.title')}
           >
             <svg
@@ -154,20 +154,20 @@ export function BlogPostLayout() {
 }
 
 const styles = {
-  container: 'mx-auto flex w-full max-w-[1400px] flex-1 flex-col px-4',
+  container: 'mx-auto flex w-full max-w-[1480px] flex-1 flex-col px-4',
   layoutGrid: 'flex flex-1 items-stretch justify-center gap-8',
   simpleLayoutGrid: 'gap-10 xl:gap-12',
-  leftSidebar: 'hidden w-[280px] shrink-0 lg:hidden xl:block',
-  rightSidebar: 'hidden w-[280px] shrink-0 lg:block',
+  leftSidebar: 'hidden w-[260px] shrink-0 lg:hidden xl:block',
+  rightSidebar: 'hidden w-[260px] shrink-0 lg:block',
   simpleRightSidebar: 'w-[240px] xl:w-[260px]',
   stickyWrapper:
     'sticky top-[86px] h-[calc(100vh-8rem)] space-y-6 overflow-y-auto pb-10 scrollbar-hide',
   simpleStickyWrapper:
     'h-[calc(100vh-7rem)] space-y-0 overflow-y-auto rounded-none bg-transparent pb-8',
   mainContent:
-    'flex w-full min-w-0 max-w-[640px] flex-1 flex-col md:max-w-[680px] lg:max-w-[720px] xl:max-w-[760px]',
+    'flex w-full min-w-0 max-w-[660px] flex-1 flex-col md:max-w-[700px] lg:max-w-[760px] xl:max-w-[820px]',
   simpleMainContent:
-    'max-w-[720px] md:max-w-[760px] lg:max-w-[780px] xl:max-w-[820px]',
+    'max-w-[740px] md:max-w-[780px] lg:max-w-[820px] xl:max-w-[860px]',
 }
 
 function resolvePostLanguage(slug: string | undefined, fallback: string) {

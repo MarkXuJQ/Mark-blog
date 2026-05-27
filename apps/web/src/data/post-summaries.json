@@ -1,5 +1,20 @@
 [
   {
+    "id": "what-do-computer-science-majors-learn-cn",
+    "slug": "what-do-computer-science-majors-learn-cn",
+    "language": "zh",
+    "title": "计算机都学些什么？",
+    "date": "2026-05-27",
+    "summary": "写给家长和准备选专业的学弟学妹：计算机科学与技术专业到底学些什么？它不只是写代码，也不只是修电脑，而是一套围绕计算、系统、软件和工程实践展开的训练。",
+    "wordCount": 4903,
+    "tags": [
+      "College",
+      "Computer Science",
+      "Major"
+    ],
+    "category": "tech"
+  },
+  {
     "id": "why-I-recommend-everyone-to-write-blog-cn",
     "slug": "why-I-recommend-everyone-to-write-blog-cn",
     "language": "zh",
@@ -189,7 +204,7 @@
     "date": "2026-04-05",
     "updated": "2026-04-06",
     "summary": "I recently found a GitHub project called voice-input-src, a voice input app for Mac. The surprising part is that the repository contains only one detailed prompt for AI.",
-    "wordCount": 1162,
+    "wordCount": 1161,
     "image": "https://img.markxu.icu/imgvoiceinput.jpeg",
     "tags": [
       "Github",

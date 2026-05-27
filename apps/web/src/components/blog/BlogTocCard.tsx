@@ -47,7 +47,7 @@ const styles = {
   tocBody: 'relative',
   tocRail: 'relative pl-4',
   tocRailLine:
-    'absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-slate-200/80 dark:bg-slate-800/80',
+    'absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-slate-200/80 dark:bg-[var(--border-color)]',
   tocRailIndicator: cn(
     'absolute left-0 h-4 w-[3px] rounded-full bg-blue-600',
     'transition-[top,height,opacity] duration-200 ease-out -translate-y-1/2',
@@ -60,21 +60,22 @@ const styles = {
   ),
   tocItem: cn(
     'text-[var(--text-secondary)] hover:bg-slate-100/65 hover:text-blue-600',
-    'dark:hover:bg-slate-800/50 dark:hover:text-blue-400'
+    'dark:hover:bg-[color-mix(in_srgb,var(--surface-card)_78%,var(--text-primary)_10%)] dark:hover:text-blue-400'
   ),
   tocItemActive: cn(
     'bg-blue-50/80 text-blue-600 font-semibold',
-    'dark:bg-blue-950/30 dark:text-blue-400'
+    'dark:bg-[color-mix(in_srgb,var(--surface-card)_72%,var(--brand-500)_28%)] dark:text-blue-300'
   ),
   tocLevel1: 'px-2 font-semibold',
   tocLevel2: 'px-2 font-medium',
   tocLevel3: 'px-2',
   tocGroup: 'relative mt-1 list-none rounded-lg py-0.5',
-  tocGroupActive: 'bg-slate-50/70 dark:bg-slate-900/35',
+  tocGroupActive:
+    'bg-slate-50/70 dark:bg-[color-mix(in_srgb,var(--surface-card)_84%,var(--page-background)_16%)]',
   tocChildList: cn(
     'relative mt-1 space-y-0.5 list-none pl-4',
     'before:absolute before:left-2 before:top-1 before:bottom-1 before:w-px before:rounded-full',
-    'before:bg-slate-200 dark:before:bg-slate-700/80'
+    'before:bg-slate-200 dark:before:bg-[var(--border-color)]'
   ),
   tocChildListActive: 'before:bg-blue-300 dark:before:bg-blue-500/70',
 }
@@ -370,19 +371,19 @@ export function BlogTocDrawer({
 
       <div
         className={cn(
-          'backdrop-blur-0 fixed top-[10vh] right-6 z-50 w-[min(82vw,320px)] rounded-2xl bg-white/95 shadow-xl transition-all duration-200',
-          'dark:bg-slate-950/95',
+          'backdrop-blur-0 fixed top-[10vh] right-6 z-50 w-[min(82vw,320px)] rounded-2xl border border-slate-200 bg-white/95 shadow-xl transition-all duration-200',
+          'dark:border-[var(--border-color)] dark:bg-[color-mix(in_srgb,var(--surface-card)_96%,transparent)]',
           open
             ? 'translate-x-0 opacity-100'
             : 'pointer-events-none translate-x-4 opacity-0'
         )}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 text-sm font-semibold text-[var(--text-secondary)] dark:border-slate-800">
+        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 text-sm font-semibold text-[var(--text-secondary)] dark:border-[var(--border-color)]">
           <span>{t('blog.toc.title')}</span>
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[var(--text-disabled)] transition hover:bg-slate-100 hover:text-[var(--text-primary)] dark:hover:bg-slate-800"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[var(--text-disabled)] transition hover:bg-slate-100 hover:text-[var(--text-primary)] dark:hover:bg-[color-mix(in_srgb,var(--surface-card)_78%,var(--text-primary)_10%)]"
             aria-label={t('blog.toc.close', 'Close')}
           >
             <X size={14} />

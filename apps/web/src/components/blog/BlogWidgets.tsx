@@ -5,8 +5,8 @@ import { Card } from '../ui/Card'
 import { cn } from '@/lib/utils'
 import { getImageUrl } from '@/utils/image'
 import { Link } from 'react-router-dom'
-import { Calendar, Clock, FileText, Activity, Hash, Layers } from 'lucide-react'
-import { LuGithub } from 'react-icons/lu'
+import { Clock, FileText, Activity, Layers } from 'lucide-react'
+import { LuGithub, LuHammer, LuWholeWord } from 'react-icons/lu'
 import { RiBilibiliLine, RiTwitterXFill, RiZhihuFill } from 'react-icons/ri'
 import { RiLinksLine } from 'react-icons/ri'
 import type { BlogPostSummary } from '@/types'
@@ -264,12 +264,12 @@ export function StatsWidget({ posts }: StatsWidgetProps) {
           value={totalPosts}
         />
         <StatItem
-          icon={<Hash size={16} />}
+          icon={<LuWholeWord size={16} />}
           label={t('blog.sidebar.stats.wordCount')}
           value={(totalWords / 1000).toFixed(1) + 'k'}
         />
         <StatItem
-          icon={<Calendar size={16} />}
+          icon={<LuHammer size={16} />}
           label={t('blog.sidebar.stats.lastUpdate')}
           value={lastUpdatedString}
         />
