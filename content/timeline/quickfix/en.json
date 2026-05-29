@@ -1,5 +1,13 @@
 [
   {
+    "id": "qf-20260530",
+    "date": "2026-05-30",
+    "content": [
+      "Fixed several UI display and layout issues across blog filters, the navbar, the blog list, and the games page for steadier visual hierarchy",
+      "Reworked the theme curtain transition: with target-theme symbols, dark-mode stars, and a longer page color transition to reduce glare during day/night switches"
+    ]
+  },
+  {
     "id": "qf-20260525",
     "date": "2026-05-25",
     "content": [

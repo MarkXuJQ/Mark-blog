@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 export type ThemeMode = 'light' | 'system' | 'dark'
 
 const THEME_TRANSITION_CLASS = 'theme-switching'
-const THEME_TRANSITION_DURATION = 280
+const THEME_TRANSITION_DURATION = 1000
 
 export function useTheme() {
   const [mode, setMode] = useState<ThemeMode>(() => {

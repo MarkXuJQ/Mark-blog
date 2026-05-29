@@ -15,14 +15,25 @@ import { useScrollVisibility } from '@/hooks/useScrollVisibility'
 import { type ThemeMode, useTheme } from '@/hooks/useTheme'
 
 const CURTAIN_ENTER_MS = 420
-const CURTAIN_HOLD_MS = 160
-const CURTAIN_EXIT_MS = 520
+const CURTAIN_SETTLE_MS = 1100
+const CURTAIN_EXIT_MS = 650
 
 function getResolvedThemeTone(): 'light' | 'dark' {
   if (typeof window === 'undefined') return 'light'
   return window.document.documentElement.classList.contains('dark')
     ? 'dark'
     : 'light'
+}
+
+function getThemeModeTone(mode: ThemeMode): 'light' | 'dark' {
+  if (mode === 'system') {
+    if (typeof window === 'undefined') return 'light'
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light'
+  }
+
+  return mode
 }
 
 function prefersReducedMotion() {
@@ -68,23 +79,25 @@ export function RootLayout() {
     }
 
     clearThemeCurtainTimers()
-    const tone = getResolvedThemeTone()
-    setThemeCurtain({ phase: 'enter', tone })
+    const fromTone = getResolvedThemeTone()
+    const toTone = getThemeModeTone(nextMode)
+    setThemeCurtain({ phase: 'enter', fromTone, toTone })
 
     window.requestAnimationFrame(() => {
-      setThemeCurtain({ phase: 'cover', tone })
+      setThemeCurtain({ phase: 'cover', fromTone, toTone })
     })
 
     scheduleThemeCurtainTimer(() => {
       setMode(nextMode)
+      setThemeCurtain({ phase: 'settle', fromTone, toTone })
 
       scheduleThemeCurtainTimer(() => {
-        setThemeCurtain({ phase: 'exit', tone })
-      }, CURTAIN_HOLD_MS)
+        setThemeCurtain({ phase: 'exit', fromTone, toTone })
+      }, CURTAIN_SETTLE_MS)
 
       scheduleThemeCurtainTimer(() => {
         setThemeCurtain(null)
-      }, CURTAIN_HOLD_MS + CURTAIN_EXIT_MS)
+      }, CURTAIN_SETTLE_MS + CURTAIN_EXIT_MS)
     }, CURTAIN_ENTER_MS)
   }
 
