@@ -3,7 +3,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://markxu.icu</id>
     <title>Mark的自留地</title>
-    <updated>2026-05-20T00:00:00.000Z</updated>
+    <updated>2026-05-27T00:00:00.000Z</updated>
     <generator>Mark Xu Blog Generator</generator>
     <author>
         <name>Mark Xu</name>
@@ -16,6 +16,20 @@
     <logo>https://markxu.icu/images/IMG_1766.JPG</logo>
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
+    <entry>
+        <title type="html"><![CDATA[计算机都学些什么？]]></title>
+        <id>https://markxu.icu/blog/what-do-computer-science-majors-learn-cn</id>
+        <link href="https://markxu.icu/blog/what-do-computer-science-majors-learn-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img20260527160205221.png" type="image/png"/>
+        <updated>2026-05-27T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[写给想要了解计算机科学与技术专业到底学些什么的朋友，它不只是写代码，也不只是修电脑，而是一套围绕计算、系统、软件和工程实践展开的训练。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img20260527160205221.png" alt="计算机都学些什么？" /> <p>写给想要了解计算机科学与技术专业到底学些什么的朋友，它不只是写代码，也不只是修电脑，而是一套围绕计算、系统、软件和工程实践展开的训练。</p> <a class="view-full" href="https://markxu.icu/blog/what-do-computer-science-majors-learn-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[为什么会推荐大学生写博客？]]></title>
         <id>https://markxu.icu/blog/why-I-recommend-everyone-to-write-blog-cn</id>

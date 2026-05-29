@@ -10,6 +10,7 @@ import {
   useMotionValue,
   useSpring,
   useTransform,
+  type MotionStyle,
   type MotionValue,
 } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -88,14 +89,17 @@ function SceneTag({
   value,
   className,
   isDarkMode,
+  style,
 }: {
   label: string
   value: string
   className: string
   isDarkMode: boolean
+  style?: MotionStyle
 }) {
   return (
-    <div
+    <motion.div
+      style={style}
       className={cn(
         styles.tag,
         className,
@@ -104,7 +108,7 @@ function SceneTag({
     >
       <span className={styles.tagLabel}>{label}</span>
       <span className={styles.tagValue}>{value}</span>
-    </div>
+    </motion.div>
   )
 }
 
@@ -225,6 +229,16 @@ export function HomeHeroAvatarScene({
     smoothX,
     [-1, 1],
     prefersReducedMotion ? [0, 0] : [-7, 7]
+  )
+  const tagAX = useTransform(
+    smoothX,
+    [-1, 1],
+    prefersReducedMotion ? [0, 0] : [-5, 5]
+  )
+  const tagAY = useTransform(
+    smoothY,
+    [-1, 1],
+    prefersReducedMotion ? [0, 0] : [-4, 4]
   )
   const ringOpacity = useTransform(
     sceneProgress,
@@ -459,12 +473,14 @@ export function HomeHeroAvatarScene({
               value={isZh ? '技术 / 设计 / 体验' : 'Code / Design / Motion'}
               className={styles.tagA}
               isDarkMode={isDarkMode}
+              style={{ x: tagAX, y: tagAY }}
             />
             <SceneTag
               label={isZh ? '内容模块' : 'Modules'}
               value={isZh ? 'Blog / 生活 / 影视' : 'Blog / Life / Movies'}
               className={styles.tagB}
               isDarkMode={isDarkMode}
+              style={{ x: tagAX, y: tagAY }}
             />
 
             <div className={styles.avatarStage}>
@@ -486,10 +502,18 @@ export function HomeHeroAvatarScene({
               />
               <motion.div
                 className={styles.avatarShell}
-                style={{ x: avatarX, y: avatarY, rotate: avatarRotate }}
+                style={{
+                  x: avatarX,
+                  y: avatarY,
+                  rotate: avatarRotate,
+                  clipPath: 'inset(0 round 38%)',
+                }}
               >
                 <div className={styles.avatarHalo} />
-                <div className={styles.avatarMask}>
+                <div
+                  className={styles.avatarMask}
+                  style={{ clipPath: 'inset(0 round 34%)' }}
+                >
                   <img
                     src={avatarSrc}
                     alt=""
@@ -525,6 +549,7 @@ export function HomeHeroAvatarScene({
                 value={isZh ? '旅行 / 音乐 / 游戏' : 'Travel / Music / Games'}
                 className={styles.tagC}
                 isDarkMode={isDarkMode}
+                style={{ x: tagAX, y: tagAY }}
               />
             </div>
           </div>
@@ -570,10 +595,11 @@ const styles = {
   signalDotLight: 'bg-amber-200 shadow-amber-200/60',
   signalDotDark: 'bg-cyan-200 shadow-cyan-200/55',
   shellWrap:
-    'relative z-20 flex h-full w-full items-center justify-center [transform-style:preserve-3d] will-change-transform',
+    'relative z-20 flex h-full w-full items-center justify-center rounded-[34px] [transform-style:preserve-3d] will-change-transform lg:rounded-[38px]',
   shell: cn(
     'relative flex h-full w-full items-center justify-center overflow-hidden rounded-[34px] px-4 py-5 backdrop-blur-xl sm:px-5 sm:py-6',
     'lg:rounded-[38px] lg:px-7 lg:py-7 lg:backdrop-blur-2xl',
+    '[clip-path:inset(0_round_34px)] lg:[clip-path:inset(0_round_38px)]',
     '[transform-style:preserve-3d]'
   ),
   shellLight:
@@ -581,13 +607,13 @@ const styles = {
   shellDark:
     'bg-[linear-gradient(160deg,rgba(15,23,42,0.84)_0%,rgba(7,14,26,0.78)_48%,rgba(8,20,38,0.72)_100%)]',
   gridOverlay:
-    'pointer-events-none absolute inset-0 rounded-[34px] bg-[length:26px_26px] sm:bg-[length:30px_30px] lg:rounded-[38px] lg:bg-[length:34px_34px]',
+    'pointer-events-none absolute inset-0 overflow-hidden rounded-[34px] bg-[length:26px_26px] [clip-path:inset(0_round_34px)] sm:bg-[length:30px_30px] lg:rounded-[38px] lg:bg-[length:34px_34px] lg:[clip-path:inset(0_round_38px)]',
   gridOverlayLight:
     'bg-[linear-gradient(rgba(100,116,139,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(100,116,139,0.2)_1px,transparent_1px)]',
   gridOverlayDark:
     'bg-[linear-gradient(rgba(186,230,253,0.11)_1px,transparent_1px),linear-gradient(90deg,rgba(186,230,253,0.11)_1px,transparent_1px)]',
   paperNoise:
-    'pointer-events-none absolute inset-0 rounded-[34px] lg:rounded-[38px]',
+    'pointer-events-none absolute inset-0 overflow-hidden rounded-[34px] [clip-path:inset(0_round_34px)] lg:rounded-[38px] lg:[clip-path:inset(0_round_38px)]',
   paperNoiseLight:
     'opacity-70 mix-blend-multiply bg-[radial-gradient(circle_at_14%_18%,rgba(15,23,42,0.05)_0_0.8px,transparent_1px),radial-gradient(circle_at_78%_32%,rgba(15,23,42,0.035)_0_0.9px,transparent_1.2px),radial-gradient(circle_at_36%_74%,rgba(15,23,42,0.04)_0_0.7px,transparent_1px),radial-gradient(circle_at_64%_84%,rgba(15,23,42,0.03)_0_0.8px,transparent_1px)] bg-[length:18px_18px,24px_24px,22px_22px,28px_28px]',
   paperNoiseDark:
