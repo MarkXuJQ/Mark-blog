@@ -350,8 +350,6 @@ export function HomeHeroAvatarScene({
     isCoarsePointer &&
     !prefersReducedMotion &&
     (motionSensorState === 'idle' || motionSensorState === 'denied')
-  const showMotionSensorHint =
-    isCoarsePointer && !prefersReducedMotion && motionSensorState === 'granted'
   const motionSensorLabel =
     motionSensorState === 'denied'
       ? isZh
@@ -360,8 +358,6 @@ export function HomeHeroAvatarScene({
       : isZh
         ? '轻触启用体感头像'
         : 'Tap to enable tilt avatar'
-  const motionSensorHint = isZh ? '倾斜手机试试' : 'Tilt your phone'
-
   const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (prefersReducedMotion || event.pointerType === 'touch') return
 
@@ -548,17 +544,6 @@ export function HomeHeroAvatarScene({
         </button>
       ) : null}
 
-      {showMotionSensorHint ? (
-        <div
-          className={cn(
-            styles.tiltPrompt,
-            styles.tiltHint,
-            isDarkMode ? styles.tiltPromptDark : styles.tiltPromptLight
-          )}
-        >
-          {motionSensorHint}
-        </div>
-      ) : null}
     </motion.div>
   )
 }
@@ -652,5 +637,4 @@ const styles = {
     'border-white/70 bg-white/72 text-slate-900 hover:-translate-x-1/2 hover:-translate-y-0.5',
   tiltPromptDark:
     'border-white/14 bg-slate-950/48 text-white hover:-translate-x-1/2 hover:-translate-y-0.5',
-  tiltHint: 'pointer-events-none',
 }

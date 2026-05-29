@@ -70,7 +70,7 @@ function FilterTrigger({
   return (
     <DropdownTrigger
       className={cn(
-        'flex cursor-pointer items-center gap-2 rounded-lg bg-white px-3 py-2 text-[0.95rem] font-medium text-slate-700 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition-[background-color,color,box-shadow] dark:shadow-none',
+        'flex min-w-0 max-w-[48vw] cursor-pointer items-center gap-2 rounded-lg bg-white px-3 py-2 text-[0.95rem] font-medium text-slate-700 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition-[background-color,color,box-shadow] dark:shadow-none sm:max-w-none',
         'hover:bg-slate-50 hover:text-slate-900 hover:shadow-sm',
         'dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100',
         simple &&
@@ -80,7 +80,9 @@ function FilterTrigger({
       {!simple && (
         <Icon className={cn('h-[1.1rem] w-[1.1rem]', meta.textClassName)} />
       )}
-      <span className={cn(!simple && meta.textClassName)}>{label}</span>
+      <span className={cn('min-w-0 truncate', !simple && meta.textClassName)}>
+        {label}
+      </span>
       {!simple && (
         <ChevronDown
           size={14}
@@ -158,7 +160,7 @@ export function BlogFilter({
         {!hideSort && (
           <button
             onClick={onToggleSort}
-            className="flex cursor-pointer items-center justify-center rounded-lg border border-transparent bg-transparent px-0 py-0 text-sm font-medium text-[var(--text-secondary)] transition-colors select-none hover:bg-transparent hover:text-[var(--text-primary)] active:scale-95 dark:border-transparent dark:bg-transparent dark:hover:bg-transparent"
+            className="hidden cursor-pointer items-center justify-center rounded-lg border border-transparent bg-transparent px-0 py-0 text-sm font-medium text-[var(--text-secondary)] transition-colors select-none hover:bg-transparent hover:text-[var(--text-primary)] active:scale-95 dark:border-transparent dark:bg-transparent dark:hover:bg-transparent sm:flex"
           >
             <motion.div
               layout
@@ -214,7 +216,7 @@ export function BlogFilter({
         <button
           onClick={onToggleSort}
           className={cn(
-            'flex cursor-pointer items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition-[background-color,color,box-shadow] select-none active:scale-95 dark:shadow-none',
+            'hidden cursor-pointer items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition-[background-color,color,box-shadow] select-none active:scale-95 dark:shadow-none sm:flex',
             'hover:bg-slate-50 hover:text-slate-900 hover:shadow-sm',
             'dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100',
             simple &&

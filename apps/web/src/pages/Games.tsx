@@ -266,12 +266,12 @@ function StatTile(props: {
   const { label, value, hint, icon } = props
 
   return (
-    <div className="rounded-[1.4rem] border border-slate-200/70 bg-white/75 p-3.5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur-sm sm:rounded-3xl sm:p-4 dark:border-0 dark:bg-[#17191c] dark:shadow-none">
+    <div className="rounded-[1.4rem] border border-slate-200/70 bg-white/75 p-3.5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur-sm sm:rounded-3xl sm:p-4 dark:border dark:border-white/8 dark:bg-[#101215] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_18px_32px_-28px_rgba(0,0,0,0.8)]">
       <div className="flex items-center justify-between gap-3">
-        <p className="min-w-0 flex-1 text-[0.65rem] leading-snug font-semibold tracking-[0.16em] text-slate-500 uppercase sm:text-xs sm:tracking-[0.24em] dark:text-slate-400">
+        <p className="min-w-0 flex-1 text-[0.65rem] leading-snug font-semibold tracking-[0.16em] text-slate-500 uppercase sm:text-xs sm:tracking-[0.24em] dark:text-slate-300">
           {label}
         </p>
-        <span className="shrink-0 text-slate-500 dark:text-slate-400">
+        <span className="shrink-0 text-slate-500 dark:text-slate-300">
           {icon}
         </span>
       </div>

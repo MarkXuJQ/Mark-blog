@@ -100,6 +100,18 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
     { to: '/movies', label: t('nav.movies') },
     { to: '/games', label: t('nav.games') },
   ]
+  const mobilePrimaryItems = [
+    { to: '/', label: t('nav.homepage') },
+    { to: '/blog', label: t('nav.blog') },
+    { to: '/about', label: t('nav.about') },
+    { to: '/timeline', label: t('nav.timeline') },
+  ]
+  const mobileOtherItems = [
+    { to: '/life', label: t('nav.life') },
+    { to: '/movies', label: t('nav.movies') },
+    { to: '/games', label: t('nav.games') },
+    { to: '/links', label: t('nav.links') },
+  ]
 
   return (
     <header className={styles.header}>
@@ -192,29 +204,22 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
             containerClassName="mb-2"
             onTrigger={() => setIsMobileMenuOpen(false)}
           />
-          <NavLink
-            to="/"
-            className={({ isActive }) => styles.mobile.link(isActive)}
-          >
-            {t('nav.homepage')}
-          </NavLink>
-          <NavLink
-            to="/blog"
-            className={({ isActive }) => styles.mobile.link(isActive)}
-          >
-            {t('nav.blog')}
-          </NavLink>
-          <NavLink
-            to="/about"
-            className={({ isActive }) => styles.mobile.link(isActive)}
-          >
-            {t('nav.about')}
-          </NavLink>
+          <div className={styles.mobile.grid}>
+            {mobilePrimaryItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) => styles.mobile.link(isActive)}
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
 
           <div className={styles.mobile.section}>
             <div className={styles.mobile.sectionTitle}>{t('nav.others')}</div>
             <div className={styles.mobile.grid}>
-              {otherItems.map((item) => (
+              {mobileOtherItems.map((item) => (
                 <NavLink
                   key={item.to}
                   to={item.to}
@@ -226,13 +231,30 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
             </div>
           </div>
 
-          <div className={styles.mobile.controls}>
+          <div className={styles.mobile.footer}>
+            <div className={styles.mobile.themeContainer}>
+              {(['light', 'system', 'dark'] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  className={styles.mobile.themeButton(mode === m)}
+                  onClick={() => onModeChange(m)}
+                  aria-label={`Switch to ${m} mode`}
+                >
+                  {m === 'light' && <Sun size={16} />}
+                  {m === 'system' && <Monitor size={16} />}
+                  {m === 'dark' && <Moon size={16} />}
+                </button>
+              ))}
+            </div>
+
             <SegmentedToggle
               value={isZh ? 'zh' : 'en'}
               onValueChange={changeLanguage}
               ariaLabel="Language"
-              size="lg"
-              buttonClassName="w-20 px-0 text-sm font-semibold"
+              size="sm"
+              className="order-1 justify-self-center"
+              buttonClassName="w-12 px-0 text-[11px] font-semibold"
               items={[
                 {
                   value: 'zh',
@@ -243,29 +265,13 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
                 {
                   value: 'en',
                   ariaLabel: 'Switch to English',
-                  content: 'English',
+                  content: 'EN',
                   activeTextClassName: 'text-slate-900 dark:text-slate-100',
                 },
               ]}
             />
           </div>
 
-          {/* Mobile Theme Toggle */}
-          <div className={styles.mobile.themeContainer}>
-            {(['light', 'system', 'dark'] as const).map((m) => (
-              <button
-                key={m}
-                type="button"
-                className={styles.mobile.themeButton(mode === m)}
-                onClick={() => onModeChange(m)}
-                aria-label={`Switch to ${m} mode`}
-              >
-                {m === 'light' && <Sun size={20} />}
-                {m === 'system' && <Monitor size={20} />}
-                {m === 'dark' && <Moon size={20} />}
-              </button>
-            ))}
-          </div>
         </div>
       )}
     </header>
@@ -292,25 +298,24 @@ const styles = {
   mobile: {
     toggle:
       'flex p-1 text-slate-600 transition-colors hover:text-slate-900 md:hidden dark:text-slate-300 dark:hover:text-white',
-    menu: 'absolute top-full right-0 left-0 z-50 mt-2 flex flex-col gap-1 rounded-2xl bg-white p-4 shadow-xl md:hidden dark:bg-[#17191c]',
+    menu: 'absolute top-full left-2 right-2 z-50 mt-2 flex max-h-[calc(100vh-5rem)] flex-col gap-1 overflow-y-auto rounded-[20px] border border-slate-200/80 bg-white/96 p-3 shadow-[0_24px_60px_-36px_rgba(15,23,42,0.55)] backdrop-blur-xl md:hidden dark:border-[#2b2f36] dark:bg-[#17191c]/96',
     link: (isActive: boolean) =>
       cn(
-        'block px-4 py-3 text-base transition-colors rounded-md',
+        'flex min-h-11 items-center justify-start rounded-xl px-3 py-2.5 text-sm text-left transition-colors',
         isActive
           ? 'bg-slate-100 font-bold text-slate-900 dark:bg-[#23262c] dark:text-slate-100'
           : 'font-normal text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-[#23262c] dark:hover:text-slate-200'
       ),
-    section: 'my-2 border-t border-slate-100 pt-2 dark:border-[#2b2f36]',
+    section: 'mt-2 border-t border-slate-100 pt-2 dark:border-[#2b2f36]',
     sectionTitle:
-      'px-4 py-2 text-xs font-semibold text-slate-500 uppercase dark:text-slate-500',
-    grid: 'grid grid-cols-2 gap-2',
-    controls:
-      'mt-2 flex items-center justify-center border-t border-slate-100 pt-4 dark:border-[#2b2f36]',
-    themeContainer:
-      'mt-2 flex items-center justify-center gap-4 border-t border-slate-100 pt-4 pb-2 dark:border-[#2b2f36]',
+      'px-2 py-1.5 text-left text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-500',
+    grid: 'grid grid-cols-2 gap-1.5',
+    footer:
+      'mt-2 flex flex-col items-center gap-3 border-t border-slate-100 px-1 pt-3 pb-1 dark:border-[#2b2f36]',
+    themeContainer: 'order-2 flex items-center justify-center gap-2',
     themeButton: (isActive: boolean) =>
       cn(
-        'flex h-10 w-10 items-center justify-center rounded-full transition-colors',
+        'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
         isActive
           ? 'bg-slate-100 text-slate-900 ring-2 ring-slate-200 dark:bg-[#23262c] dark:text-slate-100 dark:ring-[#2b2f36]'
           : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-[#23262c]'
