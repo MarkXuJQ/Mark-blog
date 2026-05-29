@@ -89,60 +89,95 @@ export function Blog() {
             : 'mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'
         }
       >
-        <div className="flex flex-col gap-2">
-          <div
-            className={
-              simpleMode
-                ? 'flex flex-wrap items-baseline justify-between gap-x-5 gap-y-2'
-                : undefined
-            }
-          >
-            <h1
-              className={
-                simpleMode
-                  ? 'text-3xl font-bold text-[var(--text-primary)]'
-                  : 'text-3xl font-bold text-slate-900 dark:text-slate-100'
-              }
-            >
-              {pageTitle}
-            </h1>
-            {simpleMode ? <SimpleBlogHeaderLinks /> : null}
-          </div>
-          <SearchStatus
-            query={searchQuery}
-            count={posts.length}
-            onClear={clearSearch}
-          />
-        </div>
-
         {simpleMode ? (
-          <div className="flex flex-col gap-4">
-            <SearchTriggerInput
-              placeholder={t('blog.sidebar.search.placeholder')}
-              query={searchQuery}
-              iconClassName="left-0 text-[var(--text-secondary)]"
-              className="rounded-none border-0 border-b border-[var(--border-color)] bg-transparent px-0 py-2 pl-7 text-[var(--text-primary)] shadow-none placeholder:text-[var(--text-secondary)] focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)] focus:ring-0 dark:border-[var(--border-color)] dark:bg-transparent dark:text-[var(--text-primary)] dark:placeholder:text-[var(--text-secondary)] dark:focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)]"
-            />
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+          <>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-3xl font-bold leading-tight text-[var(--text-primary)]">
+                  {pageTitle}
+                </h1>
+                <div className="mt-2">
+                  <SearchStatus
+                    query={searchQuery}
+                    count={posts.length}
+                    onClear={clearSearch}
+                  />
+                </div>
+              </div>
+              <div className="ml-auto flex shrink-0 items-center pt-0.5">
+                <div className="sm:hidden">
+                  <BlogFilter
+                    allCategories={allCategories}
+                    selectedCategory={selectedCategory}
+                    onSelectCategory={setSelectedCategory}
+                    sortBy={sortBy}
+                    onToggleSort={toggleSort}
+                    hideSort
+                  />
+                </div>
+                <div className="hidden sm:block">
+                  <SimpleBlogHeaderLinks />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <SearchTriggerInput
+                placeholder={t('blog.sidebar.search.placeholder')}
+                query={searchQuery}
+                iconClassName="left-0 text-[var(--text-secondary)]"
+                className="rounded-none border-0 border-b border-[var(--border-color)] bg-transparent px-0 py-2 pl-7 text-[var(--text-primary)] shadow-none placeholder:text-[var(--text-secondary)] focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)] focus:ring-0 dark:border-[var(--border-color)] dark:bg-transparent dark:text-[var(--text-primary)] dark:placeholder:text-[var(--text-secondary)] dark:focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)]"
+              />
+              <div className="hidden flex-wrap items-center gap-x-5 gap-y-2 text-sm sm:flex">
+                <BlogFilter
+                  allCategories={allCategories}
+                  selectedCategory={selectedCategory}
+                  onSelectCategory={setSelectedCategory}
+                  sortBy={sortBy}
+                  onToggleSort={toggleSort}
+                  simple
+                  hideSort
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex min-w-0 flex-wrap items-start justify-between gap-3 sm:block">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-3xl font-bold leading-tight text-slate-900 dark:text-slate-100">
+                  {pageTitle}
+                </h1>
+                <div className="mt-2">
+                  <SearchStatus
+                    query={searchQuery}
+                    count={posts.length}
+                    onClear={clearSearch}
+                  />
+                </div>
+              </div>
+              <div className="ml-auto flex shrink-0 items-center pt-0.5 sm:hidden">
+                <BlogFilter
+                  allCategories={allCategories}
+                  selectedCategory={selectedCategory}
+                  onSelectCategory={setSelectedCategory}
+                  sortBy={sortBy}
+                  onToggleSort={toggleSort}
+                  hideSort
+                />
+              </div>
+            </div>
+
+            <div className="hidden sm:block">
               <BlogFilter
                 allCategories={allCategories}
                 selectedCategory={selectedCategory}
                 onSelectCategory={setSelectedCategory}
                 sortBy={sortBy}
                 onToggleSort={toggleSort}
-                simple
-                hideSort
               />
             </div>
-          </div>
-        ) : (
-          <BlogFilter
-            allCategories={allCategories}
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-            sortBy={sortBy}
-            onToggleSort={toggleSort}
-          />
+          </>
         )}
       </div>
 
