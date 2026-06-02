@@ -1,5 +1,21 @@
 [
   {
+    "id": "Amoy-food-walk-note1-cn",
+    "slug": "Amoy-food-walk-note1-cn",
+    "language": "zh",
+    "title": "厦门逛吃日记 1",
+    "date": "2026-06-02",
+    "summary": "还有几天就要毕业了，对厦门这座城市很是不舍，于是在网上看了几家好吃的店，和同学出门去探一探店，途中也发现了惊喜，当然也有失望。",
+    "wordCount": 2781,
+    "image": "https://img.markxu.icu/img20260602232937241.png",
+    "tags": [
+      "Amoy",
+      "Food",
+      "Travel"
+    ],
+    "category": "Experience"
+  },
+  {
     "id": "what-do-computer-science-majors-learn-cn",
     "slug": "what-do-computer-science-majors-learn-cn",
     "language": "zh",
@@ -276,7 +292,7 @@
       "Life",
       "Travel"
     ],
-    "category": "essay"
+    "category": "Experience"
   },
   {
     "id": "chaoshan-trip-notes-cn",
@@ -308,6 +324,6 @@
       "Life",
       "Travel"
     ],
-    "category": "essay"
+    "category": "Experience"
   }
 ]

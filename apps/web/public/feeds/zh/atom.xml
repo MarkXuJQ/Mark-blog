@@ -3,7 +3,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://markxu.icu</id>
     <title>Mark的自留地</title>
-    <updated>2026-05-27T00:00:00.000Z</updated>
+    <updated>2026-06-02T00:00:00.000Z</updated>
     <generator>Mark Xu Blog Generator</generator>
     <author>
         <name>Mark Xu</name>
@@ -16,6 +16,20 @@
     <logo>https://markxu.icu/images/IMG_1766.JPG</logo>
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
+    <entry>
+        <title type="html"><![CDATA[厦门逛吃日记 1]]></title>
+        <id>https://markxu.icu/blog/Amoy-food-walk-note1-cn</id>
+        <link href="https://markxu.icu/blog/Amoy-food-walk-note1-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img20260602232937241.png" type="image/png"/>
+        <updated>2026-06-02T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[还有几天就要毕业了，对厦门这座城市很是不舍，于是在网上看了几家好吃的店，和同学出门去探一探店，途中也发现了惊喜，当然也有失望。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img20260602232937241.png" alt="厦门逛吃日记 1" /> <p>还有几天就要毕业了，对厦门这座城市很是不舍，于是在网上看了几家好吃的店，和同学出门去探一探店，途中也发现了惊喜，当然也有失望。</p> <a class="view-full" href="https://markxu.icu/blog/Amoy-food-walk-note1-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[计算机都学些什么？]]></title>
         <id>https://markxu.icu/blog/what-do-computer-science-majors-learn-cn</id>

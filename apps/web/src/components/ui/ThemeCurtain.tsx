@@ -107,11 +107,11 @@ export function ThemeCurtain({ state }: ThemeCurtainProps) {
       >
         <div
           className={cn(
-            'theme-curtain-target absolute top-0 bottom-0 left-0 w-[calc(100%+8rem)] transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
+            'theme-curtain-target absolute top-0 bottom-0 left-0 w-full transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
             isSettled ? 'translate-x-0' : '-translate-x-full'
           )}
           style={{
-            background: `linear-gradient(90deg, ${TONE_BACKGROUND[state.toTone]} 0%, ${TONE_BACKGROUND[state.toTone]} calc(100% - 8rem), transparent 100%)`,
+            backgroundColor: TONE_BACKGROUND[state.toTone],
           }}
         />
         <div

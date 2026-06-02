@@ -29,6 +29,7 @@ import {
 import { Card } from '@/components/ui/Card'
 import { useCodeBlockEnhancements } from '@/hooks/useCodeBlockEnhancements'
 import { useImageLightbox } from '@/hooks/useImageLightbox'
+import { usePhotoScroll } from '@/hooks/usePhotoScroll'
 import {
   decorateArticleLinkPreviews,
   decorateArticleReferences,
@@ -86,6 +87,7 @@ export function BlogPost() {
     },
     `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`
   )
+  usePhotoScroll(contentRef, `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`)
   const highlightQuery = searchParams.get('q') || ''
   const highlightIndexRaw = searchParams.get('i') || '0'
 
