@@ -1,6 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { useLightbox } from '@/components/ui/Lightbox'
 
+function wasRecentlyDragged(img: HTMLImageElement) {
+  return Boolean(img.closest('[data-photo-scroll-dragged="true"]'))
+}
+
 /**
  * A hook that automatically attaches click handlers to all images within a container
  * to open them in the lightbox.
@@ -35,7 +39,10 @@ export function useImageLightbox(deps: unknown[] = []) {
       if (img.parentElement?.tagName === 'FIGURE') {
         // If already wrapped, just attach listener
         img.style.cursor = 'zoom-in'
-        const handler = () => openLightbox(slides, index)
+        const handler = () => {
+          if (wasRecentlyDragged(img)) return
+          openLightbox(slides, index)
+        }
         img.addEventListener('click', handler)
         handlers.push({ element: img, listener: handler })
         return
@@ -78,6 +85,7 @@ export function useImageLightbox(deps: unknown[] = []) {
 
       img.style.cursor = 'zoom-in'
       const handler = () => {
+        if (wasRecentlyDragged(img)) return
         openLightbox(slides, index)
       }
       img.addEventListener('click', handler)
