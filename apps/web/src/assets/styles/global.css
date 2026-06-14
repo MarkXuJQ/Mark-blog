@@ -1252,18 +1252,6 @@ i {
   }
 }
 
-@keyframes theme-curtain-symbol-arrive {
-  from {
-    opacity: 0;
-    transform: translate3d(-50%, -42%, 0) scale(0.92);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate3d(-50%, -50%, 0) scale(1);
-  }
-}
-
 @keyframes theme-curtain-stars-drift {
   from {
     transform: translate3d(-4%, 0, 0);
@@ -1272,11 +1260,6 @@ i {
   to {
     transform: translate3d(4%, 0, 0);
   }
-}
-
-.theme-curtain-symbol {
-  animation: theme-curtain-symbol-arrive 620ms cubic-bezier(0.2, 0.82, 0.18, 1)
-    both;
 }
 
 .theme-curtain-stars {
@@ -1295,7 +1278,6 @@ i {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .theme-curtain-symbol,
   .theme-curtain-stars {
     animation: none;
   }

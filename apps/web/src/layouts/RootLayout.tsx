@@ -14,9 +14,11 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { useScrollVisibility } from '@/hooks/useScrollVisibility'
 import { type ThemeMode, useTheme } from '@/hooks/useTheme'
 
-const CURTAIN_ENTER_MS = 420
-const CURTAIN_SETTLE_MS = 1100
-const CURTAIN_EXIT_MS = 650
+const CURTAIN_TIMING_SCALE = 1.5
+const CURTAIN_ENTER_MS = Math.round(180 * CURTAIN_TIMING_SCALE)
+const CURTAIN_SWITCH_HOLD_MS = Math.round(120 * CURTAIN_TIMING_SCALE)
+const CURTAIN_SETTLE_MS = Math.round(320 * CURTAIN_TIMING_SCALE)
+const CURTAIN_EXIT_MS = Math.round(180 * CURTAIN_TIMING_SCALE)
 
 function getResolvedThemeTone(): 'light' | 'dark' {
   if (typeof window === 'undefined') return 'light'
@@ -88,16 +90,18 @@ export function RootLayout() {
     })
 
     scheduleThemeCurtainTimer(() => {
-      setMode(nextMode)
-      setThemeCurtain({ phase: 'settle', fromTone, toTone })
-
       scheduleThemeCurtainTimer(() => {
-        setThemeCurtain({ phase: 'exit', fromTone, toTone })
-      }, CURTAIN_SETTLE_MS)
+        setMode(nextMode)
+        setThemeCurtain({ phase: 'settle', fromTone, toTone })
 
-      scheduleThemeCurtainTimer(() => {
-        setThemeCurtain(null)
-      }, CURTAIN_SETTLE_MS + CURTAIN_EXIT_MS)
+        scheduleThemeCurtainTimer(() => {
+          setThemeCurtain({ phase: 'exit', fromTone, toTone })
+        }, CURTAIN_SETTLE_MS)
+
+        scheduleThemeCurtainTimer(() => {
+          setThemeCurtain(null)
+        }, CURTAIN_SETTLE_MS + CURTAIN_EXIT_MS)
+      }, CURTAIN_SWITCH_HOLD_MS)
     }, CURTAIN_ENTER_MS)
   }
 
