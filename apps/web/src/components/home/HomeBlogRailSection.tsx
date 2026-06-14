@@ -28,7 +28,7 @@ const BLOG_POST_LIMIT = 7
 const BLOG_RAIL_DEFAULT_SPEED_PERCENT = 50
 const BLOG_RAIL_MIN_SPEED_PERCENT = 20
 const BLOG_RAIL_MAX_SPEED_PERCENT = 100
-const BLOG_RAIL_BASE_DURATION_SECONDS = 54
+const BLOG_RAIL_BASE_DURATION_SECONDS = 64
 const BLOG_RAIL_DRAG_CLICK_THRESHOLD = 6
 const HOME_PAGER_SUPPRESS_EVENT = 'home:pager-suppress'
 
@@ -162,8 +162,14 @@ export function HomeBlogRailSection({
       frameId = window.requestAnimationFrame(tick)
     }
 
-    syncLoopWidth()
-    frameId = window.requestAnimationFrame(tick)
+    let startTimer = 0
+
+    const startLoop = () => {
+      syncLoopWidth()
+      frameId = window.requestAnimationFrame(tick)
+    }
+
+    startTimer = window.setTimeout(startLoop, 180)
 
     const resizeObserver =
       typeof ResizeObserver === 'undefined'
@@ -174,6 +180,7 @@ export function HomeBlogRailSection({
     window.addEventListener('load', syncLoopWidth)
 
     return () => {
+      window.clearTimeout(startTimer)
       window.cancelAnimationFrame(frameId)
       window.cancelAnimationFrame(resizeFrameId)
       resizeObserver?.disconnect()
@@ -292,8 +299,9 @@ export function HomeBlogRailSection({
                         alt=""
                         aria-hidden="true"
                         className="h-full w-full object-cover"
-                        loading="lazy"
+                        loading="eager"
                         decoding="async"
+                        fetchPriority="high"
                       />
                     </div>
                   </div>

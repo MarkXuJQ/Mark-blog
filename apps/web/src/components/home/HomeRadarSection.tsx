@@ -113,8 +113,9 @@ function HomeRadarAvatar({ avatarSrc }: { avatarSrc: string }) {
         <img
           src={avatarSrc}
           alt=""
-          loading="lazy"
+          loading="eager"
           decoding="async"
+          fetchPriority="high"
           className={styles.avatarAnchorImage}
         />
       </div>
@@ -238,6 +239,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     (node) => node.category === activeSignalCategory
   )
   const signalListId = 'home-radar-signal-list'
+  const [isRadarSceneActive, setIsRadarSceneActive] = useState(false)
   const {
     activateSignalNode,
     activeNodeId,
@@ -252,7 +254,10 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     scheduleSignalNodeDeactivate,
     sectionRef,
     verticalLineReveal,
-  } = useHomeRadarScene({ paused: isRadarPaused })
+  } = useHomeRadarScene({
+    paused: isRadarPaused,
+    active: isRadarSceneActive,
+  })
   const activeNode = activeNodeId
     ? (RADAR_NODES.find((node) => node.id === activeNodeId) ?? null)
     : null
@@ -273,8 +278,10 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsRadarSectionVisible(entry.isIntersecting)
+        setIsRadarSceneActive(entry.isIntersecting || entry.intersectionRatio > 0)
       },
       {
+        rootMargin: '20% 0px 20% 0px',
         threshold: 0.08,
       }
     )
