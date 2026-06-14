@@ -2,6 +2,7 @@ import { useEffect, type RefObject } from 'react'
 
 const DRAG_THRESHOLD = 6
 const DRAG_SUPPRESS_MS = 180
+const PHOTO_SCROLL_SELECTOR = '.photo-scroll, .photo-scroll-vertical'
 
 function getWheelDelta(event: WheelEvent) {
   const rawDelta =
@@ -29,7 +30,7 @@ export function usePhotoScroll(
     if (!container) return
 
     const scrollers = Array.from(
-      container.querySelectorAll<HTMLElement>('.photo-scroll')
+      container.querySelectorAll<HTMLElement>(PHOTO_SCROLL_SELECTOR)
     )
     if (scrollers.length === 0) return
 
@@ -188,7 +189,8 @@ export function usePhotoScroll(
       if (!event.ctrlKey) return
       if (!(event.target instanceof Element)) return
 
-      const scroller = event.target.closest<HTMLElement>('.photo-scroll')
+      const scroller =
+        event.target.closest<HTMLElement>(PHOTO_SCROLL_SELECTOR)
       if (!scroller || !container.contains(scroller)) return
 
       const delta = getWheelDelta(event)
