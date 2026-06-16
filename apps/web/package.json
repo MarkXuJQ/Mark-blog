@@ -9,6 +9,7 @@
     "build": "node scripts/generate-steam-dashboard.js && node scripts/generate-post-summaries.js && node scripts/generate-font-subsets.js && node scripts/generate-responsive-images.js && tsc -b && vite build && node scripts/generate-sitemap.js && node scripts/prerender.js && node scripts/generate-rss.js",
     "generate:posts": "node scripts/generate-post-summaries.js",
     "generate:fonts": "node scripts/generate-font-subsets.js",
+    "setup:fonts": "python3 -m venv .venv-fonttools && .venv-fonttools/bin/python -m pip install --upgrade pip fonttools brotli",
     "generate:images": "node scripts/generate-responsive-images.js",
     "steam:sync": "node scripts/generate-steam-dashboard.js",
     "pagespeed:svg": "node scripts/generate-pagespeed-svgs.js",

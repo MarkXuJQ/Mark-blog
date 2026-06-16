@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T05:26:16.079Z",
+  "generatedAt": "2026-06-15T11:13:29.994Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -33,9 +33,9 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 155718,
-        "totalNegative": 164957,
-        "totalReviews": 320675,
+        "totalPositive": 155873,
+        "totalNegative": 165015,
+        "totalReviews": 320888,
         "positivePercent": 49
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1781071959",
@@ -64,9 +64,9 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 452497,
-        "totalNegative": 57305,
-        "totalReviews": 509802,
+        "totalPositive": 452680,
+        "totalNegative": 57324,
+        "totalReviews": 510004,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
@@ -93,9 +93,9 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 815761,
-        "totalNegative": 26990,
-        "totalReviews": 842751,
+        "totalPositive": 815912,
+        "totalNegative": 26988,
+        "totalReviews": 842900,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
@@ -124,9 +124,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 843729,
-        "totalNegative": 28069,
-        "totalReviews": 871798,
+        "totalPositive": 843853,
+        "totalNegative": 28070,
+        "totalReviews": 871923,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991",
@@ -153,9 +153,9 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 322334,
-        "totalNegative": 52285,
-        "totalReviews": 374619,
+        "totalPositive": 322383,
+        "totalNegative": 52297,
+        "totalReviews": 374680,
         "positivePercent": 86
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1740607040",
@@ -184,9 +184,9 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 163542,
-        "totalNegative": 20702,
-        "totalReviews": 184244,
+        "totalPositive": 163584,
+        "totalNegative": 20709,
+        "totalReviews": 184293,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1777476997",

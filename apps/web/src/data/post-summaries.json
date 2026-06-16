@@ -1,19 +1,21 @@
 [
   {
-    "id": " thoughts-on-graduation-cn",
-    "slug": " thoughts-on-graduation-cn",
+    "id": "anti-reward-hacking-college-cn",
+    "slug": "anti-reward-hacking-college-cn",
     "language": "zh",
-    "title": "大学毕业，人生又一阶段的开始",
+    "title": "拒绝 Reward Hacking：我的大学四年",
     "date": "2026-06-14",
-    "updated": "2026-06-14",
-    "summary": "近几日纷纷与同学们道别，我在经过无数次的地方停了又停、看了又看，",
-    "wordCount": 0,
+    "updated": "2026-06-15",
+    "summary": "离开学校的时候，我想记录大学四年的回忆，也想记录自己如何拒绝把绩点、排名和简历当作唯一奖励函数。",
+    "wordCount": 6363,
+    "image": "https://img.markxu.icu/imgb8e606e4235578a4b05bc4b87ae8945f_720.jpg",
     "tags": [
       "College",
       "Graduation",
-      "Summary"
+      "Reward Hacking",
+      "Meritocracy"
     ],
-    "category": "life"
+    "category": "Experience"
   },
   {
     "id": "Amoy-food-walk-note1-cn",
@@ -118,7 +120,7 @@
     "title": "Looking at AI Through the Lens of Meme: Thoughts After Playing Death Stranding 2",
     "date": "2026-05-16",
     "summary": "After finishing the story of Death Stranding 2, I began to understand MEME as a way for the genes of human culture to keep growing. AI can reuse these cultural genes, but new cultural genes may still have to grow out of human experience.",
-    "wordCount": 2678,
+    "wordCount": 2677,
     "image": "https://img.markxu.icu/img69e8647962c8ab32d1d0e0fbf1e40b61.png",
     "tags": [
       "AI",

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="科学空间">
+  <rect width="128" height="128" rx="28" fill="#f7f3e8" />
+  <circle cx="64" cy="64" r="43" fill="none" stroke="#1f3b63" stroke-width="8" />
+  <path
+    d="M32 67c9-16 21-24 36-24 10 0 19 4 28 12"
+    fill="none"
+    stroke="#d8912f"
+    stroke-width="7"
+    stroke-linecap="round"
+  />
+  <path
+    d="M40 81c8-10 17-15 28-15 9 0 17 3 25 10"
+    fill="none"
+    stroke="#1f3b63"
+    stroke-width="7"
+    stroke-linecap="round"
+  />
+  <circle cx="91" cy="42" r="6" fill="#d8912f" />
+</svg>

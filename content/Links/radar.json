@@ -83,6 +83,12 @@
       "cardAlignX": "right",
       "cardAlignY": "bottom",
       "color": "#FF6F43"
+    },
+    {
+      "id": "spaces",
+      "cardAlignX": "left",
+      "cardAlignY": "top",
+      "color": "#10A64B"
     }
   ]
 }

@@ -208,5 +208,20 @@
       "zh": "记录骑行、编程、观影、生活感想与健康观察的个人博客。",
       "en": "A personal blog documenting cycling, programming, movies, life reflections, and health observations."
     }
+  },
+  {
+    "id": "spaces",
+    "radarCategory": "personal-blog",
+    "name": "科学空间",
+    "href": "https://spaces.ac.cn/",
+    "faviconKey": "spaces",
+    "eyebrow": {
+      "zh": "数学 / 自然科学 / 机器学习",
+      "en": "Mathematics / Science / Machine learning"
+    },
+    "description": {
+      "zh": "苏剑林维护的长期中文科学博客，围绕数学、天文、理论物理、计算机与生活随笔展开。",
+      "en": "A long-running Chinese science blog by BoJone, spanning mathematics, astronomy, theoretical physics, computing, and life notes."
+    }
   }
 ]

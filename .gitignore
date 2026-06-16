@@ -156,6 +156,10 @@ PROJECT_CONTEXT_PROMPT.txt
 # Local generated font manifests
 apps/web/.generated/
 
+# Local Python tooling for font subset generation
+apps/web/.venv-fonttools/
+.venv-fonttools/
+
 # Local source fonts used only for subset generation
 apps/web/src/assets/fonts/纳米丰宋_纳挼字库/
 apps/web/src/assets/fonts/AlibabaPuHuiTi-3-65-Medium/

@@ -47,6 +47,12 @@
       "url": "https://1900.live/",
       "avatar": "nineteen-hundred",
       "description": "1900 的个人博客，记录骑行、编程、观影、生活感想和健康观察。"
+    },
+    {
+      "name": "科学空间",
+      "url": "https://spaces.ac.cn/",
+      "avatar": "spaces",
+      "description": "苏剑林维护的长期中文科学博客，内容横跨数学、自然科学、机器学习和生活随笔。"
     }
   ],
   "neighbors": []
