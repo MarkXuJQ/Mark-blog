@@ -14,6 +14,7 @@ export function HomeWidgetStackPlaceholder({
       data-home-snap="widget"
       className="relative isolate z-20 snap-start"
       style={{
+        contain: 'layout paint style',
         minHeight: HOME_WIDGET_STACK_PLACEHOLDER_MIN_HEIGHT,
       }}
     >
@@ -53,7 +54,10 @@ export function HomeRadarPlaceholder({
       aria-hidden="true"
       data-home-snap="radar"
       className="relative isolate z-[30] min-h-[100svh] overflow-hidden"
-      style={{ backgroundColor: 'var(--page-background)' }}
+      style={{
+        backgroundColor: 'var(--page-background)',
+        contain: 'layout paint style',
+      }}
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_24%,rgba(6,182,212,0.1)_0%,rgba(6,182,212,0.04)_26%,rgba(6,182,212,0)_58%),radial-gradient(circle_at_80%_72%,rgba(249,115,22,0.08)_0%,rgba(249,115,22,0.03)_28%,rgba(249,115,22,0)_56%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(148,163,184,0.05)_0px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.04)_0px,transparent_1px)] [background-size:24px_24px]" />

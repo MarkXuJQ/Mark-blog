@@ -330,6 +330,10 @@ function findPyftsubset() {
   ].find(Boolean)
   const candidates = [
     process.env.PYFTSUBSET,
+    path.join(projectRoot, '.venv-fonttools/bin/pyftsubset'),
+    path.join(projectRoot, '.venv-fonttools/Scripts/pyftsubset.exe'),
+    path.join(repoRoot, '.venv-fonttools/bin/pyftsubset'),
+    path.join(repoRoot, '.venv-fonttools/Scripts/pyftsubset.exe'),
     'pyftsubset',
     path.join(userHome, 'anaconda3/envs/pelvis_seg/bin/pyftsubset'),
     path.join(userHome, 'miniconda3/Scripts/pyftsubset.exe'),

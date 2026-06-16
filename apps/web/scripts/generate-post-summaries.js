@@ -38,12 +38,16 @@ function resolveLanguageFromPath(filePath) {
 }
 
 function normalizeOptionalString(value) {
-  return typeof value === 'string' && value.trim() ? value : undefined
+  if (typeof value !== 'string') return undefined
+  const trimmed = value.trim()
+  return trimmed ? trimmed : undefined
 }
 
 function normalizeOptionalStringArray(value) {
   return Array.isArray(value)
-    ? value.filter((item) => typeof item === 'string' && item.trim().length > 0)
+    ? value
+        .map((item) => (typeof item === 'string' ? item.trim() : ''))
+        .filter((item) => item.length > 0)
     : undefined
 }
 

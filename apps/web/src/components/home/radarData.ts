@@ -10,6 +10,7 @@ import pathosFavicon from '../../assets/home/radar/pathos.png'
 import radiogardenFavicon from '../../assets/home/radar/radiogarden.png'
 import rleonardiFavicon from '../../assets/home/radar/rleonardi.png'
 import ruanyifengFavicon from '../../assets/home/radar/ruanyifeng.png'
+import spacesFavicon from '../../assets/home/radar/spaces.svg'
 import tongliaoFavicon from '../../assets/home/radar/tongliao.png'
 import uselesswebFavicon from '../../assets/home/radar/uselessweb.png'
 import zhheoFavicon from '../../assets/home/radar/zhheo.png'
@@ -26,6 +27,7 @@ const RADAR_FAVICONS = {
   radiogarden: radiogardenFavicon,
   rleonardi: rleonardiFavicon,
   ruanyifeng: ruanyifengFavicon,
+  spaces: spacesFavicon,
   tongliao: tongliaoFavicon,
   uselessweb: uselesswebFavicon,
   zhheo: zhheoFavicon,

@@ -92,6 +92,7 @@ function HomeHeroBackground({ isDarkMode }: { isDarkMode: boolean }) {
           isDarkMode ? styles.heroImageNight : styles.heroImageDay
         )}
         decoding="async"
+        loading="eager"
         fetchPriority="high"
       />
     </picture>

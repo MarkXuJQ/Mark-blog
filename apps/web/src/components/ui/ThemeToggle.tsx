@@ -73,9 +73,11 @@ export function ThemeToggle({ mode, onModeChange }: ThemeToggleProps) {
                   {m === 'light' && (
                     <Sun
                       size={14}
-                      className={`transition-transform duration-500 ${
-                        mode === 'light' ? '-rotate-12 scale-110' : ''
-                      } group-hover:rotate-180`}
+                      className={`transition-all duration-300 ${
+                        mode === 'light'
+                          ? 'scale-110 opacity-100'
+                          : 'opacity-85'
+                      }`}
                     />
                   )}
 
@@ -83,9 +85,11 @@ export function ThemeToggle({ mode, onModeChange }: ThemeToggleProps) {
                     <span className="relative inline-flex h-[14px] w-[14px] items-center justify-center">
                       <Monitor
                         size={14}
-                        className={`transition-transform duration-300 ${
-                          mode === 'system' ? 'scale-110 -rotate-2' : ''
-                        } group-hover:scale-110 group-hover:rotate-3`}
+                        className={`transition-all duration-300 ${
+                          mode === 'system'
+                            ? 'scale-110 opacity-100'
+                            : 'opacity-85'
+                        }`}
                       />
                       <span
                         className={`pointer-events-none absolute left-0 right-0 h-px rounded-full bg-current shadow-[0_0_10px_currentColor] transition-all duration-500 ${
@@ -109,7 +113,11 @@ export function ThemeToggle({ mode, onModeChange }: ThemeToggleProps) {
                       strokeLinejoin="round"
                       xmlns="http://www.w3.org/2000/svg"
                       aria-hidden="true"
-                      className="overflow-visible"
+                      className={`overflow-visible transition-all duration-300 ${
+                        mode === 'dark'
+                          ? 'scale-110 opacity-100'
+                          : 'opacity-85'
+                      }`}
                     >
                       <path
                         d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"

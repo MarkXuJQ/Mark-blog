@@ -5,6 +5,7 @@ import joshwcomeauFavicon from '@/assets/home/radar/joshwcomeau.png'
 import nineteenHundredFavicon from '@/assets/home/radar/nineteen-hundred.png'
 import pathosFavicon from '@/assets/home/radar/pathos.png'
 import ruanyifengFavicon from '@/assets/home/radar/ruanyifeng.png'
+import spacesFavicon from '@/assets/home/radar/spaces.svg'
 import zhheoFavicon from '@/assets/home/radar/zhheo.png'
 import zhiluFavicon from '@/assets/home/radar/zhilu.png'
 
@@ -15,6 +16,7 @@ const LINK_FAVICONS = {
   'nineteen-hundred': nineteenHundredFavicon,
   pathos: pathosFavicon,
   ruanyifeng: ruanyifengFavicon,
+  spaces: spacesFavicon,
   zhheo: zhheoFavicon,
   zhilu: zhiluFavicon,
 } as const

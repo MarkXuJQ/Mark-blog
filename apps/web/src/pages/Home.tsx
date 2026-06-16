@@ -1,7 +1,9 @@
 import {
   lazy,
+  useEffect,
   useRef,
   Suspense,
+  useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Footer } from '@/components/layout/Footer'
@@ -26,6 +28,59 @@ import { useDeferredRender } from '@/hooks/useDeferredRender'
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
 import { getImageUrl } from '@/utils/image'
 
+const HOME_DEFERRED_PRELOAD_DELAY_MS = 900
+const HOME_CHUNK_PRELOAD_DELAY_MS = 650
+
+function useDeferredMount(enabled: boolean, delayMs: number) {
+  const [isMounted, setIsMounted] = useState(() => !enabled)
+
+  useEffect(() => {
+    if (!enabled) {
+      setIsMounted(false)
+      return
+    }
+
+    setIsMounted(false)
+    let timeoutHandle = 0
+    let fallbackHandle = 0
+    let idleHandle: number | null = null
+
+    timeoutHandle = window.setTimeout(() => {
+      if (typeof window.requestIdleCallback === 'function') {
+        idleHandle = window.requestIdleCallback(() => {
+          setIsMounted(true)
+        })
+        return
+      }
+
+      fallbackHandle = window.setTimeout(() => {
+        setIsMounted(true)
+      }, 0)
+    }, delayMs)
+
+    return () => {
+      window.clearTimeout(timeoutHandle)
+      window.clearTimeout(fallbackHandle)
+      if (idleHandle !== null && typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleHandle)
+      }
+    }
+  }, [delayMs, enabled])
+
+  return isMounted
+}
+
+function useHomeChunkPreload() {
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void import('@/components/home/HomeWidgetStackSection')
+      void import('@/components/home/HomeRadarSection')
+    }, HOME_CHUNK_PRELOAD_DELAY_MS)
+
+    return () => window.clearTimeout(timer)
+  }, [])
+}
+
 const LazyHomeRadarSection = lazy(() =>
   import('@/components/home/HomeRadarSection').then((module) => ({
     default: module.HomeRadarSection,
@@ -45,15 +100,18 @@ function HomeDeferredScenes({
   avatarSrc: string
   isCoarsePointer: boolean
 }) {
+  const shouldPreloadDeferredScenes = useDeferredMount(true, HOME_DEFERRED_PRELOAD_DELAY_MS)
   const {
     targetRef: widgetStackPlaceholderRef,
     shouldRender: shouldRenderWidgetStack,
   } = useDeferredRender<HTMLElement>({
-    rootMargin: isCoarsePointer ? '520px 0px' : '1600px 0px',
+    rootMargin: isCoarsePointer ? '260px 0px' : '720px 0px',
+    initial: shouldPreloadDeferredScenes,
   })
   const { targetRef: radarPlaceholderRef, shouldRender: shouldRenderRadar } =
     useDeferredRender<HTMLDivElement>({
-      rootMargin: isCoarsePointer ? '420px 0px' : '1400px 0px',
+      rootMargin: isCoarsePointer ? '220px 0px' : '640px 0px',
+      initial: shouldPreloadDeferredScenes,
     })
 
   return (
@@ -118,6 +176,7 @@ export function Home() {
     prefersReducedMotion,
   })
   useHomeGsapReveal(pageRef, { prefersReducedMotion })
+  useHomeChunkPreload()
 
   return (
     <>

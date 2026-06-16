@@ -152,7 +152,13 @@ function getSectionReturnScrollTop(
   )
 }
 
-export function useHomeRadarScene({ paused = false }: { paused?: boolean } = {}) {
+export function useHomeRadarScene({
+  paused = false,
+  active = true,
+}: {
+  paused?: boolean
+  active?: boolean
+} = {}) {
   const reduceMotion = usePrefersReducedMotion()
   const isCoarsePointer = useIsCoarsePointer()
   const lenis = useLenis()
@@ -187,6 +193,8 @@ export function useHomeRadarScene({ paused = false }: { paused?: boolean } = {})
   }, [autoExplorationProgress])
 
   useEffect(() => {
+    if (!active) return
+
     const updateViewportHeight = () => {
       const nextHeight = window.innerHeight
       setViewportHeight((current) =>
@@ -201,7 +209,7 @@ export function useHomeRadarScene({ paused = false }: { paused?: boolean } = {})
     return () => {
       window.removeEventListener('resize', updateViewportHeight)
     }
-  }, [])
+  }, [active])
 
   const virtualScrollDistance = getBoundedScrollDistance(
     viewportHeight,
@@ -470,7 +478,7 @@ export function useHomeRadarScene({ paused = false }: { paused?: boolean } = {})
   )
 
   useEffect(() => {
-    if (reduceMotion) return
+    if (reduceMotion || !active) return
 
     const onWheel = (event: WheelEvent) => {
       if (!isLockedRef.current) return
@@ -510,7 +518,7 @@ export function useHomeRadarScene({ paused = false }: { paused?: boolean } = {})
       window.removeEventListener('touchmove', onTouchMove)
       window.removeEventListener('touchend', onTouchEnd)
     }
-  }, [applyVirtualScrollDelta, reduceMotion])
+  }, [active, applyVirtualScrollDelta, reduceMotion])
 
   useEffect(() => {
     return () => {
@@ -531,7 +539,7 @@ export function useHomeRadarScene({ paused = false }: { paused?: boolean } = {})
 
   useLenis(
     (instance) => {
-      if (reduceMotion) return
+      if (reduceMotion || !active) return
       if (unlockDirectionRef.current !== 0) return
       if (isLockedRef.current) return
       if (isAutoExplorationCompleteRef.current) return
@@ -539,12 +547,12 @@ export function useHomeRadarScene({ paused = false }: { paused?: boolean } = {})
       if (instance.direction === 0) return
       maybeLockSceneFromViewport(instance.direction > 0 ? 1 : -1)
     },
-    [maybeLockSceneFromViewport, reduceMotion],
+    [active, maybeLockSceneFromViewport, reduceMotion],
     0
   )
 
   useEffect(() => {
-    if (reduceMotion) return
+    if (reduceMotion || !active) return
 
     lastWindowScrollYRef.current = window.scrollY
 
@@ -564,7 +572,7 @@ export function useHomeRadarScene({ paused = false }: { paused?: boolean } = {})
 
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [maybeLockSceneFromViewport, reduceMotion])
+  }, [active, maybeLockSceneFromViewport, reduceMotion])
 
   const progress = reduceMotion ? 1 : sceneProgress
 
@@ -591,7 +599,7 @@ export function useHomeRadarScene({ paused = false }: { paused?: boolean } = {})
   const beamFocusSweepAngle = beamSweepStartAngle + sweepBeamAngle
 
   useEffect(() => {
-    if (reduceMotion || paused || !beamLoopActive) {
+    if (reduceMotion || paused || !beamLoopActive || !active) {
       clearBeamLoopFrame()
       return
     }
@@ -622,7 +630,7 @@ export function useHomeRadarScene({ paused = false }: { paused?: boolean } = {})
     beamLoopFrameRef.current = requestAnimationFrame(advance)
 
     return clearBeamLoopFrame
-  }, [beamLoopActive, clearBeamLoopFrame, paused, reduceMotion])
+  }, [active, beamLoopActive, clearBeamLoopFrame, paused, reduceMotion])
 
   return {
     activateSignalNode,
