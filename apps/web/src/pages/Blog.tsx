@@ -52,6 +52,8 @@ export function Blog() {
     toggleSort,
     searchQuery,
     clearSearch,
+    categoryCounts,
+    totalPostsCount,
   } = useBlogPosts()
 
   // Pagination state
@@ -163,18 +165,22 @@ export function Blog() {
                   onSelectCategory={setSelectedCategory}
                   sortBy={sortBy}
                   onToggleSort={toggleSort}
+                  categoryCounts={categoryCounts}
+                  totalPostsCount={totalPostsCount}
                   hideSort
                 />
               </div>
             </div>
 
-            <div className="hidden sm:block">
+            <div className="hidden sm:flex sm:justify-end">
               <BlogFilter
                 allCategories={allCategories}
                 selectedCategory={selectedCategory}
                 onSelectCategory={setSelectedCategory}
                 sortBy={sortBy}
                 onToggleSort={toggleSort}
+                categoryCounts={categoryCounts}
+                totalPostsCount={totalPostsCount}
               />
             </div>
           </>

@@ -17,6 +17,7 @@ export function useBlogPosts() {
     () => getAllPostSummaries(i18n.language),
     [i18n.language]
   )
+  const totalPostsCount = allPosts.length
 
   // State
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
@@ -67,6 +68,18 @@ export function useBlogPosts() {
     return Array.from(categories.values()).sort(compareBlogCategories)
   }, [allPosts])
 
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {}
+
+    allPosts.forEach((post) => {
+      if (!post.category) return
+      const canonicalKey = canonicalBlogCategoryKey(post.category)
+      counts[canonicalKey] = (counts[canonicalKey] ?? 0) + 1
+    })
+
+    return counts
+  }, [allPosts])
+
   const filteredAndSortedPosts = useMemo(() => {
     let result = [...searchedPosts]
 
@@ -102,5 +115,7 @@ export function useBlogPosts() {
     toggleSort,
     searchQuery,
     clearSearch,
+    categoryCounts,
+    totalPostsCount,
   }
 }
