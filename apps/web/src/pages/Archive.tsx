@@ -362,9 +362,9 @@ const styles = {
     'text-xs font-semibold tracking-wide text-slate-400 uppercase dark:text-slate-500',
   selectedTags: 'flex min-w-0 flex-wrap items-center gap-2',
   selectedTag:
-    'inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 shadow-sm ring-1 ring-slate-200/80 transition-[background-color,color,box-shadow] hover:bg-slate-200/70 hover:text-slate-900 hover:ring-slate-300/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700/70 dark:hover:bg-slate-700/70 dark:hover:text-slate-100 dark:hover:ring-slate-600/80',
+    'inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 shadow-sm ring-1 ring-slate-200/80 transition-[background-color,color,box-shadow,transform] hover:-translate-y-0.5 hover:bg-slate-900 hover:text-white hover:ring-slate-900/20 hover:shadow-[0_10px_22px_-16px_rgba(15,23,42,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700/70 dark:hover:bg-slate-100 dark:hover:text-slate-950 dark:hover:ring-white/20 dark:hover:shadow-none',
   selectedTagActive:
-    'bg-slate-200/70 text-slate-900 ring-slate-300/80 dark:bg-slate-700/70 dark:text-slate-100 dark:ring-slate-600/80',
+    '-translate-y-0.5 bg-slate-900 text-white ring-slate-900/20 shadow-[0_10px_22px_-16px_rgba(15,23,42,0.55)] dark:bg-slate-100 dark:text-slate-950 dark:ring-white/20 dark:shadow-none',
   clearTagsButton:
     'inline-flex shrink-0 cursor-pointer items-center rounded-lg px-2 py-1.5 text-xs font-semibold text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
 
@@ -388,9 +388,9 @@ const styles = {
   postLink: 'focus:outline-none',
   postTags: 'relative z-10 mt-2 flex shrink-0 flex-wrap gap-2 sm:mt-0',
   postTag:
-    'relative z-10 inline-flex cursor-pointer items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 transition-[background-color,color,box-shadow] hover:bg-slate-200/70 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700/70 dark:hover:text-slate-100',
+    'relative z-10 inline-flex cursor-pointer items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 transition-[background-color,color,box-shadow,transform] hover:-translate-y-0.5 hover:bg-slate-900 hover:text-white hover:shadow-[0_10px_22px_-16px_rgba(15,23,42,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-100 dark:hover:text-slate-950 dark:hover:shadow-none',
   postTagActive:
-    'bg-slate-200/70 text-slate-900 shadow-[0_0_0_1px_rgba(148,163,184,0.28)] dark:bg-slate-700/70 dark:text-slate-100 dark:shadow-[0_0_0_1px_rgba(100,116,139,0.35)]',
+    '-translate-y-0.5 bg-slate-900 text-white shadow-[0_0_0_1px_rgba(15,23,42,0.12),0_10px_22px_-16px_rgba(15,23,42,0.55)] dark:bg-slate-100 dark:text-slate-950 dark:shadow-none',
   emptyState:
     'rounded-xl border border-dashed border-slate-200 px-4 py-10 text-center text-sm font-medium text-slate-500 dark:border-slate-800 dark:text-slate-400',
 
