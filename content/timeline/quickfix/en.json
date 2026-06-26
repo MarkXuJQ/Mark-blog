@@ -1,5 +1,16 @@
 [
   {
+    "id": "qf-20260626",
+    "date": "2026-06-26",
+    "content": [
+      "Fixed the homepage blog rail mouse interaction so cards can still open posts while drag-to-scroll remains available",
+      "Refined the article TOC sidebar by hiding the top-level article title, expanding the active section title, and letting the highlight bar follow the expanded height",
+      "Updated the rich-mode blog category dropdown with a tighter two-column layout, post counts, active-category highlighting, and better narrow-screen behavior",
+      "Added rich-mode archive tag filtering with shared-tag hover highlights, click-to-combine filters, one-click clearing, and stronger hover visibility",
+      "Unified the card color treatment across archive, links, and timeline hint panels, and documented the design patterns for future UI work"
+    ]
+  },
+  {
     "id": "qf-20260613",
     "date": "2026-06-13",
     "content": [

@@ -94,6 +94,13 @@
       "allTags": "All Tags",
       "allCategories": "All Posts"
     },
+    "archive": {
+      "activeTags": "Filtering",
+      "clearTags": "Clear",
+      "filterByTag": "Filter by tag {{tag}}",
+      "removeTag": "Remove tag {{tag}}",
+      "noTagResults": "No articles match all selected tags"
+    },
     "categories": {
       "essay": "Miscellany",
       "experience": "Experience",
