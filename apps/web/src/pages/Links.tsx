@@ -101,7 +101,7 @@ export function Links() {
                   {labels.rules.map((rule) => (
                     <li key={rule} className="flex gap-2">
                       <span
-                        className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500"
+                        className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400 dark:bg-slate-600"
                         aria-hidden="true"
                       />
                       <span>{rule}</span>
@@ -190,7 +190,7 @@ const styles = {
   applyGrid:
     'grid gap-5 xl:grid-cols-[minmax(18rem,0.82fr)_minmax(28rem,1.18fr)]',
   rulesBox:
-    'mt-6 rounded-xl border border-slate-200/70 bg-white/70 p-5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] dark:border-0 dark:bg-[#17191c]/70 dark:shadow-none',
+    'mt-6 rounded-xl border border-slate-200/70 bg-white/80 p-5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur dark:border-0 dark:bg-[#17191c] dark:shadow-none',
   ownInfoCode:
     'min-w-0 [&_.md-code-action]:text-[0.68rem] [&_.md-code-frame]:m-0 [&_.md-code-frame]:shadow-[0_12px_28px_rgba(15,23,42,0.12)] [&_.md-code-language]:text-[0.78rem] [&_.md-code-pre]:!py-4 [&_.md-code-pre]:text-[0.82rem] [&_.md-code-pre_code]:text-[0.82rem] [&_.md-code-toolbar]:top-3',
   formatHint: 'mb-3 text-sm leading-6 text-slate-500 dark:text-slate-400',

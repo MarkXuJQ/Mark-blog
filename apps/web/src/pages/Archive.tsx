@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useOutletContext } from 'react-router-dom'
-import { ArrowLeft, Layers } from 'lucide-react'
+import { ArrowLeft, Layers, X } from 'lucide-react'
 import { Seo } from '@/components/seo/Seo'
 import { StaggeredList } from '@/components/ui/StaggeredList'
 import { getAllPostSummaries } from '@/lib/content'
@@ -11,25 +12,36 @@ import type { BlogPostSummary } from '@/types'
 export function Archive() {
   const { t, i18n } = useTranslation()
   const { simpleMode = false } = useOutletContext<ArchiveOutletContext>()
+  const [hoveredTag, setHoveredTag] = useState<string | null>(null)
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
   const posts = getAllPostSummaries(i18n.language)
+  const postsByYear = groupPostsByYear(posts)
+  const years = getArchiveYears(postsByYear)
+  const filteredPosts =
+    selectedTags.length > 0
+      ? posts.filter((post) => postMatchesSelectedTags(post, selectedTags))
+      : posts
+  const filteredPostsByYear = groupPostsByYear(filteredPosts)
+  const filteredYears = getArchiveYears(filteredPostsByYear)
+  const hasSelectedTags = selectedTags.length > 0
+  const filterMotionKey = selectedTags.map(getArchiveTagKey).join('|')
 
-  // Group posts by year
-  const postsByYear = posts.reduce(
-    (acc, post) => {
-      const year = new Date(post.date).getFullYear()
-      if (!acc[year]) {
-        acc[year] = []
+  const toggleTag = (tag: string) => {
+    setSelectedTags((currentTags) => {
+      const tagKey = getArchiveTagKey(tag)
+      const isSelected = currentTags.some(
+        (currentTag) => getArchiveTagKey(currentTag) === tagKey
+      )
+
+      if (isSelected) {
+        return currentTags.filter(
+          (currentTag) => getArchiveTagKey(currentTag) !== tagKey
+        )
       }
-      acc[year].push(post)
-      return acc
-    },
-    {} as Record<number, BlogPostSummary[]>
-  )
 
-  // Sort years descending
-  const years = Object.keys(postsByYear)
-    .map(Number)
-    .sort((a, b) => b - a)
+      return [...currentTags, tag]
+    })
+  }
 
   return (
     <div className={simpleMode ? styles.simpleContainer : styles.container}>
@@ -48,21 +60,55 @@ export function Archive() {
             <BackToBlogLink />
           </div>
 
+          {hasSelectedTags ? (
+            <div className={styles.filterBar}>
+              <div className={styles.filterContent}>
+                <span className={styles.filterLabel}>
+                  {t('blog.archive.activeTags')}
+                </span>
+                <div className={styles.selectedTags}>
+                  {selectedTags.map((tag) => (
+                    <SelectedArchiveTag
+                      key={getArchiveTagKey(tag)}
+                      tag={tag}
+                      hoveredTag={hoveredTag}
+                      onHoverTag={setHoveredTag}
+                      onToggleTag={toggleTag}
+                    />
+                  ))}
+                </div>
+              </div>
+              <button
+                type="button"
+                className={styles.clearTagsButton}
+                onClick={() => {
+                  setSelectedTags([])
+                  setHoveredTag(null)
+                }}
+              >
+                {t('blog.archive.clearTags')}
+              </button>
+            </div>
+          ) : null}
+
           <div className={styles.yearList}>
-            {years.map((year) => (
+            {filteredYears.map((year) => (
               <section key={year} className={styles.yearSection}>
                 <div className={styles.yearHeader}>
                   <h2 className={styles.yearTitle}>
                     {year}
                     <span className={styles.postCount}>
-                      {postsByYear[year].length}{' '}
+                      {filteredPostsByYear[year].length}{' '}
                       {t('blog.sidebar.stats.articleCount')}
                     </span>
                   </h2>
                 </div>
 
-                <StaggeredList className={styles.postsList}>
-                  {postsByYear[year].map((post) => (
+                <StaggeredList
+                  key={`${year}-${filterMotionKey}`}
+                  className={styles.postsList}
+                >
+                  {filteredPostsByYear[year].map((post) => (
                     <article key={post.slug} className={styles.postItem}>
                       <div className={styles.postHeader}>
                         <time dateTime={post.date} className={styles.postDate}>
@@ -85,9 +131,14 @@ export function Archive() {
                       {post.tags && post.tags.length > 0 && (
                         <div className={styles.postTags}>
                           {post.tags.map((tag) => (
-                            <span key={tag} className={styles.postTag}>
-                              #{tag}
-                            </span>
+                            <ArchivePostTag
+                              key={tag}
+                              tag={tag}
+                              hoveredTag={hoveredTag}
+                              selectedTags={selectedTags}
+                              onHoverTag={setHoveredTag}
+                              onToggleTag={toggleTag}
+                            />
                           ))}
                         </div>
                       )}
@@ -96,10 +147,90 @@ export function Archive() {
                 </StaggeredList>
               </section>
             ))}
+
+            {filteredYears.length === 0 ? (
+              <div className={styles.emptyState}>
+                {t('blog.archive.noTagResults')}
+              </div>
+            ) : null}
           </div>
         </>
       )}
     </div>
+  )
+}
+
+function ArchivePostTag({
+  tag,
+  hoveredTag,
+  selectedTags,
+  onHoverTag,
+  onToggleTag,
+}: {
+  tag: string
+  hoveredTag: string | null
+  selectedTags: string[]
+  onHoverTag: (tag: string | null) => void
+  onToggleTag: (tag: string) => void
+}) {
+  const { t } = useTranslation()
+  const tagKey = getArchiveTagKey(tag)
+  const isSelected = selectedTags.some(
+    (selectedTag) => getArchiveTagKey(selectedTag) === tagKey
+  )
+  const isHovered = getArchiveTagKey(hoveredTag) === tagKey
+
+  return (
+    <button
+      type="button"
+      aria-pressed={isSelected}
+      aria-label={t('blog.archive.filterByTag', { tag })}
+      className={cn(
+        styles.postTag,
+        (isSelected || isHovered) && styles.postTagActive
+      )}
+      onClick={(event) => {
+        event.stopPropagation()
+        onToggleTag(tag)
+      }}
+      onMouseEnter={() => onHoverTag(tag)}
+      onMouseLeave={() => onHoverTag(null)}
+      onFocus={() => onHoverTag(tag)}
+      onBlur={() => onHoverTag(null)}
+    >
+      #{tag}
+    </button>
+  )
+}
+
+function SelectedArchiveTag({
+  tag,
+  hoveredTag,
+  onHoverTag,
+  onToggleTag,
+}: {
+  tag: string
+  hoveredTag: string | null
+  onHoverTag: (tag: string | null) => void
+  onToggleTag: (tag: string) => void
+}) {
+  const { t } = useTranslation()
+  const isHovered = getArchiveTagKey(hoveredTag) === getArchiveTagKey(tag)
+
+  return (
+    <button
+      type="button"
+      aria-label={t('blog.archive.removeTag', { tag })}
+      className={cn(styles.selectedTag, isHovered && styles.selectedTagActive)}
+      onClick={() => onToggleTag(tag)}
+      onMouseEnter={() => onHoverTag(tag)}
+      onMouseLeave={() => onHoverTag(null)}
+      onFocus={() => onHoverTag(tag)}
+      onBlur={() => onHoverTag(null)}
+    >
+      <span>#{tag}</span>
+      <X aria-hidden="true" className="h-3.5 w-3.5" />
+    </button>
   )
 }
 
@@ -156,6 +287,41 @@ function SimpleArchive({
   )
 }
 
+function groupPostsByYear(posts: BlogPostSummary[]) {
+  return posts.reduce(
+    (acc, post) => {
+      const year = new Date(post.date).getFullYear()
+      if (!acc[year]) {
+        acc[year] = []
+      }
+      acc[year].push(post)
+      return acc
+    },
+    {} as Record<number, BlogPostSummary[]>
+  )
+}
+
+function getArchiveYears(postsByYear: Record<number, BlogPostSummary[]>) {
+  return Object.keys(postsByYear)
+    .map(Number)
+    .sort((a, b) => b - a)
+}
+
+function getArchiveTagKey(tag?: string | null) {
+  return tag?.trim().toLowerCase() ?? ''
+}
+
+function postMatchesSelectedTags(
+  post: BlogPostSummary,
+  selectedTags: string[]
+) {
+  return selectedTags.every((selectedTag) =>
+    post.tags?.some(
+      (postTag) => getArchiveTagKey(postTag) === getArchiveTagKey(selectedTag)
+    )
+  )
+}
+
 function formatArchiveDate(date: string) {
   const parsed = new Date(date)
   if (Number.isNaN(parsed.getTime())) return date
@@ -189,6 +355,18 @@ const styles = {
   title: 'text-3xl font-bold text-slate-900 dark:text-slate-100',
   backLink:
     'inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
+  filterBar:
+    'flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200/70 bg-white/80 px-3 py-2.5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur dark:border-0 dark:bg-[#17191c] dark:shadow-none',
+  filterContent: 'flex min-w-0 flex-1 flex-wrap items-center gap-2.5',
+  filterLabel:
+    'text-xs font-semibold tracking-wide text-slate-400 uppercase dark:text-slate-500',
+  selectedTags: 'flex min-w-0 flex-wrap items-center gap-2',
+  selectedTag:
+    'inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 shadow-sm ring-1 ring-slate-200/80 transition-[background-color,color,box-shadow] hover:bg-slate-200/70 hover:text-slate-900 hover:ring-slate-300/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700/70 dark:hover:bg-slate-700/70 dark:hover:text-slate-100 dark:hover:ring-slate-600/80',
+  selectedTagActive:
+    'bg-slate-200/70 text-slate-900 ring-slate-300/80 dark:bg-slate-700/70 dark:text-slate-100 dark:ring-slate-600/80',
+  clearTagsButton:
+    'inline-flex shrink-0 cursor-pointer items-center rounded-lg px-2 py-1.5 text-xs font-semibold text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100',
 
   yearList: 'space-y-9',
 
@@ -206,11 +384,15 @@ const styles = {
   postDate:
     'shrink-0 font-mono text-sm font-medium tabular-nums text-slate-400 dark:text-slate-500',
   postTitle:
-    'min-w-0 text-lg font-bold text-slate-800 transition-colors group-hover:text-blue-500 dark:text-slate-200 dark:group-hover:text-blue-400',
+    'min-w-0 text-lg font-bold text-slate-900 transition-colors group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400',
   postLink: 'focus:outline-none',
   postTags: 'relative z-10 mt-2 flex shrink-0 flex-wrap gap-2 sm:mt-0',
   postTag:
-    'rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-800 dark:text-slate-400',
+    'relative z-10 inline-flex cursor-pointer items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 transition-[background-color,color,box-shadow] hover:bg-slate-200/70 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700/70 dark:hover:text-slate-100',
+  postTagActive:
+    'bg-slate-200/70 text-slate-900 shadow-[0_0_0_1px_rgba(148,163,184,0.28)] dark:bg-slate-700/70 dark:text-slate-100 dark:shadow-[0_0_0_1px_rgba(100,116,139,0.35)]',
+  emptyState:
+    'rounded-xl border border-dashed border-slate-200 px-4 py-10 text-center text-sm font-medium text-slate-500 dark:border-slate-800 dark:text-slate-400',
 
   simpleHeader:
     'mb-8 flex flex-wrap items-baseline justify-between gap-x-5 gap-y-2 border-b border-[var(--border-color)] pb-4',
