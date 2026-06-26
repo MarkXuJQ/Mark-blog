@@ -94,6 +94,13 @@
       "allTags": "全部标签",
       "allCategories": "全部文章"
     },
+    "archive": {
+      "activeTags": "筛选中",
+      "clearTags": "清除",
+      "filterByTag": "筛选标签 {{tag}}",
+      "removeTag": "移除标签 {{tag}}",
+      "noTagResults": "没有找到同时包含这些标签的文章"
+    },
     "categories": {
       "essay": "杂谈",
       "experience": "生活经验",

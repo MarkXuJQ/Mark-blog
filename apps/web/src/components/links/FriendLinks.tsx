@@ -60,13 +60,13 @@ function FriendLinkCard({
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex min-w-0 items-center gap-2">
-          <span className="truncate text-base font-semibold text-slate-900 transition-colors group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400">
+          <span className="truncate text-base font-semibold text-slate-900 transition-colors group-hover:text-[color-mix(in_srgb,var(--brand-600)_82%,var(--text-primary)_18%)] dark:text-slate-100 dark:group-hover:text-[color-mix(in_srgb,var(--brand-400)_82%,var(--text-primary)_18%)]">
             {link.name}
           </span>
           {!simple ? (
             <RiLinksLine
               size={15}
-              className="shrink-0 text-slate-300 transition-colors group-hover:text-blue-500 dark:text-slate-600 dark:group-hover:text-blue-400"
+              className="shrink-0 text-slate-300 transition-colors group-hover:text-[var(--brand-500)] dark:text-slate-600 dark:group-hover:text-[var(--brand-400)]"
               aria-hidden="true"
             />
           ) : null}
@@ -149,7 +149,7 @@ const styles = {
   card: cn(
     'gap-3 rounded-xl border border-slate-200/70 bg-white/75 p-4 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)]',
     'transition-[background-color,box-shadow,transform]',
-    'hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_1px_0_rgba(59,130,246,0.16),0_16px_34px_rgba(15,23,42,0.10)]',
+    'hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_1px_0_color-mix(in_srgb,var(--brand-500)_24%,transparent),0_16px_34px_rgba(15,23,42,0.10)]',
     'dark:border-0 dark:bg-[#17191c] dark:shadow-none dark:hover:bg-[#1d2025]'
   ),
   simpleCard:
@@ -160,13 +160,13 @@ const styles = {
   simpleFaviconFrame: 'h-9 w-9',
   sectionHeader: cn(
     'relative pb-4',
-    'after:absolute after:bottom-0 after:left-0 after:h-1 after:w-12 after:rounded-full after:bg-blue-500/70 after:content-[""]',
-    'before:absolute before:bottom-0 before:left-14 before:h-1 before:w-2 before:rounded-full before:bg-blue-500/25 before:content-[""]'
+    'after:absolute after:bottom-0 after:left-0 after:h-1 after:w-12 after:rounded-full after:bg-[color-mix(in_srgb,var(--brand-500)_72%,transparent)] after:content-[""]',
+    'before:absolute before:bottom-0 before:left-14 before:h-1 before:w-2 before:rounded-full before:bg-[color-mix(in_srgb,var(--brand-500)_28%,transparent)] before:content-[""]'
   ),
   simpleSectionHeader: 'pb-1',
   simpleGrid: 'space-y-0',
   emptyState:
-    'rounded-xl border border-slate-200/70 bg-slate-50/80 px-4 py-5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] dark:border-0 dark:bg-slate-900/30 dark:shadow-none',
+    'rounded-xl border border-slate-200/70 bg-white/80 px-4 py-5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur dark:border-0 dark:bg-[#17191c] dark:shadow-none',
 }
 
 export function FriendLinks({ className, simple = false }: FriendLinksProps) {

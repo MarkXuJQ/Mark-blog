@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import { setupTocTree } from '@/lib/toc'
 
+const BLOG_TOC_HEADING_SELECTOR =
+  '[data-article-content="true"] h1, [data-article-content="true"] h2, [data-article-content="true"] h3'
+
 export function useToc(
   mainRef: React.RefObject<HTMLElement>,
   pathname: string,
@@ -48,7 +51,11 @@ export function useToc(
       const { flat, destroy } = setupTocTree(
         mainRef.current,
         (id) => setActiveId(id),
-        { topOffset: 120, trackActive } // Adjusted offset for better experience
+        {
+          topOffset: 120,
+          trackActive,
+          headingSelector: BLOG_TOC_HEADING_SELECTOR,
+        }
       )
       if (flat.length === 0) {
         destroy()

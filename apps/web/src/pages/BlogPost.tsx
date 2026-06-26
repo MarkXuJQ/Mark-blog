@@ -90,6 +90,7 @@ export function BlogPost() {
   usePhotoScroll(contentRef, `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`)
   const highlightQuery = searchParams.get('q') || ''
   const highlightIndexRaw = searchParams.get('i') || '0'
+  const hasHighlightQuery = highlightQuery.trim().length > 0
 
   useEffect(() => {
     const container = contentRef.current
@@ -109,9 +110,17 @@ export function BlogPost() {
     const target = highlights[Math.min(Math.max(0, idx), highlights.length - 1)]
     if (!target) return
 
-    requestAnimationFrame(() => {
-      target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    let timerId: number | undefined
+    const frameId = window.requestAnimationFrame(() => {
+      timerId = window.setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 80)
     })
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      if (typeof timerId === 'number') window.clearTimeout(timerId)
+    }
   }, [contentHtml, contentRef, highlightIndexRaw, highlightQuery])
 
   useEffect(() => {
@@ -122,11 +131,12 @@ export function BlogPost() {
 
   useEffect(() => {
     if (!slug) return
+    if (hasHighlightQuery) return
     // Ensure navigation lands at the top of the next/prev post.
     requestAnimationFrame(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     })
-  }, [slug])
+  }, [hasHighlightQuery, slug])
 
   useEffect(() => {
     if (!post) return

@@ -35,6 +35,7 @@ const HOME_PAGER_SUPPRESS_EVENT = 'home:pager-suppress'
 interface BlogRailDragState {
   pointerId: number
   startX: number
+  startY: number
   startOffset: number
   hasDragged: boolean
 }
@@ -194,12 +195,11 @@ export function HomeBlogRailSection({
     railDragStateRef.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
+      startY: event.clientY,
       startOffset: railOffsetRef.current,
       hasDragged: false,
     }
     railLastFrameTimeRef.current = null
-    setIsDraggingRail(true)
-    event.currentTarget.setPointerCapture(event.pointerId)
     suppressHomePager()
   }
 
@@ -208,11 +208,25 @@ export function HomeBlogRailSection({
     if (!dragState || dragState.pointerId !== event.pointerId) return
 
     const deltaX = event.clientX - dragState.startX
+    const deltaY = event.clientY - dragState.startY
     const loopWidth = railLoopWidthRef.current
 
-    if (Math.abs(deltaX) > BLOG_RAIL_DRAG_CLICK_THRESHOLD) {
+    if (
+      !dragState.hasDragged &&
+      (Math.hypot(deltaX, deltaY) < BLOG_RAIL_DRAG_CLICK_THRESHOLD ||
+        Math.abs(deltaX) <= Math.abs(deltaY))
+    ) {
+      return
+    }
+
+    if (!dragState.hasDragged) {
       dragState.hasDragged = true
       suppressClickRef.current = true
+      setIsDraggingRail(true)
+      if (!event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.setPointerCapture(event.pointerId)
+      }
+      suppressHomePager()
     }
 
     railOffsetRef.current = normalizeRailOffset(
@@ -224,10 +238,8 @@ export function HomeBlogRailSection({
       railTrackRef.current.style.transform = `translate3d(${railOffsetRef.current}px, 0, 0)`
     }
 
-    if (dragState.hasDragged) {
-      event.preventDefault()
-      suppressHomePager()
-    }
+    event.preventDefault()
+    suppressHomePager()
   }
 
   const finishRailDrag = (event: ReactPointerEvent<HTMLDivElement>) => {

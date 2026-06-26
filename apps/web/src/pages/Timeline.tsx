@@ -359,12 +359,13 @@ const styles = {
   // Event Header
   eventHeader: 'mb-4 cursor-pointer',
   eventMeta: 'flex items-center gap-2',
-  eventDate: 'text-sm font-semibold text-blue-600 dark:text-blue-400',
+  eventDate:
+    'text-sm font-semibold text-[color-mix(in_srgb,var(--brand-600)_86%,var(--text-primary)_14%)] dark:text-[color-mix(in_srgb,var(--brand-400)_84%,var(--text-primary)_16%)]',
   itemCount:
     'inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400',
   expandIcon: 'ml-auto text-slate-400 transition-transform duration-200',
   eventTitle:
-    'mt-1 text-2xl font-medium text-slate-900 transition-colors hover:text-blue-600 dark:text-slate-100 dark:hover:text-blue-400',
+    'mt-1 text-2xl font-medium text-slate-900 transition-colors hover:text-[color-mix(in_srgb,var(--brand-600)_82%,var(--text-primary)_18%)] dark:text-slate-100 dark:hover:text-[color-mix(in_srgb,var(--brand-400)_82%,var(--text-primary)_18%)]',
   eventDescription: 'mt-2 text-slate-600 dark:text-slate-400',
 
   // Expanded Content
@@ -380,7 +381,7 @@ const styles = {
     'min-w-[80px] pt-0.5 font-mono text-xs text-slate-400 dark:text-slate-500',
   itemContent: 'flex-1',
   itemLink:
-    'text-slate-700 hover:text-blue-600 hover:underline dark:text-slate-300 dark:hover:text-blue-400',
+    'text-slate-700 hover:text-[color-mix(in_srgb,var(--brand-600)_82%,var(--text-primary)_18%)] hover:underline dark:text-slate-300 dark:hover:text-[color-mix(in_srgb,var(--brand-400)_82%,var(--text-primary)_18%)]',
   itemText: 'text-slate-600 dark:text-slate-400',
   quickfixList: 'list-none space-y-5',
   quickfixGroup:
@@ -389,11 +390,11 @@ const styles = {
   quickfixMarker:
     'h-2.5 w-2.5 rounded-full bg-slate-400 ring-2 ring-white dark:bg-slate-600 dark:ring-slate-950',
   quickfixDate:
-    'font-mono text-sm font-semibold text-blue-600 dark:text-blue-400',
+    'font-mono text-sm font-semibold text-[color-mix(in_srgb,var(--brand-600)_86%,var(--text-primary)_14%)] dark:text-[color-mix(in_srgb,var(--brand-400)_84%,var(--text-primary)_16%)]',
   quickfixItems: 'mt-3 list-none space-y-2 pl-[1.375rem]',
   quickfixItem: 'text-sm',
   quickfixText: 'text-slate-600 dark:text-slate-400',
   lifePanel:
-    'rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 p-5 text-sm text-slate-600 dark:border-slate-700/70 dark:bg-slate-900/40 dark:text-slate-400',
+    'rounded-2xl border border-slate-200/70 bg-white/80 p-5 text-sm text-[var(--text-secondary)] shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur dark:border-0 dark:bg-[#17191c] dark:text-slate-400 dark:shadow-none',
   lifeText: 'text-sm',
 }

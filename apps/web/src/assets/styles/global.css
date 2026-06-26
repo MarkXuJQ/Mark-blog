@@ -460,6 +460,13 @@ i {
   font-weight: 600;
 }
 
+.markdown-body :not(pre) > code::before,
+.markdown-body :not(pre) > code::after,
+.prose :not(pre) > code::before,
+.prose :not(pre) > code::after {
+  content: none !important;
+}
+
 .dark .markdown-body :not(pre) > code,
 .dark .prose :not(pre) > code {
   background: color-mix(in srgb, var(--surface-card) 76%, #0f172a 24%);
