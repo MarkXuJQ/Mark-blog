@@ -55,15 +55,15 @@ const styles = {
   ),
   tocList: 'space-y-1 list-none pl-0',
   tocItemBase: cn(
-    'relative block overflow-hidden rounded-md py-1 text-sm leading-5 truncate',
+    'relative block overflow-hidden rounded-md py-1 text-sm leading-5',
     'cursor-pointer transition-[color,background-color,transform] duration-150'
   ),
   tocItem: cn(
-    'text-[var(--text-secondary)] hover:bg-slate-100/65 hover:text-blue-600',
+    'truncate text-[var(--text-secondary)] hover:bg-slate-100/65 hover:text-blue-600',
     'dark:hover:bg-[color-mix(in_srgb,var(--surface-card)_78%,var(--text-primary)_10%)] dark:hover:text-blue-400'
   ),
   tocItemActive: cn(
-    'bg-blue-50/80 text-blue-600 font-semibold',
+    'whitespace-normal break-words bg-blue-50/80 text-blue-600 font-semibold',
     'dark:bg-[color-mix(in_srgb,var(--surface-card)_72%,var(--brand-500)_28%)] dark:text-blue-300'
   ),
   tocLevel1: 'px-2 font-semibold',
@@ -161,7 +161,7 @@ function TocList({
     const activeCenter = activeRect.top - railRect.top + activeRect.height / 2
     setIndicatorTop(activeCenter)
 
-    const baseHeight = 16
+    const minIndicatorHeight = 16
     const first = items[0]
     const last = items[items.length - 1]
     const firstRect = first.getBoundingClientRect()
@@ -169,11 +169,11 @@ function TocList({
     const firstCenter = firstRect.top - railRect.top + firstRect.height / 2
     const lastCenter = lastRect.top - railRect.top + lastRect.height / 2
 
-    let nextHeight = baseHeight
+    let nextHeight = Math.max(minIndicatorHeight, activeRect.height)
     if (activeId === first.getAttribute('data-toc-id')) {
-      nextHeight = Math.max(baseHeight, firstCenter * 2)
+      nextHeight = Math.max(nextHeight, firstCenter * 2)
     } else if (activeId === last.getAttribute('data-toc-id')) {
-      nextHeight = Math.max(baseHeight, (railRect.height - lastCenter) * 2)
+      nextHeight = Math.max(nextHeight, (railRect.height - lastCenter) * 2)
     }
     nextHeight = Math.min(nextHeight, railRect.height)
     setIndicatorHeight(nextHeight)
