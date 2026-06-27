@@ -48,15 +48,6 @@
         },
         {
           "type": "city",
-          "name": "潍坊市",
-          "label": "潍坊市",
-          "coords": [
-            36.5543,
-            119.0777
-          ]
-        },
-        {
-          "type": "city",
           "name": "日照市",
           "label": "日照市",
           "coords": [
