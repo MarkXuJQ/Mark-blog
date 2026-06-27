@@ -3,7 +3,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://markxu.icu</id>
     <title>Mark的自留地</title>
-    <updated>2026-06-14T00:00:00.000Z</updated>
+    <updated>2026-06-25T00:00:00.000Z</updated>
     <generator>Mark Xu Blog Generator</generator>
     <author>
         <name>Mark Xu</name>
@@ -17,13 +17,27 @@
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
     <entry>
+        <title type="html"><![CDATA[localhost 背后：一趟没有出门的网络旅行]]></title>
+        <id>https://markxu.icu/blog/behind-localhost-cn</id>
+        <link href="https://markxu.icu/blog/behind-localhost-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/imgnetwork-layer.png" type="image/png"/>
+        <updated>2026-06-25T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[开发时我们天天访问的 localhost，它到底有没有走网络协议栈？又走了几层网络结构？]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgnetwork-layer.png" alt="localhost 背后：一趟没有出门的网络旅行" /> <p>开发时我们天天访问的 localhost，它到底有没有走网络协议栈？又走了几层网络结构？</p> <a class="view-full" href="https://markxu.icu/blog/behind-localhost-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[拒绝 Reward Hacking：我的大学四年]]></title>
         <id>https://markxu.icu/blog/anti-reward-hacking-college-cn</id>
         <link href="https://markxu.icu/blog/anti-reward-hacking-college-cn"/>
         <link rel="enclosure" href="https://img.markxu.icu/imgb8e606e4235578a4b05bc4b87ae8945f_720.jpg" type="image/jpg"/>
         <updated>2026-06-14T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[近几日纷纷与同学们道别，我在经过无数次的地方停了又停、看了又看，拍了许多照片，很是不舍，在自己博客里矫情下，简单记录下自己的感受，也作为一个总结，谈谈我做过的选择。]]></summary>
-        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgb8e606e4235578a4b05bc4b87ae8945f_720.jpg" alt="拒绝 Reward Hacking：我的大学四年" /> <p>近几日纷纷与同学们道别，我在经过无数次的地方停了又停、看了又看，拍了许多照片，很是不舍，在自己博客里矫情下，简单记录下自己的感受，也作为一个总结，谈谈我做过的选择。</p> <a class="view-full" href="https://markxu.icu/blog/anti-reward-hacking-college-cn" target="_blank">点击查看全文</a>]]></content>
+        <summary type="html"><![CDATA[离开学校的时候，我想记录大学四年的回忆，也想记录自己如何在一次次选择中，慢慢形成了拒绝把绩点、排名和简历当作唯一目标的价值观。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgb8e606e4235578a4b05bc4b87ae8945f_720.jpg" alt="拒绝 Reward Hacking：我的大学四年" /> <p>离开学校的时候，我想记录大学四年的回忆，也想记录自己如何在一次次选择中，慢慢形成了拒绝把绩点、排名和简历当作唯一目标的价值观。</p> <a class="view-full" href="https://markxu.icu/blog/anti-reward-hacking-college-cn" target="_blank">点击查看全文</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>

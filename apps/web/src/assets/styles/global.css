@@ -663,6 +663,107 @@ i {
   box-decoration-break: clone;
 }
 
+.markdown-body .md-table-frame,
+.prose .md-table-frame {
+  margin: 1.7rem 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--surface-card) 97%, #f8fafc 3%);
+  box-shadow: var(--shadow-card);
+  scrollbar-color: color-mix(in srgb, var(--article-muted) 36%, transparent)
+    transparent;
+  scrollbar-width: thin;
+}
+
+.markdown-body .md-table-frame::-webkit-scrollbar,
+.prose .md-table-frame::-webkit-scrollbar {
+  height: 0.42rem;
+}
+
+.markdown-body .md-table-frame::-webkit-scrollbar-track,
+.prose .md-table-frame::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.markdown-body .md-table-frame::-webkit-scrollbar-thumb,
+.prose .md-table-frame::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--article-muted) 34%, transparent);
+}
+
+.markdown-body .md-table,
+.prose .md-table {
+  width: 100%;
+  min-width: min(42rem, 100%);
+  margin: 0 !important;
+  table-layout: var(--md-table-layout, auto);
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow-wrap: normal;
+}
+
+.markdown-body .md-table thead,
+.prose .md-table thead {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--brand-400) 10%, transparent),
+    color-mix(in srgb, var(--surface-card) 94%, transparent)
+  );
+}
+
+.markdown-body .md-table :where(th, td),
+.prose .md-table :where(th, td) {
+  min-width: 0;
+  border-color: var(--border-color) !important;
+  padding: 0.72rem 0.86rem;
+  vertical-align: top;
+  line-height: 1.62;
+}
+
+.markdown-body .md-table th,
+.prose .md-table th {
+  color: var(--article-heading);
+  font-weight: 760;
+  white-space: nowrap;
+}
+
+.markdown-body .md-table td,
+.prose .md-table td {
+  color: var(--article-text);
+}
+
+.markdown-body .md-table :where(th, td) > :first-child,
+.prose .md-table :where(th, td) > :first-child {
+  margin-top: 0;
+}
+
+.markdown-body .md-table :where(th, td) > :last-child,
+.prose .md-table :where(th, td) > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body .md-table tbody tr:nth-child(even),
+.prose .md-table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--surface-card) 94%, var(--brand-400) 6%);
+}
+
+.markdown-body .md-table tbody tr:hover,
+.prose .md-table tbody tr:hover {
+  background: color-mix(in srgb, var(--surface-card) 90%, var(--brand-400) 10%);
+}
+
+.simple-reading .markdown-body .md-table-frame {
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+
+.simple-reading .markdown-body .md-table :where(th, td) {
+  padding: 0.64rem 0.72rem;
+}
+
 .dark .article-rich .markdown-body h2 {
   color: var(--article-heading);
   background-image: linear-gradient(

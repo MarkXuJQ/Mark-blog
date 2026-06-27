@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T11:13:29.994Z",
+  "generatedAt": "2026-06-27T03:53:34.165Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -13,9 +13,9 @@
     "playedCount": 149,
     "unplayedCount": 76,
     "totalMinutes": 171131,
-    "totalRecentMinutes": 1545,
+    "totalRecentMinutes": 195,
     "totalUnlockedAchievements": 1917,
-    "totalAvailableAchievements": 7270,
+    "totalAvailableAchievements": 7274,
     "featuredAppId": 2246340
   },
   "featured": [
@@ -33,9 +33,9 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 155873,
-        "totalNegative": 165015,
-        "totalReviews": 320888,
+        "totalPositive": 156944,
+        "totalNegative": 165411,
+        "totalReviews": 322355,
         "positivePercent": 49
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1781071959",
@@ -64,9 +64,9 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 452680,
-        "totalNegative": 57324,
-        "totalReviews": 510004,
+        "totalPositive": 453934,
+        "totalNegative": 57455,
+        "totalReviews": 511389,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
@@ -93,9 +93,9 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 815912,
-        "totalNegative": 26988,
-        "totalReviews": 842900,
+        "totalPositive": 817295,
+        "totalNegative": 27050,
+        "totalReviews": 844345,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
@@ -124,9 +124,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 843853,
-        "totalNegative": 28070,
-        "totalReviews": 871923,
+        "totalPositive": 845631,
+        "totalNegative": 28244,
+        "totalReviews": 873875,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991",
@@ -153,22 +153,16 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 322383,
-        "totalNegative": 52297,
-        "totalReviews": 374680,
+        "totalPositive": 322939,
+        "totalNegative": 52331,
+        "totalReviews": 375270,
         "positivePercent": 86
       },
-      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1740607040",
-      "shortDescription": "Expand your empire, advance your culture and go head-to-head against history’s greatest leaders. Will your civilization stand the test of time?",
-      "releaseDate": "20 Oct, 2016",
-      "developers": [
-        "Firaxis Games",
-        "Aspyr (Mac)",
-        "Aspyr (Linux)"
-      ],
-      "genres": [
-        "Strategy"
-      ]
+      "headerImage": "",
+      "shortDescription": "",
+      "releaseDate": "",
+      "developers": [],
+      "genres": []
     },
     {
       "appid": 812140,
@@ -184,9 +178,9 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 163584,
-        "totalNegative": 20709,
-        "totalReviews": 184293,
+        "totalPositive": 163843,
+        "totalNegative": 20740,
+        "totalReviews": 184583,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1777476997",
@@ -349,7 +343,7 @@
       "appid": 1903340,
       "name": "Clair Obscur: Expedition 33",
       "playtimeMinutes": 3228,
-      "recentPlaytimeMinutes": 646,
+      "recentPlaytimeMinutes": 0,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1903340/d48fb3ed033a08bad9bf0a2e1ceb145e58ffe0aa.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1903340",
@@ -377,7 +371,7 @@
       "appid": 2868840,
       "name": "Slay the Spire 2",
       "playtimeMinutes": 3111,
-      "recentPlaytimeMinutes": 638,
+      "recentPlaytimeMinutes": 195,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2868840/f92b09dab91f1d1738f72fe0dd9be18dcc2901f9.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/2868840",
@@ -651,7 +645,7 @@
       "appid": 588650,
       "name": "Dead Cells",
       "playtimeMinutes": 1453,
-      "recentPlaytimeMinutes": 261,
+      "recentPlaytimeMinutes": 0,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/588650/a431361e5dae5fd6ac2433064b62b2a37abc38f1.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/588650",
@@ -1818,7 +1812,7 @@
       "communityUrl": "https://steamcommunity.com/app/346010",
       "achievementStats": {
         "unlockedCount": 5,
-        "totalCount": 50
+        "totalCount": 54
       }
     },
     {

@@ -43,10 +43,7 @@ export function BlogPostCard({
   // Layout A: no cover image, text-only card.
   if (!coverImage) {
     return (
-      <div
-        className={cn('animate-in fade-in duration-200', className)}
-        style={style}
-      >
+      <div className={className} style={style}>
         <Link to={`/blog/${post.slug}`} className="block">
           <Card className="group block border border-slate-200/70 p-4 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-transform hover:-translate-y-1 hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] sm:p-5 dark:border-0 dark:shadow-none">
             <article>
@@ -87,10 +84,7 @@ export function BlogPostCard({
 
   // Layout B: cover image present, split card (image + text).
   return (
-    <div
-      className={cn('animate-in fade-in duration-200', className)}
-      style={style}
-    >
+    <div className={className} style={style}>
       <Link to={`/blog/${post.slug}`} className="block">
         <Card className="group block overflow-hidden border border-slate-200/70 p-0 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-transform hover:-translate-y-1 hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] sm:p-0 dark:border-0 dark:shadow-none">
           {/* Mobile template */}

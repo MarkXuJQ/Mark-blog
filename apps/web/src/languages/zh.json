@@ -103,10 +103,10 @@
     },
     "categories": {
       "essay": "杂谈",
-      "experience": "生活经验",
-      "tech": "技术分享",
+      "experience": "生活",
+      "tech": "技术日记",
       "share": "资源分享",
-      "project": "项目经历"
+      "project": "项目介绍"
     },
     "sort": {
       "created": "创建日期",

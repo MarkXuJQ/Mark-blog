@@ -1,13 +1,28 @@
 [
   {
+    "id": "behind-localhost-cn",
+    "slug": "behind-localhost-cn",
+    "language": "zh",
+    "title": "localhost 背后：一趟没有出门的网络旅行",
+    "date": "2026-06-25",
+    "summary": "开发时我们天天访问的 localhost，它到底有没有走网络协议栈？又走了几层网络结构？",
+    "wordCount": 1672,
+    "tags": [
+      "Network",
+      "TCP/IP",
+      "localhost"
+    ],
+    "category": "tech"
+  },
+  {
     "id": "anti-reward-hacking-college-cn",
     "slug": "anti-reward-hacking-college-cn",
     "language": "zh",
     "title": "拒绝 Reward Hacking：我的大学四年",
     "date": "2026-06-14",
-    "updated": "2026-06-15",
-    "summary": "离开学校的时候，我想记录大学四年的回忆，也想记录自己如何拒绝把绩点、排名和简历当作唯一奖励函数。",
-    "wordCount": 6363,
+    "updated": "2026-06-17",
+    "summary": "离开学校的时候，我想记录大学四年的回忆，也想记录自己如何在一次次选择中，慢慢形成了拒绝把绩点、排名和简历当作唯一目标的价值观。",
+    "wordCount": 6386,
     "image": "https://img.markxu.icu/imgb8e606e4235578a4b05bc4b87ae8945f_720.jpg",
     "tags": [
       "College",
@@ -15,7 +30,7 @@
       "Reward Hacking",
       "Meritocracy"
     ],
-    "category": "Experience"
+    "category": "essay"
   },
   {
     "id": "Amoy-food-walk-note1-cn",
@@ -47,7 +62,7 @@
       "Computer Science",
       "Major"
     ],
-    "category": "tech"
+    "category": "essay"
   },
   {
     "id": "why-I-recommend-everyone-to-write-blog-cn",
@@ -229,7 +244,7 @@
       "AI",
       "Prompt"
     ],
-    "category": "tech"
+    "category": "Share"
   },
   {
     "id": "prompt-only-open-source-en",

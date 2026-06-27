@@ -3,19 +3,116 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { plugin as markdown, Mode } from 'vite-plugin-markdown'
 import MarkdownIt from 'markdown-it'
+import type { RenderRule } from 'markdown-it/lib/renderer.mjs'
+import type StateCore from 'markdown-it/lib/rules_core/state_core.mjs'
 import katex from 'katex'
 import markdownItTexmath from 'markdown-it-texmath'
 import fs from 'node:fs'
 import path from 'path'
 import { pathToFileURL } from 'node:url'
 
-const markdownIt = new MarkdownIt({ html: true }).use(markdownItTexmath, {
-  engine: katex,
-  delimiters: 'dollars',
-  katexOptions: {
-    throwOnError: false,
-  },
-})
+const TABLE_WIDTHS_PATTERN =
+  /^<!--\s*table-widths\s*:\s*([\s\S]*?)\s*-->$/i
+
+function splitTableWidths(input: string): string[] {
+  const widths: string[] = []
+  let current = ''
+  let depth = 0
+
+  for (const char of input) {
+    if (char === '(') {
+      depth += 1
+    } else if (char === ')') {
+      depth = Math.max(0, depth - 1)
+    } else if (char === ',' && depth === 0) {
+      widths.push(current)
+      current = ''
+      continue
+    }
+
+    current += char
+  }
+
+  widths.push(current)
+
+  return widths
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .filter((item) => /^[\w\s.%(),/+*-]+$/.test(item))
+}
+
+function markdownItArticleTables(md: MarkdownIt) {
+  md.core.ruler.after('inline', 'article_table_metadata', (state: StateCore) => {
+    let pendingWidths: string[] | null = null
+
+    state.tokens.forEach((token) => {
+      if (token.type === 'html_block') {
+        const match = token.content.trim().match(TABLE_WIDTHS_PATTERN)
+
+        if (match) {
+          pendingWidths = splitTableWidths(match[1])
+          token.content = ''
+          token.hidden = true
+          return
+        }
+
+        pendingWidths = null
+        return
+      }
+
+      if (token.type === 'table_open') {
+        token.attrJoin('class', 'md-table')
+
+        if (pendingWidths?.length) {
+          token.meta = {
+            ...(token.meta ?? {}),
+            columnWidths: pendingWidths,
+          }
+          token.attrSet('style', '--md-table-layout: fixed;')
+        }
+
+        pendingWidths = null
+      }
+    })
+  })
+
+  const defaultTableOpen =
+    md.renderer.rules.table_open ??
+    ((tokens, idx, options, _env, self) => self.renderToken(tokens, idx, options))
+  const defaultTableClose =
+    md.renderer.rules.table_close ??
+    ((tokens, idx, options, _env, self) => self.renderToken(tokens, idx, options))
+
+  md.renderer.rules.table_open = ((tokens, idx, options, env, self) => {
+    const widths = tokens[idx].meta?.columnWidths as string[] | undefined
+    const colgroup = widths?.length
+      ? `<colgroup>${widths
+          .map((width) => `<col style="width: ${md.utils.escapeHtml(width)};">`)
+          .join('')}</colgroup>`
+      : ''
+
+    return `<div class="md-table-frame">${defaultTableOpen(
+      tokens,
+      idx,
+      options,
+      env,
+      self
+    )}${colgroup}`
+  }) satisfies RenderRule
+
+  md.renderer.rules.table_close = ((tokens, idx, options, env, self) =>
+    `${defaultTableClose(tokens, idx, options, env, self)}</div>`) satisfies RenderRule
+}
+
+const markdownIt = new MarkdownIt({ html: true })
+  .use(markdownItTexmath, {
+    engine: katex,
+    delimiters: 'dollars',
+    katexOptions: {
+      throwOnError: false,
+    },
+  })
+  .use(markdownItArticleTables)
 
 function vercelApiDevPlugin(): Plugin {
   const apiHandlers = {
