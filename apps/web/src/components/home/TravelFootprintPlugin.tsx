@@ -552,7 +552,7 @@ const styles = {
     'pointer-events-none absolute left-1/2 top-6 -z-10 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.18)_0%,rgba(56,189,248,0.08)_28%,rgba(56,189,248,0)_68%)] blur-3xl',
   ambientOrbitSecondary:
     'pointer-events-none absolute right-[-2rem] top-[20rem] -z-10 h-[18rem] w-[18rem] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0.04)_30%,rgba(255,255,255,0)_70%)] blur-3xl',
-  grid: 'relative grid items-start gap-5 pt-0 sm:gap-6 lg:grid-cols-[minmax(19.5rem,24.5rem)_minmax(0,1fr)] lg:gap-x-7 lg:gap-y-5',
+  grid: 'relative grid items-start gap-5 pt-0 sm:gap-6 lg:grid-cols-[minmax(19.5rem,24.5rem)_minmax(0,1fr)] lg:items-stretch lg:gap-x-7 lg:gap-y-5',
   leftRail:
     'relative z-[3] flex min-w-0 flex-col lg:col-start-1 lg:row-start-1 lg:max-w-[28rem] xl:max-w-[30rem]',
   leftWidgetStack:
@@ -574,7 +574,7 @@ const styles = {
     'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_54px_rgba(181,232,251,0.34)]',
   mapPanel: 'relative z-[2] w-full self-start',
   embedPanel:
-    'z-[4] self-start p-2 sm:p-2.5 lg:col-start-2 lg:row-start-1 lg:ml-auto lg:w-[87%]',
+    'z-[4] self-start p-2 sm:p-2.5 lg:col-start-2 lg:row-start-1 lg:h-full lg:w-full lg:self-stretch',
   clockCell: 'w-full self-start will-change-transform p-3 sm:p-4',
   clockPanel: 'h-full w-full overflow-visible',
   cardHeader: 'flex items-start gap-2.5',
@@ -606,11 +606,11 @@ const styles = {
   mapHighlight:
     'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_32px_rgba(181,232,251,0.36)]',
   embedViewport:
-    'relative overflow-hidden rounded-[24px] bg-[linear-gradient(180deg,#0d141a_0%,#091016_100%)] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:p-2',
+    'relative overflow-hidden rounded-[24px] bg-[linear-gradient(180deg,#0d141a_0%,#091016_100%)] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:p-2 lg:h-full',
   embedViewportInteractive:
     'shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_36px_rgba(34,211,238,0.08)]',
   embedFrame:
-    'relative block aspect-square w-full rounded-[20px] border-0 bg-[#10161a] shadow-[0_18px_40px_-28px_rgba(0,0,0,0.78)] lg:aspect-[1/1.085]',
+    'relative block aspect-square w-full rounded-[20px] border-0 bg-[#10161a] shadow-[0_18px_40px_-28px_rgba(0,0,0,0.78)] lg:h-full lg:aspect-auto',
   embedFrameLocked: 'pointer-events-none saturate-[0.92]',
   embedInteractionVeil:
     'absolute inset-2 rounded-[20px] bg-[radial-gradient(circle_at_50%_42%,rgba(255,255,255,0.035)_0%,rgba(255,255,255,0)_48%)]',

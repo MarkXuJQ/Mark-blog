@@ -70,8 +70,6 @@ export function Blog() {
     const start = (currentPage - 1) * ITEMS_PER_PAGE
     return posts.slice(start, start + ITEMS_PER_PAGE)
   }, [posts, currentPage])
-  const listMotionKey = `${simpleMode ? 'simple' : 'rich'}-${selectedCategory}-${sortBy}-${searchQuery}-${currentPage}`
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -191,7 +189,6 @@ export function Blog() {
         {currentPosts.length > 0 ? (
           <>
             <StaggeredList
-              key={listMotionKey}
               className={simpleMode ? 'space-y-0' : 'space-y-6'}
             >
               {currentPosts.map((post) =>
