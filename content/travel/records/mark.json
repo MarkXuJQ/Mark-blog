@@ -15,6 +15,51 @@
   "passengerName": "Mark Xu",
   "journeys": [
     {
+      "title": "初到武汉",
+      "date": "2026-06-14",
+      "transportMode": "train",
+      "showEndpoints": true,
+      "departure": {
+        "type": "city",
+        "name": "厦门市",
+        "label": "厦门市",
+        "coords": [
+          24.6764,
+          118.1239
+        ]
+      },
+      "destination": {
+        "type": "city",
+        "name": "武汉市",
+        "label": "武汉市",
+        "coords": [
+          30.623,
+          114.3482
+        ]
+      },
+      "locations": [
+        {
+          "type": "city",
+          "name": "厦门市",
+          "label": "厦门市",
+          "coords": [
+            24.6764,
+            118.1239
+          ]
+        },
+        {
+          "type": "city",
+          "name": "武汉市",
+          "label": "武汉市",
+          "coords": [
+            30.623,
+            114.3482
+          ]
+        }
+      ],
+      "id": "2020beb5-5424-462b-86f7-2d66cf1bd819"
+    },
+    {
       "title": "记录曾经去过的地方",
       "transportMode": "default",
       "showEndpoints": false,
