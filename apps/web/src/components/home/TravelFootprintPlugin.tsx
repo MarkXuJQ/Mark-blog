@@ -574,7 +574,7 @@ const styles = {
     'absolute inset-0 h-full w-full object-contain opacity-100 drop-shadow-[0_0_54px_rgba(181,232,251,0.34)]',
   mapPanel: 'relative z-[2] w-full self-start',
   embedPanel:
-    'z-[4] self-start p-2 sm:p-2.5 lg:col-start-2 lg:row-start-1 lg:h-full lg:w-full lg:self-stretch',
+    'z-[4] self-start p-2 sm:p-2.5 lg:col-start-2 lg:row-start-1 lg:ml-auto lg:h-full lg:w-[87%] lg:max-w-[44rem] lg:self-stretch',
   clockCell: 'w-full self-start will-change-transform p-3 sm:p-4',
   clockPanel: 'h-full w-full overflow-visible',
   cardHeader: 'flex items-start gap-2.5',
