@@ -6,7 +6,7 @@
     "title": "localhost 背后：一趟没有出门的网络旅行",
     "date": "2026-06-25",
     "summary": "开发时我们天天访问的 localhost，它到底有没有走网络协议栈？又走了几层网络结构？",
-    "wordCount": 1672,
+    "wordCount": 2882,
     "tags": [
       "Network",
       "TCP/IP",
