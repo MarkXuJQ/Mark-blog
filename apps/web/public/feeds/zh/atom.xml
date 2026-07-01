@@ -3,7 +3,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://markxu.icu</id>
     <title>Mark的自留地</title>
-    <updated>2026-06-25T00:00:00.000Z</updated>
+    <updated>2026-07-01T11:02:10.464Z</updated>
     <generator>Mark Xu Blog Generator</generator>
     <author>
         <name>Mark Xu</name>
@@ -16,6 +16,19 @@
     <logo>https://markxu.icu/images/IMG_1766.JPG</logo>
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
+    <entry>
+        <title type="html"><![CDATA[2.广州游记]]></title>
+        <id>https://markxu.icu/blog/2.%E5%B9%BF%E5%B7%9E%E6%B8%B8%E8%AE%B0</id>
+        <link href="https://markxu.icu/blog/2.%E5%B9%BF%E5%B7%9E%E6%B8%B8%E8%AE%B0"/>
+        <link rel="enclosure" href="https://img.markxu.icu/imgRedNoteGuide.jpg" type="image/jpg"/>
+        <updated>2026-07-01T11:02:10.464Z</updated>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgRedNoteGuide.jpg" alt="2.广州游记" />  <a class="view-full" href="https://markxu.icu/blog/2.%E5%B9%BF%E5%B7%9E%E6%B8%B8%E8%AE%B0" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[localhost 背后：一趟没有出门的网络旅行]]></title>
         <id>https://markxu.icu/blog/behind-localhost-cn</id>
@@ -185,13 +198,13 @@
         </author>
     </entry>
     <entry>
-        <title type="html"><![CDATA[广州游记]]></title>
-        <id>https://markxu.icu/blog/guangzhou-trip-notes-cn</id>
-        <link href="https://markxu.icu/blog/guangzhou-trip-notes-cn"/>
-        <link rel="enclosure" href="https://img.markxu.icu/imgIMG_20240323_广州tower.png" type="image/png"/>
-        <updated>2024-03-22T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[这是我在广州的游记，主要是流水账，但也记录了我和好兄弟在旅程中经历的小故事。]]></summary>
-        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgIMG_20240323_广州tower.png" alt="广州游记" /> <p>这是我在广州的游记，主要是流水账，但也记录了我和好兄弟在旅程中经历的小故事。</p> <a class="view-full" href="https://markxu.icu/blog/guangzhou-trip-notes-cn" target="_blank">点击查看全文</a>]]></content>
+        <title type="html"><![CDATA[西安游记]]></title>
+        <id>https://markxu.icu/blog/Xian-trip-notes-cn</id>
+        <link href="https://markxu.icu/blog/Xian-trip-notes-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img西安.jpg" type="image/jpg"/>
+        <updated>2023-10-29T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[偶然翻到了当初去西安游玩的游记，虽然也是流水账，但也足以让我回味，也放上来当作记录好了，不至于后面再看到又是一次偶然。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img西安.jpg" alt="西安游记" /> <p>偶然翻到了当初去西安游玩的游记，虽然也是流水账，但也足以让我回味，也放上来当作记录好了，不至于后面再看到又是一次偶然。</p> <a class="view-full" href="https://markxu.icu/blog/Xian-trip-notes-cn" target="_blank">点击查看全文</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>

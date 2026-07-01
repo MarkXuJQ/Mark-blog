@@ -296,22 +296,6 @@
     "category": "essay"
   },
   {
-    "id": "guangzhou-trip-notes-cn",
-    "slug": "guangzhou-trip-notes-cn",
-    "language": "zh",
-    "title": "广州游记",
-    "date": "2024-03-22",
-    "updated": "2026-03-03",
-    "summary": "这是我在广州的游记，主要是流水账，但也记录了我和好兄弟在旅程中经历的小故事。",
-    "wordCount": 1591,
-    "image": "https://img.markxu.icu/imgIMG_20240323_广州tower.png",
-    "tags": [
-      "Life",
-      "Travel"
-    ],
-    "category": "Experience"
-  },
-  {
     "id": "guangzhou-trip-notes-en",
     "slug": "guangzhou-trip-notes-en",
     "language": "en",
@@ -321,6 +305,22 @@
     "summary": "This is my travel note in Guangzhou. (translated by ai)",
     "wordCount": 1097,
     "image": "https://img.markxu.icu/imgIMG_20240323_广州tower.png",
+    "tags": [
+      "Life",
+      "Travel"
+    ],
+    "category": "Experience"
+  },
+  {
+    "id": "Xian-trip-notes-cn",
+    "slug": "Xian-trip-notes-cn",
+    "language": "zh",
+    "title": "西安游记",
+    "date": "2023-10-29",
+    "updated": "2026-07-01",
+    "summary": "偶然翻到了当初去西安游玩的游记，虽然也是流水账，但也足以让我回味，也放上来当作记录好了，不至于后面再看到又是一次偶然。",
+    "wordCount": 1459,
+    "image": "https://img.markxu.icu/img西安.jpg",
     "tags": [
       "Life",
       "Travel"
@@ -342,6 +342,15 @@
       "Travel"
     ],
     "category": "Experience"
+  },
+  {
+    "id": "2.广州游记",
+    "slug": "2.广州游记",
+    "language": "zh",
+    "title": "2.广州游记",
+    "date": "",
+    "summary": "",
+    "wordCount": 1649
   },
   {
     "id": "chaoshan-trip-notes-en",
