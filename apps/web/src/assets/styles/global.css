@@ -5,6 +5,25 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@keyframes reach-out-wiggle {
+  0%,
+  100% {
+    transform: rotate(-8deg) translateX(0);
+  }
+  18% {
+    transform: rotate(-13deg) translateX(-0.18rem);
+  }
+  38% {
+    transform: rotate(-4deg) translateX(0.12rem);
+  }
+  58% {
+    transform: rotate(-11deg) translateX(-0.08rem);
+  }
+  78% {
+    transform: rotate(-6deg) translateX(0.04rem);
+  }
+}
+
 /* Custom Utility for Markdown Grid Layout */
 .img-grid-2 {
   display: grid;

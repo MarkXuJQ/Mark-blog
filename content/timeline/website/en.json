@@ -1,5 +1,62 @@
 [
   {
+    "date": "2026-07-06",
+    "title": "Applied to Join Travellings!",
+    "description": "Prepared the site for joining Travellings by tightening external entry points, contact information, and blog-reading metadata so visitors can understand the site, reach the maintainer, and estimate reading effort more easily.",
+    "categories": [
+      {
+        "title": "Travellings Entry Points",
+        "items": [
+          {
+            "id": "travellings-20260706-1",
+            "content": "Added a Travellings icon to the blog sidebar social links, using a subway icon and tooltip so the random-site relay entry fits naturally with the rest of the site",
+            "date": "2026-07-06"
+          },
+          {
+            "id": "travellings-20260706-2",
+            "content": "Added the Travellings entry to the mobile blog drawer so the relay remains discoverable on phones",
+            "date": "2026-07-06"
+          },
+          {
+            "id": "travellings-20260706-3",
+            "content": "Added a Travellings link to the footer social area and completed bilingual labels for a consistent desktop, mobile, and footer path",
+            "date": "2026-07-06"
+          }
+        ]
+      },
+      {
+        "title": "Site Identity and Contact",
+        "items": [
+          {
+            "id": "travellings-20260706-4",
+            "content": "Added a Reach out contact card to the About page with primary email, QQ, and one-click copy actions so visitors and Travellings reviewers can identify the maintainer more easily",
+            "date": "2026-07-06"
+          },
+          {
+            "id": "travellings-20260706-5",
+            "content": "Completed bilingual accessibility labels for the contact popup and Travellings links, improving internationalization and assistive-technology support",
+            "date": "2026-07-06"
+          }
+        ]
+      },
+      {
+        "title": "Blog Reading Details",
+        "items": [
+          {
+            "id": "travellings-20260706-6",
+            "content": "Reordered blog card and article metadata into category, date, word count, and reading time, with reading time shown only when the viewport has enough room",
+            "date": "2026-07-06"
+          },
+          {
+            "id": "travellings-20260706-7",
+            "content": "Reused existing word-count data to estimate reading time and reduced the display to a clock icon plus minutes for lighter scanning",
+            "date": "2026-07-06"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-05-24",
     "title": "Blog Index, Archives, and Friends Page Polish",
     "description": "Continued tightening the blog content entry points by shipping the friends page, simplifying archives, and adding lightweight staggered motion to list-heavy views.",

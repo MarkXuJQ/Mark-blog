@@ -7,7 +7,7 @@ import {
   useOutletContext,
 } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { LuHammer, LuPencilLine, LuWholeWord } from 'react-icons/lu'
+import { LuClock, LuHammer, LuPencilLine, LuWholeWord } from 'react-icons/lu'
 import { CategoryLabel } from '@/components/blog/CategoryLabel'
 import { Copyright } from '@/components/blog/Copyright'
 import { PostNavigation } from '@/components/blog/PostNavigation'
@@ -39,7 +39,10 @@ import {
   getPostBySlug,
   getSharedPostCommentPath,
 } from '@/lib/content'
-import { countWords } from '@/utils/readingTime'
+import {
+  countWords,
+  estimateReadingTimeFromWordCount,
+} from '@/utils/readingTime'
 import { cn } from '@/lib/utils'
 import {
   extractOptimizedImageUrlsFromHtml,
@@ -175,6 +178,7 @@ export function BlogPost() {
   }
 
   const words = post.wordCount ?? countWords(post.content)
+  const readingMinutes = estimateReadingTimeFromWordCount(words)
   const originalCoverImage = post.image ? getImageUrl(post.image) : ''
   const coverImage = originalCoverImage
     ? getOptimizedImageUrl(originalCoverImage, 'cover')
@@ -232,6 +236,7 @@ export function BlogPost() {
     { name: post.title, url: postUrl },
   ])
   const metaItemClass = 'inline-flex items-center gap-1.5 leading-none'
+  const readingTimeMetaClass = cn(metaItemClass, 'hidden sm:inline-flex')
 
   if (simpleMode) {
     return (
@@ -255,9 +260,7 @@ export function BlogPost() {
 
         <header className={styles.simpleReadingHeader}>
           <div className={styles.simpleReadingMeta}>
-            {post.category ? (
-              <CategoryLabel category={post.category} />
-            ) : null}
+            {post.category ? <CategoryLabel category={post.category} /> : null}
             <time dateTime={post.date} className={metaItemClass}>
               <LuPencilLine className="h-4 w-4" aria-hidden="true" />
               <span>{post.date}</span>
@@ -273,6 +276,11 @@ export function BlogPost() {
             <span className={metaItemClass}>
               <LuWholeWord className="h-4 w-4" aria-hidden="true" />
               <span>{t('blog.wordCount', { count: words })}</span>
+            </span>
+
+            <span className={readingTimeMetaClass}>
+              <LuClock className="h-4 w-4" aria-hidden="true" />
+              <span>{t('blog.readingTime', { minutes: readingMinutes })}</span>
             </span>
           </div>
 
@@ -383,6 +391,13 @@ export function BlogPost() {
                       <LuWholeWord className="h-4 w-4" aria-hidden="true" />
                       <span>{t('blog.wordCount', { count: words })}</span>
                     </span>
+
+                    <span className={readingTimeMetaClass}>
+                      <LuClock className="h-4 w-4" aria-hidden="true" />
+                      <span>
+                        {t('blog.readingTime', { minutes: readingMinutes })}
+                      </span>
+                    </span>
                   </div>
 
                   <h1
@@ -458,9 +473,19 @@ export function BlogPost() {
                     <LuWholeWord className="h-4 w-4" aria-hidden="true" />
                     <span>{t('blog.wordCount', { count: words })}</span>
                   </span>
+
+                  <span className={readingTimeMetaClass}>
+                    <LuClock className="h-4 w-4" aria-hidden="true" />
+                    <span>
+                      {t('blog.readingTime', { minutes: readingMinutes })}
+                    </span>
+                  </span>
                 </div>
 
-                <h1 className={styles.plainPostTitle} data-article-heading="true">
+                <h1
+                  className={styles.plainPostTitle}
+                  data-article-heading="true"
+                >
                   {post.title}
                 </h1>
               </header>
@@ -529,8 +554,7 @@ const styles = {
   ),
   plainPostHeader:
     'not-prose mb-10 border-b border-slate-200/70 pb-8 dark:border-slate-800/80',
-  plainPostTopRow:
-    'mb-8 flex items-start justify-between gap-4 sm:mb-9',
+  plainPostTopRow: 'mb-8 flex items-start justify-between gap-4 sm:mb-9',
   plainPostMeta:
     'mb-4 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500 dark:text-slate-400',
   plainPostTags:

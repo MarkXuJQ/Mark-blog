@@ -3,7 +3,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://markxu.icu</id>
     <title>Mark的自留地</title>
-    <updated>2026-07-01T11:02:10.464Z</updated>
+    <updated>2026-07-06T00:00:00.000Z</updated>
     <generator>Mark Xu Blog Generator</generator>
     <author>
         <name>Mark Xu</name>
@@ -17,12 +17,13 @@
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
     <entry>
-        <title type="html"><![CDATA[2.广州游记]]></title>
-        <id>https://markxu.icu/blog/2.%E5%B9%BF%E5%B7%9E%E6%B8%B8%E8%AE%B0</id>
-        <link href="https://markxu.icu/blog/2.%E5%B9%BF%E5%B7%9E%E6%B8%B8%E8%AE%B0"/>
-        <link rel="enclosure" href="https://img.markxu.icu/imgRedNoteGuide.jpg" type="image/jpg"/>
-        <updated>2026-07-01T11:02:10.464Z</updated>
-        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgRedNoteGuide.jpg" alt="2.广州游记" />  <a class="view-full" href="https://markxu.icu/blog/2.%E5%B9%BF%E5%B7%9E%E6%B8%B8%E8%AE%B0" target="_blank">点击查看全文</a>]]></content>
+        <title type="html"><![CDATA[TCP 慢启动的窗口增长：教材、RFC 与 Linux 内核实现的三层对照]]></title>
+        <id>https://markxu.icu/blog/tcp-slow-start-cwnd-growth-cn</id>
+        <link href="https://markxu.icu/blog/tcp-slow-start-cwnd-growth-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img2025408.png" type="image/png"/>
+        <updated>2026-07-06T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[TCP 慢启动常被简化为“每个 RTT 拥塞窗口翻倍”，但教材模型、RFC 标准和 Linux 内核实现其实站在不同层面描述同一件事。我尝试把这三层放在一起对照，厘清 cwnd 到底按 ACK、字节还是完整段增长。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img2025408.png" alt="TCP 慢启动的窗口增长：教材、RFC 与 Linux 内核实现的三层对照" /> <p>TCP 慢启动常被简化为“每个 RTT 拥塞窗口翻倍”，但教材模型、RFC 标准和 Linux 内核实现其实站在不同层面描述同一件事。我尝试把这三层放在一起对照，厘清 cwnd 到底按 ACK、字节还是完整段增长。</p> <a class="view-full" href="https://markxu.icu/blog/tcp-slow-start-cwnd-growth-cn" target="_blank">点击查看全文</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>
@@ -275,6 +276,20 @@
         <updated>2026-03-24T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[This is the literal first blog post on my personal site, sharing my thoughts and experiences.]]></summary>
         <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgmarketshareofReactVueAngular.png" alt="My First Blog" /> <p>This is the literal first blog post on my personal site, sharing my thoughts and experiences.</p> <a class="view-full" href="https://markxu.icu/blog/first-blog-post-en" target="_blank">Read full article</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[广州游记]]></title>
+        <id>https://markxu.icu/blog/guangzhou-trip-notes-cn</id>
+        <link href="https://markxu.icu/blog/guangzhou-trip-notes-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/imgIMG_20240323_广州tower.png" type="image/png"/>
+        <updated>2024-03-22T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[这是我在广州的游记，主要是流水账，但也记录了我和好兄弟在旅程中经历的小故事。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgIMG_20240323_广州tower.png" alt="广州游记" /> <p>这是我在广州的游记，主要是流水账，但也记录了我和好兄弟在旅程中经历的小故事。</p> <a class="view-full" href="https://markxu.icu/blog/guangzhou-trip-notes-cn" target="_blank">点击查看全文</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>

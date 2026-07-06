@@ -2,14 +2,27 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SearchTriggerInput } from '../search/SearchTriggerInput'
 import { Card } from '../ui/Card'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip'
 import { cn } from '@/lib/utils'
 import { getImageUrl } from '@/utils/image'
 import { Link } from 'react-router-dom'
 import { Clock, FileText, Activity, Layers } from 'lucide-react'
 import { LuGithub, LuHammer, LuWholeWord } from 'react-icons/lu'
-import { RiBilibiliLine, RiTwitterXFill, RiZhihuFill } from 'react-icons/ri'
+import {
+  RiBilibiliLine,
+  RiSubwayFill,
+  RiTwitterXFill,
+  RiZhihuFill,
+} from 'react-icons/ri'
 import { RiLinksLine } from 'react-icons/ri'
 import type { BlogPostSummary } from '@/types'
+
+const TRAVELLINGS_URL = 'https://www.travellings.cn/go.html'
 
 // --- Profile Content (Internal) ---
 function ProfileContent() {
@@ -99,49 +112,60 @@ function ProfileContent() {
 
 // --- Social Links (Single function as requested) ---
 function SocialLinks() {
+  const { t } = useTranslation()
+  const socialLinks = [
+    {
+      href: 'https://github.com/MarkXuJQ',
+      label: 'GitHub',
+      icon: <LuGithub size={20} aria-hidden="true" />,
+    },
+    {
+      href: 'https://space.bilibili.com/351772037',
+      label: 'Bilibili',
+      icon: <RiBilibiliLine size={20} aria-hidden="true" />,
+    },
+    {
+      href: 'https://x.com/MXu269/articles',
+      label: 'X (Twitter)',
+      icon: <RiTwitterXFill size={20} aria-hidden="true" />,
+    },
+    {
+      href: 'https://www.zhihu.com/people/mark-81-75',
+      label: 'Zhihu',
+      icon: <RiZhihuFill size={20} aria-hidden="true" />,
+    },
+    {
+      href: TRAVELLINGS_URL,
+      label: t('travellings.aria'),
+      icon: <RiSubwayFill size={20} aria-hidden="true" />,
+    },
+  ]
+
   return (
-    <div className={styles.socialRow}>
-      <a
-        href="https://github.com/MarkXuJQ"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={styles.socialBtn}
-        aria-label="GitHub"
-      >
-        <LuGithub size={20} />
-        <span className="sr-only">GitHub</span>
-      </a>
-      <a
-        href="https://space.bilibili.com/351772037"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={styles.socialBtn}
-        aria-label="Bilibili"
-      >
-        <RiBilibiliLine size={20} />
-        <span className="sr-only">Bilibili</span>
-      </a>
-      <a
-        href="https://x.com/MXu269/articles"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={styles.socialBtn}
-        aria-label="X (Twitter)"
-      >
-        <RiTwitterXFill size={20} />
-        <span className="sr-only">X (Twitter)</span>
-      </a>
-      <a
-        href="https://www.zhihu.com/people/mark-81-75"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={styles.socialBtn}
-        aria-label="Zhihu"
-      >
-        <RiZhihuFill size={20} />
-        <span className="sr-only">Zhihu</span>
-      </a>
-    </div>
+    <TooltipProvider delayDuration={120}>
+      <div className={styles.socialRow}>
+        {socialLinks.map((item) => (
+          <Tooltip key={item.href}>
+            <TooltipTrigger asChild>
+              <a
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.socialBtn}
+                aria-label={item.label}
+                title={item.label}
+              >
+                {item.icon}
+                <span className="sr-only">{item.label}</span>
+              </a>
+            </TooltipTrigger>
+            <TooltipContent side="top" showArrow className="text-xs">
+              {item.label}
+            </TooltipContent>
+          </Tooltip>
+        ))}
+      </div>
+    </TooltipProvider>
   )
 }
 

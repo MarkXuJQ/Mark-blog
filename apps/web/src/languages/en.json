@@ -60,7 +60,7 @@
     "back": "Back to Blog",
     "prevPost": "Previous Post",
     "nextPost": "Next Post",
-    "readingTime": "Reading time: {{minutes}} min",
+    "readingTime": "{{minutes}} min",
     "wordCount": "{{count}} words",
     "sidebar": {
       "profile": {
@@ -135,6 +135,11 @@
     "title": "Page Not Found",
     "description": "Sorry, the page you are looking for does not exist.",
     "backHome": "Back to Homepage"
+  },
+  "travellings": {
+    "title": "Travelling",
+    "description": "Visit another independent site at random",
+    "aria": "Travelling link relay"
   },
   "movies": {
     "description": "A small archive of movies I have watched, with a few simple stats and notes along the way.",
@@ -301,7 +306,18 @@
     "originContent": "During my preparation for the 2026 postgraduate entrance exam (in 2025), I stumbled upon some personal blogs, such as <0>Zhilu's Blog</0>. They were exquisite, efficient, and written with such maturity that I was truly impressed ☺️. Through their blogroll, I discovered so many people recording their lives on their own websites. Thinking back on my own university days, I realized I also had much to share but nowhere to do so, which planted the seed for creating my own website.",
     "techTitle": "Building Process",
     "techContent": "During the winter break after the exam, I started researching how to build it. I learned about many existing frameworks for quick deployment. However, to apply the frontend knowledge I had learned and to learn more through this project, I quickly built a first version and sketched out the website (excuse my 'straight male aesthetic'). Later, by studying Zhilu's and other classmates' websites, and with some helpful tools plus my own knowledge, I quickly built this semi-finished small website. If you find any bugs or areas for improvement, please point them out!",
-    "futureContent": "In the future, I will start recording my life and continuously share my experiences and daily thoughts. I hope you like it!"
+    "futureContent": "In the future, I will start recording my life and continuously share my experiences and daily thoughts. I hope you like it!",
+    "contact": {
+      "trigger": "Reach out!",
+      "title": "Contact",
+      "primary": "Primary email",
+      "email": "Email",
+      "qq": "QQ",
+      "close": "Close contact popup",
+      "copy": "Copy",
+      "copyDone": "Copied",
+      "copyFailed": "Copy failed"
+    }
   },
   "comments": {
     "title": "Leave a Comment!",
