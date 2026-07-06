@@ -11,6 +11,11 @@ export function countWords(input) {
 
 export function estimateReadingTime(input) {
   const words = countWords(input)
+  return estimateReadingTimeFromWordCount(words)
+}
+
+export function estimateReadingTimeFromWordCount(wordCount) {
+  const words = Number.isFinite(wordCount) ? wordCount : 0
   const wordsPerMinute = 300
   const minutes = Math.round(words / wordsPerMinute)
   return Math.max(minutes, 1)

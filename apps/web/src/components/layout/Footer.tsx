@@ -1,8 +1,15 @@
 import { cn } from '@/lib/utils'
 import { Trans, useTranslation } from 'react-i18next'
 import { LuGithub } from 'react-icons/lu'
-import { RiBilibiliLine, RiTwitterXFill, RiZhihuFill } from 'react-icons/ri'
+import {
+  RiBilibiliLine,
+  RiSubwayFill,
+  RiTwitterXFill,
+  RiZhihuFill,
+} from 'react-icons/ri'
 import { RiRssLine } from 'react-icons/ri'
+
+const TRAVELLINGS_URL = 'https://www.travellings.cn/go.html'
 
 export function Footer({
   className,
@@ -82,6 +89,21 @@ export function Footer({
             aria-label="Zhihu"
           >
             <RiZhihuFill size={20} />
+          </a>
+          <a
+            href={TRAVELLINGS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              'transition-colors',
+              isHomeVariant
+                ? 'hover:text-white'
+                : 'hover:text-[var(--text-primary)]'
+            )}
+            aria-label={t('travellings.aria')}
+            title={t('travellings.aria')}
+          >
+            <RiSubwayFill size={20} />
           </a>
           <a
             href={feedPath}

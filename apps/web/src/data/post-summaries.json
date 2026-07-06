@@ -1,5 +1,21 @@
 [
   {
+    "id": "tcp-slow-start-cwnd-growth-cn",
+    "slug": "tcp-slow-start-cwnd-growth-cn",
+    "language": "zh",
+    "title": "TCP 慢启动的窗口增长：教材、RFC 与 Linux 内核实现的三层对照",
+    "date": "2026-07-06",
+    "summary": "TCP 慢启动常被简化为“每个 RTT 拥塞窗口翻倍”，但教材模型、RFC 标准和 Linux 内核实现其实站在不同层面描述同一件事。我尝试把这三层放在一起对照，厘清 cwnd 到底按 ACK、字节还是完整段增长。",
+    "wordCount": 3274,
+    "tags": [
+      "Network",
+      "TCP/IP",
+      "Linux",
+      "RFC"
+    ],
+    "category": "tech"
+  },
+  {
     "id": "behind-localhost-cn",
     "slug": "behind-localhost-cn",
     "language": "zh",
@@ -296,6 +312,22 @@
     "category": "essay"
   },
   {
+    "id": "guangzhou-trip-notes-cn",
+    "slug": "guangzhou-trip-notes-cn",
+    "language": "zh",
+    "title": "广州游记",
+    "date": "2024-03-22",
+    "updated": "2026-03-03",
+    "summary": "这是我在广州的游记，主要是流水账，但也记录了我和好兄弟在旅程中经历的小故事。",
+    "wordCount": 1591,
+    "image": "https://img.markxu.icu/imgIMG_20240323_广州tower.png",
+    "tags": [
+      "Life",
+      "Travel"
+    ],
+    "category": "Experience"
+  },
+  {
     "id": "guangzhou-trip-notes-en",
     "slug": "guangzhou-trip-notes-en",
     "language": "en",
@@ -342,15 +374,6 @@
       "Travel"
     ],
     "category": "Experience"
-  },
-  {
-    "id": "2.广州游记",
-    "slug": "2.广州游记",
-    "language": "zh",
-    "title": "2.广州游记",
-    "date": "",
-    "summary": "",
-    "wordCount": 1649
   },
   {
     "id": "chaoshan-trip-notes-en",

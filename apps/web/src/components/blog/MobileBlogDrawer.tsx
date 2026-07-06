@@ -5,7 +5,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { FileText, Layers, X } from 'lucide-react'
 import { BiSidebar } from 'react-icons/bi'
-import { RiLinksLine } from 'react-icons/ri'
+import { RiLinksLine, RiSubwayFill } from 'react-icons/ri'
 import { cn } from '@/lib/utils'
 import { getImageUrl } from '@/utils/image'
 
@@ -15,6 +15,7 @@ interface MobileBlogDrawerProps {
 }
 
 const PORTAL_ROOT_ID = 'mobile-blog-drawer-root'
+const TRAVELLINGS_URL = 'https://www.travellings.cn/go.html'
 
 export function MobileBlogDrawer({
   simpleMode,
@@ -154,6 +155,12 @@ export function MobileBlogDrawer({
                         icon={<RiLinksLine size={18} aria-hidden="true" />}
                         label={linksLabel}
                       />
+                      <DrawerExternalLink
+                        href={TRAVELLINGS_URL}
+                        icon={<RiSubwayFill size={18} aria-hidden="true" />}
+                        label={t('travellings.title')}
+                        ariaLabel={t('travellings.aria')}
+                      />
                     </nav>
 
                     <div className={styles.modePanel}>
@@ -211,6 +218,32 @@ function DrawerLink({
       <span className={styles.navIcon}>{icon}</span>
       <span>{label}</span>
     </NavLink>
+  )
+}
+
+function DrawerExternalLink({
+  href,
+  icon,
+  label,
+  ariaLabel,
+}: {
+  href: string
+  icon: React.ReactNode
+  label: string
+  ariaLabel: string
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={styles.navLink(false)}
+      aria-label={ariaLabel}
+      title={ariaLabel}
+    >
+      <span className={styles.navIcon}>{icon}</span>
+      <span>{label}</span>
+    </a>
   )
 }
 
