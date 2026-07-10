@@ -1,22 +1,30 @@
 import friendLinksConfig from '@content/Links/links.json'
 import dbushellFavicon from '@/assets/home/radar/dbushell.png'
 import eventuallymakingFavicon from '@/assets/home/radar/eventuallymaking.png'
+import inneiFavicon from '@/assets/home/radar/innei.png'
 import joshwcomeauFavicon from '@/assets/home/radar/joshwcomeau.png'
+import lucumrFavicon from '@/assets/home/radar/lucumr.png'
 import nineteenHundredFavicon from '@/assets/home/radar/nineteen-hundred.png'
+import ooowlFavicon from '@/assets/home/radar/ooowl.png'
 import pathosFavicon from '@/assets/home/radar/pathos.png'
 import ruanyifengFavicon from '@/assets/home/radar/ruanyifeng.png'
 import spacesFavicon from '@/assets/home/radar/spaces.svg'
+import victorzhouFavicon from '@/assets/home/radar/victorzhou.png'
 import zhheoFavicon from '@/assets/home/radar/zhheo.png'
 import zhiluFavicon from '@/assets/home/radar/zhilu.png'
 
 const LINK_FAVICONS = {
   dbushell: dbushellFavicon,
   eventuallymaking: eventuallymakingFavicon,
+  innei: inneiFavicon,
   joshwcomeau: joshwcomeauFavicon,
+  lucumr: lucumrFavicon,
   'nineteen-hundred': nineteenHundredFavicon,
+  ooowl: ooowlFavicon,
   pathos: pathosFavicon,
   ruanyifeng: ruanyifengFavicon,
   spaces: spacesFavicon,
+  victorzhou: victorzhouFavicon,
   zhheo: zhheoFavicon,
   zhilu: zhiluFavicon,
 } as const

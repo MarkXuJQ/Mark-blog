@@ -223,5 +223,80 @@
       "zh": "苏剑林维护的长期中文科学博客，围绕数学、天文、理论物理、计算机与生活随笔展开。",
       "en": "A long-running Chinese science blog by BoJone, spanning mathematics, astronomy, theoretical physics, computing, and life notes."
     }
+  },
+  {
+    "id": "peter-oravec",
+    "radarCategory": "interesting-site",
+    "name": "Peter Oravec",
+    "href": "https://peteroravec.com/",
+    "faviconKey": "peter-oravec",
+    "eyebrow": {
+      "zh": "前端作品集 / 交互动效",
+      "en": "Front-end portfolio / Motion"
+    },
+    "description": {
+      "zh": "Peter Oravec 的个人作品站，像可探索的前端简历一样展示 JavaScript、Angular、Node.js 与交互动效作品。",
+      "en": "Peter Oravec's portfolio site, an interactive front-end resume showcasing JavaScript, Angular, Node.js, and motion-heavy work."
+    }
+  },
+  {
+    "id": "distill",
+    "radarCategory": "interesting-site",
+    "name": "Distill",
+    "href": "https://distill.pub/",
+    "faviconKey": "distill",
+    "eyebrow": {
+      "zh": "机器学习 / 可视化文章",
+      "en": "Machine learning / Visual essays"
+    },
+    "description": {
+      "zh": "以清晰可视化和长文解释机器学习概念的经典在线出版物。",
+      "en": "A classic online publication explaining machine-learning ideas through careful visual essays."
+    }
+  },
+  {
+    "id": "innei",
+    "radarCategory": "personal-blog",
+    "name": "Innei",
+    "href": "https://innei.in/",
+    "faviconKey": "innei",
+    "eyebrow": {
+      "zh": "TypeScript / React / 全栈",
+      "en": "TypeScript / React / Full-stack"
+    },
+    "description": {
+      "zh": "Innei 的个人博客，记录前端与全栈开发、TypeScript、React、Next.js、AI 工程、独立开发、旅行和生活。",
+      "en": "Innei's personal blog on frontend and full-stack development, TypeScript, React, Next.js, AI engineering, indie hacking, travel, and life."
+    }
+  },
+  {
+    "id": "victorzhou",
+    "radarCategory": "personal-blog",
+    "name": "Victor Zhou",
+    "href": "https://victorzhou.com/",
+    "faviconKey": "victorzhou",
+    "eyebrow": {
+      "zh": "Web 开发 / 机器学习",
+      "en": "Web development / Machine learning"
+    },
+    "description": {
+      "zh": "Victor Zhou 的个人博客，分享 Web 开发、机器学习、Python、Gatsby 和安全等工程笔记。",
+      "en": "Victor Zhou's blog about web development, machine learning, Python, Gatsby, security, and more."
+    }
+  },
+  {
+    "id": "lucumr",
+    "radarCategory": "personal-blog",
+    "name": "Armin Ronacher",
+    "href": "https://lucumr.pocoo.org/",
+    "faviconKey": "lucumr",
+    "eyebrow": {
+      "zh": "Python / 开源工程 / 软件设计",
+      "en": "Python / Open source / Software design"
+    },
+    "description": {
+      "zh": "Armin Ronacher 的长期个人博客，记录 Python、Flask、Rust、开源工程和软件设计思考。",
+      "en": "Armin Ronacher's long-running personal blog about Python, Flask, Rust, open-source engineering, and software design."
+    }
   }
 ]
