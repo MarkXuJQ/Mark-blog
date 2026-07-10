@@ -89,6 +89,42 @@
       "cardAlignX": "left",
       "cardAlignY": "top",
       "color": "#10A64B"
+    },
+    {
+      "id": "peter-oravec",
+      "cardAlignX": "right",
+      "cardAlignY": "bottom",
+      "color": "#10A64B"
+    },
+    {
+      "id": "distill",
+      "cardAlignX": "center",
+      "cardAlignY": "bottom",
+      "color": "#F4C433"
+    },
+    {
+      "id": "innei",
+      "cardAlignX": "left",
+      "cardAlignY": "top",
+      "color": "#7670E8"
+    },
+    {
+      "id": "victorzhou",
+      "cardAlignX": "center",
+      "cardAlignY": "top",
+      "color": "#FF6F43"
+    },
+    {
+      "id": "lucumr",
+      "cardAlignX": "right",
+      "cardAlignY": "bottom",
+      "color": "#F4C433"
+    },
+    {
+      "id": "ooowl",
+      "cardAlignX": "left",
+      "cardAlignY": "top",
+      "color": "#10A64B"
     }
   ]
 }

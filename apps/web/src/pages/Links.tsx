@@ -23,8 +23,7 @@ export function Links() {
       name: t('siteTitle'),
       url: siteUrl,
       avatar: toAbsoluteUrl('/images/IMG_1766.JPG', siteUrl),
-      description:
-        '慢慢更新，慢慢打磨。写代码、看电影、出门逛街、记录一点不高级的快乐，不算深刻的思考🤔',
+      description: '慢慢更新，慢慢打磨，认真分享，认真生活！',
     }
   }, [t])
 

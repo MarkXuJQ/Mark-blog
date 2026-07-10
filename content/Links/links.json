@@ -53,7 +53,32 @@
       "url": "https://spaces.ac.cn/",
       "avatar": "spaces",
       "description": "苏剑林维护的长期中文科学博客，内容横跨数学、自然科学、机器学习和生活随笔。"
+    },
+    {
+      "name": "Innei",
+      "url": "https://innei.in/",
+      "avatar": "innei",
+      "description": "Innei's personal blog on frontend and full-stack development — TypeScript, React, Next.js, AI engineering, indie hacking, travel and life."
+    },
+    {
+      "name": "Victor Zhou",
+      "url": "https://victorzhou.com/",
+      "avatar": "victorzhou",
+      "description": "Victor Zhou 的个人博客，分享 Web 开发、机器学习、Python、Gatsby 和安全等工程笔记。"
+    },
+    {
+      "name": "Armin Ronacher",
+      "url": "https://lucumr.pocoo.org/",
+      "avatar": "lucumr",
+      "description": "Armin Ronacher 的长期个人博客，记录 Python、Flask、Rust、开源工程和软件设计思考。"
     }
   ],
-  "neighbors": []
+  "neighbors": [
+    {
+      "name": "TT清沫uk",
+      "url": "https://ttquk.github.io/",
+      "avatar": "https://ts1.tc.mm.bing.net/th/id/OIP-C.6WsD9caLSNQFhJOi77soRAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "description": "TT清沫ukの博客"
+    }
+  ]
 }
