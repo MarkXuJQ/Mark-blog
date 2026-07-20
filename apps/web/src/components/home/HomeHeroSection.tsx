@@ -190,7 +190,7 @@ export function HomeHeroSection({
           style={{ opacity: heroContentOpacity, y: heroContentY }}
         >
           <div className={styles.heroContentInner}>
-            <div data-home-reveal="hero-copy" className={styles.heroCopy}>
+            <div className={styles.heroCopy}>
               <h1
                 className={cn(
                   styles.title,
@@ -349,11 +349,7 @@ export function HomeHeroSection({
               </div>
             </div>
 
-            <div
-              data-home-reveal="hero-visual"
-              data-home-reveal-delay={prefersReducedMotion ? undefined : 0.16}
-              className={styles.heroVisualWrap}
-            >
+            <div className={styles.heroVisualWrap}>
               <HomeHeroAvatarScene
                 avatarSrc={avatarSrc}
                 sceneProgress={sceneProgress}
@@ -392,7 +388,7 @@ const styles = {
   heroContentInner:
     'mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.96fr)] lg:gap-12',
   heroCopy:
-    'order-2 flex flex-col items-center text-center lg:order-1 lg:items-start lg:text-left',
+    'home-hero-copy-enter order-2 flex flex-col items-center text-center lg:order-1 lg:items-start lg:text-left',
   title: cn(
     'mt-2 max-w-4xl text-center text-4xl font-semibold tracking-tight sm:text-6xl lg:mt-6 lg:text-left lg:text-7xl'
   ),
@@ -427,5 +423,5 @@ const styles = {
   dotLight: 'bg-black/26',
   dotDark: 'bg-white/55',
   heroVisualWrap:
-    'order-1 relative flex w-full items-center justify-center lg:order-2 lg:justify-end',
+    'home-hero-visual-enter order-1 relative flex w-full items-center justify-center lg:order-2 lg:justify-end',
 }

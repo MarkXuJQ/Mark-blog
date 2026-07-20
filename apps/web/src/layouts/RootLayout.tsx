@@ -1,11 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Footer } from '@/components/layout/Footer'
 import { NavBar } from '@/components/layout/NavBar'
 import { GlobalSearchHost } from '@/components/search/GlobalSearchHost'
 import { PageTransitionHost } from '@/components/transitions/PageTransitionHost'
-import { DraggableBackToTop } from '@/components/ui/DraggableBackToTop'
-import { GlobalLinkPreview } from '@/components/ui/GlobalLinkPreview'
 import {
   ThemeCurtain,
   type ThemeCurtainState,
@@ -13,6 +11,17 @@ import {
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { useScrollVisibility } from '@/hooks/useScrollVisibility'
 import { type ThemeMode, useTheme } from '@/hooks/useTheme'
+
+const LazyDraggableBackToTop = lazy(() =>
+  import('@/components/ui/DraggableBackToTop').then((module) => ({
+    default: module.DraggableBackToTop,
+  }))
+)
+const LazyGlobalLinkPreview = lazy(() =>
+  import('@/components/ui/GlobalLinkPreview').then((module) => ({
+    default: module.GlobalLinkPreview,
+  }))
+)
 
 const CURTAIN_TIMING_SCALE = 1.5
 const CURTAIN_ENTER_MS = Math.round(180 * CURTAIN_TIMING_SCALE)
@@ -50,12 +59,15 @@ export function RootLayout() {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false)
   const [isTransitionActive, setIsTransitionActive] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [areClientInteractionsReady, setAreClientInteractionsReady] =
+    useState(false)
   const [themeCurtain, setThemeCurtain] = useState<ThemeCurtainState | null>(
     null
   )
   const themeCurtainTimers = useRef<number[]>([])
   const isHome = pathname === '/'
   const hideBackToTop = pathname === '/'
+  const supportsLinkPreviews = pathname.startsWith('/blog/')
 
   const clearThemeCurtainTimers = () => {
     themeCurtainTimers.current.forEach((timerId) => {
@@ -123,6 +135,11 @@ export function RootLayout() {
     return clearThemeCurtainTimers
   }, [])
 
+  useEffect(() => {
+    if (window.__PRERENDER__) return
+    setAreClientInteractionsReady(true)
+  }, [])
+
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-[var(--page-background)] text-[var(--text-primary)] transition-colors duration-300">
       {/* Sticky NavBar Container - Floating Effect */}
@@ -162,10 +179,18 @@ export function RootLayout() {
 
       <ThemeToggle mode={mode} onModeChange={handleThemeModeChange} />
       <ThemeCurtain state={themeCurtain} />
-      {!hideBackToTop && <DraggableBackToTop />}
+      {areClientInteractionsReady && !hideBackToTop ? (
+        <Suspense fallback={null}>
+          <LazyDraggableBackToTop />
+        </Suspense>
+      ) : null}
       <PageTransitionHost onActiveChange={setIsTransitionActive} />
       <GlobalSearchHost onOpenChange={setIsSearchOpen} />
-      <GlobalLinkPreview />
+      {areClientInteractionsReady && supportsLinkPreviews ? (
+        <Suspense fallback={null}>
+          <LazyGlobalLinkPreview />
+        </Suspense>
+      ) : null}
     </div>
   )
 }

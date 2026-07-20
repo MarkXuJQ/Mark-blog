@@ -5,10 +5,11 @@ import { Seo } from '@/components/seo/Seo'
 import { cn } from '@/lib/utils'
 import { WebsiteCard } from '@/components/ui/WebsiteCard'
 import { Check, Copy, X } from 'lucide-react'
-import '@/assets/styles/about-font.css'
 
 const CONTACT_EMAIL = 'xujianqiao86@gmail.com'
 const CONTACT_QQ = '2960278146'
+const FASCINATE_INLINE_STYLESHEET_URL =
+  'https://fonts.googleapis.com/css2?family=Fascinate+Inline&display=swap'
 type ContactTarget = 'email' | 'qq'
 type CopyState = {
   target: ContactTarget | null
@@ -16,6 +17,8 @@ type CopyState = {
 }
 
 export function About() {
+  useAboutDisplayFont()
+
   const { t } = useTranslation()
   const commentsRef = useRef<HTMLDivElement>(null)
   const [copyState, setCopyState] = useState<CopyState>({
@@ -175,6 +178,25 @@ export function About() {
 
     </>
   )
+}
+
+function useAboutDisplayFont() {
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.__PRERENDER__) return
+
+    const existingLink = document.head.querySelector<HTMLLinkElement>(
+      'link[data-about-font="fascinate-inline"]'
+    )
+    if (existingLink) return
+
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = FASCINATE_INLINE_STYLESHEET_URL
+    link.dataset.aboutFont = 'fascinate-inline'
+    document.head.appendChild(link)
+
+    return () => link.remove()
+  }, [])
 }
 
 function ContactPanel({

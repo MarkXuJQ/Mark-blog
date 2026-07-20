@@ -29,6 +29,7 @@ export function ArchiveLayout() {
   )
 
   useEffect(() => {
+    if (window.__PRERENDER__) return
     setIsMounted(true)
   }, [])
 

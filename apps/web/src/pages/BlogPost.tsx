@@ -261,8 +261,7 @@ export function BlogPost() {
         />
 
         <Link to="/blog" className={styles.simpleReadingBackLink}>
-          {'< '}
-          {t('blog.back')}
+          {`< ${t('blog.back')}`}
         </Link>
 
         <header className={styles.simpleReadingHeader}>
@@ -355,8 +354,7 @@ export function BlogPost() {
                   to="/blog"
                   className="inline-flex w-fit shrink-0 items-center rounded-full border border-white/18 bg-black/18 px-3 py-1.5 text-sm font-medium text-white/95 shadow-sm backdrop-blur transition-colors hover:bg-black/28"
                 >
-                  {'< '}
-                  {t('blog.back')}
+                  {`< ${t('blog.back')}`}
                 </Link>
 
                 {post.tags && post.tags.length > 0 ? (
@@ -366,7 +364,7 @@ export function BlogPost() {
                         key={tag}
                         className="rounded-full border border-white/18 bg-white/12 px-3 py-1 text-xs font-medium text-white/90 backdrop-blur"
                       >
-                        #{tag}
+                        {`#${tag}`}
                       </span>
                     ))}
                   </div>
@@ -446,14 +444,13 @@ export function BlogPost() {
                     className={styles.backLink}
                     data-link-preview="off"
                   >
-                    {'< '}
-                    {t('blog.back')}
+                    {`< ${t('blog.back')}`}
                   </Link>
                   {post.tags && post.tags.length > 0 ? (
                     <div className={styles.plainPostTags}>
                       {post.tags.map((tag) => (
                         <span key={tag} className={styles.plainPostTag}>
-                          #{tag}
+                          {`#${tag}`}
                         </span>
                       ))}
                     </div>

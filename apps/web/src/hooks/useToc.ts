@@ -17,6 +17,8 @@ export function useToc(
   const [activeId, setActiveId] = useState<string>('')
 
   useEffect(() => {
+    if (window.__PRERENDER__) return
+
     let cleanup: (() => void) | undefined
     let observer: MutationObserver | undefined
     let raf = 0

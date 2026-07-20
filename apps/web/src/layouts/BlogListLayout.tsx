@@ -27,6 +27,7 @@ export function BlogListLayout() {
   )
 
   useEffect(() => {
+    if (window.__PRERENDER__) return
     setIsMounted(true)
   }, [])
 

@@ -117,7 +117,8 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
     <header className={styles.header}>
       <Link to="/" className={styles.logo.link}>
         <img
-          src="/favicon.png"
+          src="/favicon-32.png"
+          srcSet="/favicon-32.png 1x, /favicon-64.png 2x"
           alt="Logo"
           width={32}
           height={32}

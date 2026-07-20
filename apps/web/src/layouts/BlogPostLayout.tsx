@@ -51,6 +51,7 @@ export function BlogPostLayout() {
   }, [pathname, hash])
 
   useEffect(() => {
+    if (window.__PRERENDER__) return
     setIsMounted(true)
   }, [])
 

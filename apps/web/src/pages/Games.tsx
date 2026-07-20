@@ -792,6 +792,8 @@ export function Games() {
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    if (window.__PRERENDER__) return
+
     let active = true
 
     setStatus('loading')

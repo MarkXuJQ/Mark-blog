@@ -55,7 +55,8 @@ export function SegmentedToggle<T extends string>({
     items.findIndex((item) => item.value === value)
   )
   const currentItem = items[currentIndex] ?? items[0]
-  const knobWidth = `calc((100% - 0.25rem) / ${Math.max(items.length, 1)})`
+  const itemCount = Math.max(items.length, 1)
+  const knobWidth = `calc(${100 / itemCount}% - ${0.25 / itemCount}rem)`
 
   return (
     <div

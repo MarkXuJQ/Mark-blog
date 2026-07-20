@@ -30,14 +30,19 @@ export function DeferredComments({
   onCommentLoaded,
 }: DeferredCommentsProps) {
   const placeholderRef = useRef<HTMLDivElement>(null)
-  const [shouldRender, setShouldRender] = useState(Boolean(eager))
+  const [shouldRender, setShouldRender] = useState(false)
 
   useEffect(() => {
-    if (shouldRender || eager) {
-      if (eager) {
-        preloadTwikooScript()
-      }
+    if (window.__PRERENDER__) return
+
+    if (shouldRender) {
       return
+    }
+
+    if (eager) {
+      preloadTwikooScript()
+      const timer = window.setTimeout(() => setShouldRender(true), 2500)
+      return () => window.clearTimeout(timer)
     }
 
     const node = placeholderRef.current

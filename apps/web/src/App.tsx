@@ -1,75 +1,90 @@
-import { lazy, Suspense, type ReactNode } from 'react'
+import { Suspense, useEffect, useState, type ReactNode } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { RootLayout } from './layouts/RootLayout'
 import { HomeLayout } from './layouts/HomeLayout'
 import { DeferredVercelInsights } from './components/analytics/DeferredVercelInsights'
+import { createPreloadableComponent } from './utils/preloadableComponent'
 
-const LightboxProvider = lazy(() =>
-  import('./components/ui/Lightbox').then((module) => ({
-    default: module.LightboxProvider,
-  }))
+const LightboxProvider = createPreloadableComponent(() =>
+  import('./components/ui/Lightbox').then((module) => module.LightboxProvider)
 )
-const ArchiveLayout = lazy(() =>
-  import('./layouts/ArchiveLayout').then((module) => ({
-    default: module.ArchiveLayout,
-  }))
+const ArchiveLayout = createPreloadableComponent(() =>
+  import('./layouts/ArchiveLayout').then((module) => module.ArchiveLayout)
 )
-const BlogListLayout = lazy(() =>
-  import('./layouts/BlogListLayout').then((module) => ({
-    default: module.BlogListLayout,
-  }))
+const BlogListLayout = createPreloadableComponent(() =>
+  import('./layouts/BlogListLayout').then((module) => module.BlogListLayout)
 )
-const BlogPostLayout = lazy(() =>
-  import('./layouts/BlogPostLayout').then((module) => ({
-    default: module.BlogPostLayout,
-  }))
+const BlogPostLayout = createPreloadableComponent(() =>
+  import('./layouts/BlogPostLayout').then((module) => module.BlogPostLayout)
 )
-const SmoothScrollProvider = lazy(() =>
-  import('./components/providers/SmoothScrollProvider').then((module) => ({
-    default: module.SmoothScrollProvider,
-  }))
+const SmoothScrollProvider = createPreloadableComponent(() =>
+  import('./components/providers/SmoothScrollProvider').then(
+    (module) => module.SmoothScrollProvider
+  )
 )
-const Home = lazy(() =>
-  import('./pages/Home').then((module) => ({ default: module.Home }))
+const Home = createPreloadableComponent(() =>
+  import('./pages/Home').then((module) => module.Home)
 )
-const Blog = lazy(() =>
-  import('./pages/Blog').then((module) => ({ default: module.Blog }))
+const Blog = createPreloadableComponent(() =>
+  import('./pages/Blog').then((module) => module.Blog)
 )
-const BlogPost = lazy(() =>
-  import('./pages/BlogPost').then((module) => ({ default: module.BlogPost }))
+const BlogPost = createPreloadableComponent(() =>
+  import('./pages/BlogPost').then((module) => module.BlogPost)
 )
-const Timeline = lazy(() =>
-  import('./pages/Timeline').then((module) => ({ default: module.Timeline }))
+const Timeline = createPreloadableComponent(() =>
+  import('./pages/Timeline').then((module) => module.Timeline)
 )
-const Archive = lazy(() =>
-  import('./pages/Archive').then((module) => ({ default: module.Archive }))
+const Archive = createPreloadableComponent(() =>
+  import('./pages/Archive').then((module) => module.Archive)
 )
-const About = lazy(() =>
-  import('./pages/About').then((module) => ({ default: module.About }))
+const About = createPreloadableComponent(() =>
+  import('./pages/About').then((module) => module.About)
 )
-const Life = lazy(() =>
-  import('./pages/Life').then((module) => ({ default: module.Life }))
+const Life = createPreloadableComponent(() =>
+  import('./pages/Life').then((module) => module.Life)
 )
-const Movies = lazy(() =>
-  import('./pages/Movies').then((module) => ({ default: module.Movies }))
+const Movies = createPreloadableComponent(() =>
+  import('./pages/Movies').then((module) => module.Movies)
 )
-const MovieReviewPost = lazy(() =>
-  import('./pages/MovieReviewPost').then((module) => ({
-    default: module.MovieReviewPost,
-  }))
+const MovieReviewPost = createPreloadableComponent(() =>
+  import('./pages/MovieReviewPost').then((module) => module.MovieReviewPost)
 )
-const Games = lazy(() =>
-  import('./pages/Games').then((module) => ({ default: module.Games }))
+const Games = createPreloadableComponent(() =>
+  import('./pages/Games').then((module) => module.Games)
 )
-const Search = lazy(() =>
-  import('./pages/Search').then((module) => ({ default: module.Search }))
+const Search = createPreloadableComponent(() =>
+  import('./pages/Search').then((module) => module.Search)
 )
-const Links = lazy(() =>
-  import('./pages/Links').then((module) => ({ default: module.Links }))
+const Links = createPreloadableComponent(() =>
+  import('./pages/Links').then((module) => module.Links)
 )
-const NotFound = lazy(() =>
-  import('./pages/NotFound').then((module) => ({ default: module.NotFound }))
+const NotFound = createPreloadableComponent(() =>
+  import('./pages/NotFound').then((module) => module.NotFound)
 )
+
+// Hydration needs the same preload registry used by these route components.
+// eslint-disable-next-line react-refresh/only-export-components
+export async function preloadCurrentRoute(pathname: string) {
+  const routeComponents = (() => {
+    if (pathname === '/') return [SmoothScrollProvider, Home]
+    if (pathname === '/blog') return [BlogListLayout, Blog]
+    if (pathname.startsWith('/blog/')) {
+      return [BlogPostLayout, LightboxProvider, BlogPost]
+    }
+    if (pathname === '/archive') return [ArchiveLayout, Archive]
+    if (pathname === '/links') return [ArchiveLayout, Links]
+    if (pathname === '/timeline') return [Timeline]
+    if (pathname === '/search') return [Search]
+    if (pathname === '/about') return [About]
+    if (pathname === '/life') return [LightboxProvider, Life]
+    if (pathname === '/movies') return [Movies]
+    if (pathname.startsWith('/movies/reviews/')) return [MovieReviewPost]
+    if (pathname === '/games') return [Games]
+    return [NotFound]
+  })()
+
+  await Promise.all(routeComponents.map((component) => component.preload()))
+}
 
 function RouteLoading() {
   return (
@@ -83,6 +98,17 @@ function RouteLoading() {
 }
 
 function LazyRoute({ children }: { children: ReactNode }) {
+  const [shouldUseSuspense, setShouldUseSuspense] = useState(
+    () => !window.__HYDRATING_PRERENDER__
+  )
+
+  useEffect(() => {
+    window.__HYDRATING_PRERENDER__ = false
+    setShouldUseSuspense(true)
+  }, [])
+
+  if (!shouldUseSuspense) return children
+
   return <Suspense fallback={<RouteLoading />}>{children}</Suspense>
 }
 

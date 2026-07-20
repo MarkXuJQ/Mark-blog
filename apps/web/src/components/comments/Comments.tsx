@@ -63,6 +63,7 @@ export function Comments({
 
     let cancelled = false
     let fallbackTimer: number | null = null
+    let initTimer: number | null = null
     let pollTimer: number | null = null
     let observer: MutationObserver | null = null
     const host = mountHostRef.current
@@ -131,7 +132,9 @@ export function Comments({
       }
     }
 
-    void initTwikoo()
+    initTimer = window.setTimeout(() => {
+      void initTwikoo()
+    }, 800)
 
     return () => {
       cancelled = true
@@ -141,6 +144,9 @@ export function Comments({
       }
       if (fallbackTimer !== null) {
         window.clearTimeout(fallbackTimer)
+      }
+      if (initTimer !== null) {
+        window.clearTimeout(initTimer)
       }
       host.replaceChildren()
     }

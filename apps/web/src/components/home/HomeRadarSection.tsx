@@ -180,7 +180,14 @@ function RadarAxisMarker({
 }) {
   const isVertical = side === 'top' || side === 'bottom'
   const isNumberFirst = side === 'top' || side === 'left'
-  const markerTick = <span className={styles.axisMarkerTick} />
+  const markerTick = (
+    <span
+      className={cn(
+        styles.axisMarkerTick,
+        isVertical && styles.axisMarkerTickVertical
+      )}
+    />
+  )
   const markerLabel = <span>{label}</span>
 
   return (
@@ -1313,6 +1320,7 @@ const styles = {
     'absolute z-[5] flex items-center gap-2 font-[var(--font-pixel)] text-[0.6rem] uppercase text-slate-500/72 dark:text-white/32',
   axisMarkerVertical: 'flex-col',
   axisMarkerTick: 'h-px w-4 bg-slate-400/58 dark:bg-white/24',
+  axisMarkerTickVertical: 'h-4 w-px',
   ring: 'pointer-events-none absolute rounded-full border border-slate-300/62',
   outerRing:
     'border-dashed border-slate-300/80 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]',

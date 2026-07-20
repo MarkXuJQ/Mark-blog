@@ -39,11 +39,7 @@ function ProfileContent() {
     ],
     [i18n.language, t]
   )
-  const [signatureIndex, setSignatureIndex] = useState(() =>
-    signatureOptions.length > 0
-      ? Math.floor(Math.random() * signatureOptions.length)
-      : 0
-  )
+  const [signatureIndex, setSignatureIndex] = useState(0)
   const signature =
     signatureOptions[signatureIndex] ?? signatureOptions[0] ?? ''
   const normalizedSignature = (() => {
