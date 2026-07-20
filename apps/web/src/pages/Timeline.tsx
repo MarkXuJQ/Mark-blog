@@ -343,9 +343,6 @@ const styles = {
     'absolute inset-x-0 -bottom-1 h-0.5 rounded-full bg-slate-900 dark:bg-slate-100',
   tabRule: 'h-px w-full bg-slate-200 dark:bg-slate-800',
   section: 'space-y-6',
-  sectionHeader: 'space-y-2',
-  sectionTitle: 'text-xl font-semibold text-slate-900 dark:text-slate-100',
-  sectionDesc: 'text-sm text-slate-500 dark:text-slate-400',
   timeline:
     'relative border-l-2 border-slate-200 pl-8 dark:border-slate-800 ml-4 sm:ml-0',
   eventWrapper: 'relative mb-8 last:mb-0',

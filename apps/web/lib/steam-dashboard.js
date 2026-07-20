@@ -1,3 +1,5 @@
+import process from 'node:process'
+
 const STEAM_API_BASE_URL = 'https://api.steampowered.com'
 const STEAM_STORE_BASE_URL = 'https://store.steampowered.com'
 const DEFAULT_STEAM_PROFILE_ID = '76561199085291248'
@@ -502,7 +504,8 @@ function isPlaceholderGameName(value) {
 function stripLegacyTimeToBeat(game) {
   if (!game) return game
 
-  const { timeToBeat: _legacyTimeToBeat, ...nextGame } = game
+  const nextGame = { ...game }
+  delete nextGame.timeToBeat
   return nextGame
 }
 
@@ -674,12 +677,10 @@ export async function createSteamLiveDashboard(
   config = getSteamConfig()
 ) {
   const { apiKey, steamId } = ensureSteamConfig(config)
-  const {
-    benchmarkSource: _legacyBenchmarkSource,
-    benchmarkGeneratedAt: _legacyBenchmarkGeneratedAt,
-    benchmarkMatchedCount: _legacyBenchmarkMatchedCount,
-    ...baseLibrary
-  } = staticLibrary || {}
+  const baseLibrary = { ...(staticLibrary || {}) }
+  delete baseLibrary.benchmarkSource
+  delete baseLibrary.benchmarkGeneratedAt
+  delete baseLibrary.benchmarkMatchedCount
   const staticGames = Array.isArray(staticLibrary?.games) ? staticLibrary.games : []
   const staticFeatured = Array.isArray(staticLibrary?.featured)
     ? staticLibrary.featured

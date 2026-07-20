@@ -119,7 +119,7 @@ function HomeDeferredScenes({
       {shouldRenderWidgetStack ? (
         <Suspense fallback={<HomeWidgetStackPlaceholder />}>
           <div className="snap-start">
-            <LazyHomeWidgetStackSection avatarSrc={avatarSrc} />
+            <LazyHomeWidgetStackSection />
           </div>
         </Suspense>
       ) : (

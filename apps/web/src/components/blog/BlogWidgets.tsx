@@ -343,14 +343,6 @@ const styles = {
   profileSignature:
     'text-sm leading-relaxed text-slate-600 dark:text-slate-300',
 
-  // Search
-  searchContainer: 'relative flex items-center',
-  searchIcon: 'absolute left-3 text-slate-400',
-  searchInput: cn(
-    'w-full rounded-full border border-slate-200 bg-slate-50 px-4 py-2 pl-10 text-sm outline-none transition-all',
-    'placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20',
-    'dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:border-blue-400'
-  ),
   socialRow: 'mt-4 flex justify-center gap-4',
   socialBtn: 'transition-colors hover:text-slate-900 dark:hover:text-slate-200',
 
@@ -358,14 +350,6 @@ const styles = {
   widgetHeader:
     'mb-4 flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-800',
   widgetTitle: 'font-medium text-slate-800 dark:text-slate-100',
-
-  // Archive
-  archiveYearGroup:
-    'flex items-center justify-between rounded-lg p-2 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50',
-  archiveYearHeader: 'flex w-full items-center justify-between',
-  archiveYear: 'font-medium text-slate-700 dark:text-slate-300',
-  archiveCount:
-    'rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-800 dark:text-slate-400',
 
   // Stats
   statsGrid: 'grid grid-cols-1 gap-4',

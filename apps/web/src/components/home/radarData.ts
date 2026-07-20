@@ -172,28 +172,34 @@ export const NODE_SCAN_GLOW_ANGLE_WINDOW = 26
 export const SIGNAL_DOT_SIZE_PX = 44
 export const SIGNAL_CARD_SIZE_PX = 212
 export const SIGNAL_DOT_SIZE_STEP_PX = 8
+const RADAR_AXIS_EDGE_INSET = '3.5%'
+const RADAR_AXIS_EDGE_OPPOSITE = `calc(100% - ${RADAR_AXIS_EDGE_INSET})`
 export const RADAR_AXIS_MARKERS = [
   {
+    side: 'top',
     label: '000',
     left: '50%',
-    top: '3.5%',
+    top: RADAR_AXIS_EDGE_INSET,
     className: '-translate-x-1/2 -translate-y-full',
   },
   {
+    side: 'right',
     label: '090',
-    left: '96.4%',
+    left: RADAR_AXIS_EDGE_OPPOSITE,
     top: '50%',
-    className: 'translate-x-full -translate-y-1/2',
+    className: '-translate-y-1/2',
   },
   {
+    side: 'bottom',
     label: '180',
     left: '50%',
-    top: '96.4%',
-    className: '-translate-x-1/2 translate-y-full',
+    top: RADAR_AXIS_EDGE_OPPOSITE,
+    className: '-translate-x-1/2',
   },
   {
+    side: 'left',
     label: '270',
-    left: '3.6%',
+    left: RADAR_AXIS_EDGE_INSET,
     top: '50%',
     className: '-translate-x-full -translate-y-1/2',
   },

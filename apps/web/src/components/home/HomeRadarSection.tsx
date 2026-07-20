@@ -166,24 +166,35 @@ function RadarMetaItem({
 }
 
 function RadarAxisMarker({
+  side,
   label,
   left,
   top,
   className,
 }: {
+  side: 'top' | 'right' | 'bottom' | 'left'
   label: string
   left: string
   top: string
   className: string
 }) {
+  const isVertical = side === 'top' || side === 'bottom'
+  const isNumberFirst = side === 'top' || side === 'left'
+  const markerTick = <span className={styles.axisMarkerTick} />
+  const markerLabel = <span>{label}</span>
+
   return (
     <div
       aria-hidden="true"
-      className={cn(styles.axisMarker, className)}
+      className={cn(
+        styles.axisMarker,
+        isVertical && styles.axisMarkerVertical,
+        className
+      )}
       style={{ left, top }}
     >
-      <span className={styles.axisMarkerTick} />
-      <span>{label}</span>
+      {isNumberFirst ? markerLabel : markerTick}
+      {isNumberFirst ? markerTick : markerLabel}
     </div>
   )
 }
@@ -228,12 +239,6 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
 
   const isRadarPaused =
     isRadarManuallyPaused || !isPageVisible || !isRadarSectionVisible
-  const introEyebrow = isZh
-    ? '个人雷达 / Curated orbit'
-    : 'Personal radar / Curated orbit'
-  const introDescription = isZh
-    ? '把我喜欢的博客、网页和有意思的网络角落整理成一个小雷达'
-    : 'A slow personal scan of the blogs, experiments, and web corners I keep returning to.'
   const signalCount = String(RADAR_NODES.length).padStart(2, '0')
   const activeSignalSourceNodes = RADAR_NODES.filter(
     (node) => node.category === activeSignalCategory
@@ -609,10 +614,6 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
             transform: `translateY(${(1 - introReveal) * 18}px)`,
           }}
         >
-          <div className={styles.introEyebrowRow}>
-            <div aria-hidden="true" className={styles.introEyebrowRule} />
-            <p className={styles.introEyebrow}>{introEyebrow}</p>
-          </div>
           <h2
             className={cn(
               'heading-display',
@@ -622,7 +623,6 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
           >
             {isZh ? '发现的博客和网站' : 'Blogs and Sites I Discovered'}
           </h2>
-          <p className={styles.introDescription}>{introDescription}</p>
           <div className={styles.metaRow}>
             <div ref={signalTriggerRef} className={styles.metaPopoverAnchor}>
               <RadarMetaItem
@@ -689,6 +689,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
             {RADAR_AXIS_MARKERS.map((marker) => (
               <RadarAxisMarker
                 key={marker.label}
+                side={marker.side}
                 label={marker.label}
                 left={marker.left}
                 top={marker.top}
@@ -1240,16 +1241,9 @@ const styles = {
     'pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(148,163,184,0.07)_0px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.06)_0px,transparent_1px)] [background-size:24px_24px]',
   introPanel:
     'pointer-events-none absolute left-6 top-[12svh] z-[110] max-w-[min(34rem,calc(100vw-3rem))] space-y-4 sm:left-8 sm:top-[13svh] sm:max-w-[min(34rem,calc(100vw-4rem))] sm:space-y-5 lg:left-12 lg:top-[14svh] xl:left-16 2xl:left-24',
-  introEyebrowRow: 'flex items-center gap-3',
-  introEyebrowRule:
-    'h-px w-12 bg-[linear-gradient(90deg,rgba(15,23,42,0.18),rgba(15,23,42,0))] dark:bg-[linear-gradient(90deg,rgba(255,255,255,0.2),rgba(255,255,255,0))]',
-  introEyebrow:
-    'font-[var(--font-pixel)] text-[0.68rem] uppercase tracking-[0.26em] text-slate-500/74 dark:text-white/42',
   introTitle:
     'max-w-[15ch] text-[1.55rem] leading-[1.02] text-balance text-slate-950 [text-shadow:0_10px_28px_rgba(255,255,255,0.82)] sm:text-[1.95rem] dark:text-white dark:[text-shadow:0_14px_32px_rgba(2,6,23,0.68)]',
   introTitleNoWrap: 'max-w-none whitespace-nowrap text-wrap-normal',
-  introDescription:
-    'max-w-[34ch] text-sm leading-6 text-slate-600/84 dark:text-white/58 sm:text-[0.95rem]',
   metaRow: 'flex flex-wrap items-baseline gap-x-5 gap-y-3',
   metaPopoverAnchor: 'relative z-[120] pointer-events-auto',
   metaItem:
@@ -1261,7 +1255,7 @@ const styles = {
   metaLabel:
     'text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-slate-500/78 dark:text-white/40',
   signalSourceList:
-    'pointer-events-auto z-[140] rounded-[24px] bg-white/88 p-3 shadow-[0_28px_64px_-36px_rgba(15,23,42,0.34)] backdrop-blur-xl dark:bg-slate-950/84',
+    'pointer-events-auto z-[140] rounded-[24px] bg-white/88 p-3 shadow-[0_28px_64px_-36px_rgba(15,23,42,0.34)] backdrop-blur-xl dark:bg-[#17191c]',
   signalSourceListHeader: 'flex items-center justify-between gap-4 px-1 pb-2',
   signalSourceListTitle:
     'text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-slate-500/82 dark:text-white/44',
@@ -1316,7 +1310,8 @@ const styles = {
     'relative h-[72%] w-[72%] overflow-hidden rounded-full border border-slate-200/80 bg-white/72 shadow-[0_18px_34px_-24px_rgba(15,23,42,0.48)] ring-1 ring-white/70 dark:border-white/24 dark:bg-slate-950/54 dark:shadow-[0_18px_34px_-24px_rgba(2,6,23,0.84)] dark:ring-white/10',
   avatarAnchorImage: 'h-full w-full scale-[1.04] object-cover object-center',
   axisMarker:
-    'absolute z-[5] flex items-center gap-2 font-[var(--font-pixel)] text-[0.6rem] uppercase tracking-[0.24em] text-slate-500/72 dark:text-white/32',
+    'absolute z-[5] flex items-center gap-2 font-[var(--font-pixel)] text-[0.6rem] uppercase text-slate-500/72 dark:text-white/32',
+  axisMarkerVertical: 'flex-col',
   axisMarkerTick: 'h-px w-4 bg-slate-400/58 dark:bg-white/24',
   ring: 'pointer-events-none absolute rounded-full border border-slate-300/62',
   outerRing:

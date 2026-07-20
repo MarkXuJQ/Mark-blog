@@ -204,67 +204,7 @@ function useHomeWidgetStackScene({
   }
 }
 
-function HomeTravelAvatarKeyframe({
-  avatarSrc,
-  isZh,
-}: {
-  avatarSrc: string
-  isZh: boolean
-}) {
-  return (
-    <div aria-hidden="true" className={styles.keyframeScene}>
-      <div className={styles.keyframeShell}>
-        <div className={styles.keyframeStage}>
-          <div className={styles.keyframeHeaderRow}>
-            <div className={styles.keyframeCopy}>
-              <p className={styles.keyframeEyebrow}>
-                {isZh
-                  ? '旅行足迹 / Travel footprint'
-                  : 'Travel footprint / Atlas'}
-              </p>
-              <h2 className={styles.keyframeTitle}>
-                {isZh ? '去过的地方' : "Places I've Been"}
-              </h2>
-            </div>
-          </div>
-          <div className={styles.keyframeMapStage}>
-            <div className={styles.keyframeMapViewport}>
-              <div className={styles.keyframeAnchorLayer}>
-                <div className={styles.keyframeAnchorCell}>
-                  <div className={styles.keyframeAnchorPortrait}>
-                    <div
-                      aria-hidden="true"
-                      className={styles.keyframeAnchorGlow}
-                    />
-                    <div className={styles.keyframeAnchorFrame}>
-                      <div className={styles.keyframeAnchorMask}>
-                        <img
-                          src={avatarSrc}
-                          alt=""
-                          loading="eager"
-                          decoding="async"
-                          className={styles.keyframeAnchorImage}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-interface HomeWidgetStackSectionProps {
-  avatarSrc: string
-}
-
-export function HomeWidgetStackSection({
-  avatarSrc,
-}: HomeWidgetStackSectionProps) {
+export function HomeWidgetStackSection() {
   const { i18n } = useTranslation()
   const isZh = i18n.language?.startsWith('zh')
   const prefersReducedMotion = Boolean(useReducedMotion())
@@ -325,11 +265,6 @@ export function HomeWidgetStackSection({
                       aria-hidden="true"
                       className={styles.stageRingSecondary}
                     />
-                    <HomeTravelAvatarKeyframe
-                      avatarSrc={avatarSrc}
-                      isZh={Boolean(isZh)}
-                    />
-
                     <div className={styles.pluginWrap}>
                       <TravelFootprintPlugin
                         revealProgress={widgetRevealProgress}
@@ -365,32 +300,4 @@ const styles = {
     'relative min-h-full pt-[10svh] pb-[18svh] sm:pt-[12svh] sm:pb-[20svh] lg:pt-[13svh] lg:pb-[22svh] will-change-transform',
   contentViewportInner: 'relative',
   pluginWrap: 'relative z-10',
-  keyframeScene:
-    'pointer-events-none invisible absolute inset-0 z-0 select-none',
-  keyframeShell: 'mx-auto w-full max-w-[78rem] overflow-visible',
-  keyframeStage: 'relative overflow-visible',
-  keyframeHeaderRow: 'relative z-[3] pt-0 sm:pt-1 lg:pt-2',
-  keyframeCopy:
-    'relative z-[3] max-w-3xl -translate-x-0.5 -translate-y-0.5 sm:-translate-x-1 sm:-translate-y-1 lg:-translate-x-2 lg:-translate-y-1.5',
-  keyframeEyebrow:
-    'font-[var(--font-pixel)] text-[0.72rem] uppercase tracking-[0.28em] text-cyan-100/70 drop-shadow-[0_10px_24px_rgba(5,9,19,0.45)]',
-  keyframeTitle:
-    'mt-3 max-w-[18ch] text-3xl font-semibold leading-[1.02] text-white text-balance drop-shadow-[0_18px_34px_rgba(5,9,19,0.48)] sm:text-[3.35rem] lg:text-[4rem]',
-  keyframeMapStage:
-    'relative z-[2] mx-auto mt-3 w-full max-w-[58rem] overflow-visible sm:mt-5 lg:mt-6 lg:max-w-[62rem]',
-  keyframeMapViewport:
-    'relative aspect-[2.34/1] w-full overflow-visible sm:aspect-[2.52/1]',
-  keyframeAnchorLayer:
-    'absolute bottom-[5.5%] left-[1.5%] z-[4] w-auto justify-start pt-0 lg:pt-0',
-  keyframeAnchorCell:
-    'relative z-[3] flex w-full justify-center self-start pt-1 will-change-transform lg:max-w-[22rem] lg:pt-6',
-  keyframeAnchorPortrait:
-    'relative mx-0 w-full max-w-[6.75rem] sm:max-w-[8rem] lg:max-w-[9rem]',
-  keyframeAnchorGlow:
-    'pointer-events-none absolute inset-[-22%] bg-[radial-gradient(circle_at_50%_18%,rgba(125,211,252,0.28)_0%,rgba(125,211,252,0.1)_32%,rgba(125,211,252,0)_72%)] blur-3xl',
-  keyframeAnchorFrame:
-    'relative aspect-square w-full overflow-hidden rounded-[24px] bg-slate-950/56 p-2 shadow-[0_22px_48px_-30px_rgba(0,0,0,0.74)] backdrop-blur-sm',
-  keyframeAnchorMask:
-    'h-full w-full overflow-hidden rounded-[22px] bg-[#0d1319]',
-  keyframeAnchorImage: 'h-full w-full scale-[1.04] object-cover object-center',
 }

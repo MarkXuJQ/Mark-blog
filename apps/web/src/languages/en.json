@@ -248,17 +248,11 @@
       "playedGamesHint": "{{remaining}} games are still untouched."
     },
     "featured": {
-      "eyebrow": "Featured",
       "title": "Most Played",
-      "description": "The library's heaviest hitters.",
-      "reviewPositive": "{{percent}}% positive",
-      "reviewCount": "{{count}} reviews",
-      "noReview": "No review summary available",
       "lifetimeHours": "Lifetime",
       "achievements": "Achievements",
       "noAchievements": "No achievements",
-      "recentHours": "Last 2 Weeks",
-      "releaseDate": "Released: {{date}}",
+      "releaseDate": "Release date",
       "noData": "There is not enough play history yet to build the featured shelf."
     },
     "library": {
