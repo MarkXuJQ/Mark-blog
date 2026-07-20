@@ -41,6 +41,12 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://markxu.icu/blog/Wuhan-food-walk-note1-cn</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://markxu.icu/blog/tcp-slow-start-cwnd-growth-cn</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>

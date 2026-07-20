@@ -1,2 +1,3 @@
+export * from './decorateArticleContent'
 export * from './decorateArticleLinkPreviews'
-export * from './decorateArticleReferences'
+export * from './widgets'

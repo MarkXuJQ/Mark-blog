@@ -4,10 +4,9 @@ import { useTranslation } from 'react-i18next'
 import { Calendar, Star } from 'lucide-react'
 import { Seo } from '@/components/seo/Seo'
 import { Card } from '@/components/ui/Card'
-import { decorateArticleLinkPreviews } from '@/lib/article'
+import { decorateArticleContent } from '@/lib/article'
 import { getMovieReviewBySlug } from '@/lib/content'
 import { cn } from '@/lib/utils'
-import { rewriteHtmlImageSrc } from '@/utils/image'
 
 export function MovieReviewPost() {
   const { slug } = useParams()
@@ -18,10 +17,7 @@ export function MovieReviewPost() {
       return ''
     }
 
-    return decorateArticleLinkPreviews(
-      rewriteHtmlImageSrc(review.content),
-      i18n.language
-    )
+    return decorateArticleContent(review.content, i18n.language)
   }, [i18n.language, review])
 
   if (!review) {

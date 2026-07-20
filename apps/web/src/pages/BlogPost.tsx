@@ -30,10 +30,7 @@ import { Card } from '@/components/ui/Card'
 import { useCodeBlockEnhancements } from '@/hooks/useCodeBlockEnhancements'
 import { useImageLightbox } from '@/hooks/useImageLightbox'
 import { usePhotoScroll } from '@/hooks/usePhotoScroll'
-import {
-  decorateArticleLinkPreviews,
-  decorateArticleReferences,
-} from '@/lib/article'
+import { decorateArticleContent } from '@/lib/article'
 import {
   getAdjacentPosts,
   getPostBySlug,
@@ -48,7 +45,6 @@ import {
   extractOptimizedImageUrlsFromHtml,
   getImageUrl,
   getOptimizedImageUrl,
-  rewriteHtmlImageSrc,
 } from '@/utils/image'
 import type { BlogPostOutletContext } from '@/layouts/BlogPostLayout'
 
@@ -68,13 +64,7 @@ export function BlogPost() {
       return ''
     }
 
-    return decorateArticleLinkPreviews(
-      decorateArticleReferences(
-        rewriteHtmlImageSrc(post.content),
-        i18n.language
-      ),
-      i18n.language
-    )
+    return decorateArticleContent(post.content, i18n.language)
   }, [i18n.language, post])
   const hasMath = contentHtml.includes('class="katex')
 
