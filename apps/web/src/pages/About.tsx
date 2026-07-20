@@ -5,6 +5,7 @@ import { Seo } from '@/components/seo/Seo'
 import { cn } from '@/lib/utils'
 import { WebsiteCard } from '@/components/ui/WebsiteCard'
 import { Check, Copy, X } from 'lucide-react'
+import '@/assets/styles/about-font.css'
 
 const CONTACT_EMAIL = 'xujianqiao86@gmail.com'
 const CONTACT_QQ = '2960278146'

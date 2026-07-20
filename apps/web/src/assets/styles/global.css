@@ -1,6 +1,4 @@
 @import 'tailwindcss';
-@import 'katex/dist/katex.min.css';
-@import 'markdown-it-texmath/css/texmath.css';
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -1470,6 +1468,17 @@ i {
     animation: none;
     filter: none;
   }
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../fonts/Montserrat-Subset.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-024F, U+1E00-1EFF, U+2000-206F, U+20A0-20CF, U+2100-214F,
+    U+2190-22FF, U+FEFF, U+FFFD;
 }
 
 @font-face {

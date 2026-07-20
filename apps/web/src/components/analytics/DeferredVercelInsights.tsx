@@ -12,6 +12,7 @@ type IdleCapableWindow = Window & {
 }
 
 const ANALYTICS_LOAD_TIMEOUT_MS = 3000
+const LOCAL_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1'])
 
 export function DeferredVercelInsights() {
   const [AnalyticsComponent, setAnalyticsComponent] = useState<ComponentType | null>(null)
@@ -21,6 +22,7 @@ export function DeferredVercelInsights() {
   useEffect(() => {
     if (typeof window === 'undefined') return
     if (!import.meta.env.PROD) return
+    if (LOCAL_HOSTNAMES.has(window.location.hostname)) return
     if (window.__PRERENDER__) return
 
     let cancelled = false

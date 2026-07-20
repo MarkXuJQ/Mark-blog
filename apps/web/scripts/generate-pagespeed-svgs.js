@@ -166,6 +166,7 @@ async function runLighthouse({ url, preset, jsonPath }) {
 async function main() {
   const args = parseArgs(process.argv.slice(2))
   const url = args.url || 'https://markxu.icu'
+  const displayUrl = args['display-url'] || url
   const outDir = args.outDir
     ? path.resolve(process.cwd(), args.outDir)
     : path.resolve(__dirname, '../../../badges')
@@ -189,13 +190,13 @@ async function main() {
   const desktopSvg = renderBadgeSvg({
     title: 'PageSpeed (Lighthouse)',
     subtitle: 'Desktop',
-    url,
+    url: displayUrl,
     scores: desktopScores,
   })
   const mobileSvg = renderBadgeSvg({
     title: 'PageSpeed (Lighthouse)',
     subtitle: 'Mobile',
-    url,
+    url: displayUrl,
     scores: mobileScores,
   })
 
@@ -203,7 +204,7 @@ async function main() {
   fs.writeFileSync(path.join(outDir, 'pagespeed-mobile.svg'), mobileSvg)
 
   const summary = {
-    url,
+    url: displayUrl,
     generatedAt: new Date().toISOString(),
     desktop: desktopScores,
     mobile: mobileScores,

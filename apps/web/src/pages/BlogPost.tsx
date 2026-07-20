@@ -76,6 +76,13 @@ export function BlogPost() {
       i18n.language
     )
   }, [i18n.language, post])
+  const hasMath = contentHtml.includes('class="katex')
+
+  useEffect(() => {
+    if (!hasMath) return
+    void import('@/assets/styles/article-math.css')
+  }, [hasMath])
+
   const contentRef = useImageLightbox([contentHtml, simpleMode])
   useCodeBlockEnhancements(
     contentRef,
