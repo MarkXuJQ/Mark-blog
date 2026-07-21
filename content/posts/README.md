@@ -134,6 +134,35 @@ image: "https://img.markxu.icu/example.jpg"
 
 支持的面板属性为 `title`、`description` 和 `eyebrow`；链接说明通过 `data-note` 提供。
 
+## 旅行路线地图
+
+`PhotoRoute` 用于在游记中展示由照片定位生成的交互路线。路线 JSON 放在
+`content/travel/routes`，文章只引用不带扩展名的稳定文件名：
+
+```html
+<PhotoRoute
+  route="wuhan1"
+  title="武汉的一天"
+  desc="从照片定位整理的武汉探店路线与停留点。"
+/>
+```
+
+支持的属性：
+
+- `route`：必填，对应 `content/travel/routes/<route>.json`。
+- `title`：可选，覆盖 JSON 内的路线标题。
+- `desc`：可选，显示在标题和路线统计之间。
+
+预渲染时会从 JSON 生成日期、距离、路径点和 Stop 数量；路线接近视口时才会加载
+MapLibre 和地图样式。普通文章不会加载地图代码。
+`pnpm --dir apps/web dev` 和 `pnpm --dir apps/web build` 会自动刷新轻量路线摘要；
+只需要单独刷新时可运行 `pnpm --dir apps/web generate:photo-routes`。
+地图支持拖动和触摸缩放；普通滚轮继续滚动文章，`Command + 滚轮` 才缩放地图。
+点击 Stop 会原地打开详情卡，不会重新居中地图。
+
+路线 JSON 会公开精确坐标。提交前必须检查住宅、酒店、工作地点等不希望公开的位置。
+大体积视频和图片仍放图床，路线 JSON 保留在 Git 中，方便跟随文章审查和回滚。
+
 ## 代码块
 
 使用带语言名称的 Markdown 围栏代码块：

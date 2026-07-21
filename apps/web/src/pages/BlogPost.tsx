@@ -30,10 +30,12 @@ import { Card } from '@/components/ui/Card'
 import { useArticleCodeBlockEnhancements } from '@/hooks/useArticleCodeBlockEnhancements'
 import { useArticleImageLightbox } from '@/hooks/useArticleImageLightbox'
 import { useArticlePhotoScroll } from '@/hooks/useArticlePhotoScroll'
+import { useArticlePhotoRoutes } from '@/hooks/useArticlePhotoRoutes'
 import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
 import {
   getAdjacentPosts,
   getPostBySlug,
+  getPostLanguageBySlug,
   getSharedPostCommentPath,
 } from '@/lib/content/posts'
 import {
@@ -56,6 +58,9 @@ export function BlogPost() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const post = slug ? getPostBySlug(slug, i18n.language) : undefined
+  const articleLanguage = slug
+    ? (getPostLanguageBySlug(slug, i18n.language) ?? i18n.language)
+    : i18n.language
   const adjacentPosts = slug
     ? getAdjacentPosts(slug, i18n.language)
     : { prev: undefined, next: undefined }
@@ -65,8 +70,8 @@ export function BlogPost() {
       return ''
     }
 
-    return decorateArticleContent(post.content, i18n.language)
-  }, [i18n.language, post])
+    return decorateArticleContent(post.content, articleLanguage)
+  }, [articleLanguage, post])
   const hasMath = contentHtml.includes('class="katex')
 
   useEffect(() => {
@@ -89,6 +94,10 @@ export function BlogPost() {
     `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`
   )
   useArticlePhotoScroll(
+    contentRef,
+    `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`
+  )
+  useArticlePhotoRoutes(
     contentRef,
     `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`
   )
@@ -198,7 +207,7 @@ export function BlogPost() {
   const postImageUrl = toAbsoluteUrl(imageSource, siteUrl)
   const publishedAt = toIsoDateTime(post.date)
   const modifiedAt = toIsoDateTime(post.updated || post.date)
-  const schemaLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
+  const schemaLanguage = articleLanguage.startsWith('zh') ? 'zh-CN' : 'en-US'
   const blogPostingSchema: JsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',

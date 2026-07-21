@@ -162,6 +162,44 @@ function vercelApiDevPlugin(): Plugin {
   }
 }
 
+function prerenderedRoutePreviewPlugin(): Plugin {
+  const distDirectory = path.resolve(__dirname, 'dist')
+
+  return {
+    name: 'prerendered-route-preview',
+    configurePreviewServer(server) {
+      server.middlewares.use((request, _response, next) => {
+        if (!request.url) return next()
+
+        const url = new URL(request.url, 'http://127.0.0.1')
+        if (url.pathname === '/' || url.pathname.endsWith('/')) return next()
+
+        let routePath: string
+        try {
+          routePath = decodeURIComponent(url.pathname).replace(/^\/+/, '')
+        } catch {
+          return next()
+        }
+
+        const routeIndex = path.resolve(
+          distDirectory,
+          routePath,
+          'index.html'
+        )
+        if (
+          !routeIndex.startsWith(`${distDirectory}${path.sep}`) ||
+          !fs.existsSync(routeIndex)
+        ) {
+          return next()
+        }
+
+        request.url = `${url.pathname}/${url.search}`
+        next()
+      })
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -169,6 +207,7 @@ export default defineConfig({
     tailwindcss(),
     markdown({ mode: [Mode.HTML, Mode.TOC], markdownIt }),
     vercelApiDevPlugin(),
+    prerenderedRoutePreviewPlugin(),
   ],
   resolve: {
     alias: {

@@ -187,6 +187,14 @@ export function getPostBySlug(
   return findPostMatch(slug, language, options)?.post
 }
 
+export function getPostLanguageBySlug(
+  slug: string,
+  language?: string,
+  options?: { fallback?: boolean }
+): PostLanguage | undefined {
+  return findPostMatch(slug, language, options)?.language
+}
+
 export function getAdjacentPosts(
   slug: string,
   language?: string,

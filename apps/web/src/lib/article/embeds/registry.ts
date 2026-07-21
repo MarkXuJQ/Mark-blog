@@ -1,10 +1,12 @@
 import { referencePanelEmbed } from './referencePanel'
+import { photoRouteEmbed } from './photoRoute'
 import type { ArticleEmbedContext, ArticleEmbedDefinition } from './types'
 import { websiteCardEmbed } from './websiteCard'
 
 export const ARTICLE_EMBEDS: readonly ArticleEmbedDefinition[] = [
   websiteCardEmbed,
   referencePanelEmbed,
+  photoRouteEmbed,
 ]
 
 function getReplacementTarget(source: Element) {
