@@ -5,12 +5,15 @@ import { Clapperboard, Search, Star } from 'lucide-react'
 import { RiDoubanLine } from 'react-icons/ri'
 import { MovieGuestbook } from '@/components/movies/MovieGuestbook'
 import { MovieStatsPanel } from '@/components/movies/MovieStatsPanel'
-import { Seo } from '@/components/seo/Seo'
+import { Seo } from '@/app/seo/Seo'
 import { Pagination } from '@/components/ui/Pagination'
 import { RevealText } from '@/components/ui/reveal-text'
 import { WatchActivityCalendar } from '@/components/movies/WatchActivityCalendar'
-import { getMovieReviewBySlug, getMovieReviewBySubjectId } from '@/lib/content'
-import { cn } from '@/lib/utils'
+import {
+  getMovieReviewBySlug,
+  getMovieReviewBySubjectId,
+} from '@/lib/content/movieReviews'
+import { cn } from '@/lib/classNames'
 import movieCsvRaw from '@content/movies/movie.csv?raw'
 import movieOverridesRaw from '@content/movies/movie-overrides.json'
 
@@ -522,6 +525,7 @@ export function Movies() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
+    if (window.__PRERENDER__) return
     if (!gridNode) return
 
     const updateColumns = () => {
@@ -552,12 +556,16 @@ export function Movies() {
   }, [gridNode])
 
   useEffect(() => {
+    if (window.__PRERENDER__) return
+
     setCinemaLetterImages(
       shuffleItems(CINEMA_STILL_IMAGES).slice(0, CINEMA_REVEAL_TEXT.length)
     )
   }, [])
 
   useEffect(() => {
+    if (window.__PRERENDER__) return
+
     if (viewMode !== 'tmdb') {
       setTmdbStatus('idle')
       setTmdbErrorMessage('')

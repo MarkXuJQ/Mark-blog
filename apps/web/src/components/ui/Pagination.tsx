@@ -1,5 +1,10 @@
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from 'lucide-react'
+import { cn } from '@/lib/classNames'
 
 interface PaginationProps {
   currentPage: number
@@ -19,7 +24,7 @@ export function Pagination({
   // Calculate visible page numbers
   const getPageNumbers = () => {
     const pages: (number | '...')[] = []
-    
+
     // Always show first page
     pages.push(1)
 
@@ -62,28 +67,28 @@ export function Pagination({
 
   return (
     <nav
-      className={cn('flex items-center justify-center gap-2 mt-12', className)}
+      className={cn('mt-12 flex items-center justify-center gap-2', className)}
       aria-label="Pagination"
     >
       <button
         onClick={() => onPageChange(1)}
         disabled={currentPage === 1}
-        className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 transition-colors"
+        className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
         aria-label="First page"
       >
         <ChevronsLeft size={18} />
       </button>
-      
+
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 transition-colors"
+        className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
         aria-label="Previous page"
       >
         <ChevronLeft size={18} />
       </button>
 
-      <div className="flex items-center gap-1 mx-2">
+      <div className="mx-2 flex items-center gap-1">
         {getPageNumbers().map((page, index) => (
           <div key={index}>
             {page === '...' ? (
@@ -92,7 +97,7 @@ export function Pagination({
               <button
                 onClick={() => onPageChange(page as number)}
                 className={cn(
-                  'min-w-[2rem] h-8 px-2 rounded-lg text-sm font-medium transition-colors',
+                  'h-8 min-w-[2rem] rounded-lg px-2 text-sm font-medium transition-colors',
                   currentPage === page
                     ? 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500'
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'
@@ -109,7 +114,7 @@ export function Pagination({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 transition-colors"
+        className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
         aria-label="Next page"
       >
         <ChevronRight size={18} />
@@ -118,7 +123,7 @@ export function Pagination({
       <button
         onClick={() => onPageChange(totalPages)}
         disabled={currentPage === totalPages}
-        className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 transition-colors"
+        className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
         aria-label="Last page"
       >
         <ChevronsRight size={18} />

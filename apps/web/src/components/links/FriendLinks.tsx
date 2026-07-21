@@ -13,14 +13,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 import {
   FRIEND_LINK_CATEGORY_ORDER,
   FRIEND_LINKS,
   getFriendLinkLabels,
   type FriendLink,
   type FriendLinkCategory,
-} from './friendLinksData'
+} from '@/lib/links/friendLinksData'
 
 interface FriendLinksProps {
   className?: string
@@ -131,9 +131,7 @@ function FriendLinkCard({
             <span className={styles.tooltipTitle}>{link.name}</span>
             <span className={styles.tooltipUrl}>{link.href}</span>
           </span>
-          <span className={styles.tooltipDescription}>
-            {link.description}
-          </span>
+          <span className={styles.tooltipDescription}>{link.description}</span>
         </TooltipContent>
       </Tooltip>
     </span>

@@ -15,7 +15,10 @@ const PORT = 4173
 const BASE_URL = `http://localhost:${PORT}`
 const DIST_DIR = path.resolve(__dirname, '../dist')
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
-const MOVIE_REVIEWS_DIR = path.resolve(__dirname, '../../../content/movies/reviews')
+const MOVIE_REVIEWS_DIR = path.resolve(
+  __dirname,
+  '../../../content/movies/reviews'
+)
 
 function collectMarkdownFiles(dirPath) {
   if (!fs.existsSync(dirPath)) return []
@@ -46,9 +49,7 @@ function resolvePostSlugs(filePath) {
       ? data.slug.trim()
       : fileSlug
   const aliases = Array.isArray(data.aliases)
-    ? data.aliases.filter(
-        (alias) => typeof alias === 'string' && alias.trim()
-      )
+    ? data.aliases.filter((alias) => typeof alias === 'string' && alias.trim())
     : []
 
   return Array.from(new Set([slug, ...aliases, fileSlug]))
@@ -71,6 +72,7 @@ function getRoutes() {
     '/archive',
     '/about',
     '/life',
+    '/links',
     '/movies',
     '/games',
   ]
@@ -104,7 +106,11 @@ async function prerender() {
   // 1. Start Vite Preview Server
   const require = createRequire(import.meta.url)
   const vitePackageJsonPath = require.resolve('vite/package.json')
-  const viteCliPath = path.resolve(path.dirname(vitePackageJsonPath), 'bin', 'vite.js')
+  const viteCliPath = path.resolve(
+    path.dirname(vitePackageJsonPath),
+    'bin',
+    'vite.js'
+  )
 
   const server = spawn(
     process.execPath,

@@ -3,7 +3,7 @@ import {
   getGlobalSearchState,
   openGlobalSearch,
   subscribeGlobalSearch,
-} from './globalSearchBus'
+} from '@/lib/search/globalSearchBus'
 
 const LazyGlobalSearchModal = lazy(() =>
   import('./GlobalSearchModal').then((module) => ({
@@ -16,7 +16,9 @@ export function GlobalSearchHost({
 }: {
   onOpenChange?: (open: boolean) => void
 }) {
-  const [shouldMount, setShouldMount] = useState(() => getGlobalSearchState().open)
+  const [shouldMount, setShouldMount] = useState(
+    () => getGlobalSearchState().open
+  )
 
   useEffect(() => {
     return subscribeGlobalSearch((state) => {

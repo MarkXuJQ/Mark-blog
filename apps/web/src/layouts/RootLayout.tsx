@@ -7,18 +7,18 @@ import { PageTransitionHost } from '@/components/transitions/PageTransitionHost'
 import {
   ThemeCurtain,
   type ThemeCurtainState,
-} from '@/components/ui/ThemeCurtain'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
+} from '@/components/theme/ThemeCurtain'
+import { ThemeToggle } from '@/components/theme/ThemeToggle'
 import { useScrollVisibility } from '@/hooks/useScrollVisibility'
 import { type ThemeMode, useTheme } from '@/hooks/useTheme'
 
 const LazyDraggableBackToTop = lazy(() =>
-  import('@/components/ui/DraggableBackToTop').then((module) => ({
+  import('@/components/layout/DraggableBackToTop').then((module) => ({
     default: module.DraggableBackToTop,
   }))
 )
 const LazyGlobalLinkPreview = lazy(() =>
-  import('@/components/ui/GlobalLinkPreview').then((module) => ({
+  import('@/components/article/GlobalLinkPreview').then((module) => ({
     default: module.GlobalLinkPreview,
   }))
 )

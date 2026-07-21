@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
 import { Comments } from './Comments'
-import { preloadTwikooScript } from './twikooLoader'
+import { preloadTwikooScript } from '@/lib/comments/twikooLoader'
 
 interface DeferredCommentsProps {
   rootMargin?: string

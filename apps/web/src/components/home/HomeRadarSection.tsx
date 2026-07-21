@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 import {
   easeOutBack,
   easeOutCubic,
@@ -13,7 +13,7 @@ import {
   mix,
   segmentProgress,
   useHomeRadarScene,
-} from './useHomeRadarScene'
+} from '@/hooks/useHomeRadarScene'
 import {
   getNodeDotSize,
   isLightHexColor,
@@ -28,7 +28,7 @@ import {
   type RadarNode,
   type SignalPortalState,
   withAlpha,
-} from './radarData'
+} from '@/lib/home/radarData'
 
 interface HomeRadarSectionProps {
   avatarSrc: string
@@ -290,7 +290,9 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsRadarSectionVisible(entry.isIntersecting)
-        setIsRadarSceneActive(entry.isIntersecting || entry.intersectionRatio > 0)
+        setIsRadarSceneActive(
+          entry.isIntersecting || entry.intersectionRatio > 0
+        )
       },
       {
         rootMargin: '20% 0px 20% 0px',

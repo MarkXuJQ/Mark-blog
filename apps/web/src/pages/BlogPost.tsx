@@ -15,8 +15,8 @@ import { DeferredComments } from '@/components/comments/DeferredComments'
 import {
   applySearchHighlights,
   clearSearchHighlights,
-} from '@/components/search/domHighlight'
-import { Seo } from '@/components/seo/Seo'
+} from '@/lib/search/domHighlight'
+import { Seo } from '@/app/seo/Seo'
 import {
   DEFAULT_IMAGE,
   buildBreadcrumbSchema,
@@ -25,27 +25,27 @@ import {
   toAbsoluteUrl,
   toIsoDateTime,
   type JsonLd,
-} from '@/components/seo/shared'
+} from '@/lib/seo'
 import { Card } from '@/components/ui/Card'
-import { useCodeBlockEnhancements } from '@/hooks/useCodeBlockEnhancements'
-import { useImageLightbox } from '@/hooks/useImageLightbox'
-import { usePhotoScroll } from '@/hooks/usePhotoScroll'
-import { decorateArticleContent } from '@/lib/article'
+import { useArticleCodeBlockEnhancements } from '@/hooks/useArticleCodeBlockEnhancements'
+import { useArticleImageLightbox } from '@/hooks/useArticleImageLightbox'
+import { useArticlePhotoScroll } from '@/hooks/useArticlePhotoScroll'
+import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
 import {
   getAdjacentPosts,
   getPostBySlug,
   getSharedPostCommentPath,
-} from '@/lib/content'
+} from '@/lib/content/posts'
 import {
   countWords,
   estimateReadingTimeFromWordCount,
-} from '@/utils/readingTime'
-import { cn } from '@/lib/utils'
+} from '@/lib/content/readingTime'
+import { cn } from '@/lib/classNames'
 import {
   extractOptimizedImageUrlsFromHtml,
   getImageUrl,
   getOptimizedImageUrl,
-} from '@/utils/image'
+} from '@/lib/image'
 import type { BlogPostOutletContext } from '@/layouts/BlogPostLayout'
 
 export function BlogPost() {
@@ -73,8 +73,8 @@ export function BlogPost() {
     void import('@/assets/styles/article-math.css')
   }, [hasMath])
 
-  const contentRef = useImageLightbox([contentHtml, simpleMode])
-  useCodeBlockEnhancements(
+  const contentRef = useArticleImageLightbox([contentHtml, simpleMode])
+  useArticleCodeBlockEnhancements(
     contentRef,
     {
       copy: t('codeBlock.copy'),
@@ -87,7 +87,10 @@ export function BlogPost() {
     },
     `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`
   )
-  usePhotoScroll(contentRef, `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`)
+  useArticlePhotoScroll(
+    contentRef,
+    `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`
+  )
   const highlightQuery = searchParams.get('q') || ''
   const highlightIndexRaw = searchParams.get('i') || '0'
   const hasHighlightQuery = highlightQuery.trim().length > 0

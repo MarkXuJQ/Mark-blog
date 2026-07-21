@@ -1,5 +1,5 @@
 import { useId, type CSSProperties, type SVGProps } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 
 export interface LifeClockDisplayRow {
   value: string
@@ -61,7 +61,7 @@ const LED_GLYPHS: Record<string, string[]> = {
   H: ['10001', '10001', '10001', '11111', '10001', '10001', '10001', '00000'],
   R: ['11110', '10001', '10001', '11110', '10100', '10010', '10001', '00000'],
   Y: ['10001', '01010', '00100', '00100', '00100', '00100', '00100', '00000'],
-  '年': [
+  年: [
     '00111100',
     '00011000',
     '00111100',
@@ -71,7 +71,7 @@ const LED_GLYPHS: Record<string, string[]> = {
     '01011010',
     '10011001',
   ],
-  '天': [
+  天: [
     '00011000',
     '11111111',
     '00011000',
@@ -81,7 +81,7 @@ const LED_GLYPHS: Record<string, string[]> = {
     '00011000',
     '00000000',
   ],
-  '小': [
+  小: [
     '00000000',
     '10000001',
     '01000010',
@@ -91,7 +91,7 @@ const LED_GLYPHS: Record<string, string[]> = {
     '00011000',
     '00000000',
   ],
-  '时': [
+  时: [
     '11100010',
     '10100010',
     '10101111',
@@ -229,13 +229,7 @@ interface LedDotsProps extends SVGProps<SVGGElement> {
   inset?: number
 }
 
-function LedDots({
-  cells,
-  dotSize,
-  fill,
-  inset = 0,
-  ...props
-}: LedDotsProps) {
+function LedDots({ cells, dotSize, fill, inset = 0, ...props }: LedDotsProps) {
   const cellSize = Math.max(0, dotSize - inset * 2)
 
   return (
@@ -263,7 +257,8 @@ export function LifeClockDisplay({
   const scaledDotSize = layout.ledDotSize * layout.ledScale
   const scaledDotGap = layout.ledDotGap * layout.ledScale
   const cellPitch = scaledDotSize + scaledDotGap
-  const lineHeight = GLYPH_HEIGHT * scaledDotSize + (GLYPH_HEIGHT - 1) * scaledDotGap
+  const lineHeight =
+    GLYPH_HEIGHT * scaledDotSize + (GLYPH_HEIGHT - 1) * scaledDotGap
   const contentWidth = layout.width - layout.paddingX * 2
   const contentHeight = layout.height - layout.paddingY * 2
   const lineDefinitions = rows.map((row) =>
@@ -276,7 +271,8 @@ export function LifeClockDisplay({
     )
   )
   const totalTextHeight =
-    lineDefinitions.length * lineHeight + (lineDefinitions.length - 1) * layout.rowGap
+    lineDefinitions.length * lineHeight +
+    (lineDefinitions.length - 1) * layout.rowGap
   const textTop = layout.paddingY + (contentHeight - totalTextHeight) / 2
   const pitch = scaledDotSize + scaledDotGap
   const offPatternId = `${svgId}-off`
@@ -321,7 +317,13 @@ export function LifeClockDisplay({
               />
             </pattern>
 
-            <filter id={glowFilterId} x="-20%" y="-32%" width="140%" height="164%">
+            <filter
+              id={glowFilterId}
+              x="-20%"
+              y="-32%"
+              width="140%"
+              height="164%"
+            >
               <feGaussianBlur stdDeviation={layout.glowBlur} />
             </filter>
 
@@ -335,13 +337,22 @@ export function LifeClockDisplay({
             </clipPath>
           </defs>
 
-          <rect width={layout.width} height={layout.height} fill={lifeClockPalette.board} />
-          <rect width={layout.width} height={layout.height} fill={`url(#${offPatternId})`} />
+          <rect
+            width={layout.width}
+            height={layout.height}
+            fill={lifeClockPalette.board}
+          />
+          <rect
+            width={layout.width}
+            height={layout.height}
+            fill={`url(#${offPatternId})`}
+          />
 
           <g clipPath={`url(#${contentClipId})`}>
             {lineDefinitions.map((line, index) => {
               const lineWidth =
-                line.columns * scaledDotSize + Math.max(0, line.columns - 1) * scaledDotGap
+                line.columns * scaledDotSize +
+                Math.max(0, line.columns - 1) * scaledDotGap
               const x = layout.paddingX + (contentWidth - lineWidth) / 2
               const y = textTop + index * (lineHeight + layout.rowGap)
               const positionedCells = line.cells.map((cell) => ({

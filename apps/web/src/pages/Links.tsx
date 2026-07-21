@@ -5,10 +5,10 @@ import { RiLinksLine } from 'react-icons/ri'
 import { Link, useOutletContext } from 'react-router-dom'
 import { DeferredComments } from '@/components/comments/DeferredComments'
 import { FriendLinks } from '@/components/links/FriendLinks'
-import { getFriendLinkLabels } from '@/components/links/friendLinksData'
-import { Seo } from '@/components/seo/Seo'
-import { getSiteUrl, toAbsoluteUrl } from '@/components/seo/shared'
-import { useCodeBlockEnhancements } from '@/hooks/useCodeBlockEnhancements'
+import { getFriendLinkLabels } from '@/lib/links/friendLinksData'
+import { Seo } from '@/app/seo/Seo'
+import { getSiteUrl, toAbsoluteUrl } from '@/lib/seo'
+import { useArticleCodeBlockEnhancements } from '@/hooks/useArticleCodeBlockEnhancements'
 import type { ArchiveOutletContext } from '@/layouts/ArchiveLayout'
 
 export function Links() {
@@ -140,7 +140,7 @@ function OwnLinkInfoCodeBlock({
   const { t } = useTranslation()
   const codeBlockRef = useRef<HTMLDivElement | null>(null)
   const code = useMemo(() => JSON.stringify(siteInfo, null, 2), [siteInfo])
-  useCodeBlockEnhancements(
+  useArticleCodeBlockEnhancements(
     codeBlockRef,
     {
       copy: t('codeBlock.copy'),

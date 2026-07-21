@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import {
   getPendingPageTransition,
   subscribePageTransition,
-} from './pageTransitionBus'
+} from '@/lib/transitions/pageTransitionBus'
 
 const LazyPageTransitionOverlay = lazy(() =>
   import('./PageTransitionOverlay').then((module) => ({

@@ -5,10 +5,10 @@ import { BlogRelatedPosts } from '@/components/blog/BlogRelatedPosts'
 import { BlogTocCard, BlogTocDrawer } from '@/components/blog/BlogTocCard'
 import { LeftSidebarWidget } from '@/components/blog/BlogWidgets'
 import { ReaderModeToggle } from '@/components/blog/ReaderModeToggle'
-import { useToc } from '@/hooks/useToc'
-import { getAllPostSummaries } from '@/lib/content'
-import { getPostBySlug } from '@/lib/content'
-import { cn } from '@/lib/utils'
+import { useArticleToc } from '@/hooks/useArticleToc'
+import { getAllPostSummaries } from '@/lib/content/postSummaries'
+import { getPostBySlug } from '@/lib/content/posts'
+import { cn } from '@/lib/classNames'
 
 export type BlogPostOutletContext = {
   simpleMode: boolean
@@ -28,7 +28,7 @@ export function BlogPostLayout() {
   })
 
   const mainRef = useRef<HTMLElement | null>(null)
-  const { toc, activeId } = useToc(
+  const { toc, activeId } = useArticleToc(
     mainRef as React.RefObject<HTMLElement>,
     pathname + hash,
     {

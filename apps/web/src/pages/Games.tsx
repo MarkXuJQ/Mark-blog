@@ -20,10 +20,10 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useReducedMotion } from 'framer-motion'
-import { Seo } from '@/components/seo/Seo'
+import { Seo } from '@/app/seo/Seo'
 import { Pagination } from '@/components/ui/Pagination'
 import { SelectMenu } from '@/components/ui/SelectMenu'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 
 type LoadStatus = 'loading' | 'ready' | 'error'
 type GameSort = 'playtime' | 'recent' | 'achievements'

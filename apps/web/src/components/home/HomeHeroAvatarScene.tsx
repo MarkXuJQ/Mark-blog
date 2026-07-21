@@ -13,9 +13,9 @@ import {
   type MotionStyle,
   type MotionValue,
 } from 'framer-motion'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
-import { getImageUrl } from '@/utils/image'
+import { getImageUrl } from '@/lib/image'
 
 const AVATAR_AVIF_SRCSET = [
   `${getImageUrl('/images/avatar-256.avif')} 256w`,
@@ -25,7 +25,8 @@ const AVATAR_WEBP_SRCSET = [
   `${getImageUrl('/images/avatar-256.webp')} 256w`,
   `${getImageUrl('/images/avatar-384.webp')} 384w`,
 ].join(', ')
-const AVATAR_SIZES = '(min-width: 1024px) 248px, (min-width: 640px) 228px, 208px'
+const AVATAR_SIZES =
+  '(min-width: 1024px) 248px, (min-width: 640px) 228px, 208px'
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)
@@ -592,7 +593,6 @@ export function HomeHeroAvatarScene({
           {motionSensorLabel}
         </button>
       ) : null}
-
     </motion.div>
   )
 }

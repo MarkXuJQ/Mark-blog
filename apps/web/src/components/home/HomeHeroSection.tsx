@@ -1,9 +1,9 @@
 import { motion, type MotionValue } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { VerticalCutReveal } from '../ui/vertical-cut-reveal'
-import { TextRotate } from '../ui/text-rotate'
-import { cn } from '@/lib/utils'
-import { getImageUrl } from '@/utils/image'
+import { VerticalCutReveal } from '@/components/ui/vertical-cut-reveal'
+import { TextRotate } from '@/components/ui/text-rotate'
+import { cn } from '@/lib/classNames'
+import { getImageUrl } from '@/lib/image'
 import { HomeHeroAvatarScene } from './HomeHeroAvatarScene'
 
 interface HomeHeroSectionProps {

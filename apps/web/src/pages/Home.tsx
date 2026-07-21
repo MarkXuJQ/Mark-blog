@@ -1,10 +1,4 @@
-import {
-  lazy,
-  useEffect,
-  useRef,
-  Suspense,
-  useState,
-} from 'react'
+import { lazy, useEffect, useRef, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Footer } from '@/components/layout/Footer'
 import {
@@ -13,20 +7,20 @@ import {
 } from '@/components/home/HomeDeferredPlaceholders'
 import { HomeBlogRailSection } from '@/components/home/HomeBlogRailSection'
 import { HomeHeroSection } from '@/components/home/HomeHeroSection'
-import { useHomePageSceneMotion } from '@/components/home/useHomePageSceneMotion'
-import { useHomePageRuntime } from '@/components/home/useHomePageRuntime'
-import { useHomeGsapReveal } from '@/components/home/useHomeGsapReveal'
-import { useHomeSectionPager } from '@/components/home/useHomeSectionPager'
-import { Seo } from '@/components/seo/Seo'
+import { useHomePageSceneMotion } from '@/hooks/useHomePageSceneMotion'
+import { useHomePageRuntime } from '@/hooks/useHomePageRuntime'
+import { useHomeGsapReveal } from '@/hooks/useHomeGsapReveal'
+import { useHomeSectionPager } from '@/hooks/useHomeSectionPager'
+import { Seo } from '@/app/seo/Seo'
 import {
   DEFAULT_DESCRIPTION,
   getSiteUrl,
   toAbsoluteUrl,
   type JsonLd,
-} from '@/components/seo/shared'
+} from '@/lib/seo'
 import { useDeferredRender } from '@/hooks/useDeferredRender'
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
-import { getImageUrl } from '@/utils/image'
+import { getImageUrl } from '@/lib/image'
 
 const HOME_DEFERRED_PRELOAD_DELAY_MS = 2400
 const HOME_CHUNK_PRELOAD_DELAY_MS = 2600
@@ -44,7 +38,10 @@ type NavigatorWithConnection = Navigator & {
 }
 
 type IdleCapableWindow = Window & {
-  requestIdleCallback?: (callback: () => void, options?: { timeout?: number }) => number
+  requestIdleCallback?: (
+    callback: () => void,
+    options?: { timeout?: number }
+  ) => number
   cancelIdleCallback?: (handle: number) => void
 }
 
@@ -78,7 +75,10 @@ function useDeferredMount(enabled: boolean, delayMs: number) {
     return () => {
       window.clearTimeout(timeoutHandle)
       window.clearTimeout(fallbackHandle)
-      if (idleHandle !== null && typeof window.cancelIdleCallback === 'function') {
+      if (
+        idleHandle !== null &&
+        typeof window.cancelIdleCallback === 'function'
+      ) {
         window.cancelIdleCallback(idleHandle)
       }
     }
@@ -169,7 +169,10 @@ function HomeDeferredScenes({
 }) {
   const isPrerender =
     typeof window !== 'undefined' && Boolean(window.__PRERENDER__)
-  const shouldPreloadDeferredScenes = useDeferredMount(true, HOME_DEFERRED_PRELOAD_DELAY_MS)
+  const shouldPreloadDeferredScenes = useDeferredMount(
+    true,
+    HOME_DEFERRED_PRELOAD_DELAY_MS
+  )
   const {
     targetRef: widgetStackPlaceholderRef,
     shouldRender: shouldRenderWidgetStack,

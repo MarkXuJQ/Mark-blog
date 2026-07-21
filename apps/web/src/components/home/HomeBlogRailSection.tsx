@@ -10,11 +10,11 @@ import {
 import { motion, type MotionValue, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { getAllPostSummaries } from '@/lib/content'
+import { getAllPostSummaries } from '@/lib/content/postSummaries'
 import { CategoryLabel } from '@/components/blog/CategoryLabel'
-import { Label } from '../ui/label'
-import { cn } from '@/lib/utils'
-import type { BlogPostSummary } from '@/types'
+import { Label } from '@/components/ui/label'
+import { cn } from '@/lib/classNames'
+import type { BlogPostSummary } from '@/lib/content/posts'
 
 interface HomeBlogRailSectionProps {
   avatarSrc: string

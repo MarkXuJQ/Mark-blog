@@ -1,6 +1,7 @@
-import { getSiteUrl } from '@/components/seo/shared'
-import { getImageUrl } from '@/utils/image'
-import { getMovieReviewBySlug, getPostBySlug } from '@/lib/content'
+import { getSiteUrl } from '@/lib/seo'
+import { getImageUrl } from '@/lib/image'
+import { getMovieReviewBySlug } from '@/lib/content/movieReviews'
+import { getPostBySlug } from '@/lib/content/posts'
 
 function normalizePathname(pathname: string) {
   const normalized = pathname.replace(/\/+$/, '')

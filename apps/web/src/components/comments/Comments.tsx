@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LinkGuard } from './LinkGuard'
-import { getTwikooApi, loadTwikooScript } from './twikooLoader'
-import { cn } from '@/lib/utils'
+import { getTwikooApi, loadTwikooScript } from '@/lib/comments/twikooLoader'
+import { cn } from '@/lib/classNames'
 
 // Declare Twikoo on window
 declare global {

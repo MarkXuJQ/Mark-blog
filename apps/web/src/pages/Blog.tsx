@@ -5,19 +5,19 @@ import { BlogFilter } from '@/components/blog/BlogFilter'
 import { BlogPostCard } from '@/components/blog/BlogPostCard'
 import { SearchStatus } from '@/components/search/SearchStatus'
 import { SearchTriggerInput } from '@/components/search/SearchTriggerInput'
-import { Seo } from '@/components/seo/Seo'
+import { Seo } from '@/app/seo/Seo'
 import {
   buildBreadcrumbSchema,
   getSiteUrl,
   toAbsoluteUrl,
   type JsonLd,
-} from '@/components/seo/shared'
+} from '@/lib/seo'
 import { Pagination } from '@/components/ui/Pagination'
 import { StaggeredList } from '@/components/ui/StaggeredList'
 import { useBlogPosts } from '@/hooks/useBlogPosts'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 import type { BlogListOutletContext } from '@/layouts/BlogListLayout'
-import type { BlogPostSummary } from '@/types'
+import type { BlogPostSummary } from '@/lib/content/posts'
 
 const ITEMS_PER_PAGE = 10
 
@@ -93,7 +93,7 @@ export function Blog() {
           <>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <h1 className="text-3xl font-bold leading-tight text-[var(--text-primary)]">
+                <h1 className="text-3xl leading-tight font-bold text-[var(--text-primary)]">
                   {pageTitle}
                 </h1>
                 <div className="mt-2">
@@ -145,7 +145,7 @@ export function Blog() {
           <>
             <div className="flex min-w-0 flex-wrap items-start justify-between gap-3 sm:block">
               <div className="min-w-0 flex-1">
-                <h1 className="text-3xl font-bold leading-tight text-slate-900 dark:text-slate-100">
+                <h1 className="text-3xl leading-tight font-bold text-slate-900 dark:text-slate-100">
                   {pageTitle}
                 </h1>
                 <div className="mt-2">
@@ -188,9 +188,7 @@ export function Blog() {
       <div>
         {currentPosts.length > 0 ? (
           <>
-            <StaggeredList
-              className={simpleMode ? 'space-y-0' : 'space-y-6'}
-            >
+            <StaggeredList className={simpleMode ? 'space-y-0' : 'space-y-6'}>
               {currentPosts.map((post) =>
                 simpleMode ? (
                   <SimpleBlogPostItem key={post.id} post={post} />

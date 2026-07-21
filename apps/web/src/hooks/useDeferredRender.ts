@@ -24,7 +24,11 @@ export function useDeferredRender<T extends Element = HTMLDivElement>({
     }
 
     const node = targetRef.current
-    if (!node || typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+    if (
+      !node ||
+      typeof window === 'undefined' ||
+      !('IntersectionObserver' in window)
+    ) {
       startTransition(() => {
         setShouldRender(true)
       })
@@ -33,7 +37,11 @@ export function useDeferredRender<T extends Element = HTMLDivElement>({
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting || entry.intersectionRatio > 0)) {
+        if (
+          !entries.some(
+            (entry) => entry.isIntersecting || entry.intersectionRatio > 0
+          )
+        ) {
           return
         }
 

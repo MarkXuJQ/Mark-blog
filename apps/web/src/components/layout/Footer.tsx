@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 import { Trans, useTranslation } from 'react-i18next'
 import { LuGithub } from 'react-icons/lu'
 import {

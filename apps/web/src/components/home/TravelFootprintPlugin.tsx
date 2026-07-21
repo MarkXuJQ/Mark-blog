@@ -11,7 +11,7 @@ import {
 } from 'framer-motion'
 import { ExternalLink, MousePointer2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 import { useDeferredRender } from '@/hooks/useDeferredRender'
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
 import markTravelRecord from '@content/travel/records/mark.json'

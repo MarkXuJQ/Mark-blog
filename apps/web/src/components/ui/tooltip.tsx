@@ -3,7 +3,7 @@
 import * as TooltipPrimitive from '@radix-ui/react-tooltip'
 import * as React from 'react'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 
 const TooltipProvider = TooltipPrimitive.Provider
 
@@ -30,9 +30,7 @@ const TooltipContent = React.forwardRef<
     >
       {props.children}
       {showArrow && (
-        <TooltipPrimitive.Arrow
-          className="-my-px fill-white drop-shadow-[0_1px_0_rgba(15,23,42,0.08)] dark:fill-slate-950"
-        />
+        <TooltipPrimitive.Arrow className="-my-px fill-white drop-shadow-[0_1px_0_rgba(15,23,42,0.08)] dark:fill-slate-950" />
       )}
     </TooltipPrimitive.Content>
   </TooltipPrimitive.Portal>

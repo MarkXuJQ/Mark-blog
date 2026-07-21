@@ -27,10 +27,10 @@ i18n
     fallbackLng: 'zh',
     // 调试模式，开发时可以设为 true
     debug: false,
-    
+
     interpolation: {
       // React 已经内置了 XSS 防护，所以这里不需要转义
-      escapeValue: false, 
+      escapeValue: false,
     },
   })
 

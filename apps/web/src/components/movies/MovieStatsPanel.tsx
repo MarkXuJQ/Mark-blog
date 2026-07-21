@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Clapperboard, Star } from 'lucide-react'
 import { RiDoubanLine, RiMovie2Line } from 'react-icons/ri'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 
 interface MovieStatsPanelProps {
   watchCount: number

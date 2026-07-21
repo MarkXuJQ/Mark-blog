@@ -2,8 +2,9 @@ import { Suspense, useEffect, useState, type ReactNode } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { RootLayout } from './layouts/RootLayout'
 import { HomeLayout } from './layouts/HomeLayout'
-import { DeferredVercelInsights } from './components/analytics/DeferredVercelInsights'
-import { createPreloadableComponent } from './utils/preloadableComponent'
+import { DeferredVercelInsights } from './app/analytics/DeferredVercelInsights'
+import { createPreloadableComponent } from './app/routing/createPreloadableComponent'
+import { normalizePathname } from './app/routing/normalizePathname'
 
 const LightboxProvider = createPreloadableComponent(() =>
   import('./components/ui/Lightbox').then((module) => module.LightboxProvider)
@@ -18,7 +19,7 @@ const BlogPostLayout = createPreloadableComponent(() =>
   import('./layouts/BlogPostLayout').then((module) => module.BlogPostLayout)
 )
 const SmoothScrollProvider = createPreloadableComponent(() =>
-  import('./components/providers/SmoothScrollProvider').then(
+  import('./app/providers/SmoothScrollProvider').then(
     (module) => module.SmoothScrollProvider
   )
 )
@@ -65,21 +66,24 @@ const NotFound = createPreloadableComponent(() =>
 // Hydration needs the same preload registry used by these route components.
 // eslint-disable-next-line react-refresh/only-export-components
 export async function preloadCurrentRoute(pathname: string) {
+  const normalizedPathname = normalizePathname(pathname)
   const routeComponents = (() => {
-    if (pathname === '/') return [SmoothScrollProvider, Home]
-    if (pathname === '/blog') return [BlogListLayout, Blog]
-    if (pathname.startsWith('/blog/')) {
+    if (normalizedPathname === '/') return [SmoothScrollProvider, Home]
+    if (normalizedPathname === '/blog') return [BlogListLayout, Blog]
+    if (normalizedPathname.startsWith('/blog/')) {
       return [BlogPostLayout, LightboxProvider, BlogPost]
     }
-    if (pathname === '/archive') return [ArchiveLayout, Archive]
-    if (pathname === '/links') return [ArchiveLayout, Links]
-    if (pathname === '/timeline') return [Timeline]
-    if (pathname === '/search') return [Search]
-    if (pathname === '/about') return [About]
-    if (pathname === '/life') return [LightboxProvider, Life]
-    if (pathname === '/movies') return [Movies]
-    if (pathname.startsWith('/movies/reviews/')) return [MovieReviewPost]
-    if (pathname === '/games') return [Games]
+    if (normalizedPathname === '/archive') return [ArchiveLayout, Archive]
+    if (normalizedPathname === '/links') return [ArchiveLayout, Links]
+    if (normalizedPathname === '/timeline') return [Timeline]
+    if (normalizedPathname === '/search') return [Search]
+    if (normalizedPathname === '/about') return [About]
+    if (normalizedPathname === '/life') return [LightboxProvider, Life]
+    if (normalizedPathname === '/movies') return [Movies]
+    if (normalizedPathname.startsWith('/movies/reviews/')) {
+      return [MovieReviewPost]
+    }
+    if (normalizedPathname === '/games') return [Games]
     return [NotFound]
   })()
 

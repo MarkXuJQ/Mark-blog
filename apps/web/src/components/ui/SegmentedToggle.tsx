@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 import {
   Tooltip,
   TooltipContent,
@@ -63,7 +63,7 @@ export function SegmentedToggle<T extends string>({
       role="radiogroup"
       aria-label={ariaLabel}
       className={cn(
-        'relative isolate inline-grid grid-flow-col auto-cols-fr items-center rounded-full border border-slate-200/80 bg-white/85 shadow-sm ring-1 ring-slate-900/5 backdrop-blur-md dark:border-[#2b2f36] dark:bg-[#17191c] dark:ring-[#2b2f36]/70 dark:shadow-none',
+        'relative isolate inline-grid auto-cols-fr grid-flow-col items-center rounded-full border border-slate-200/80 bg-white/85 shadow-sm ring-1 ring-slate-900/5 backdrop-blur-md dark:border-[#2b2f36] dark:bg-[#17191c] dark:shadow-none dark:ring-[#2b2f36]/70',
         sizeStyles[size].container,
         className
       )}
@@ -71,7 +71,7 @@ export function SegmentedToggle<T extends string>({
       <div
         aria-hidden="true"
         className={cn(
-          'pointer-events-none absolute left-0.5 top-0.5 z-[1] rounded-full border border-slate-200/90 bg-white shadow-sm transition-transform duration-300 ease-out dark:border-[#2b2f36] dark:bg-[#23262c] dark:shadow-none',
+          'pointer-events-none absolute top-0.5 left-0.5 z-[1] rounded-full border border-slate-200/90 bg-white shadow-sm transition-transform duration-300 ease-out dark:border-[#2b2f36] dark:bg-[#23262c] dark:shadow-none',
           sizeStyles[size].button,
           currentItem?.knobClassName
         )}
@@ -94,8 +94,8 @@ export function SegmentedToggle<T extends string>({
                 'group relative z-10 inline-flex items-center justify-center rounded-full font-medium tracking-tight transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:focus-visible:ring-slate-600',
                 sizeStyles[size].button,
                 value === item.value
-                  ? item.activeTextClassName ??
-                      'text-slate-900 dark:text-slate-100'
+                  ? (item.activeTextClassName ??
+                      'text-slate-900 dark:text-slate-100')
                   : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200',
                 buttonClassName
               )}

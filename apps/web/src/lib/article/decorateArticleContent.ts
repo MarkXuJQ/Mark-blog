@@ -1,9 +1,9 @@
-import { rewriteHtmlImageSrc } from '@/utils/image'
+import { rewriteHtmlImageSrc } from '@/lib/image'
 import { decorateArticleLinkPreviews } from './decorateArticleLinkPreviews'
-import { decorateArticleWidgets } from './widgets'
+import { decorateArticleEmbeds } from './embeds'
 
 export function decorateArticleContent(html: string, language?: string) {
   const withImages = rewriteHtmlImageSrc(html)
-  const withWidgets = decorateArticleWidgets(withImages, { language })
-  return decorateArticleLinkPreviews(withWidgets, language)
+  const withEmbeds = decorateArticleEmbeds(withImages, { language })
+  return decorateArticleLinkPreviews(withEmbeds, language)
 }

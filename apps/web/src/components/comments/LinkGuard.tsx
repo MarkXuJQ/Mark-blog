@@ -54,8 +54,9 @@ export function LinkGuard({ containerRef }: LinkGuardProps) {
   const [popoverJumpTo, setPopoverJumpTo] = useState('')
   const [popoverInput, setPopoverInput] = useState('')
   const [showUndo, setShowUndo] = useState(false)
-  const [referenceElement, setReferenceElement] =
-    useState<HTMLElement | null>(null)
+  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(
+    null
+  )
   const [position, setPosition] = useState<PopoverPosition | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)
 
@@ -159,7 +160,7 @@ export function LinkGuard({ containerRef }: LinkGuardProps) {
   return createPortal(
     <div
       ref={popoverRef}
-      className="fixed z-[160] flex -translate-y-full items-stretch overflow-hidden rounded-lg border border-slate-200 bg-white p-1 shadow-xl animate-in fade-in zoom-in-95 duration-200 dark:border-slate-700 dark:bg-slate-800"
+      className="animate-in fade-in zoom-in-95 fixed z-[160] flex -translate-y-full items-stretch overflow-hidden rounded-lg border border-slate-200 bg-white p-1 shadow-xl duration-200 dark:border-slate-700 dark:bg-slate-800"
       style={{
         left: position.left,
         top: position.top,
@@ -174,7 +175,7 @@ export function LinkGuard({ containerRef }: LinkGuardProps) {
         tabIndex={0}
         aria-label="Edit link"
         key={popoverJumpTo}
-        className="min-w-0 flex-1 break-all px-3 py-1.5 font-mono text-sm text-slate-600 outline-none dark:text-slate-300"
+        className="min-w-0 flex-1 px-3 py-1.5 font-mono text-sm break-all text-slate-600 outline-none dark:text-slate-300"
         contentEditable="plaintext-only"
         suppressContentEditableWarning
         spellCheck={false}

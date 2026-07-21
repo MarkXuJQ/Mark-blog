@@ -1,5 +1,5 @@
 import rawPostSummaries from '../../data/post-summaries.json'
-import type { BlogPostSummary } from '@/types'
+import type { BlogPostSummary } from '@/lib/content/posts'
 
 type PostLanguage = 'zh' | 'en'
 type LocalizedBlogPostSummary = BlogPostSummary & {

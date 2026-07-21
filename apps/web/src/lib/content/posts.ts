@@ -1,5 +1,24 @@
-import type { BlogPost, MarkdownPost } from '@/types'
+import type { MarkdownPost } from './markdown'
 import { getAllPostSummaries } from './postSummaries'
+
+export interface BlogPostSummary {
+  id: string
+  title: string
+  slug: string
+  sourceSlug?: string
+  aliases?: string[]
+  date: string
+  updated?: string
+  summary: string
+  wordCount?: number
+  image?: string
+  tags?: string[]
+  category?: string
+}
+
+export interface BlogPost extends BlogPostSummary {
+  content: string
+}
 
 type PostLanguage = 'zh' | 'en'
 type PostFolder = 'chinese' | 'english'

@@ -2,11 +2,11 @@ import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Star } from 'lucide-react'
-import { Seo } from '@/components/seo/Seo'
+import { Seo } from '@/app/seo/Seo'
 import { Card } from '@/components/ui/Card'
-import { decorateArticleContent } from '@/lib/article'
-import { getMovieReviewBySlug } from '@/lib/content'
-import { cn } from '@/lib/utils'
+import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
+import { getMovieReviewBySlug } from '@/lib/content/movieReviews'
+import { cn } from '@/lib/classNames'
 
 export function MovieReviewPost() {
   const { slug } = useParams()

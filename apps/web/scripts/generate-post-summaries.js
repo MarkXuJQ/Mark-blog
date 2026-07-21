@@ -3,7 +3,7 @@ import path from 'node:path'
 import process from 'node:process'
 import matter from 'gray-matter'
 import { fileURLToPath } from 'node:url'
-import { countWords } from '../src/utils/readingTime.js'
+import { countWords } from '../src/lib/content/readingTime.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)

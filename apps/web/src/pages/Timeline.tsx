@@ -2,20 +2,10 @@ import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import zhEvents from '@content/timeline/website/zh.json'
-import enEvents from '@content/timeline/website/en.json'
-import zhQuickFixes from '@content/timeline/quickfix/zh.json'
-import enQuickFixes from '@content/timeline/quickfix/en.json'
 import { GitCommit, ChevronDown, ChevronRight } from 'lucide-react'
-import { Seo } from '@/components/seo/Seo'
+import { Seo } from '@/app/seo/Seo'
 import { StaggeredList } from '@/components/ui/StaggeredList'
-import type { QuickFixGroup, TimelineEvent } from '@/types'
-
-// Cast the JSON data to the correct type
-const zhTimelineEvents = zhEvents as TimelineEvent[]
-const enTimelineEvents = enEvents as TimelineEvent[]
-const zhQuickFixItems = zhQuickFixes as QuickFixGroup[]
-const enQuickFixItems = enQuickFixes as QuickFixGroup[]
+import { getTimelineContent } from '@/lib/content/timeline'
 
 function MilestoneMarker() {
   return (
@@ -31,12 +21,7 @@ function ItemMarker() {
 
 export function Timeline() {
   const { t, i18n } = useTranslation()
-  const events = i18n.language.startsWith('zh')
-    ? zhTimelineEvents
-    : enTimelineEvents
-  const quickFixes = i18n.language.startsWith('zh')
-    ? zhQuickFixItems
-    : enQuickFixItems
+  const { events, quickFixes } = getTimelineContent(i18n.language)
   const quickFixGroups = useMemo(
     () => [...quickFixes].sort((a, b) => b.date.localeCompare(a.date)),
     [quickFixes]

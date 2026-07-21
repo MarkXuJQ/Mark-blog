@@ -8,13 +8,13 @@ import {
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 import {
   Dropdown,
   DropdownContent,
   DropdownTrigger,
-  useDropdown,
-} from '../ui/Dropdown'
+} from '@/components/ui/Dropdown'
+import { useDropdown } from '@/hooks/useDropdown'
 
 const VISIBLE_YEAR_COUNT = 5
 const YEAR_ITEM_HEIGHT = 40
@@ -79,52 +79,58 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
     valueRef.current = value
   }, [selectedIndex, value])
 
-  const commitIndex = useCallback((nextIndex: number, closeAfterChange = false) => {
-    const safeIndex = clampIndex(nextIndex, years.length)
-    const nextYear = years[safeIndex]
-    if (typeof nextYear !== 'number') return
+  const commitIndex = useCallback(
+    (nextIndex: number, closeAfterChange = false) => {
+      const safeIndex = clampIndex(nextIndex, years.length)
+      const nextYear = years[safeIndex]
+      if (typeof nextYear !== 'number') return
 
-    wheelDeltaRef.current = 0
+      wheelDeltaRef.current = 0
 
-    if (nextYear !== valueRef.current) {
-      onValueChange(nextYear)
-    }
+      if (nextYear !== valueRef.current) {
+        onValueChange(nextYear)
+      }
 
-    if (closeAfterChange) {
-      setIsOpen(false)
-    }
-  }, [onValueChange, setIsOpen, years])
+      if (closeAfterChange) {
+        setIsOpen(false)
+      }
+    },
+    [onValueChange, setIsOpen, years]
+  )
 
-  const moveBySteps = useCallback((deltaSteps: number) => {
-    if (deltaSteps === 0) return
-    commitIndex(selectedIndexRef.current + deltaSteps)
-  }, [commitIndex])
+  const moveBySteps = useCallback(
+    (deltaSteps: number) => {
+      if (deltaSteps === 0) return
+      commitIndex(selectedIndexRef.current + deltaSteps)
+    },
+    [commitIndex]
+  )
 
-  const processDelta = useCallback((
-    deltaY: number,
-    options: { threshold: number; maxSteps?: number }
-  ) => {
-    if (years.length <= 1) return
-    const { threshold, maxSteps } = options
+  const processDelta = useCallback(
+    (deltaY: number, options: { threshold: number; maxSteps?: number }) => {
+      if (years.length <= 1) return
+      const { threshold, maxSteps } = options
 
-    wheelDeltaRef.current += deltaY
-    let stepCount = 0
+      wheelDeltaRef.current += deltaY
+      let stepCount = 0
 
-    while (Math.abs(wheelDeltaRef.current) >= threshold) {
-      const direction = wheelDeltaRef.current > 0 ? 1 : -1
-      stepCount += direction
-      wheelDeltaRef.current -= direction * threshold
-    }
+      while (Math.abs(wheelDeltaRef.current) >= threshold) {
+        const direction = wheelDeltaRef.current > 0 ? 1 : -1
+        stepCount += direction
+        wheelDeltaRef.current -= direction * threshold
+      }
 
-    if (stepCount !== 0) {
-      const limitedStepCount =
-        typeof maxSteps === 'number'
-          ? Math.sign(stepCount) * Math.min(Math.abs(stepCount), maxSteps)
-          : stepCount
+      if (stepCount !== 0) {
+        const limitedStepCount =
+          typeof maxSteps === 'number'
+            ? Math.sign(stepCount) * Math.min(Math.abs(stepCount), maxSteps)
+            : stepCount
 
-      moveBySteps(limitedStepCount)
-    }
-  }, [moveBySteps, years.length])
+        moveBySteps(limitedStepCount)
+      }
+    },
+    [moveBySteps, years.length]
+  )
 
   const clearSuppressedClick = () => {
     if (suppressClickTimeoutRef.current !== null) {
@@ -276,7 +282,7 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
             'border-slate-300 text-slate-900 dark:border-[#3a3f48] dark:text-slate-100'
         )}
       >
-        <span className="hidden shrink-0 text-[0.72rem] uppercase tracking-[0.18em] text-slate-500 sm:inline dark:text-slate-400">
+        <span className="hidden shrink-0 text-[0.72rem] tracking-[0.18em] text-slate-500 uppercase sm:inline dark:text-slate-400">
           {label}
         </span>
         <span
@@ -300,7 +306,7 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
         align="end"
         className="!top-full !right-0 !mt-2 !min-w-0 origin-top-right overflow-visible rounded-2xl border border-slate-200/80 bg-white/92 p-2 shadow-[0_24px_48px_-28px_rgba(15,23,42,0.42)] ring-1 ring-black/5 backdrop-blur dark:border-[#2b2f36] dark:bg-[#17191c]/96 dark:ring-white/5"
       >
-        <div className="relative w-[4.25rem] overflow-hidden bg-transparent px-0 py-0 shadow-none sm:w-[4.5rem] [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)] [-webkit-mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)]">
+        <div className="relative w-[4.25rem] overflow-hidden bg-transparent [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)] px-0 py-0 shadow-none [-webkit-mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)] sm:w-[4.5rem]">
           <div className="relative" style={{ height: `${WHEEL_HEIGHT}px` }}>
             <div
               role="listbox"
@@ -320,7 +326,7 @@ function CalendarYearWheelControl(props: CalendarYearWheelProps) {
               }}
             >
               <div
-                className="absolute inset-x-0 will-change-transform transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                className="absolute inset-x-0 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
                 style={{
                   transform: `translateY(${translateY}px)`,
                 }}

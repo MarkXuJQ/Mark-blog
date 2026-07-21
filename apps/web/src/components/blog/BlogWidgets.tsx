@@ -1,15 +1,15 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SearchTriggerInput } from '../search/SearchTriggerInput'
-import { Card } from '../ui/Card'
+import { SearchTriggerInput } from '@/components/search/SearchTriggerInput'
+import { Card } from '@/components/ui/Card'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '../ui/tooltip'
-import { cn } from '@/lib/utils'
-import { getImageUrl } from '@/utils/image'
+} from '@/components/ui/tooltip'
+import { cn } from '@/lib/classNames'
+import { getImageUrl } from '@/lib/image'
 import { Link } from 'react-router-dom'
 import { Clock, FileText, Activity, Layers } from 'lucide-react'
 import { LuGithub, LuHammer, LuWholeWord } from 'react-icons/lu'
@@ -20,7 +20,7 @@ import {
   RiZhihuFill,
 } from 'react-icons/ri'
 import { RiLinksLine } from 'react-icons/ri'
-import type { BlogPostSummary } from '@/types'
+import type { BlogPostSummary } from '@/lib/content/posts'
 
 const TRAVELLINGS_URL = 'https://www.travellings.cn/go.html'
 

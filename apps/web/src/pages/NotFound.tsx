@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { FileQuestion } from 'lucide-react'
-import { Seo } from '@/components/seo/Seo'
+import { Seo } from '@/app/seo/Seo'
 import { Card } from '@/components/ui/Card'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 
 export function NotFound() {
   const { t } = useTranslation()

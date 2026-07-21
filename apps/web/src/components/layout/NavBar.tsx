@@ -3,17 +3,17 @@ import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { NavLink, Link, useLocation } from 'react-router-dom'
 import { ChevronDown, Menu, X, Sun, Moon, Monitor } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 import type { ThemeMode } from '@/hooks/useTheme'
-import { SearchTriggerInput } from '../search/SearchTriggerInput'
+import { SearchTriggerInput } from '@/components/search/SearchTriggerInput'
 import { SegmentedToggle } from '../ui/SegmentedToggle'
 import {
   Dropdown,
   DropdownContent,
   DropdownItem,
   DropdownTrigger,
-  useDropdown,
 } from '../ui/Dropdown'
+import { useDropdown } from '@/hooks/useDropdown'
 
 interface NavBarProps {
   mode: ThemeMode
@@ -272,7 +272,6 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
               ]}
             />
           </div>
-
         </div>
       )}
     </header>
