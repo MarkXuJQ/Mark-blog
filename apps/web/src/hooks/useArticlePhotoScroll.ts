@@ -26,6 +26,8 @@ export function useArticlePhotoScroll(
   contentKey?: string
 ) {
   useEffect(() => {
+    if (window.__PRERENDER__) return
+
     const container = containerRef.current
     if (!container) return
 

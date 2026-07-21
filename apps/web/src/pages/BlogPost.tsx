@@ -47,6 +47,7 @@ import {
   getOptimizedImageUrl,
 } from '@/lib/image'
 import type { BlogPostOutletContext } from '@/layouts/BlogPostLayout'
+import '@/assets/styles/article-blocks.css'
 
 export function BlogPost() {
   const { slug } = useParams()

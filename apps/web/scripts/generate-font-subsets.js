@@ -152,7 +152,11 @@ function collectTextFiles(dirPath, files = []) {
       continue
     }
 
-    if (entry.isFile() && textExtensions.has(path.extname(entry.name))) {
+    if (
+      entry.isFile() &&
+      entry.name.toLowerCase() !== 'readme.md' &&
+      textExtensions.has(path.extname(entry.name))
+    ) {
       files.push(fullPath)
     }
   }

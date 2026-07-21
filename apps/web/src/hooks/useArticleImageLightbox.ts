@@ -17,6 +17,8 @@ export function useArticleImageLightbox(deps: unknown[] = []) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (window.__PRERENDER__) return
+
     const node = containerRef.current
     if (!node) return
 

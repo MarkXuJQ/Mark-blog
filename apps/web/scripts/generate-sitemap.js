@@ -3,13 +3,17 @@ import path from 'node:path'
 import process from 'node:process'
 import matter from 'gray-matter'
 import { fileURLToPath } from 'node:url'
+import { collectMarkdownFiles, collectPostMarkdownFiles } from './post-files.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const DOMAIN = 'https://markxu.icu'
 
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
-const MOVIE_REVIEWS_DIR = path.resolve(__dirname, '../../../content/movies/reviews')
+const MOVIE_REVIEWS_DIR = path.resolve(
+  __dirname,
+  '../../../content/movies/reviews'
+)
 const PUBLIC_DIR = path.resolve(__dirname, '../public')
 const DIST_DIR = path.resolve(__dirname, '../dist')
 
@@ -20,31 +24,13 @@ if (!fs.existsSync(POSTS_DIR)) {
   process.exit(1)
 }
 
-function collectMarkdownFiles(dirPath) {
-  const entries = fs.readdirSync(dirPath, { withFileTypes: true })
-  const files = []
-
-  for (const entry of entries) {
-    const fullPath = path.join(dirPath, entry.name)
-    if (entry.isDirectory()) {
-      files.push(...collectMarkdownFiles(fullPath))
-      continue
-    }
-    if (entry.isFile() && entry.name.endsWith('.md')) {
-      files.push(fullPath)
-    }
-  }
-
-  return files
-}
-
 function resolvePostSlug(filePath, data) {
   return typeof data.slug === 'string' && data.slug.trim()
     ? data.slug.trim()
     : path.basename(filePath, '.md')
 }
 
-const files = collectMarkdownFiles(POSTS_DIR)
+const files = collectPostMarkdownFiles(POSTS_DIR)
 
 const allPosts = files.map((filePath) => {
   const content = fs.readFileSync(filePath, 'utf-8')
@@ -70,7 +56,9 @@ allPosts.forEach((post) => {
   }
 
   const currentTimestamp = new Date(post.updated || post.date).getTime()
-  const existingTimestamp = new Date(existing.updated || existing.date).getTime()
+  const existingTimestamp = new Date(
+    existing.updated || existing.date
+  ).getTime()
   if (currentTimestamp > existingTimestamp) {
     postsBySlug.set(post.slug, post)
   }

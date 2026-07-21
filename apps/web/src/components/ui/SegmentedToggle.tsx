@@ -70,6 +70,7 @@ export function SegmentedToggle<T extends string>({
     >
       <div
         aria-hidden="true"
+        suppressHydrationWarning
         className={cn(
           'pointer-events-none absolute top-0.5 left-0.5 z-[1] rounded-full border border-slate-200/90 bg-white shadow-sm transition-transform duration-300 ease-out dark:border-[#2b2f36] dark:bg-[#23262c] dark:shadow-none',
           sizeStyles[size].button,

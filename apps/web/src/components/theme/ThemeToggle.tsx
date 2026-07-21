@@ -47,6 +47,7 @@ export function ThemeToggle({ mode, onModeChange }: ThemeToggleProps) {
         className="relative isolate flex items-center rounded-full bg-white/70 p-1 shadow-2xl ring-1 ring-slate-900/10 backdrop-blur-md transition-[background-color,box-shadow] duration-500 before:pointer-events-none before:absolute before:inset-0 before:z-0 before:rounded-full before:bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.95),rgba(255,255,255,0.55),rgba(255,255,255,0.20))] before:content-[''] dark:bg-[#17191c] dark:ring-[#2b2f36] dark:before:bg-[radial-gradient(ellipse_at_top,rgba(120,130,145,0.18),rgba(23,25,28,0.00))]"
       >
         <div
+          suppressHydrationWarning
           className={`absolute top-1 left-1 z-[1] h-7 w-9 rounded-full transition-[transform,box-shadow,background] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] will-change-transform ${knobClassNameByMode[mode]}`}
           style={{
             transform: knobTransformByMode[mode],
