@@ -10,7 +10,11 @@ import {
 } from '@/components/theme/ThemeCurtain'
 import { ThemeToggle } from '@/components/theme/ThemeToggle'
 import { useScrollVisibility } from '@/hooks/useScrollVisibility'
-import { type ThemeMode, useTheme } from '@/hooks/useTheme'
+import {
+  resolveThemeModeTone,
+  type ThemeMode,
+  useTheme,
+} from '@/hooks/useTheme'
 
 const LazyDraggableBackToTop = lazy(() =>
   import('@/components/layout/DraggableBackToTop').then((module) => ({
@@ -34,17 +38,6 @@ function getResolvedThemeTone(): 'light' | 'dark' {
   return window.document.documentElement.classList.contains('dark')
     ? 'dark'
     : 'light'
-}
-
-function getThemeModeTone(mode: ThemeMode): 'light' | 'dark' {
-  if (mode === 'system') {
-    if (typeof window === 'undefined') return 'light'
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light'
-  }
-
-  return mode
 }
 
 function prefersReducedMotion() {
@@ -87,14 +80,21 @@ export function RootLayout() {
   }
 
   const handleThemeModeChange = (nextMode: ThemeMode) => {
-    if (nextMode === mode || prefersReducedMotion()) {
+    const fromTone = getResolvedThemeTone()
+    const toTone = resolveThemeModeTone(nextMode)
+
+    if (
+      nextMode === mode ||
+      prefersReducedMotion() ||
+      fromTone === toTone
+    ) {
+      clearThemeCurtainTimers()
+      setThemeCurtain(null)
       setMode(nextMode)
       return
     }
 
     clearThemeCurtainTimers()
-    const fromTone = getResolvedThemeTone()
-    const toTone = getThemeModeTone(nextMode)
     setThemeCurtain({ phase: 'enter', fromTone, toTone })
 
     window.requestAnimationFrame(() => {
