@@ -22,7 +22,14 @@
     "quickfixTitle": "Quick Fix",
     "quickfixDesc": "小修小补与界面微调，按条目独立记录。",
     "lifeTitle": "人生记录",
-    "lifeDesc": "个人成长与片段记录。"
+    "lifeDesc": "个人成长与片段记录。",
+    "progress": {
+      "ariaLabel": "时间进度",
+      "dayOfYear": "今年第几天",
+      "yearProgress": "今年进度",
+      "dayProgress": "今日进度",
+      "dayUnit": "天"
+    }
   },
   "search": {
     "title": "搜索",

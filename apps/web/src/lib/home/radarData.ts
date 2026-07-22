@@ -1,11 +1,13 @@
 import radarConfig from '@content/Links/radar.json'
 import linkSites from '@content/Links/sites.json'
+import blurredcodeFavicon from '../../assets/home/radar/blurredcode.ico'
 import dbushellFavicon from '../../assets/home/radar/dbushell.png'
 import distillFavicon from '../../assets/home/radar/distill.png'
 import eventuallymakingFavicon from '../../assets/home/radar/eventuallymaking.png'
 import geokashFavicon from '../../assets/home/radar/geokash.png'
 import inneiFavicon from '../../assets/home/radar/innei.png'
 import joshwcomeauFavicon from '../../assets/home/radar/joshwcomeau.png'
+import leitaoFavicon from '../../assets/home/radar/leitao.png'
 import lucumrFavicon from '../../assets/home/radar/lucumr.png'
 import messengerFavicon from '../../assets/home/radar/messenger.png'
 import nineteenHundredFavicon from '../../assets/home/radar/nineteen-hundred.png'
@@ -17,18 +19,21 @@ import rleonardiFavicon from '../../assets/home/radar/rleonardi.png'
 import ruanyifengFavicon from '../../assets/home/radar/ruanyifeng.png'
 import spacesFavicon from '../../assets/home/radar/spaces.svg'
 import tongliaoFavicon from '../../assets/home/radar/tongliao.png'
+import ttqukFavicon from '../../assets/home/radar/ttquk.png'
 import uselesswebFavicon from '../../assets/home/radar/uselessweb.png'
 import victorzhouFavicon from '../../assets/home/radar/victorzhou.png'
 import zhheoFavicon from '../../assets/home/radar/zhheo.png'
 import zhiluFavicon from '../../assets/home/radar/zhilu.png'
 
 const RADAR_FAVICONS = {
+  blurredcode: blurredcodeFavicon,
   dbushell: dbushellFavicon,
   distill: distillFavicon,
   eventuallymaking: eventuallymakingFavicon,
   geokash: geokashFavicon,
   innei: inneiFavicon,
   joshwcomeau: joshwcomeauFavicon,
+  leitao: leitaoFavicon,
   lucumr: lucumrFavicon,
   messenger: messengerFavicon,
   'nineteen-hundred': nineteenHundredFavicon,
@@ -40,6 +45,7 @@ const RADAR_FAVICONS = {
   ruanyifeng: ruanyifengFavicon,
   spaces: spacesFavicon,
   tongliao: tongliaoFavicon,
+  ttquk: ttqukFavicon,
   uselessweb: uselesswebFavicon,
   victorzhou: victorzhouFavicon,
   zhheo: zhheoFavicon,

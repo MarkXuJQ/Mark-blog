@@ -1,29 +1,35 @@
 import friendLinksConfig from '@content/Links/links.json'
+import blurredcodeFavicon from '@/assets/home/radar/blurredcode.ico'
 import dbushellFavicon from '@/assets/home/radar/dbushell.png'
 import eventuallymakingFavicon from '@/assets/home/radar/eventuallymaking.png'
 import inneiFavicon from '@/assets/home/radar/innei.png'
 import joshwcomeauFavicon from '@/assets/home/radar/joshwcomeau.png'
+import leitaoFavicon from '@/assets/home/radar/leitao.png'
 import lucumrFavicon from '@/assets/home/radar/lucumr.png'
 import nineteenHundredFavicon from '@/assets/home/radar/nineteen-hundred.png'
 import ooowlFavicon from '@/assets/home/radar/ooowl.png'
 import pathosFavicon from '@/assets/home/radar/pathos.png'
 import ruanyifengFavicon from '@/assets/home/radar/ruanyifeng.png'
 import spacesFavicon from '@/assets/home/radar/spaces.svg'
+import ttqukFavicon from '@/assets/home/radar/ttquk.png'
 import victorzhouFavicon from '@/assets/home/radar/victorzhou.png'
 import zhheoFavicon from '@/assets/home/radar/zhheo.png'
 import zhiluFavicon from '@/assets/home/radar/zhilu.png'
 
 const LINK_FAVICONS = {
+  blurredcode: blurredcodeFavicon,
   dbushell: dbushellFavicon,
   eventuallymaking: eventuallymakingFavicon,
   innei: inneiFavicon,
   joshwcomeau: joshwcomeauFavicon,
+  leitao: leitaoFavicon,
   lucumr: lucumrFavicon,
   'nineteen-hundred': nineteenHundredFavicon,
   ooowl: ooowlFavicon,
   pathos: pathosFavicon,
   ruanyifeng: ruanyifengFavicon,
   spaces: spacesFavicon,
+  ttquk: ttqukFavicon,
   victorzhou: victorzhouFavicon,
   zhheo: zhheoFavicon,
   zhilu: zhiluFavicon,

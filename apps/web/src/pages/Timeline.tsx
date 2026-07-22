@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { GitCommit, ChevronDown, ChevronRight } from 'lucide-react'
 import { Seo } from '@/app/seo/Seo'
+import { TimeProgress } from '@/components/timeline/TimeProgress'
 import { StaggeredList } from '@/components/ui/StaggeredList'
 import { getTimelineContent } from '@/lib/content/timeline'
 
@@ -120,42 +121,45 @@ export function Timeline() {
           <h1 className={styles.title}>{t('nav.timeline')}</h1>
         </div>
 
-        <div
-          className={styles.tabs}
-          role="tablist"
-          aria-label={t('nav.timeline')}
-          tabIndex={0}
-          onKeyDown={(event) => {
-            if (event.key === 'ArrowLeft') {
-              event.preventDefault()
-              moveTab(-1)
-            }
-            if (event.key === 'ArrowRight') {
-              event.preventDefault()
-              moveTab(1)
-            }
-          }}
-        >
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              className={activeTab === tab.id ? styles.tabActive : styles.tab}
-              onClick={() =>
-                setActiveTab(tab.id as 'website' | 'quickfix' | 'life')
+        <div className={styles.controlRow}>
+          <div
+            className={styles.tabs}
+            role="tablist"
+            aria-label={t('nav.timeline')}
+            tabIndex={0}
+            onKeyDown={(event) => {
+              if (event.key === 'ArrowLeft') {
+                event.preventDefault()
+                moveTab(-1)
               }
-            >
-              {tab.label}
-              {activeTab === tab.id && (
-                <motion.span
-                  layoutId="timeline-tab-underline"
-                  className={styles.tabUnderline}
-                />
-              )}
-            </button>
-          ))}
+              if (event.key === 'ArrowRight') {
+                event.preventDefault()
+                moveTab(1)
+              }
+            }}
+          >
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                className={activeTab === tab.id ? styles.tabActive : styles.tab}
+                onClick={() =>
+                  setActiveTab(tab.id as 'website' | 'quickfix' | 'life')
+                }
+              >
+                {tab.label}
+                {activeTab === tab.id && (
+                  <motion.span
+                    layoutId="timeline-tab-underline"
+                    className={styles.tabUnderline}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+          <TimeProgress />
         </div>
         <div className={styles.tabRule} aria-hidden="true" />
 
@@ -321,6 +325,8 @@ const styles = {
   wrapper: 'w-full max-w-3xl space-y-6',
   header: 'flex items-center justify-between',
   title: 'text-3xl font-bold text-slate-900 dark:text-slate-100',
+  controlRow:
+    'flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-6',
   tabs: 'flex flex-wrap gap-6 text-sm',
   tab: 'relative pb-2 font-medium text-slate-500 transition-colors hover:text-slate-900 dark:hover:text-slate-100',
   tabActive: 'relative pb-2 font-semibold text-slate-900 dark:text-slate-100',

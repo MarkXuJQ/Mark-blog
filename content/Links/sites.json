@@ -298,5 +298,50 @@
       "zh": "Armin Ronacher 的长期个人博客，记录 Python、Flask、Rust、开源工程和软件设计思考。",
       "en": "Armin Ronacher's long-running personal blog about Python, Flask, Rust, open-source engineering, and software design."
     }
+  },
+  {
+    "id": "leitao",
+    "radarCategory": "personal-blog",
+    "name": "水拍石",
+    "href": "https://www.leitao.cn/",
+    "faviconKey": "leitao",
+    "eyebrow": {
+      "zh": "经济观察 / 投资与生活",
+      "en": "Economics / Investing / Life"
+    },
+    "description": {
+      "zh": "雷涛的个人博客，长期记录经济、投资、阅读、摄影和生活随笔。",
+      "en": "Lei Tao's personal blog about economics, investing, reading, photography, and everyday life."
+    }
+  },
+  {
+    "id": "blurredcode",
+    "radarCategory": "personal-blog",
+    "name": "Blurred code",
+    "href": "https://www.blurredcode.com/",
+    "faviconKey": "blurredcode",
+    "eyebrow": {
+      "zh": "Unreal Engine / Vulkan / 图形学",
+      "en": "Unreal Engine / Vulkan / Graphics"
+    },
+    "description": {
+      "zh": "记录 Unreal Engine、Vulkan、图形渲染、移动端性能与底层工程问题的技术博客。",
+      "en": "A technical blog about Unreal Engine, Vulkan, graphics rendering, mobile performance, and low-level engineering."
+    }
+  },
+  {
+    "id": "ttquk",
+    "radarCategory": "personal-blog",
+    "name": "TT清沫uk",
+    "href": "https://ttquk.github.io/",
+    "faviconKey": "ttquk",
+    "eyebrow": {
+      "zh": "Linux / Hexo / 网络安全",
+      "en": "Linux / Hexo / Cybersecurity"
+    },
+    "description": {
+      "zh": "记录 Linux、Hexo、网络安全、读书和校园生活的个人博客。",
+      "en": "A personal blog about Linux, Hexo, cybersecurity, reading, and school life."
+    }
   }
 ]

@@ -1,5 +1,16 @@
 [
   {
+    "id": "qf-20260722",
+    "date": "2026-07-22",
+    "content": [
+      "Reorganized the web app structure by clarifying the roles of app, components, hooks, and lib, consolidating scattered types and content utilities, and removing obsolete files and ignore-list noise",
+      "Unified article authoring extensions with reusable components such as WebsiteCard, centralized embed rendering, and a practical writing guide under content/posts",
+      "Added an interactive travel-route component backed by JSON, with map exploration, Stop details, first-view playback, and an initial embed in the Wuhan food walk post",
+      "Improved initial loading by trimming font subsets, loading the About font and math styles on demand, generating lighter responsive images, and reducing below-the-fold preloading",
+      "Simplified the homepage radar and games-page hierarchy while aligning dark cards, map popups, radar coordinates, and related interface details"
+    ]
+  },
+  {
     "id": "qf-20260626",
     "date": "2026-06-26",
     "content": [

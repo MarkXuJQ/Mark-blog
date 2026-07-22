@@ -22,7 +22,14 @@
     "quickfixTitle": "Quick Fixes",
     "quickfixDesc": "Small patches and UI tweaks tracked as standalone entries.",
     "lifeTitle": "Life Log",
-    "lifeDesc": "Personal progress and moments."
+    "lifeDesc": "Personal progress and moments.",
+    "progress": {
+      "ariaLabel": "Time progress",
+      "dayOfYear": "Day of the Year",
+      "yearProgress": "Year Progress",
+      "dayProgress": "Today Progress",
+      "dayUnit": "d"
+    }
   },
   "search": {
     "title": "Search",
