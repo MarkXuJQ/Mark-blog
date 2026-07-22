@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { getOptimizedImageUrl } from '@/utils/image'
-import { cn } from '@/lib/utils'
-import type { BlogPost, BlogPostSummary } from '@/types'
+import { getOptimizedImageUrl } from '@/lib/image'
+import { cn } from '@/lib/classNames'
+import type { BlogPost, BlogPostSummary } from '@/lib/content/posts'
 
 interface BlogRelatedPostsProps {
   currentPost: BlogPost | null

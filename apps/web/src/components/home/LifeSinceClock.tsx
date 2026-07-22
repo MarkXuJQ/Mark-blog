@@ -1,6 +1,6 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 import { LifeClockDisplay, type LifeClockDisplayRow } from './LifeClockDisplay'
-import { useLifeClockMetrics } from './useLifeClockMetrics'
+import { useLifeClockMetrics } from '@/hooks/useLifeClockMetrics'
 
 export interface LifeSinceClockProps {
   className?: string

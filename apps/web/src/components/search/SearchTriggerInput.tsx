@@ -1,5 +1,5 @@
 import { SearchInput } from './SearchInput'
-import { openGlobalSearch } from './openGlobalSearch'
+import { openGlobalSearch } from '@/lib/search/globalSearchBus'
 
 export function SearchTriggerInput({
   placeholder,

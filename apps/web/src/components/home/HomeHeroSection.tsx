@@ -1,9 +1,9 @@
 import { motion, type MotionValue } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { VerticalCutReveal } from '../ui/vertical-cut-reveal'
-import { TextRotate } from '../ui/text-rotate'
-import { cn } from '@/lib/utils'
-import { getImageUrl } from '@/utils/image'
+import { VerticalCutReveal } from '@/components/ui/vertical-cut-reveal'
+import { TextRotate } from '@/components/ui/text-rotate'
+import { cn } from '@/lib/classNames'
+import { getImageUrl } from '@/lib/image'
 import { HomeHeroAvatarScene } from './HomeHeroAvatarScene'
 
 interface HomeHeroSectionProps {
@@ -190,7 +190,7 @@ export function HomeHeroSection({
           style={{ opacity: heroContentOpacity, y: heroContentY }}
         >
           <div className={styles.heroContentInner}>
-            <div data-home-reveal="hero-copy" className={styles.heroCopy}>
+            <div className={styles.heroCopy}>
               <h1
                 className={cn(
                   styles.title,
@@ -349,11 +349,7 @@ export function HomeHeroSection({
               </div>
             </div>
 
-            <div
-              data-home-reveal="hero-visual"
-              data-home-reveal-delay={prefersReducedMotion ? undefined : 0.16}
-              className={styles.heroVisualWrap}
-            >
+            <div className={styles.heroVisualWrap}>
               <HomeHeroAvatarScene
                 avatarSrc={avatarSrc}
                 sceneProgress={sceneProgress}
@@ -392,9 +388,7 @@ const styles = {
   heroContentInner:
     'mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.96fr)] lg:gap-12',
   heroCopy:
-    'order-2 flex flex-col items-center text-center lg:order-1 lg:items-start lg:text-left',
-  heroEyebrow:
-    'hidden items-center rounded-full bg-white/10 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-white/78 backdrop-blur-xl lg:inline-flex',
+    'home-hero-copy-enter order-2 flex flex-col items-center text-center lg:order-1 lg:items-start lg:text-left',
   title: cn(
     'mt-2 max-w-4xl text-center text-4xl font-semibold tracking-tight sm:text-6xl lg:mt-6 lg:text-left lg:text-7xl'
   ),
@@ -423,22 +417,11 @@ const styles = {
     'mx-auto mt-6 max-w-2xl space-y-5 px-2 text-base font-medium leading-relaxed sm:text-lg lg:mx-0 lg:px-0',
   contentContainerLight: 'text-black/80',
   contentContainerDark: 'text-white/80',
-  heroActions:
-    'mt-7 flex flex-wrap items-center justify-center gap-3 lg:justify-start',
-  primaryAction:
-    'inline-flex items-center rounded-full px-5 py-3 text-sm font-semibold transition-transform duration-300 hover:-translate-y-0.5 hover:scale-[1.01]',
-  primaryActionLight:
-    'bg-white/72 text-black shadow-[0_18px_40px_-24px_rgba(15,23,42,0.14)] backdrop-blur-xl hover:bg-white/84',
-  primaryActionDark: 'bg-white text-slate-950',
-  secondaryAction:
-    'inline-flex items-center rounded-full px-5 py-3 text-sm font-semibold backdrop-blur-xl transition-transform duration-300 hover:-translate-y-0.5',
-  secondaryActionLight: 'bg-white/30 text-black hover:bg-white/46',
-  secondaryActionDark: 'bg-white/10 text-white hover:bg-white/14',
   heroFooter: 'mt-10 hidden flex-col items-center gap-4 lg:flex lg:items-start',
   decorativeContainer: 'flex justify-center gap-2 opacity-70 lg:justify-start',
   dot: 'h-2 w-2 rounded-full',
   dotLight: 'bg-black/26',
   dotDark: 'bg-white/55',
   heroVisualWrap:
-    'order-1 relative flex w-full items-center justify-center lg:order-2 lg:justify-end',
+    'home-hero-visual-enter order-1 relative flex w-full items-center justify-center lg:order-2 lg:justify-end',
 }

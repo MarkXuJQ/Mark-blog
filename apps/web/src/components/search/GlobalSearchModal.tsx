@@ -3,15 +3,18 @@ import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getAllPosts } from '@/lib/content'
+import { getAllPosts } from '@/lib/content/posts'
 import { SearchInput } from './SearchInput'
-import { closeGlobalSearch, subscribeGlobalSearch } from './globalSearchBus'
+import {
+  closeGlobalSearch,
+  subscribeGlobalSearch,
+} from '@/lib/search/globalSearchBus'
 import {
   buildBlogSearchDocs,
   searchBlogDocs,
   normalizeQuery,
   type BlogSearchHit,
-} from './blogSearch'
+} from '@/lib/search/blogSearch'
 
 export function GlobalSearchModal({
   onOpenChange,
@@ -82,7 +85,9 @@ export function GlobalSearchModal({
 
       if (key === 'arrowdown') {
         e.preventDefault()
-        setActiveIndex((prev) => Math.min(prev + 1, Math.max(0, hits.length - 1)))
+        setActiveIndex((prev) =>
+          Math.min(prev + 1, Math.max(0, hits.length - 1))
+        )
         return
       }
 
@@ -140,7 +145,7 @@ export function GlobalSearchModal({
           />
 
           <motion.div
-            className="absolute left-1/2 top-[14vh] w-[min(720px,calc(100vw-2rem))] -translate-x-1/2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-[#2b2f36] dark:bg-[#17191c]"
+            className="absolute top-[14vh] left-1/2 w-[min(720px,calc(100vw-2rem))] -translate-x-1/2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-[#2b2f36] dark:bg-[#17191c]"
             initial={{ y: 10, scale: 0.98, opacity: 0 }}
             animate={{ y: 0, scale: 1, opacity: 1 }}
             exit={{ y: 8, scale: 0.98, opacity: 0 }}
@@ -166,7 +171,9 @@ export function GlobalSearchModal({
               <div className="mt-2 flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
                 <span>Ctrl/⌘ K</span>
                 <span>
-                  {hits.length > 0 ? t('search.resultsCount', { count: hits.length }) : ''}
+                  {hits.length > 0
+                    ? t('search.resultsCount', { count: hits.length })
+                    : ''}
                 </span>
               </div>
             </div>

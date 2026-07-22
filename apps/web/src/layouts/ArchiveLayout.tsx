@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next'
 import { LeftSidebarWidget, StatsWidget } from '@/components/blog/BlogWidgets'
 import { MobileBlogDrawer } from '@/components/blog/MobileBlogDrawer'
 import { ReaderModeToggle } from '@/components/blog/ReaderModeToggle'
-import { getAllPostSummaries } from '@/lib/content'
-import { cn } from '@/lib/utils'
+import { normalizePathname } from '@/app/routing/normalizePathname'
+import { getAllPostSummaries } from '@/lib/content/postSummaries'
+import { cn } from '@/lib/classNames'
 
 export type ArchiveOutletContext = {
   simpleMode: boolean
@@ -17,22 +18,26 @@ export function ArchiveLayout() {
   const { i18n } = useTranslation()
   const { pathname } = useLocation()
   const posts = getAllPostSummaries(i18n.language)
-  const isLinksPage = pathname === '/links'
+  const isLinksPage = normalizePathname(pathname) === '/links'
   const [isMounted, setIsMounted] = useState(false)
-  const [simpleMode, setSimpleMode] = useState(() => {
-    if (typeof window === 'undefined') return false
-    return window.localStorage.getItem(READER_MODE_STORAGE_KEY) === 'simple'
-  })
+  const [simpleMode, setSimpleMode] = useState(false)
   const outletContext = useMemo(
     () => ({ simpleMode }) satisfies ArchiveOutletContext,
     [simpleMode]
   )
 
   useEffect(() => {
+    if (window.__PRERENDER__) return
+
+    setSimpleMode(
+      window.localStorage.getItem(READER_MODE_STORAGE_KEY) === 'simple'
+    )
     setIsMounted(true)
   }, [])
 
   useEffect(() => {
+    if (!isMounted) return
+
     document.documentElement.toggleAttribute('data-simple-reading', simpleMode)
     window.localStorage.setItem(
       READER_MODE_STORAGE_KEY,
@@ -42,7 +47,7 @@ export function ArchiveLayout() {
     return () => {
       document.documentElement.removeAttribute('data-simple-reading')
     }
-  }, [simpleMode])
+  }, [isMounted, simpleMode])
 
   return (
     <div className={styles.container}>

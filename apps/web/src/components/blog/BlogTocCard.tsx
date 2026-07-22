@@ -1,14 +1,14 @@
 import { ArrowUpCircle, MessageSquareText } from 'lucide-react'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Card } from '../ui/Card'
+import { Card } from '@/components/ui/Card'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '../ui/tooltip'
-import { cn } from '@/lib/utils'
+} from '@/components/ui/tooltip'
+import { cn } from '@/lib/classNames'
 import '../../i18n'
 import { X } from 'lucide-react'
 

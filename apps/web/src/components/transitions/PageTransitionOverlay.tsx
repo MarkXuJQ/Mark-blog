@@ -5,7 +5,7 @@ import pixelFontUrl from '../../assets/fonts/UranusPixel-Subset.woff2'
 import {
   clearPendingPageTransition,
   subscribePageTransition,
-} from './pageTransitionBus'
+} from '@/lib/transitions/pageTransitionBus'
 
 const SWEEP_DURATION = 0.82
 const EASTER_LINES = [
@@ -89,7 +89,7 @@ export function PageTransitionOverlay({
     <AnimatePresence>
       {isActive && (
         <motion.div
-          className="fixed inset-0 z-[2000] pointer-events-auto"
+          className="pointer-events-auto fixed inset-0 z-[2000]"
           onClick={dismissOverlay}
           onKeyDown={(event) => {
             if (
@@ -104,7 +104,9 @@ export function PageTransitionOverlay({
           }}
           role={isWaitingClick ? 'button' : undefined}
           tabIndex={isWaitingClick ? 0 : -1}
-          aria-label={isWaitingClick ? 'Click to continue transition' : undefined}
+          aria-label={
+            isWaitingClick ? 'Click to continue transition' : undefined
+          }
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -131,20 +133,25 @@ export function PageTransitionOverlay({
             initial={{ scaleX: 0 }}
             animate={{
               scaleX:
-                pageTransition.phase === 'cover' || pageTransition.phase === 'hold'
+                pageTransition.phase === 'cover' ||
+                pageTransition.phase === 'hold'
                   ? 1
                   : 0,
             }}
             style={{
               transformOrigin:
-                pageTransition.phase === 'cover' || pageTransition.phase === 'hold'
+                pageTransition.phase === 'cover' ||
+                pageTransition.phase === 'hold'
                   ? 'left center'
                   : 'right center',
             }}
             exit={{ scaleX: 0 }}
             transition={{ duration: SWEEP_DURATION, ease: [0.22, 1, 0.36, 1] }}
             onAnimationComplete={() => {
-              if (pageTransition.phase === 'cover' && !hasNavigatedRef.current) {
+              if (
+                pageTransition.phase === 'cover' &&
+                !hasNavigatedRef.current
+              ) {
                 hasNavigatedRef.current = true
                 if (pageTransition.to) navigate(pageTransition.to)
                 holdStartedAtRef.current = Date.now()
@@ -177,7 +184,7 @@ export function PageTransitionOverlay({
                 }
               >
                 <div
-                  className="whitespace-nowrap text-[clamp(30px,4.2vw,56px)] font-black uppercase leading-none tracking-[0.26em] text-black/82 drop-shadow-[0_1px_0_rgba(255,255,255,0.2)]"
+                  className="text-[clamp(30px,4.2vw,56px)] leading-none font-black tracking-[0.26em] whitespace-nowrap text-black/82 uppercase drop-shadow-[0_1px_0_rgba(255,255,255,0.2)]"
                   style={{
                     fontFamily:
                       "'Uranus Pixel', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif",
@@ -211,7 +218,10 @@ export function PageTransitionOverlay({
                 <motion.div
                   className="rounded-full border border-black/35 bg-black/18 px-4 py-2 text-sm font-semibold tracking-wide text-black"
                   animate={{ opacity: [0.88, 1, 0.88] }}
-                  transition={{ duration: 1.4, repeat: Number.POSITIVE_INFINITY }}
+                  transition={{
+                    duration: 1.4,
+                    repeat: Number.POSITIVE_INFINITY,
+                  }}
                 >
                   点击继续 · Click to continue
                 </motion.div>
@@ -226,11 +236,13 @@ export function PageTransitionOverlay({
               initial={{ opacity: 0, scale: 0.86, rotate: 192 }}
               animate={{
                 opacity:
-                  pageTransition.phase === 'cover' || pageTransition.phase === 'hold'
+                  pageTransition.phase === 'cover' ||
+                  pageTransition.phase === 'hold'
                     ? 1
                     : 0,
                 scale:
-                  pageTransition.phase === 'cover' || pageTransition.phase === 'hold'
+                  pageTransition.phase === 'cover' ||
+                  pageTransition.phase === 'hold'
                     ? 1
                     : 0.86,
                 rotate: 202,

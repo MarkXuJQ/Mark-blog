@@ -1,18 +1,31 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Footer } from '@/components/layout/Footer'
 import { NavBar } from '@/components/layout/NavBar'
 import { GlobalSearchHost } from '@/components/search/GlobalSearchHost'
 import { PageTransitionHost } from '@/components/transitions/PageTransitionHost'
-import { DraggableBackToTop } from '@/components/ui/DraggableBackToTop'
-import { GlobalLinkPreview } from '@/components/ui/GlobalLinkPreview'
 import {
   ThemeCurtain,
   type ThemeCurtainState,
-} from '@/components/ui/ThemeCurtain'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
+} from '@/components/theme/ThemeCurtain'
+import { ThemeToggle } from '@/components/theme/ThemeToggle'
 import { useScrollVisibility } from '@/hooks/useScrollVisibility'
-import { type ThemeMode, useTheme } from '@/hooks/useTheme'
+import {
+  resolveThemeModeTone,
+  type ThemeMode,
+  useTheme,
+} from '@/hooks/useTheme'
+
+const LazyDraggableBackToTop = lazy(() =>
+  import('@/components/layout/DraggableBackToTop').then((module) => ({
+    default: module.DraggableBackToTop,
+  }))
+)
+const LazyGlobalLinkPreview = lazy(() =>
+  import('@/components/article/GlobalLinkPreview').then((module) => ({
+    default: module.GlobalLinkPreview,
+  }))
+)
 
 const CURTAIN_TIMING_SCALE = 1.5
 const CURTAIN_ENTER_MS = Math.round(180 * CURTAIN_TIMING_SCALE)
@@ -27,17 +40,6 @@ function getResolvedThemeTone(): 'light' | 'dark' {
     : 'light'
 }
 
-function getThemeModeTone(mode: ThemeMode): 'light' | 'dark' {
-  if (mode === 'system') {
-    if (typeof window === 'undefined') return 'light'
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light'
-  }
-
-  return mode
-}
-
 function prefersReducedMotion() {
   if (typeof window === 'undefined') return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -50,12 +52,15 @@ export function RootLayout() {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false)
   const [isTransitionActive, setIsTransitionActive] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [areClientInteractionsReady, setAreClientInteractionsReady] =
+    useState(false)
   const [themeCurtain, setThemeCurtain] = useState<ThemeCurtainState | null>(
     null
   )
   const themeCurtainTimers = useRef<number[]>([])
   const isHome = pathname === '/'
   const hideBackToTop = pathname === '/'
+  const supportsLinkPreviews = pathname.startsWith('/blog/')
 
   const clearThemeCurtainTimers = () => {
     themeCurtainTimers.current.forEach((timerId) => {
@@ -75,14 +80,21 @@ export function RootLayout() {
   }
 
   const handleThemeModeChange = (nextMode: ThemeMode) => {
-    if (nextMode === mode || prefersReducedMotion()) {
+    const fromTone = getResolvedThemeTone()
+    const toTone = resolveThemeModeTone(nextMode)
+
+    if (
+      nextMode === mode ||
+      prefersReducedMotion() ||
+      fromTone === toTone
+    ) {
+      clearThemeCurtainTimers()
+      setThemeCurtain(null)
       setMode(nextMode)
       return
     }
 
     clearThemeCurtainTimers()
-    const fromTone = getResolvedThemeTone()
-    const toTone = getThemeModeTone(nextMode)
     setThemeCurtain({ phase: 'enter', fromTone, toTone })
 
     window.requestAnimationFrame(() => {
@@ -121,6 +133,11 @@ export function RootLayout() {
 
   useEffect(() => {
     return clearThemeCurtainTimers
+  }, [])
+
+  useEffect(() => {
+    if (window.__PRERENDER__) return
+    setAreClientInteractionsReady(true)
   }, [])
 
   return (
@@ -162,10 +179,18 @@ export function RootLayout() {
 
       <ThemeToggle mode={mode} onModeChange={handleThemeModeChange} />
       <ThemeCurtain state={themeCurtain} />
-      {!hideBackToTop && <DraggableBackToTop />}
+      {areClientInteractionsReady && !hideBackToTop ? (
+        <Suspense fallback={null}>
+          <LazyDraggableBackToTop />
+        </Suspense>
+      ) : null}
       <PageTransitionHost onActiveChange={setIsTransitionActive} />
       <GlobalSearchHost onOpenChange={setIsSearchOpen} />
-      <GlobalLinkPreview />
+      {areClientInteractionsReady && supportsLinkPreviews ? (
+        <Suspense fallback={null}>
+          <LazyGlobalLinkPreview />
+        </Suspense>
+      ) : null}
     </div>
   )
 }

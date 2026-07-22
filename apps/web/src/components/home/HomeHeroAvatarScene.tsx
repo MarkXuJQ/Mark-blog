@@ -13,8 +13,20 @@ import {
   type MotionStyle,
   type MotionValue,
 } from 'framer-motion'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
+import { getImageUrl } from '@/lib/image'
+
+const AVATAR_AVIF_SRCSET = [
+  `${getImageUrl('/images/avatar-256.avif')} 256w`,
+  `${getImageUrl('/images/avatar-384.avif')} 384w`,
+].join(', ')
+const AVATAR_WEBP_SRCSET = [
+  `${getImageUrl('/images/avatar-256.webp')} 256w`,
+  `${getImageUrl('/images/avatar-384.webp')} 384w`,
+].join(', ')
+const AVATAR_SIZES =
+  '(min-width: 1024px) 248px, (min-width: 640px) 228px, 208px'
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)
@@ -514,15 +526,28 @@ export function HomeHeroAvatarScene({
                   className={styles.avatarMask}
                   style={{ clipPath: 'inset(0 round 34%)' }}
                 >
-                  <img
-                    src={avatarSrc}
-                    alt=""
-                    width={360}
-                    height={360}
-                    decoding="async"
-                    fetchPriority="high"
-                    className={styles.avatar}
-                  />
+                  <picture className={styles.avatarPicture}>
+                    <source
+                      type="image/avif"
+                      srcSet={AVATAR_AVIF_SRCSET}
+                      sizes={AVATAR_SIZES}
+                    />
+                    <source
+                      type="image/webp"
+                      srcSet={AVATAR_WEBP_SRCSET}
+                      sizes={AVATAR_SIZES}
+                    />
+                    <img
+                      src={avatarSrc}
+                      alt=""
+                      width={384}
+                      height={384}
+                      sizes={AVATAR_SIZES}
+                      decoding="async"
+                      fetchPriority="high"
+                      className={styles.avatar}
+                    />
+                  </picture>
                 </div>
                 <div className={styles.avatarOutline} />
               </motion.div>
@@ -568,7 +593,6 @@ export function HomeHeroAvatarScene({
           {motionSensorLabel}
         </button>
       ) : null}
-
     </motion.div>
   )
 }
@@ -647,6 +671,7 @@ const styles = {
     'absolute inset-[8%] rounded-[36%] bg-[radial-gradient(circle,rgba(255,255,255,0.36)_0%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0)_72%)] blur-2xl',
   avatarMask:
     'relative h-full w-full overflow-hidden rounded-[34%] bg-slate-950/10',
+  avatarPicture: 'block h-full w-full',
   avatar: 'h-full w-full scale-[1.08] object-cover object-center',
   avatarOutline: 'pointer-events-none absolute inset-0 rounded-[38%]',
   ambientOrb:

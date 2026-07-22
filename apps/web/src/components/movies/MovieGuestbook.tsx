@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { MessageSquarePlus, MessageSquareQuote, X } from 'lucide-react'
 import { DeferredComments } from '@/components/comments/DeferredComments'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 
 interface MovieGuestbookProps {
   locale: string

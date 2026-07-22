@@ -1,10 +1,4 @@
-import {
-  lazy,
-  useEffect,
-  useRef,
-  Suspense,
-  useState,
-} from 'react'
+import { lazy, useEffect, useRef, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Footer } from '@/components/layout/Footer'
 import {
@@ -13,23 +7,43 @@ import {
 } from '@/components/home/HomeDeferredPlaceholders'
 import { HomeBlogRailSection } from '@/components/home/HomeBlogRailSection'
 import { HomeHeroSection } from '@/components/home/HomeHeroSection'
-import { useHomePageSceneMotion } from '@/components/home/useHomePageSceneMotion'
-import { useHomePageRuntime } from '@/components/home/useHomePageRuntime'
-import { useHomeGsapReveal } from '@/components/home/useHomeGsapReveal'
-import { useHomeSectionPager } from '@/components/home/useHomeSectionPager'
-import { Seo } from '@/components/seo/Seo'
+import { useHomePageSceneMotion } from '@/hooks/useHomePageSceneMotion'
+import { useHomePageRuntime } from '@/hooks/useHomePageRuntime'
+import { useHomeGsapReveal } from '@/hooks/useHomeGsapReveal'
+import { useHomeSectionPager } from '@/hooks/useHomeSectionPager'
+import { Seo } from '@/app/seo/Seo'
 import {
   DEFAULT_DESCRIPTION,
   getSiteUrl,
   toAbsoluteUrl,
   type JsonLd,
-} from '@/components/seo/shared'
+} from '@/lib/seo'
 import { useDeferredRender } from '@/hooks/useDeferredRender'
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
-import { getImageUrl } from '@/utils/image'
+import { getImageUrl } from '@/lib/image'
 
-const HOME_DEFERRED_PRELOAD_DELAY_MS = 900
-const HOME_CHUNK_PRELOAD_DELAY_MS = 650
+const HOME_DEFERRED_PRELOAD_DELAY_MS = 2400
+const HOME_CHUNK_PRELOAD_DELAY_MS = 2600
+const HOME_CHUNK_PRELOAD_IDLE_TIMEOUT_MS = 3000
+const HOME_CHUNK_PRELOAD_FALLBACK_DELAY_MS = 1000
+const SLOW_NETWORK_TYPES = new Set(['slow-2g', '2g', '3g'])
+
+type NetworkInformation = {
+  effectiveType?: string
+  saveData?: boolean
+}
+
+type NavigatorWithConnection = Navigator & {
+  connection?: NetworkInformation
+}
+
+type IdleCapableWindow = Window & {
+  requestIdleCallback?: (
+    callback: () => void,
+    options?: { timeout?: number }
+  ) => number
+  cancelIdleCallback?: (handle: number) => void
+}
 
 function useDeferredMount(enabled: boolean, delayMs: number) {
   const [isMounted, setIsMounted] = useState(() => !enabled)
@@ -61,7 +75,10 @@ function useDeferredMount(enabled: boolean, delayMs: number) {
     return () => {
       window.clearTimeout(timeoutHandle)
       window.clearTimeout(fallbackHandle)
-      if (idleHandle !== null && typeof window.cancelIdleCallback === 'function') {
+      if (
+        idleHandle !== null &&
+        typeof window.cancelIdleCallback === 'function'
+      ) {
         window.cancelIdleCallback(idleHandle)
       }
     }
@@ -72,12 +89,62 @@ function useDeferredMount(enabled: boolean, delayMs: number) {
 
 function useHomeChunkPreload() {
   useEffect(() => {
-    const timer = window.setTimeout(() => {
+    if (window.__PRERENDER__) return
+
+    const connection = (navigator as NavigatorWithConnection).connection
+    if (
+      connection?.saveData ||
+      (connection?.effectiveType &&
+        SLOW_NETWORK_TYPES.has(connection.effectiveType))
+    ) {
+      return
+    }
+
+    const idleWindow = window as IdleCapableWindow
+    let idleHandle: number | null = null
+    let preloadDelayHandle = 0
+    let fallbackHandle = 0
+
+    const preloadChunks = () => {
       void import('@/components/home/HomeWidgetStackSection')
       void import('@/components/home/HomeRadarSection')
-    }, HOME_CHUNK_PRELOAD_DELAY_MS)
+    }
 
-    return () => window.clearTimeout(timer)
+    const preloadWhenIdle = () => {
+      if (idleWindow.requestIdleCallback) {
+        idleHandle = idleWindow.requestIdleCallback(preloadChunks, {
+          timeout: HOME_CHUNK_PRELOAD_IDLE_TIMEOUT_MS,
+        })
+        return
+      }
+
+      fallbackHandle = window.setTimeout(
+        preloadChunks,
+        HOME_CHUNK_PRELOAD_FALLBACK_DELAY_MS
+      )
+    }
+
+    const schedulePreload = () => {
+      preloadDelayHandle = window.setTimeout(
+        preloadWhenIdle,
+        HOME_CHUNK_PRELOAD_DELAY_MS
+      )
+    }
+
+    if (document.readyState === 'complete') {
+      schedulePreload()
+    } else {
+      window.addEventListener('load', schedulePreload, { once: true })
+    }
+
+    return () => {
+      window.removeEventListener('load', schedulePreload)
+      window.clearTimeout(preloadDelayHandle)
+      window.clearTimeout(fallbackHandle)
+      if (idleHandle !== null && idleWindow.cancelIdleCallback) {
+        idleWindow.cancelIdleCallback(idleHandle)
+      }
+    }
   }, [])
 }
 
@@ -100,7 +167,12 @@ function HomeDeferredScenes({
   avatarSrc: string
   isCoarsePointer: boolean
 }) {
-  const shouldPreloadDeferredScenes = useDeferredMount(true, HOME_DEFERRED_PRELOAD_DELAY_MS)
+  const isPrerender =
+    typeof window !== 'undefined' && Boolean(window.__PRERENDER__)
+  const shouldPreloadDeferredScenes = useDeferredMount(
+    true,
+    HOME_DEFERRED_PRELOAD_DELAY_MS
+  )
   const {
     targetRef: widgetStackPlaceholderRef,
     shouldRender: shouldRenderWidgetStack,
@@ -114,12 +186,23 @@ function HomeDeferredScenes({
       initial: shouldPreloadDeferredScenes,
     })
 
+  if (isPrerender) {
+    return (
+      <>
+        <HomeWidgetStackPlaceholder
+          placeholderRef={widgetStackPlaceholderRef}
+        />
+        <HomeRadarPlaceholder placeholderRef={radarPlaceholderRef} />
+      </>
+    )
+  }
+
   return (
     <>
       {shouldRenderWidgetStack ? (
         <Suspense fallback={<HomeWidgetStackPlaceholder />}>
           <div className="snap-start">
-            <LazyHomeWidgetStackSection avatarSrc={avatarSrc} />
+            <LazyHomeWidgetStackSection />
           </div>
         </Suspense>
       ) : (
@@ -142,7 +225,8 @@ export function Home() {
   const { t, i18n } = useTranslation()
   const pageRef = useRef<HTMLDivElement | null>(null)
   const isCoarsePointer = useIsCoarsePointer()
-  const avatarSrc = getImageUrl('/images/IMG_1766.JPG')
+  const avatarSrc = getImageUrl('/images/avatar-384.webp')
+  const compactAvatarSrc = getImageUrl('/images/avatar-96.webp')
   const siteUrl = getSiteUrl()
   const isZh = i18n.language?.startsWith('zh')
   const { handleNameClick, handleNameKeyDown, isDarkMode } =
@@ -203,7 +287,7 @@ export function Home() {
         />
 
         <HomeBlogRailSection
-          avatarSrc={avatarSrc}
+          avatarSrc={compactAvatarSrc}
           sectionScale={blog.scale}
           sectionY={blog.y}
           sectionOpacity={blog.opacity}

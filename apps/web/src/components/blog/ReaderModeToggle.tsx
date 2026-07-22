@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, useAnimation } from 'framer-motion'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 
 interface ReaderModeToggleProps {
   simpleMode: boolean

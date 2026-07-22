@@ -16,7 +16,7 @@ import {
   type Transition,
 } from 'framer-motion'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 
 interface TextRotateProps {
   texts: string[]

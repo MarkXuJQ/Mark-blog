@@ -1,0 +1,122 @@
+{
+  "$schema": "https://markxu.icu/schemas/photo-route/v1",
+  "version": 1,
+  "title": "武汉的一天",
+  "animationDurationSeconds": 2.4,
+  "path": [
+    {
+      "latitude": 30.588384,
+      "longitude": 114.279619
+    },
+    {
+      "latitude": 30.593677,
+      "longitude": 114.268941
+    },
+    {
+      "latitude": 30.593589,
+      "longitude": 114.267591
+    },
+    {
+      "latitude": 30.593587,
+      "longitude": 114.267446
+    },
+    {
+      "latitude": 30.592827,
+      "longitude": 114.264147
+    },
+    {
+      "latitude": 30.585761,
+      "longitude": 114.265551
+    },
+    {
+      "latitude": 30.565771,
+      "longitude": 114.359033
+    },
+    {
+      "latitude": 30.564027,
+      "longitude": 114.359776
+    },
+    {
+      "latitude": 30.503909,
+      "longitude": 114.324266
+    },
+    {
+      "latitude": 30.50392,
+      "longitude": 114.32422
+    }
+  ],
+  "stops": [
+    {
+      "id": "stop-01",
+      "label": "出地铁站",
+      "latitude": 30.588384,
+      "longitude": 114.279619,
+      "source": "photo",
+      "startsAt": "2026-07-19T03:41:51.000Z",
+      "endsAt": "2026-07-19T03:41:51.000Z",
+      "photoCount": 1
+    },
+    {
+      "id": "stop-02",
+      "label": "陈光记烧味饭店",
+      "latitude": 30.593618,
+      "longitude": 114.267993,
+      "source": "photo",
+      "startsAt": "2026-07-19T03:57:17.000Z",
+      "endsAt": "2026-07-19T04:36:27.000Z",
+      "photoCount": 3
+    },
+    {
+      "id": "stop-03",
+      "label": "进入中山公园",
+      "latitude": 30.592827,
+      "longitude": 114.264147,
+      "source": "photo",
+      "startsAt": "2026-07-19T04:52:38.000Z",
+      "endsAt": "2026-07-19T04:52:38.000Z",
+      "photoCount": 1
+    },
+    {
+      "id": "stop-04",
+      "label": "离开中山公园",
+      "latitude": 30.585761,
+      "longitude": 114.265551,
+      "source": "photo",
+      "startsAt": "2026-07-19T05:08:17.000Z",
+      "endsAt": "2026-07-19T05:08:17.000Z",
+      "photoCount": 1
+    },
+    {
+      "id": "stop-05",
+      "label": "湖北省博物馆",
+      "latitude": 30.564899,
+      "longitude": 114.359404,
+      "source": "photo",
+      "startsAt": "2026-07-19T06:15:12.000Z",
+      "endsAt": "2026-07-19T08:19:42.000Z",
+      "photoCount": 2
+    },
+    {
+      "id": "stop-06",
+      "label": "花花披萨",
+      "latitude": 30.503915,
+      "longitude": 114.324243,
+      "source": "photo",
+      "startsAt": "2026-07-19T09:20:40.000Z",
+      "endsAt": "2026-07-19T09:47:08.000Z",
+      "photoCount": 2
+    }
+  ],
+  "stats": {
+    "distanceKilometres": 19.282,
+    "pointCount": 10,
+    "stopCount": 6,
+    "startAt": "2026-07-19T03:41:51.000Z",
+    "endAt": "2026-07-19T09:47:08.000Z"
+  },
+  "attribution": {
+    "map": "OpenFreeMap",
+    "tiles": "© OpenMapTiles",
+    "data": "© OpenStreetMap contributors"
+  }
+}

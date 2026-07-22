@@ -43,6 +43,10 @@ const nerdFontOutput = path.join(
   projectRoot,
   'src/assets/fonts/JetBrainsMonoNerd-Subset.woff2'
 )
+const montserratFontOutput = path.join(
+  projectRoot,
+  'src/assets/fonts/Montserrat-Subset.woff2'
+)
 
 const chineseTextPath = path.join(generatedDir, 'font-chinese-chars.txt')
 const alibabaSemiBoldTextPath = path.join(
@@ -51,6 +55,7 @@ const alibabaSemiBoldTextPath = path.join(
 )
 const pixelTextPath = path.join(generatedDir, 'font-pixel-chars.txt')
 const nerdFontTextPath = path.join(generatedDir, 'font-nerd-chars.txt')
+const montserratTextPath = path.join(generatedDir, 'font-montserrat-chars.txt')
 const fontSafelistPath = path.join(
   projectRoot,
   'src/assets/fonts/font-safelist.txt'
@@ -89,6 +94,11 @@ const nerdFontSource = resolveFontSource({
     'JetBrainsMonoNerdFont-Regular',
     'JetBrainsMonoNerdFontMono-Regular',
   ],
+})
+const montserratFontSource = resolveFontSource({
+  envVar: 'MONTSERRAT_FONT_SOURCE',
+  roots: [path.join(projectRoot, 'src/assets/fonts/Montserrat')],
+  baseNames: ['Montserrat-VariableFont_wght'],
 })
 
 if (
@@ -142,7 +152,11 @@ function collectTextFiles(dirPath, files = []) {
       continue
     }
 
-    if (entry.isFile() && textExtensions.has(path.extname(entry.name))) {
+    if (
+      entry.isFile() &&
+      entry.name.toLowerCase() !== 'readme.md' &&
+      textExtensions.has(path.extname(entry.name))
+    ) {
       files.push(fullPath)
     }
   }
@@ -284,6 +298,12 @@ function buildNerdFontText() {
   )
 }
 
+function buildMontserratText() {
+  return uniqueGlyphText(
+    readProjectText() + readFontSafelist() + safeCodeExtras
+  )
+}
+
 function ensureDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true })
 }
@@ -327,6 +347,7 @@ function findPyftsubset() {
     alibabaSemiBoldFontSource,
     pixelFontSource,
     nerdFontSource,
+    montserratFontSource,
   ].find(Boolean)
   const candidates = [
     process.env.PYFTSUBSET,
@@ -366,6 +387,27 @@ function findPyftsubset() {
     if (!result.error && result.status === 0) {
       return candidate
     }
+  }
+
+  return null
+}
+
+function findFonttools() {
+  const candidates = [
+    process.env.FONTTOOLS,
+    path.join(projectRoot, '.venv-fonttools/bin/fonttools'),
+    path.join(projectRoot, '.venv-fonttools/Scripts/fonttools.exe'),
+    path.join(repoRoot, '.venv-fonttools/bin/fonttools'),
+    path.join(repoRoot, '.venv-fonttools/Scripts/fonttools.exe'),
+    'fonttools',
+  ].filter(Boolean)
+
+  for (const candidate of candidates) {
+    const result = spawnSync(candidate, ['varLib.instancer', '--help'], {
+      stdio: 'ignore',
+      shell: false,
+    })
+    if (!result.error && result.status === 0) return candidate
   }
 
   return null
@@ -425,6 +467,33 @@ function runSubset(pyftsubsetPath, options) {
   }
 }
 
+function instantiateMontserrat(fonttoolsPath) {
+  const output = path.join(generatedDir, 'Montserrat-400-900.ttf')
+  const result = spawnSync(
+    fonttoolsPath,
+    [
+      'varLib.instancer',
+      montserratFontSource,
+      'wght=400:900',
+      `--output=${output}`,
+      '--no-recalc-timestamp',
+      '--quiet',
+    ],
+    {
+      cwd: projectRoot,
+      encoding: 'utf8',
+      shell: false,
+    }
+  )
+
+  if (result.status !== 0) {
+    if (result.stderr?.trim()) console.error(result.stderr.trim())
+    throw new Error('Failed to restrict Montserrat to weights 400-900')
+  }
+
+  return output
+}
+
 function verifyOutputExists(filePath) {
   if (!fs.existsSync(filePath)) {
     throw new Error(`Missing required generated font: ${filePath}`)
@@ -448,6 +517,32 @@ function generateOrReuse(pyftsubsetPath, options) {
   verifyOutputExists(options.output)
 }
 
+function generateMontserratOrReuse(pyftsubsetPath, fonttoolsPath) {
+  const canGenerate = Boolean(
+    pyftsubsetPath && fonttoolsPath && montserratFontSource
+  )
+
+  if (canGenerate) {
+    const instantiatedSource = instantiateMontserrat(fonttoolsPath)
+    runSubset(pyftsubsetPath, {
+      input: instantiatedSource,
+      textFile: montserratTextPath,
+      output: montserratFontOutput,
+    })
+    return
+  }
+
+  if (!montserratFontSource) {
+    console.warn('Montserrat source not found, reusing committed subset font.')
+  } else if (!fonttoolsPath) {
+    console.warn(
+      'fonttools not found, reusing committed Montserrat subset font.'
+    )
+  }
+
+  verifyOutputExists(montserratFontOutput)
+}
+
 function logOutput(filePath) {
   const size = fs.statSync(filePath).size
   console.log(`Generated ${path.basename(filePath)} (${formatBytes(size)})`)
@@ -461,13 +556,16 @@ async function main() {
   const alibabaSemiBoldText = buildAlibabaSemiBoldText()
   const pixelText = uniqueGlyphText(pixelFontText)
   const nerdFontText = buildNerdFontText()
+  const montserratText = buildMontserratText()
 
   fs.writeFileSync(chineseTextPath, chineseText)
   fs.writeFileSync(alibabaSemiBoldTextPath, alibabaSemiBoldText)
   fs.writeFileSync(pixelTextPath, pixelText)
   fs.writeFileSync(nerdFontTextPath, nerdFontText)
+  fs.writeFileSync(montserratTextPath, montserratText)
 
   const pyftsubsetPath = findPyftsubset()
+  const fonttoolsPath = findFonttools()
 
   if (pyftsubsetPath) {
     console.log('Generating font subsets with:', pyftsubsetPath)
@@ -505,10 +603,13 @@ async function main() {
     label: 'Nerd font',
   })
 
+  generateMontserratOrReuse(pyftsubsetPath, fonttoolsPath)
+
   logOutput(alibabaMediumFontOutput)
   logOutput(alibabaSemiBoldFontOutput)
   logOutput(pixelFontOutput)
   logOutput(nerdFontOutput)
+  logOutput(montserratFontOutput)
 }
 
 main().catch((error) => {

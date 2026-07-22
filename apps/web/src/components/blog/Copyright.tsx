@@ -36,13 +36,13 @@ export function Copyright() {
       <ul className="grid gap-3 text-sm sm:grid-cols-2">
         <li className="flex flex-col gap-1 sm:flex-row sm:gap-2">
           <span className="min-w-[4rem] font-bold text-slate-700 dark:text-slate-200">
-            {t('blog.copyright.author')}:
+            {`${t('blog.copyright.author')}:`}
           </span>
           <span className="text-slate-600 dark:text-slate-300">Mark Xu</span>
         </li>
         <li className="flex flex-col gap-1 sm:col-span-2 sm:flex-row sm:gap-2">
           <span className="min-w-[4rem] font-bold text-slate-700 dark:text-slate-200">
-            {t('blog.copyright.license')}:
+            {`${t('blog.copyright.license')}:`}
           </span>
           <span className="text-slate-600 dark:text-slate-300">
             <Trans

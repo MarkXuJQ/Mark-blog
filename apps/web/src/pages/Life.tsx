@@ -1,14 +1,26 @@
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, MessageCircle, X, ListFilter, ChevronDown, ArrowDown } from 'lucide-react'
+import {
+  ChevronLeft,
+  ChevronRight,
+  MessageCircle,
+  X,
+  ListFilter,
+  ChevronDown,
+  ArrowDown,
+} from 'lucide-react'
 import { DeferredComments } from '@/components/comments/DeferredComments'
-import { getTwikooApi, loadTwikooScript } from '@/components/comments/twikooLoader'
-import { Seo } from '@/components/seo/Seo'
-import { Dropdown, DropdownContent, DropdownTrigger } from '@/components/ui/Dropdown'
-import { useLightbox } from '@/components/ui/Lightbox'
-import { getOriginalImageUrl, getOptimizedImageUrl } from '@/utils/image'
-import { cn } from '@/lib/utils'
+import { getTwikooApi, loadTwikooScript } from '@/lib/comments/twikooLoader'
+import { Seo } from '@/app/seo/Seo'
+import {
+  Dropdown,
+  DropdownContent,
+  DropdownTrigger,
+} from '@/components/ui/Dropdown'
+import { useLightbox } from '@/hooks/useLightbox'
+import { getOriginalImageUrl, getOptimizedImageUrl } from '@/lib/image'
+import { cn } from '@/lib/classNames'
 
 type ImageInput = string | { src: string; alt?: string }
 
@@ -54,7 +66,10 @@ function normalizeLifeImage(input: ImageInput): LifeImage {
 }
 
 function parseCityFromMeta(meta: string): string | undefined {
-  const parts = meta.split('·').map((p) => p.trim()).filter(Boolean)
+  const parts = meta
+    .split('·')
+    .map((p) => p.trim())
+    .filter(Boolean)
   const maybe = parts[1]
   return maybe ? maybe : undefined
 }
@@ -72,13 +87,21 @@ export function Life() {
   const title = t('nav.life')
   const description = t('life.description', '生活随笔瀑布流。')
   const { openLightbox } = useLightbox()
-  const twikooEnvId = import.meta.env.VITE_TWIKOO_ENV_ID || 'https://comments.markxu.icu/api/twikoo'
+  const twikooEnvId =
+    import.meta.env.VITE_TWIKOO_ENV_ID ||
+    'https://comments.markxu.icu/api/twikoo'
 
   const posts = useMemo(() => {
-    const merged = Object.values(lifeYearFiles).flatMap((module) => module.default ?? [])
+    const merged = Object.values(lifeYearFiles).flatMap(
+      (module) => module.default ?? []
+    )
     const normalized: LifePost[] = merged
       .map((post) => {
-        const rawImages = Array.isArray(post.images) ? post.images : post.image ? [post.image] : []
+        const rawImages = Array.isArray(post.images)
+          ? post.images
+          : post.image
+            ? [post.image]
+            : []
         const images = rawImages.map(normalizeLifeImage)
         const city = post.city ?? parseCityFromMeta(post.meta)
         return { ...post, images, city }
@@ -103,7 +126,9 @@ export function Life() {
   }, [posts])
 
   const selectedCityList = useMemo(() => {
-    return Object.keys(selectedCities).sort((a, b) => a.localeCompare(b, 'zh-Hans-CN'))
+    return Object.keys(selectedCities).sort((a, b) =>
+      a.localeCompare(b, 'zh-Hans-CN')
+    )
   }, [selectedCities])
 
   const displayPosts = useMemo(() => {
@@ -164,7 +189,8 @@ export function Life() {
       await loadTwikooScript()
       const twikooApi = getTwikooApi()
       if (!twikooApi?.getCommentsCount) return
-      const ids = postIds && postIds.length > 0 ? postIds : posts.map((p) => p.id)
+      const ids =
+        postIds && postIds.length > 0 ? postIds : posts.map((p) => p.id)
       const urls = ids.map((id) => `/life/${id}`)
       const res = await twikooApi.getCommentsCount({
         envId: twikooEnvId,
@@ -174,7 +200,9 @@ export function Life() {
       const next: Record<string, number> = {}
       for (const item of res) {
         if (!item?.url) continue
-        const id = item.url.startsWith('/life/') ? item.url.slice('/life/'.length) : item.url
+        const id = item.url.startsWith('/life/')
+          ? item.url.slice('/life/'.length)
+          : item.url
         next[id] = typeof item.count === 'number' ? item.count : 0
       }
       setCommentCounts((prev) => ({ ...prev, ...next }))
@@ -199,8 +227,12 @@ export function Life() {
   useEffect(() => {
     if (!activePost) return
     if (activeImages.length === 0) return
-    const next = activeImages[(activeImageIndex + 1) % activeImages.length]?.preview
-    const prev = activeImages[(activeImageIndex - 1 + activeImages.length) % activeImages.length]?.preview
+    const next =
+      activeImages[(activeImageIndex + 1) % activeImages.length]?.preview
+    const prev =
+      activeImages[
+        (activeImageIndex - 1 + activeImages.length) % activeImages.length
+      ]?.preview
     for (const src of [next, prev]) {
       if (!src) continue
       const img = new Image()
@@ -258,13 +290,15 @@ export function Life() {
 
   const goPrevImage = () => {
     if (activeImages.length <= 1) return
-    const nextIndex = activeImageIndex === 0 ? activeImages.length - 1 : activeImageIndex - 1
+    const nextIndex =
+      activeImageIndex === 0 ? activeImages.length - 1 : activeImageIndex - 1
     switchToImage(nextIndex)
   }
 
   const goNextImage = () => {
     if (activeImages.length <= 1) return
-    const nextIndex = activeImageIndex === activeImages.length - 1 ? 0 : activeImageIndex + 1
+    const nextIndex =
+      activeImageIndex === activeImages.length - 1 ? 0 : activeImageIndex + 1
     switchToImage(nextIndex)
   }
 
@@ -360,7 +394,8 @@ export function Life() {
       const deltaY = currentY - touchStartY
 
       const atTop = content.scrollTop <= 0
-      const atBottom = content.scrollTop + content.clientHeight >= content.scrollHeight - 1
+      const atBottom =
+        content.scrollTop + content.clientHeight >= content.scrollHeight - 1
 
       if ((atTop && deltaY > 0) || (atBottom && deltaY < 0)) {
         e.preventDefault()
@@ -369,7 +404,9 @@ export function Life() {
 
     document.addEventListener('touchstart', onTouchStart, { passive: true })
     document.addEventListener('touchmove', onTouchMove, { passive: false })
-    window.dispatchEvent(new CustomEvent('app:overlay', { detail: { open: true } }))
+    window.dispatchEvent(
+      new CustomEvent('app:overlay', { detail: { open: true } })
+    )
 
     return () => {
       document.removeEventListener('touchstart', onTouchStart)
@@ -387,7 +424,9 @@ export function Life() {
         window.scrollTo(0, scrollY)
       }
 
-      window.dispatchEvent(new CustomEvent('app:overlay', { detail: { open: false } }))
+      window.dispatchEvent(
+        new CustomEvent('app:overlay', { detail: { open: false } })
+      )
     }
   }, [activeId])
 
@@ -409,14 +448,21 @@ export function Life() {
           <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
-              onClick={() => setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
+              onClick={() =>
+                setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))
+              }
               className={cn(
                 'btn-secondary flex cursor-pointer items-center justify-center gap-2 select-none active:scale-95'
               )}
             >
               <ArrowDown
                 size={16}
-                className={cn(sortOrder === 'desc' ? 'rotate-0 text-blue-500' : 'rotate-180 text-green-500', 'transition-transform')}
+                className={cn(
+                  sortOrder === 'desc'
+                    ? 'rotate-0 text-blue-500'
+                    : 'rotate-180 text-green-500',
+                  'transition-transform'
+                )}
               />
               <span className="min-w-[4.5rem] text-left">
                 {sortOrder === 'desc' ? '最新优先' : '最早优先'}
@@ -435,7 +481,9 @@ export function Life() {
                     {selectedCityList.length === 0
                       ? '城市：全部'
                       : `城市：${selectedCityList.slice(0, 2).join('、')}${
-                          selectedCityList.length > 2 ? ` +${selectedCityList.length - 2}` : ''
+                          selectedCityList.length > 2
+                            ? ` +${selectedCityList.length - 2}`
+                            : ''
                         }`}
                   </span>
                   <ChevronDown size={14} />
@@ -508,12 +556,12 @@ export function Life() {
               onMouseMove={handleCardMouseMove}
               onMouseLeave={handleCardMouseLeave}
             >
-                <button
-                  type="button"
-                  onClick={() => setActiveId(post.id)}
-                  className="block w-full text-left focus:outline-none"
-                  aria-label={`打开：${post.title}`}
-                >
+              <button
+                type="button"
+                onClick={() => setActiveId(post.id)}
+                className="block w-full text-left focus:outline-none"
+                aria-label={`打开：${post.title}`}
+              >
                 <motion.div
                   layoutId={`life-image-${post.id}`}
                   className="relative min-h-[160px] w-full overflow-hidden rounded-2xl bg-slate-100 dark:bg-[#1f2328]"
@@ -531,7 +579,10 @@ export function Life() {
                       loading="lazy"
                       decoding="async"
                       onError={() =>
-                        setFailedCoverIds((prev) => ({ ...prev, [post.id]: true }))
+                        setFailedCoverIds((prev) => ({
+                          ...prev,
+                          [post.id]: true,
+                        }))
                       }
                     />
                   )}
@@ -549,7 +600,7 @@ export function Life() {
                     </div>
                   </div>
                 </div>
-                </button>
+              </button>
             </motion.div>
           ))}
         </div>
@@ -593,19 +644,20 @@ export function Life() {
                 <div className="relative shrink-0 bg-black md:w-[66%]">
                   <motion.div
                     layoutId={`life-image-${activePost.id}`}
-                    className="relative group isolate overflow-hidden rounded-2xl"
+                    className="group relative isolate overflow-hidden rounded-2xl"
                   >
-                    {!failedImagesRef.current.has(currentImageSrc) && currentImageSrc && (
-                      <img
-                        src={currentImageSrc}
-                        alt=""
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-0 h-full w-full scale-[1.2] object-cover opacity-30 blur-2xl brightness-90"
-                        loading="eager"
-                        decoding="async"
-                        draggable={false}
-                      />
-                    )}
+                    {!failedImagesRef.current.has(currentImageSrc) &&
+                      currentImageSrc && (
+                        <img
+                          src={currentImageSrc}
+                          alt=""
+                          aria-hidden="true"
+                          className="pointer-events-none absolute inset-0 h-full w-full scale-[1.2] object-cover opacity-30 blur-2xl brightness-90"
+                          loading="eager"
+                          decoding="async"
+                          draggable={false}
+                        />
+                      )}
                     <div className="relative z-10">
                       {failedImagesRef.current.has(currentImageSrc) ? (
                         <div className="flex h-[42vh] w-full flex-col items-center justify-center gap-3 text-slate-200 md:h-[85vh]">
@@ -629,7 +681,7 @@ export function Life() {
                         <img
                           src={currentImageSrc}
                           alt={activePost.title}
-                          className="h-[42vh] w-full select-none object-contain md:h-[85vh]"
+                          className="h-[42vh] w-full object-contain select-none md:h-[85vh]"
                           loading="eager"
                           decoding="async"
                           draggable={false}
@@ -686,10 +738,10 @@ export function Life() {
                             aria-label="下一张"
                           />
 
-                          <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/80">
+                          <div className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-white/80">
                             <ChevronLeft size={18} />
                           </div>
-                          <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/80">
+                          <div className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-white/80">
                             <ChevronRight size={18} />
                           </div>
 
@@ -720,7 +772,7 @@ export function Life() {
                   </motion.div>
 
                   {activeImages.length > 1 && (
-                    <div className="absolute bottom-3 left-3 right-3 z-[20] flex gap-2 overflow-x-auto rounded-xl bg-black/25 p-2 backdrop-blur">
+                    <div className="absolute right-3 bottom-3 left-3 z-[20] flex gap-2 overflow-x-auto rounded-xl bg-black/25 p-2 backdrop-blur">
                       {activeImages.map((image, idx) => (
                         <button
                           key={`${image.original}-${idx}`}
@@ -772,16 +824,20 @@ export function Life() {
                   </div>
 
                   <div className="mb-6 space-y-4 text-base leading-relaxed text-slate-700 dark:text-slate-300">
-                    {splitLifeContent(activePost.content).map((paragraph, paragraphIndex) => (
-                      <p key={`${activePost.id}-paragraph-${paragraphIndex}`}>
-                        {paragraph.map((line, lineIndex) => (
-                          <span key={`${activePost.id}-line-${paragraphIndex}-${lineIndex}`}>
-                            {line}
-                            {lineIndex < paragraph.length - 1 && <br />}
-                          </span>
-                        ))}
-                      </p>
-                    ))}
+                    {splitLifeContent(activePost.content).map(
+                      (paragraph, paragraphIndex) => (
+                        <p key={`${activePost.id}-paragraph-${paragraphIndex}`}>
+                          {paragraph.map((line, lineIndex) => (
+                            <span
+                              key={`${activePost.id}-line-${paragraphIndex}-${lineIndex}`}
+                            >
+                              {line}
+                              {lineIndex < paragraph.length - 1 && <br />}
+                            </span>
+                          ))}
+                        </p>
+                      )
+                    )}
                   </div>
 
                   <div className="mt-auto flex items-center justify-end pt-4 text-sm text-slate-600 dark:text-slate-300">
@@ -806,7 +862,6 @@ export function Life() {
           </motion.div>
         )}
       </AnimatePresence>
-
     </>
   )
 }

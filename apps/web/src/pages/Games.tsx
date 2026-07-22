@@ -20,10 +20,10 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useReducedMotion } from 'framer-motion'
-import { Seo } from '@/components/seo/Seo'
+import { Seo } from '@/app/seo/Seo'
 import { Pagination } from '@/components/ui/Pagination'
 import { SelectMenu } from '@/components/ui/SelectMenu'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 
 type LoadStatus = 'loading' | 'ready' | 'error'
 type GameSort = 'playtime' | 'recent' | 'achievements'
@@ -47,13 +47,6 @@ interface SteamSummary {
   featuredAppId: number | null
 }
 
-interface SteamReviewSummary {
-  totalPositive: number
-  totalNegative: number
-  totalReviews: number
-  positivePercent: number
-}
-
 interface SteamAchievementStats {
   unlockedCount: number
   totalCount: number
@@ -65,19 +58,13 @@ interface SteamGame {
   playtimeMinutes: number
   recentPlaytimeMinutes: number
   iconUrl: string
-  logoUrl: string
   storeUrl: string
-  communityUrl: string
   achievementStats: SteamAchievementStats | null
 }
 
 interface SteamFeaturedGame extends SteamGame {
-  reviewSummary: SteamReviewSummary | null
   headerImage: string
-  shortDescription: string
   releaseDate: string
-  developers: string[]
-  genres: string[]
 }
 
 interface SteamDashboard {
@@ -331,12 +318,28 @@ function GameIcon(props: {
   )
 }
 
+function FeaturedGameMetric({
+  label,
+  value,
+}: {
+  label: ReactNode
+  value: ReactNode
+}) {
+  return (
+    <div className="min-w-0 border-l border-white/15 px-2 first:border-l-0 first:pl-0 last:pr-0 sm:px-3">
+      <p className="min-h-6 text-[9px] leading-3 break-words text-slate-300 uppercase sm:text-[10px]">
+        {label}
+      </p>
+      <p className="mt-0.5 min-h-8 text-xs leading-4 font-semibold break-words text-slate-100 tabular-nums sm:text-sm">
+        {value}
+      </p>
+    </div>
+  )
+}
+
 function FeaturedGameCard(props: {
   game: SteamFeaturedGame
   locale: string
-  reviewLabel: string
-  reviewCountLabel: string
-  noReviewLabel: string
   lifetimeLabel: string
   achievementLabel: string
   noAchievementsLabel: string
@@ -346,9 +349,6 @@ function FeaturedGameCard(props: {
   const {
     game,
     locale,
-    reviewLabel,
-    reviewCountLabel,
-    noReviewLabel,
     lifetimeLabel,
     achievementLabel,
     noAchievementsLabel,
@@ -384,72 +384,29 @@ function FeaturedGameCard(props: {
           />
 
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-semibold tracking-[0.26em] text-cyan-100/85 uppercase">
-              Steam
-            </p>
-            <h3 className="mt-1.5 line-clamp-2 text-xl leading-tight font-semibold tracking-tight text-white sm:text-2xl">
+            <h3 className="line-clamp-2 text-xl leading-tight font-semibold text-white sm:text-2xl">
               {game.name}
             </h3>
-
-            {game.shortDescription ? (
-              <p className="mt-2.5 line-clamp-2 max-w-[28rem] text-sm leading-relaxed text-slate-200/82">
-                {game.shortDescription}
-              </p>
-            ) : null}
           </div>
         </div>
 
-        <div className="mt-4 space-y-2.5">
-          <div className="grid grid-cols-2 gap-2 text-sm text-slate-100/90">
-            <div className="rounded-[14px] bg-white/11 px-3 py-2.5 backdrop-blur-md">
-              <p className="text-[10px] tracking-[0.2em] text-slate-300 uppercase">
-                {lifetimeLabel}
-              </p>
-              <p className="mt-1 text-base font-semibold tabular-nums sm:text-lg">
-                {formatHours(game.playtimeMinutes, locale)}
-              </p>
-            </div>
-
-            <div className="rounded-[14px] bg-white/11 px-3 py-2.5 backdrop-blur-md">
-              <p className="text-[10px] tracking-[0.2em] text-slate-300 uppercase">
-                {achievementLabel}
-              </p>
-              <p className="mt-1 text-base font-semibold tabular-nums sm:text-lg">
-                {game.achievementStats
-                  ? formatAchievementValue(game.achievementStats, locale)
-                  : noAchievementsLabel}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2 text-[11px] text-slate-100/85">
-            {game.reviewSummary ? (
-              <>
-                <span className="rounded-[9px] bg-emerald-400/18 px-2.5 py-1.5 font-medium text-emerald-100 backdrop-blur-md">
-                  {reviewLabel.replace(
-                    '{{percent}}',
-                    formatInteger(game.reviewSummary.positivePercent, locale)
-                  )}
-                </span>
-                <span className="rounded-[9px] bg-white/10 px-2.5 py-1.5 font-medium backdrop-blur-md">
-                  {reviewCountLabel.replace(
-                    '{{count}}',
-                    formatInteger(game.reviewSummary.totalReviews, locale)
-                  )}
-                </span>
-              </>
-            ) : (
-              <span className="rounded-[9px] bg-white/10 px-2.5 py-1.5 font-medium backdrop-blur-md">
-                {noReviewLabel}
-              </span>
-            )}
-
-            {game.releaseDate ? (
-              <span className="rounded-[9px] bg-white/10 px-2.5 py-1.5 font-medium backdrop-blur-md">
-                {releaseDateLabel.replace('{{date}}', game.releaseDate)}
-              </span>
-            ) : null}
-          </div>
+        <div className="mt-4 grid grid-cols-3 border-t border-white/18 pt-2.5">
+          <FeaturedGameMetric
+            label={releaseDateLabel}
+            value={game.releaseDate || '—'}
+          />
+          <FeaturedGameMetric
+            label={achievementLabel}
+            value={
+              game.achievementStats
+                ? formatAchievementValue(game.achievementStats, locale)
+                : noAchievementsLabel
+            }
+          />
+          <FeaturedGameMetric
+            label={lifetimeLabel}
+            value={formatHours(game.playtimeMinutes, locale)}
+          />
         </div>
       </div>
     </article>
@@ -460,9 +417,6 @@ function FeaturedGameRail(props: {
   games: SteamFeaturedGame[]
   locale: string
   labels: {
-    reviewLabel: string
-    reviewCountLabel: string
-    noReviewLabel: string
     lifetimeLabel: string
     achievementLabel: string
     noAchievementsLabel: string
@@ -676,9 +630,6 @@ function FeaturedGameRailSegment({
   games: SteamFeaturedGame[]
   locale: string
   labels: {
-    reviewLabel: string
-    reviewCountLabel: string
-    noReviewLabel: string
     lifetimeLabel: string
     achievementLabel: string
     noAchievementsLabel: string
@@ -693,9 +644,6 @@ function FeaturedGameRailSegment({
           key={`${ariaHidden ? 'ghost' : 'live'}-${game.appid}`}
           game={game}
           locale={locale}
-          reviewLabel={labels.reviewLabel}
-          reviewCountLabel={labels.reviewCountLabel}
-          noReviewLabel={labels.noReviewLabel}
           lifetimeLabel={labels.lifetimeLabel}
           achievementLabel={labels.achievementLabel}
           noAchievementsLabel={labels.noAchievementsLabel}
@@ -844,6 +792,8 @@ export function Games() {
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    if (window.__PRERENDER__) return
+
     let active = true
 
     setStatus('loading')
@@ -1138,15 +1088,9 @@ export function Games() {
               <section className="mt-10">
                 <div className="mb-5 flex items-end justify-between gap-4">
                   <div>
-                    <p className="text-xs font-semibold tracking-[0.28em] text-cyan-700 uppercase dark:text-cyan-300">
-                      {t('games.featured.eyebrow')}
-                    </p>
-                    <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+                    <h2 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
                       {t('games.featured.title')}
                     </h2>
-                    <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                      {t('games.featured.description')}
-                    </p>
                   </div>
                 </div>
 
@@ -1155,9 +1099,6 @@ export function Games() {
                     games={featuredGames}
                     locale={locale}
                     labels={{
-                      reviewLabel: t('games.featured.reviewPositive'),
-                      reviewCountLabel: t('games.featured.reviewCount'),
-                      noReviewLabel: t('games.featured.noReview'),
                       lifetimeLabel: t('games.featured.lifetimeHours'),
                       achievementLabel: t('games.featured.achievements'),
                       noAchievementsLabel: t('games.featured.noAchievements'),

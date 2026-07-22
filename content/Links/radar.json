@@ -121,6 +121,24 @@
       "color": "#F4C433"
     },
     {
+      "id": "leitao",
+      "cardAlignX": "left",
+      "cardAlignY": "bottom",
+      "color": "#FF6F43"
+    },
+    {
+      "id": "blurredcode",
+      "cardAlignX": "center",
+      "cardAlignY": "top",
+      "color": "#7670E8"
+    },
+    {
+      "id": "ttquk",
+      "cardAlignX": "right",
+      "cardAlignY": "top",
+      "color": "#10A64B"
+    },
+    {
       "id": "ooowl",
       "cardAlignX": "left",
       "cardAlignY": "top",

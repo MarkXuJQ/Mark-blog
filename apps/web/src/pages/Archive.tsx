@@ -2,12 +2,12 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useOutletContext } from 'react-router-dom'
 import { ArrowLeft, Layers, X } from 'lucide-react'
-import { Seo } from '@/components/seo/Seo'
+import { Seo } from '@/app/seo/Seo'
 import { StaggeredList } from '@/components/ui/StaggeredList'
-import { getAllPostSummaries } from '@/lib/content'
-import { cn } from '@/lib/utils'
+import { getAllPostSummaries } from '@/lib/content/postSummaries'
+import { cn } from '@/lib/classNames'
 import type { ArchiveOutletContext } from '@/layouts/ArchiveLayout'
-import type { BlogPostSummary } from '@/types'
+import type { BlogPostSummary } from '@/lib/content/posts'
 
 export function Archive() {
   const { t, i18n } = useTranslation()

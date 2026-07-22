@@ -12,7 +12,7 @@ import {
   type ReactNode,
 } from 'react'
 import { motion, type Transition } from 'framer-motion'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 
 interface TextProps {
   children: ReactNode

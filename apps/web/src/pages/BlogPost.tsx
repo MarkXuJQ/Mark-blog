@@ -15,8 +15,8 @@ import { DeferredComments } from '@/components/comments/DeferredComments'
 import {
   applySearchHighlights,
   clearSearchHighlights,
-} from '@/components/search/domHighlight'
-import { Seo } from '@/components/seo/Seo'
+} from '@/lib/search/domHighlight'
+import { Seo } from '@/app/seo/Seo'
 import {
   DEFAULT_IMAGE,
   buildBreadcrumbSchema,
@@ -25,32 +25,31 @@ import {
   toAbsoluteUrl,
   toIsoDateTime,
   type JsonLd,
-} from '@/components/seo/shared'
+} from '@/lib/seo'
 import { Card } from '@/components/ui/Card'
-import { useCodeBlockEnhancements } from '@/hooks/useCodeBlockEnhancements'
-import { useImageLightbox } from '@/hooks/useImageLightbox'
-import { usePhotoScroll } from '@/hooks/usePhotoScroll'
-import {
-  decorateArticleLinkPreviews,
-  decorateArticleReferences,
-} from '@/lib/article'
+import { useArticleCodeBlockEnhancements } from '@/hooks/useArticleCodeBlockEnhancements'
+import { useArticleImageLightbox } from '@/hooks/useArticleImageLightbox'
+import { useArticlePhotoScroll } from '@/hooks/useArticlePhotoScroll'
+import { useArticlePhotoRoutes } from '@/hooks/useArticlePhotoRoutes'
+import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
 import {
   getAdjacentPosts,
   getPostBySlug,
+  getPostLanguageBySlug,
   getSharedPostCommentPath,
-} from '@/lib/content'
+} from '@/lib/content/posts'
 import {
   countWords,
   estimateReadingTimeFromWordCount,
-} from '@/utils/readingTime'
-import { cn } from '@/lib/utils'
+} from '@/lib/content/readingTime'
+import { cn } from '@/lib/classNames'
 import {
   extractOptimizedImageUrlsFromHtml,
   getImageUrl,
   getOptimizedImageUrl,
-  rewriteHtmlImageSrc,
-} from '@/utils/image'
+} from '@/lib/image'
 import type { BlogPostOutletContext } from '@/layouts/BlogPostLayout'
+import '@/assets/styles/article-blocks.css'
 
 export function BlogPost() {
   const { slug } = useParams()
@@ -59,6 +58,9 @@ export function BlogPost() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const post = slug ? getPostBySlug(slug, i18n.language) : undefined
+  const articleLanguage = slug
+    ? (getPostLanguageBySlug(slug, i18n.language) ?? i18n.language)
+    : i18n.language
   const adjacentPosts = slug
     ? getAdjacentPosts(slug, i18n.language)
     : { prev: undefined, next: undefined }
@@ -68,16 +70,17 @@ export function BlogPost() {
       return ''
     }
 
-    return decorateArticleLinkPreviews(
-      decorateArticleReferences(
-        rewriteHtmlImageSrc(post.content),
-        i18n.language
-      ),
-      i18n.language
-    )
-  }, [i18n.language, post])
-  const contentRef = useImageLightbox([contentHtml, simpleMode])
-  useCodeBlockEnhancements(
+    return decorateArticleContent(post.content, articleLanguage)
+  }, [articleLanguage, post])
+  const hasMath = contentHtml.includes('class="katex')
+
+  useEffect(() => {
+    if (!hasMath) return
+    void import('@/assets/styles/article-math.css')
+  }, [hasMath])
+
+  const contentRef = useArticleImageLightbox([contentHtml, simpleMode])
+  useArticleCodeBlockEnhancements(
     contentRef,
     {
       copy: t('codeBlock.copy'),
@@ -90,7 +93,14 @@ export function BlogPost() {
     },
     `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`
   )
-  usePhotoScroll(contentRef, `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`)
+  useArticlePhotoScroll(
+    contentRef,
+    `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`
+  )
+  useArticlePhotoRoutes(
+    contentRef,
+    `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`
+  )
   const highlightQuery = searchParams.get('q') || ''
   const highlightIndexRaw = searchParams.get('i') || '0'
   const hasHighlightQuery = highlightQuery.trim().length > 0
@@ -197,7 +207,7 @@ export function BlogPost() {
   const postImageUrl = toAbsoluteUrl(imageSource, siteUrl)
   const publishedAt = toIsoDateTime(post.date)
   const modifiedAt = toIsoDateTime(post.updated || post.date)
-  const schemaLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
+  const schemaLanguage = articleLanguage.startsWith('zh') ? 'zh-CN' : 'en-US'
   const blogPostingSchema: JsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -254,8 +264,7 @@ export function BlogPost() {
         />
 
         <Link to="/blog" className={styles.simpleReadingBackLink}>
-          {'< '}
-          {t('blog.back')}
+          {`< ${t('blog.back')}`}
         </Link>
 
         <header className={styles.simpleReadingHeader}>
@@ -348,8 +357,7 @@ export function BlogPost() {
                   to="/blog"
                   className="inline-flex w-fit shrink-0 items-center rounded-full border border-white/18 bg-black/18 px-3 py-1.5 text-sm font-medium text-white/95 shadow-sm backdrop-blur transition-colors hover:bg-black/28"
                 >
-                  {'< '}
-                  {t('blog.back')}
+                  {`< ${t('blog.back')}`}
                 </Link>
 
                 {post.tags && post.tags.length > 0 ? (
@@ -359,7 +367,7 @@ export function BlogPost() {
                         key={tag}
                         className="rounded-full border border-white/18 bg-white/12 px-3 py-1 text-xs font-medium text-white/90 backdrop-blur"
                       >
-                        #{tag}
+                        {`#${tag}`}
                       </span>
                     ))}
                   </div>
@@ -439,14 +447,13 @@ export function BlogPost() {
                     className={styles.backLink}
                     data-link-preview="off"
                   >
-                    {'< '}
-                    {t('blog.back')}
+                    {`< ${t('blog.back')}`}
                   </Link>
                   {post.tags && post.tags.length > 0 ? (
                     <div className={styles.plainPostTags}>
                       {post.tags.map((tag) => (
                         <span key={tag} className={styles.plainPostTag}>
-                          #{tag}
+                          {`#${tag}`}
                         </span>
                       ))}
                     </div>

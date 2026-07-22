@@ -1,9 +1,20 @@
 import { useEffect, useState } from 'react'
 
 export type ThemeMode = 'light' | 'system' | 'dark'
+export type ThemeTone = 'light' | 'dark'
 
 const THEME_TRANSITION_CLASS = 'theme-switching'
 const THEME_TRANSITION_DURATION = 1000
+
+export function resolveThemeModeTone(
+  mode: ThemeMode,
+  prefersDark =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+): ThemeTone {
+  if (mode === 'system') return prefersDark ? 'dark' : 'light'
+  return mode
+}
 
 export function useTheme() {
   const [mode, setMode] = useState<ThemeMode>(() => {
@@ -18,36 +29,47 @@ export function useTheme() {
 
   useEffect(() => {
     const root = window.document.documentElement
+    const systemPreference = window.matchMedia('(prefers-color-scheme: dark)')
     const prefersReducedMotion = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
     ).matches
+    let timeoutId: number | null = null
 
-    if (!prefersReducedMotion) {
-      root.classList.add(THEME_TRANSITION_CLASS)
-    }
-
-    root.classList.remove('light', 'dark')
-
-    if (mode === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches
+    const applyResolvedTheme = () => {
+      const currentTone: ThemeTone = root.classList.contains('dark')
         ? 'dark'
         : 'light'
-      root.classList.add(systemTheme)
-    } else {
-      root.classList.add(mode)
+      const nextTone = resolveThemeModeTone(mode, systemPreference.matches)
+      const shouldTransition =
+        !prefersReducedMotion && currentTone !== nextTone
+
+      if (timeoutId != null) {
+        window.clearTimeout(timeoutId)
+        timeoutId = null
+      }
+
+      root.classList.toggle(THEME_TRANSITION_CLASS, shouldTransition)
+      root.classList.remove('light', 'dark')
+      root.classList.add(nextTone)
+
+      if (shouldTransition) {
+        timeoutId = window.setTimeout(() => {
+          root.classList.remove(THEME_TRANSITION_CLASS)
+          timeoutId = null
+        }, THEME_TRANSITION_DURATION)
+      }
     }
 
+    applyResolvedTheme()
     localStorage.setItem('theme-mode', mode)
 
-    if (prefersReducedMotion) return
-
-    const timeoutId = window.setTimeout(() => {
-      root.classList.remove(THEME_TRANSITION_CLASS)
-    }, THEME_TRANSITION_DURATION)
+    if (mode === 'system') {
+      systemPreference.addEventListener('change', applyResolvedTheme)
+    }
 
     return () => {
-      window.clearTimeout(timeoutId)
+      if (timeoutId != null) window.clearTimeout(timeoutId)
+      systemPreference.removeEventListener('change', applyResolvedTheme)
       root.classList.remove(THEME_TRANSITION_CLASS)
     }
   }, [mode])

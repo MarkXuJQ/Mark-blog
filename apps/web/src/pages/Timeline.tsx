@@ -2,20 +2,11 @@ import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import zhEvents from '@content/timeline/website/zh.json'
-import enEvents from '@content/timeline/website/en.json'
-import zhQuickFixes from '@content/timeline/quickfix/zh.json'
-import enQuickFixes from '@content/timeline/quickfix/en.json'
 import { GitCommit, ChevronDown, ChevronRight } from 'lucide-react'
-import { Seo } from '@/components/seo/Seo'
+import { Seo } from '@/app/seo/Seo'
+import { TimeProgress } from '@/components/timeline/TimeProgress'
 import { StaggeredList } from '@/components/ui/StaggeredList'
-import type { QuickFixGroup, TimelineEvent } from '@/types'
-
-// Cast the JSON data to the correct type
-const zhTimelineEvents = zhEvents as TimelineEvent[]
-const enTimelineEvents = enEvents as TimelineEvent[]
-const zhQuickFixItems = zhQuickFixes as QuickFixGroup[]
-const enQuickFixItems = enQuickFixes as QuickFixGroup[]
+import { getTimelineContent } from '@/lib/content/timeline'
 
 function MilestoneMarker() {
   return (
@@ -31,12 +22,7 @@ function ItemMarker() {
 
 export function Timeline() {
   const { t, i18n } = useTranslation()
-  const events = i18n.language.startsWith('zh')
-    ? zhTimelineEvents
-    : enTimelineEvents
-  const quickFixes = i18n.language.startsWith('zh')
-    ? zhQuickFixItems
-    : enQuickFixItems
+  const { events, quickFixes } = getTimelineContent(i18n.language)
   const quickFixGroups = useMemo(
     () => [...quickFixes].sort((a, b) => b.date.localeCompare(a.date)),
     [quickFixes]
@@ -135,42 +121,45 @@ export function Timeline() {
           <h1 className={styles.title}>{t('nav.timeline')}</h1>
         </div>
 
-        <div
-          className={styles.tabs}
-          role="tablist"
-          aria-label={t('nav.timeline')}
-          tabIndex={0}
-          onKeyDown={(event) => {
-            if (event.key === 'ArrowLeft') {
-              event.preventDefault()
-              moveTab(-1)
-            }
-            if (event.key === 'ArrowRight') {
-              event.preventDefault()
-              moveTab(1)
-            }
-          }}
-        >
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              className={activeTab === tab.id ? styles.tabActive : styles.tab}
-              onClick={() =>
-                setActiveTab(tab.id as 'website' | 'quickfix' | 'life')
+        <div className={styles.controlRow}>
+          <div
+            className={styles.tabs}
+            role="tablist"
+            aria-label={t('nav.timeline')}
+            tabIndex={0}
+            onKeyDown={(event) => {
+              if (event.key === 'ArrowLeft') {
+                event.preventDefault()
+                moveTab(-1)
               }
-            >
-              {tab.label}
-              {activeTab === tab.id && (
-                <motion.span
-                  layoutId="timeline-tab-underline"
-                  className={styles.tabUnderline}
-                />
-              )}
-            </button>
-          ))}
+              if (event.key === 'ArrowRight') {
+                event.preventDefault()
+                moveTab(1)
+              }
+            }}
+          >
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                className={activeTab === tab.id ? styles.tabActive : styles.tab}
+                onClick={() =>
+                  setActiveTab(tab.id as 'website' | 'quickfix' | 'life')
+                }
+              >
+                {tab.label}
+                {activeTab === tab.id && (
+                  <motion.span
+                    layoutId="timeline-tab-underline"
+                    className={styles.tabUnderline}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+          <TimeProgress />
         </div>
         <div className={styles.tabRule} aria-hidden="true" />
 
@@ -336,6 +325,8 @@ const styles = {
   wrapper: 'w-full max-w-3xl space-y-6',
   header: 'flex items-center justify-between',
   title: 'text-3xl font-bold text-slate-900 dark:text-slate-100',
+  controlRow:
+    'flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-6',
   tabs: 'flex flex-wrap gap-6 text-sm',
   tab: 'relative pb-2 font-medium text-slate-500 transition-colors hover:text-slate-900 dark:hover:text-slate-100',
   tabActive: 'relative pb-2 font-semibold text-slate-900 dark:text-slate-100',
@@ -343,9 +334,6 @@ const styles = {
     'absolute inset-x-0 -bottom-1 h-0.5 rounded-full bg-slate-900 dark:bg-slate-100',
   tabRule: 'h-px w-full bg-slate-200 dark:bg-slate-800',
   section: 'space-y-6',
-  sectionHeader: 'space-y-2',
-  sectionTitle: 'text-xl font-semibold text-slate-900 dark:text-slate-100',
-  sectionDesc: 'text-sm text-slate-500 dark:text-slate-400',
   timeline:
     'relative border-l-2 border-slate-200 pl-8 dark:border-slate-800 ml-4 sm:ml-0',
   eventWrapper: 'relative mb-8 last:mb-0',

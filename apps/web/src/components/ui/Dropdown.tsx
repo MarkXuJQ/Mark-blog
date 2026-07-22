@@ -1,29 +1,6 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  createContext,
-  useContext,
-} from 'react'
-import { cn } from '@/lib/utils'
-
-interface DropdownContextType {
-  isOpen: boolean
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-  toggle: () => void
-}
-
-const DropdownContext = createContext<DropdownContextType | undefined>(
-  undefined
-)
-
-export function useDropdown() {
-  const context = useContext(DropdownContext)
-  if (!context) {
-    throw new Error('useDropdown must be used within a Dropdown')
-  }
-  return context
-}
+import React, { useState, useRef, useEffect } from 'react'
+import { cn } from '@/lib/classNames'
+import { DropdownContext, useDropdown } from '@/hooks/useDropdown'
 
 export function Dropdown({
   children,
@@ -101,9 +78,7 @@ export function DropdownContent({
     <div
       className={cn(
         'animate-in fade-in zoom-in-95 absolute top-full z-50 mt-2 min-w-[8rem] rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 duration-150 dark:border-[#2b2f36] dark:bg-[#17191c] dark:ring-white/10',
-        align === 'end'
-          ? 'right-0 origin-top-right'
-          : 'left-0 origin-top-left',
+        align === 'end' ? 'right-0 origin-top-right' : 'left-0 origin-top-left',
         className
       )}
     >

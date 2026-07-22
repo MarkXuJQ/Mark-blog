@@ -2,8 +2,8 @@ import { useTranslation } from 'react-i18next'
 import {
   getBlogCategoryMeta,
   getBlogCategoryTranslationKey,
-} from './categoryMeta'
-import { cn } from '@/lib/utils'
+} from './blogCategoryMeta'
+import { cn } from '@/lib/classNames'
 
 interface CategoryLabelProps {
   category?: string | null

@@ -8,7 +8,7 @@ import {
   normalizeSteamProfileId,
   SteamConfigError,
   SteamHttpError,
-} from '../lib/steam-dashboard.js'
+} from '../server/steam-dashboard.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)

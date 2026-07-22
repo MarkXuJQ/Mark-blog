@@ -1,5 +1,21 @@
 [
   {
+    "id": "Wuhan-food-walk-note1-cn",
+    "slug": "Wuhan-food-walk-note1-cn",
+    "language": "zh",
+    "title": "武汉逛吃日志 1",
+    "date": "2026-07-20",
+    "summary": "在武汉备考二战，周末放一天假，跟着博主的路子出门转转，还顺便看了湖北省博物馆。",
+    "wordCount": 227,
+    "image": "https://img.markxu.icu/img湖北省博.jpg",
+    "tags": [
+      "Wuhan",
+      "Food",
+      "Travel"
+    ],
+    "category": "Experience"
+  },
+  {
     "id": "tcp-slow-start-cwnd-growth-cn",
     "slug": "tcp-slow-start-cwnd-growth-cn",
     "language": "zh",

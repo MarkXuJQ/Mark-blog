@@ -3,18 +3,18 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from 'react'
 import { motion, type MotionValue, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { getAllPostSummaries } from '@/lib/content'
+import { getAllPostSummaries } from '@/lib/content/postSummaries'
 import { CategoryLabel } from '@/components/blog/CategoryLabel'
-import { Label } from '../ui/label'
-import { Slider } from '../ui/slider'
-import { cn } from '@/lib/utils'
-import type { BlogPostSummary } from '@/types'
+import { Label } from '@/components/ui/label'
+import { cn } from '@/lib/classNames'
+import type { BlogPostSummary } from '@/lib/content/posts'
 
 interface HomeBlogRailSectionProps {
   avatarSrc: string
@@ -311,9 +311,8 @@ export function HomeBlogRailSection({
                         alt=""
                         aria-hidden="true"
                         className="h-full w-full object-cover"
-                        loading="eager"
+                        loading="lazy"
                         decoding="async"
-                        fetchPriority="high"
                       />
                     </div>
                   </div>
@@ -392,7 +391,6 @@ export function HomeBlogRailSection({
 
               <BlogRailSpeedControl
                 isZh={isZh}
-                value={scrollSpeed}
                 speedPercent={speedPercent}
                 onValueChange={setScrollSpeed}
               />
@@ -406,12 +404,10 @@ export function HomeBlogRailSection({
 
 function BlogRailSpeedControl({
   isZh,
-  value,
   speedPercent,
   onValueChange,
 }: {
   isZh: boolean
-  value: number[]
   speedPercent: number
   onValueChange: (value: number[]) => void
 }) {
@@ -436,14 +432,25 @@ function BlogRailSpeedControl({
           {percentLabel}
         </output>
       </div>
-      <Slider
+      <input
         id="home-blog-scroll-speed"
-        value={value}
+        type="range"
+        value={speedPercent}
         min={BLOG_RAIL_MIN_SPEED_PERCENT}
         max={BLOG_RAIL_MAX_SPEED_PERCENT}
         step={5}
         aria-label={label}
-        onValueChange={onValueChange}
+        className="home-blog-speed-slider"
+        style={
+          {
+            '--home-blog-speed-progress': `${
+              ((speedPercent - BLOG_RAIL_MIN_SPEED_PERCENT) /
+                (BLOG_RAIL_MAX_SPEED_PERCENT - BLOG_RAIL_MIN_SPEED_PERCENT)) *
+              100
+            }%`,
+          } as CSSProperties
+        }
+        onChange={(event) => onValueChange([Number(event.currentTarget.value)])}
       />
     </div>
   )

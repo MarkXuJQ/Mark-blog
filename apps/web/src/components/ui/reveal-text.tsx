@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 
 interface RevealTextProps {
   text?: string
@@ -57,8 +57,12 @@ export function RevealText({
 }: RevealTextProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [showOverlayText, setShowOverlayText] = useState(false)
+  const isPrerender =
+    typeof window !== 'undefined' && Boolean(window.__PRERENDER__)
 
   useEffect(() => {
+    if (window.__PRERENDER__) return
+
     const lastLetterDelay = Math.max(0, text.length - 1) * letterDelay
     const totalDelay = lastLetterDelay * 1000 + springDuration
 
@@ -92,8 +96,8 @@ export function RevealText({
               opacity: 0,
             }}
             animate={{
-              scale: 1,
-              opacity: 1,
+              scale: isPrerender ? 0 : 1,
+              opacity: isPrerender ? 0 : 1,
             }}
             transition={{
               delay: index * letterDelay,
@@ -105,6 +109,7 @@ export function RevealText({
           >
             <motion.span
               className={cn('absolute inset-0', textColor)}
+              initial={{ opacity: 1 }}
               animate={{
                 opacity: hoveredIndex === index ? 0 : 1,
               }}
@@ -115,6 +120,10 @@ export function RevealText({
 
             <motion.span
               className="bg-cover bg-clip-text bg-no-repeat text-transparent"
+              initial={{
+                opacity: 0,
+                backgroundPosition: imageStartPosition,
+              }}
               animate={{
                 opacity: hoveredIndex === index ? 1 : 0,
                 backgroundPosition:

@@ -6,6 +6,7 @@ import { createRequire } from 'node:module'
 import matter from 'gray-matter'
 import puppeteer from 'puppeteer'
 import { spawn } from 'node:child_process'
+import { collectMarkdownFiles, collectPostMarkdownFiles } from './post-files.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -15,27 +16,10 @@ const PORT = 4173
 const BASE_URL = `http://localhost:${PORT}`
 const DIST_DIR = path.resolve(__dirname, '../dist')
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
-const MOVIE_REVIEWS_DIR = path.resolve(__dirname, '../../../content/movies/reviews')
-
-function collectMarkdownFiles(dirPath) {
-  if (!fs.existsSync(dirPath)) return []
-
-  const entries = fs.readdirSync(dirPath, { withFileTypes: true })
-  const files = []
-
-  for (const entry of entries) {
-    const fullPath = path.join(dirPath, entry.name)
-    if (entry.isDirectory()) {
-      files.push(...collectMarkdownFiles(fullPath))
-      continue
-    }
-    if (entry.isFile() && entry.name.endsWith('.md')) {
-      files.push(fullPath)
-    }
-  }
-
-  return files
-}
+const MOVIE_REVIEWS_DIR = path.resolve(
+  __dirname,
+  '../../../content/movies/reviews'
+)
 
 function resolvePostSlugs(filePath) {
   const fileSlug = path.basename(filePath, '.md')
@@ -46,9 +30,7 @@ function resolvePostSlugs(filePath) {
       ? data.slug.trim()
       : fileSlug
   const aliases = Array.isArray(data.aliases)
-    ? data.aliases.filter(
-        (alias) => typeof alias === 'string' && alias.trim()
-      )
+    ? data.aliases.filter((alias) => typeof alias === 'string' && alias.trim())
     : []
 
   return Array.from(new Set([slug, ...aliases, fileSlug]))
@@ -71,13 +53,14 @@ function getRoutes() {
     '/archive',
     '/about',
     '/life',
+    '/links',
     '/movies',
     '/games',
   ]
 
   // Add blog post routes
   if (fs.existsSync(POSTS_DIR)) {
-    const files = collectMarkdownFiles(POSTS_DIR)
+    const files = collectPostMarkdownFiles(POSTS_DIR)
     files.forEach((filePath) => {
       resolvePostSlugs(filePath).forEach((slug) => {
         routes.push(`/blog/${slug}`)
@@ -104,7 +87,11 @@ async function prerender() {
   // 1. Start Vite Preview Server
   const require = createRequire(import.meta.url)
   const vitePackageJsonPath = require.resolve('vite/package.json')
-  const viteCliPath = path.resolve(path.dirname(vitePackageJsonPath), 'bin', 'vite.js')
+  const viteCliPath = path.resolve(
+    path.dirname(vitePackageJsonPath),
+    'bin',
+    'vite.js'
+  )
 
   const server = spawn(
     process.execPath,
@@ -162,6 +149,7 @@ async function prerender() {
     })
 
     const routes = getRoutes()
+    const renderedPages = []
 
     console.log(`🔍 Found ${routes.length} routes to prerender.`)
 
@@ -208,12 +196,11 @@ async function prerender() {
           filePath = path.join(dirPath, 'index.html')
         }
 
-        // Write file
         // Re-inject <!DOCTYPE html> if missing (page.content() usually includes it but let's be safe)
         const finalHtml = html.startsWith('<!DOCTYPE')
           ? html
           : `<!DOCTYPE html>${html}`
-        fs.writeFileSync(filePath, finalHtml)
+        renderedPages.push({ filePath, html: finalHtml })
 
         console.log(
           `✅ [${Date.now() - start}ms] Prerendered: ${route} -> ${filePath.replace(DIST_DIR, '')}`
@@ -222,6 +209,11 @@ async function prerender() {
         console.error(`❌ Failed to prerender ${route}:`, err.message)
       }
     }
+
+    renderedPages.forEach(({ filePath, html }) => {
+      fs.mkdirSync(path.dirname(filePath), { recursive: true })
+      fs.writeFileSync(filePath, html)
+    })
   } catch (error) {
     console.error('🔥 Prerender failed:', error)
     process.exit(1)

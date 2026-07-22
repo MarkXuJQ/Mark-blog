@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation, Trans } from 'react-i18next'
 import { DeferredComments } from '@/components/comments/DeferredComments'
-import { Seo } from '@/components/seo/Seo'
-import { cn } from '@/lib/utils'
-import { WebsiteCard } from '@/components/ui/WebsiteCard'
+import { Seo } from '@/app/seo/Seo'
+import { cn } from '@/lib/classNames'
+import { WebsiteCard } from '@/components/article/WebsiteCard'
 import { Check, Copy, X } from 'lucide-react'
 
 const CONTACT_EMAIL = 'xujianqiao86@gmail.com'
 const CONTACT_QQ = '2960278146'
+const FASCINATE_INLINE_STYLESHEET_URL =
+  'https://fonts.googleapis.com/css2?family=Fascinate+Inline&display=swap'
 type ContactTarget = 'email' | 'qq'
 type CopyState = {
   target: ContactTarget | null
@@ -15,6 +17,8 @@ type CopyState = {
 }
 
 export function About() {
+  useAboutDisplayFont()
+
   const { t } = useTranslation()
   const commentsRef = useRef<HTMLDivElement>(null)
   const [copyState, setCopyState] = useState<CopyState>({
@@ -56,7 +60,11 @@ export function About() {
 
   useEffect(() => {
     const node = commentsRef.current
-    if (!node || typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+    if (
+      !node ||
+      typeof window === 'undefined' ||
+      !('IntersectionObserver' in window)
+    ) {
       return
     }
 
@@ -135,7 +143,6 @@ export function About() {
               </h2>
               <p className="leading-relaxed">{t('about.techContent')}</p>
 
-
               <WebsiteCard
                 url="https://github.com/MarkXuJQ/Mark-blog"
                 title="我的网站源码"
@@ -143,7 +150,6 @@ export function About() {
                 variant="horizontal"
                 className="not-prose mx-auto my-6 max-w-lg"
               />
-              
             </section>
 
             {/* Future */}
@@ -171,9 +177,27 @@ export function About() {
           <DeferredComments />
         </div>
       </div>
-
     </>
   )
+}
+
+function useAboutDisplayFont() {
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.__PRERENDER__) return
+
+    const existingLink = document.head.querySelector<HTMLLinkElement>(
+      'link[data-about-font="fascinate-inline"]'
+    )
+    if (existingLink) return
+
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = FASCINATE_INLINE_STYLESHEET_URL
+    link.dataset.aboutFont = 'fascinate-inline'
+    document.head.appendChild(link)
+
+    return () => link.remove()
+  }, [])
 }
 
 function ContactPanel({
@@ -207,12 +231,12 @@ function ContactPanel({
     copyState.target === target ? copyState.status : 'idle'
 
   return (
-    <div className="not-prose pointer-events-none absolute top-0 right-0 z-30 hidden -translate-y-16 translate-x-[72%] lg:block">
+    <div className="not-prose pointer-events-none absolute top-0 right-0 z-30 hidden translate-x-[72%] -translate-y-16 lg:block">
       <button
         type="button"
         onClick={onToggle}
         className={cn(
-          "pointer-events-auto origin-center rotate-[-8deg] bg-transparent p-0 text-4xl leading-none text-slate-900 transition-transform hover:-translate-x-1 hover:-rotate-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 dark:text-slate-100 [font-family:'Fascinate_Inline',cursive]",
+          "pointer-events-auto origin-center rotate-[-8deg] bg-transparent p-0 [font-family:'Fascinate_Inline',cursive] text-4xl leading-none text-slate-900 transition-transform hover:-translate-x-1 hover:-rotate-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 dark:text-slate-100",
           nudge && 'animate-[reach-out-wiggle_760ms_ease-in-out_1]'
         )}
         aria-haspopup="dialog"
@@ -223,7 +247,7 @@ function ContactPanel({
 
       <div
         className={cn(
-          'pointer-events-auto absolute right-0 top-14 w-[min(82vw,320px)] origin-top-right rotate-[-1.5deg] rounded-[1.2rem_1.7rem_1.35rem_1.55rem] border-2 border-slate-900 bg-[#fff8d8] p-4 text-slate-900 shadow-[8px_10px_0_rgba(15,23,42,0.18)] transition-all duration-200 dark:border-slate-100 dark:bg-[#202124] dark:text-slate-100 dark:shadow-[8px_10px_0_rgba(255,255,255,0.12)]',
+          'pointer-events-auto absolute top-14 right-0 w-[min(82vw,320px)] origin-top-right rotate-[-1.5deg] rounded-[1.2rem_1.7rem_1.35rem_1.55rem] border-2 border-slate-900 bg-[#fff8d8] p-4 text-slate-900 shadow-[8px_10px_0_rgba(15,23,42,0.18)] transition-all duration-200 dark:border-slate-100 dark:bg-[#202124] dark:text-slate-100 dark:shadow-[8px_10px_0_rgba(255,255,255,0.12)]',
           open
             ? 'translate-y-0 scale-100 opacity-100'
             : 'pointer-events-none -translate-y-2 scale-95 opacity-0'
@@ -317,7 +341,7 @@ function ContactMethod({
         type="button"
         onClick={onCopy}
         className={cn(
-          'inline-flex items-center justify-center gap-2 rounded-[0.9rem_0.75rem_0.8rem_1rem] border-2 border-slate-900 px-3 py-2 text-sm font-black transition-transform hover:-rotate-1 hover:scale-[1.01] dark:border-slate-100',
+          'inline-flex items-center justify-center gap-2 rounded-[0.9rem_0.75rem_0.8rem_1rem] border-2 border-slate-900 px-3 py-2 text-sm font-black transition-transform hover:scale-[1.01] hover:-rotate-1 dark:border-slate-100',
           copyStatus === 'copied'
             ? 'bg-emerald-400 text-slate-950'
             : copyStatus === 'failed'

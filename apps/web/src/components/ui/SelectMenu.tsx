@@ -1,12 +1,12 @@
 import { Check, ChevronDown } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 import {
   Dropdown,
   DropdownContent,
   DropdownItem,
   DropdownTrigger,
-  useDropdown,
 } from './Dropdown'
+import { useDropdown } from '@/hooks/useDropdown'
 
 type SelectValue = string | number
 

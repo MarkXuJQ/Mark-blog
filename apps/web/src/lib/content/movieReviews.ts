@@ -1,4 +1,4 @@
-import type { MarkdownPost } from '@/types'
+import type { MarkdownPost } from './markdown'
 
 export interface MovieReview {
   slug: string
@@ -22,12 +22,15 @@ interface MarkdownMovieReview extends MarkdownPost {
 
 const markdownFiles = import.meta.glob<MarkdownMovieReview>(
   '@content/movies/reviews/*.md',
-  { eager: true },
+  { eager: true }
 )
 
 let cachedReviews: MovieReview[] | null = null
 
-function toReview(path: string, module: MarkdownMovieReview): MovieReview | null {
+function toReview(
+  path: string,
+  module: MarkdownMovieReview
+): MovieReview | null {
   const slug = path.split('/').pop()?.replace('.md', '') || ''
   if (!slug) return null
 
@@ -49,7 +52,8 @@ function toReview(path: string, module: MarkdownMovieReview): MovieReview | null
     movieSubjectId,
     movieTitle: String(attributes.movieTitle || '').trim() || undefined,
     rating:
-      typeof attributes.rating === 'number' && Number.isFinite(attributes.rating)
+      typeof attributes.rating === 'number' &&
+      Number.isFinite(attributes.rating)
         ? attributes.rating
         : undefined,
     tags: Array.isArray(attributes.tags)

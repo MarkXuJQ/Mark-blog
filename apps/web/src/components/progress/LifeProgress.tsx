@@ -7,7 +7,7 @@ export function LifeProgress() {
     <div className="w-full rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 p-6 text-left dark:border-slate-700/70 dark:bg-slate-900/40">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          <p className="text-sm font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
             {t('underConstruction.lifeProgressTitle')}
           </p>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">

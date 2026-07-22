@@ -6,8 +6,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { FileText, Layers, X } from 'lucide-react'
 import { BiSidebar } from 'react-icons/bi'
 import { RiLinksLine, RiSubwayFill } from 'react-icons/ri'
-import { cn } from '@/lib/utils'
-import { getImageUrl } from '@/utils/image'
+import { cn } from '@/lib/classNames'
+import { getImageUrl } from '@/lib/image'
 
 interface MobileBlogDrawerProps {
   simpleMode: boolean

@@ -4,6 +4,7 @@ import process from 'node:process'
 import matter from 'gray-matter'
 import { fileURLToPath } from 'node:url'
 import { Feed } from 'feed'
+import { collectPostMarkdownFiles } from './post-files.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -33,25 +34,7 @@ if (!fs.existsSync(POSTS_DIR)) {
   process.exit(1)
 }
 
-function collectMarkdownFiles(dirPath) {
-  const entries = fs.readdirSync(dirPath, { withFileTypes: true })
-  const files = []
-
-  for (const entry of entries) {
-    const fullPath = path.join(dirPath, entry.name)
-    if (entry.isDirectory()) {
-      files.push(...collectMarkdownFiles(fullPath))
-      continue
-    }
-    if (entry.isFile() && entry.name.endsWith('.md')) {
-      files.push(fullPath)
-    }
-  }
-
-  return files
-}
-
-const files = collectMarkdownFiles(POSTS_DIR)
+const files = collectPostMarkdownFiles(POSTS_DIR)
 
 const resolveLanguageFromPath = (filePath) => {
   const normalized = filePath.replaceAll('\\', '/')
@@ -519,7 +502,13 @@ const createFeed = (feedPosts, options, atomUrl) => {
   return feed
 }
 
-const writeFeedFiles = ({ atomPath, viewPath, feedPosts, viewOptions, atomUrl }) => {
+const writeFeedFiles = ({
+  atomPath,
+  viewPath,
+  feedPosts,
+  viewOptions,
+  atomUrl,
+}) => {
   const feed = createFeed(feedPosts, viewOptions, atomUrl)
   let atomContent = feed.atom1()
   atomContent = atomContent.replace(

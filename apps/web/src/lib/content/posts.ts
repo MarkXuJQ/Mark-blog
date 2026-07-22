@@ -1,5 +1,24 @@
-import type { BlogPost, MarkdownPost } from '@/types'
+import type { MarkdownPost } from './markdown'
 import { getAllPostSummaries } from './postSummaries'
+
+export interface BlogPostSummary {
+  id: string
+  title: string
+  slug: string
+  sourceSlug?: string
+  aliases?: string[]
+  date: string
+  updated?: string
+  summary: string
+  wordCount?: number
+  image?: string
+  tags?: string[]
+  category?: string
+}
+
+export interface BlogPost extends BlogPostSummary {
+  content: string
+}
 
 type PostLanguage = 'zh' | 'en'
 type PostFolder = 'chinese' | 'english'
@@ -166,6 +185,14 @@ export function getPostBySlug(
   options?: { fallback?: boolean }
 ): BlogPost | undefined {
   return findPostMatch(slug, language, options)?.post
+}
+
+export function getPostLanguageBySlug(
+  slug: string,
+  language?: string,
+  options?: { fallback?: boolean }
+): PostLanguage | undefined {
+  return findPostMatch(slug, language, options)?.language
 }
 
 export function getAdjacentPosts(

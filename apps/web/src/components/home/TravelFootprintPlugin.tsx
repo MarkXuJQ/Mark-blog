@@ -11,7 +11,7 @@ import {
 } from 'framer-motion'
 import { ExternalLink, MousePointer2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 import { useDeferredRender } from '@/hooks/useDeferredRender'
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
 import markTravelRecord from '@content/travel/records/mark.json'
@@ -268,31 +268,6 @@ export function TravelFootprintPlugin({
         style={{ opacity: ambientSecondaryOpacity }}
       />
 
-      <div className={styles.introStage}>
-        <div className={styles.introRow}>
-          <div className={styles.introCopy}>
-            <p className={styles.introEyebrow}>
-              {isZh
-                ? '旅行足迹 / Travel footprint'
-                : 'Travel footprint / Atlas'}
-            </p>
-            <h2 className={cn('heading-display', styles.introTitle)}>
-              {isZh ? '去过的地方' : "Places I've Been"}
-            </h2>
-          </div>
-          <div className={styles.introMeta}>
-            <SummaryPill
-              value={travelSummary.countryCount}
-              label={isZh ? '个国家' : 'Countries'}
-            />
-            <SummaryPill
-              value={travelSummary.provinceCount}
-              label={isZh ? '个省份' : 'Provinces'}
-            />
-          </div>
-        </div>
-      </div>
-
       <div className={styles.grid}>
         <div className={styles.leftRail}>
           <TravelIntroHeader isZh={isZh} />
@@ -350,9 +325,6 @@ function TravelIntroHeader({ isZh }: { isZh: boolean }) {
     <div className={styles.railIntroStage}>
       <div className={styles.introRow}>
         <div className={styles.introCopy}>
-          <p className={styles.introEyebrow}>
-            {isZh ? '旅行足迹 / Travel footprint' : 'Travel footprint / Atlas'}
-          </p>
           <h2 className={cn('heading-display', styles.introTitle)}>
             {isZh ? '去过的地方' : "Places I've Been"}
           </h2>
@@ -532,14 +504,11 @@ function SummaryPill({ value, label }: { value: number; label: string }) {
 const styles = {
   shell: 'relative mx-auto w-full max-w-[78rem] overflow-visible',
   shellStatic: 'cursor-default',
-  introStage: 'hidden',
   railIntroStage: 'relative overflow-visible',
   introRow: 'relative z-[3] pt-0',
   introCopy: 'relative z-[3]',
-  introEyebrow:
-    'font-[var(--font-pixel)] text-[0.72rem] uppercase tracking-[0.28em] text-cyan-100/58 drop-shadow-[0_10px_24px_rgba(5,9,19,0.45)]',
   introTitle:
-    'mt-2 max-w-[12ch] text-3xl font-semibold leading-[0.98] text-white/94 text-balance drop-shadow-[0_18px_34px_rgba(5,9,19,0.48)] sm:text-[3.15rem] lg:text-[3.35rem]',
+    'max-w-[12ch] text-3xl font-semibold leading-[0.98] text-white/94 text-balance drop-shadow-[0_18px_34px_rgba(5,9,19,0.48)] sm:text-[3.15rem] lg:text-[3.35rem]',
   introMeta:
     'relative z-[3] mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-2 sm:mt-5 sm:gap-x-6 lg:mt-4',
   summaryPill:
@@ -577,21 +546,8 @@ const styles = {
     'z-[4] self-start p-2 sm:p-2.5 lg:col-start-2 lg:row-start-1 lg:ml-auto lg:h-full lg:w-[87%] lg:max-w-[44rem] lg:self-stretch',
   clockCell: 'w-full self-start will-change-transform p-3 sm:p-4',
   clockPanel: 'h-full w-full overflow-visible',
-  cardHeader: 'flex items-start gap-2.5',
-  panelHeaderSplit: 'mb-3 flex items-center border-b border-white/8 pb-3',
-  cardIconWrap:
-    'mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[16px] bg-white/[0.05] text-cyan-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]',
-  cardCopy: 'min-w-0',
-  cardEyebrow:
-    'text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-cyan-100/44',
-  cardTitle:
-    'mt-1 text-[0.83rem] font-medium leading-5 text-white/80 sm:text-[0.9rem]',
-  cardDescription: 'mt-3 max-w-[44rem] text-sm leading-6 text-white/58',
-  metricCluster: 'flex flex-wrap gap-2',
   mapActionOverlay:
     'absolute right-5 top-5 z-20 flex flex-wrap justify-end gap-2 sm:right-6 sm:top-6',
-  metricPill:
-    'inline-flex items-center rounded-full bg-cyan-300/[0.08] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-cyan-50/88',
   mapActionButton:
     'group inline-flex items-center justify-center gap-2 rounded-full bg-slate-950/64 px-3.5 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_14px_34px_-22px_rgba(0,0,0,0.82)] backdrop-blur-md transition-[transform,color,background-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-cyan-200/[0.12] hover:text-cyan-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/55 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 active:translate-y-0.5',
   mapActionButtonActive:
@@ -622,9 +578,4 @@ const styles = {
     'pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04)_0px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_0px,transparent_1px)] [background-size:20px_20px] opacity-40',
   embedPlaceholderLabel:
     'relative z-10 max-w-[18ch] px-6 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-cyan-100/62',
-  cardFooter:
-    'mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-white/8 pt-4',
-  cardFootnote: 'text-xs leading-5 text-white/44',
-  inlineLink:
-    'inline-flex items-center gap-2 text-xs font-medium text-cyan-100/82 transition-colors duration-300 hover:text-cyan-50',
 }

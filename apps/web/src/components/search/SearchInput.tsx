@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react'
 import { forwardRef, type ReactNode } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   onSearch?: (value: string) => void
@@ -42,7 +42,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           ref={ref}
           type="text"
           className={cn(
-            'w-full rounded-full border border-slate-200 bg-slate-50 px-4 py-2 pl-10 text-sm outline-none transition-all',
+            'w-full rounded-full border border-slate-200 bg-slate-50 px-4 py-2 pl-10 text-sm transition-all outline-none',
             rightSlot ? 'pr-28' : '',
             'placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20',
             'dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:border-blue-400',
@@ -52,7 +52,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           {...props}
         />
         {rightSlot ? (
-          <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2">
+          <div className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2">
             {rightSlot}
           </div>
         ) : null}

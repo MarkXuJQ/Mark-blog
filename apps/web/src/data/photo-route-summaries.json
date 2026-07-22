@@ -1,0 +1,12 @@
+{
+  "wuhan1": {
+    "title": "武汉的一天",
+    "stats": {
+      "distanceKilometres": 19.282,
+      "pointCount": 10,
+      "stopCount": 6,
+      "startAt": "2026-07-19T03:41:51.000Z",
+      "endAt": "2026-07-19T09:47:08.000Z"
+    }
+  }
+}

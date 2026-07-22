@@ -3,7 +3,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://markxu.icu</id>
     <title>Mark的自留地</title>
-    <updated>2026-07-06T00:00:00.000Z</updated>
+    <updated>2026-07-20T00:00:00.000Z</updated>
     <generator>Mark Xu Blog Generator</generator>
     <author>
         <name>Mark Xu</name>
@@ -16,6 +16,20 @@
     <logo>https://markxu.icu/images/IMG_1766.JPG</logo>
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
+    <entry>
+        <title type="html"><![CDATA[武汉逛吃日志 1]]></title>
+        <id>https://markxu.icu/blog/Wuhan-food-walk-note1-cn</id>
+        <link href="https://markxu.icu/blog/Wuhan-food-walk-note1-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img湖北省博.jpg" type="image/jpg"/>
+        <updated>2026-07-20T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[在武汉备考二战，周末放一天假，跟着博主的路子出门转转，还顺便看了湖北省博物馆。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img湖北省博.jpg" alt="武汉逛吃日志 1" /> <p>在武汉备考二战，周末放一天假，跟着博主的路子出门转转，还顺便看了湖北省博物馆。</p> <a class="view-full" href="https://markxu.icu/blog/Wuhan-food-walk-note1-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[TCP 慢启动的窗口增长：教材、RFC 与 Linux 内核实现的三层对照]]></title>
         <id>https://markxu.icu/blog/tcp-slow-start-cwnd-growth-cn</id>

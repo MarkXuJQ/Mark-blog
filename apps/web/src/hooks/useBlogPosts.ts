@@ -4,9 +4,9 @@ import {
   canonicalBlogCategoryKey,
   compareBlogCategories,
   PREFERRED_BLOG_CATEGORIES,
-} from '@/components/blog/categoryMeta'
-import { getAllPostSummaries } from '@/lib/content'
-import type { BlogPostSummary } from '@/types'
+} from '@/lib/blog/categories'
+import { getAllPostSummaries } from '@/lib/content/postSummaries'
+import type { BlogPostSummary } from '@/lib/content/posts'
 import { useSearch } from './useSearch'
 
 export type SortBy = 'date' | 'updated'

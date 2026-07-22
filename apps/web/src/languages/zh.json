@@ -22,7 +22,14 @@
     "quickfixTitle": "Quick Fix",
     "quickfixDesc": "小修小补与界面微调，按条目独立记录。",
     "lifeTitle": "人生记录",
-    "lifeDesc": "个人成长与片段记录。"
+    "lifeDesc": "个人成长与片段记录。",
+    "progress": {
+      "ariaLabel": "时间进度",
+      "dayOfYear": "今年第几天",
+      "yearProgress": "今年进度",
+      "dayProgress": "今日进度",
+      "dayUnit": "天"
+    }
   },
   "search": {
     "title": "搜索",
@@ -248,17 +255,11 @@
       "playedGamesHint": "还有 {{remaining}} 款还没真正开玩。"
     },
     "featured": {
-      "eyebrow": "Featured",
       "title": "常玩游戏",
-      "description": "按照总游玩时长挑出最常玩的几款。",
-      "reviewPositive": "{{percent}}% 好评",
-      "reviewCount": "{{count}} 条评测",
-      "noReview": "暂无商店评测摘要",
       "lifetimeHours": "累计时长",
       "achievements": "成就数",
       "noAchievements": "暂无成就",
-      "recentHours": "近两周",
-      "releaseDate": "发行：{{date}}",
+      "releaseDate": "发行日期",
       "noData": "当前没有足够的游玩记录来生成精选卡片。"
     },
     "library": {

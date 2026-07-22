@@ -1,20 +1,20 @@
 import { useTranslation } from 'react-i18next'
 import { ChevronDown, ArrowDown } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 import type { SortBy } from '@/hooks/useBlogPosts'
+import { canonicalBlogCategoryKey } from '@/lib/blog/categories'
 import {
-  canonicalBlogCategoryKey,
   getBlogCategoryMeta,
   getBlogCategoryTranslationKey,
-} from './categoryMeta'
+} from './blogCategoryMeta'
 import {
   Dropdown,
   DropdownContent,
   DropdownItem,
   DropdownTrigger,
-  useDropdown,
-} from '../ui/Dropdown'
+} from '@/components/ui/Dropdown'
+import { useDropdown } from '@/hooks/useDropdown'
 
 interface BlogFilterProps {
   allCategories: string[]
@@ -71,10 +71,8 @@ function CategoryMenuLabel({
       {typeof count === 'number' && !simple ? (
         <span
           className={cn(
-            'shrink-0 tabular-nums text-[0.86rem] font-semibold transition-colors',
-            active
-              ? meta.textClassName
-              : 'text-slate-500 dark:text-slate-400'
+            'shrink-0 text-[0.86rem] font-semibold tabular-nums transition-colors',
+            active ? meta.textClassName : 'text-slate-500 dark:text-slate-400'
           )}
         >
           {count}
@@ -102,7 +100,7 @@ function FilterTrigger({
   return (
     <DropdownTrigger
       className={cn(
-        'flex min-w-0 max-w-[48vw] cursor-pointer items-center gap-2 rounded-lg bg-white px-3 py-2 text-[0.95rem] font-medium text-slate-700 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition-[background-color,color,box-shadow] dark:shadow-none sm:max-w-none',
+        'flex max-w-[48vw] min-w-0 cursor-pointer items-center gap-2 rounded-lg bg-white px-3 py-2 text-[0.95rem] font-medium text-slate-700 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition-[background-color,color,box-shadow] sm:max-w-none dark:shadow-none',
         'hover:bg-slate-50 hover:text-slate-900 hover:shadow-sm',
         'dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100',
         simple &&
@@ -221,7 +219,7 @@ function RichSortButton({
         onToggleSort()
       }}
       className={cn(
-        'hidden cursor-pointer items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition-[background-color,color,box-shadow] select-none active:scale-95 dark:shadow-none sm:flex',
+        'hidden cursor-pointer items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition-[background-color,color,box-shadow] select-none active:scale-95 sm:flex dark:shadow-none',
         'hover:bg-slate-50 hover:text-slate-900 hover:shadow-sm',
         'dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100'
       )}
@@ -294,7 +292,7 @@ export function BlogFilter({
         {!hideSort && (
           <button
             onClick={onToggleSort}
-            className="hidden cursor-pointer items-center justify-center rounded-lg border border-transparent bg-transparent px-0 py-0 text-sm font-medium text-[var(--text-secondary)] transition-colors select-none hover:bg-transparent hover:text-[var(--text-primary)] active:scale-95 dark:border-transparent dark:bg-transparent dark:hover:bg-transparent sm:flex"
+            className="hidden cursor-pointer items-center justify-center rounded-lg border border-transparent bg-transparent px-0 py-0 text-sm font-medium text-[var(--text-secondary)] transition-colors select-none hover:bg-transparent hover:text-[var(--text-primary)] active:scale-95 sm:flex dark:border-transparent dark:bg-transparent dark:hover:bg-transparent"
           >
             <motion.div
               layout

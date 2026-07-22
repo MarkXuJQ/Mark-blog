@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CalendarYearWheel } from './CalendarYearWheel'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/classNames'
 
 interface CalendarDayCell {
   date: Date
@@ -329,6 +329,8 @@ export function WatchActivityCalendar({
   }, [selectedDateKey, locale])
 
   useEffect(() => {
+    if (window.__PRERENDER__) return
+
     const node = heatmapRef.current
     if (!node) return
 

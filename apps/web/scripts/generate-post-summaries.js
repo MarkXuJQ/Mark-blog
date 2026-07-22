@@ -3,32 +3,14 @@ import path from 'node:path'
 import process from 'node:process'
 import matter from 'gray-matter'
 import { fileURLToPath } from 'node:url'
-import { countWords } from '../src/utils/readingTime.js'
+import { countWords } from '../src/lib/content/readingTime.js'
+import { collectPostMarkdownFiles } from './post-files.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
 const OUTPUT_FILE = path.resolve(__dirname, '../src/data/post-summaries.json')
-
-function collectMarkdownFiles(dirPath) {
-  const entries = fs.readdirSync(dirPath, { withFileTypes: true })
-  const files = []
-
-  for (const entry of entries) {
-    const fullPath = path.join(dirPath, entry.name)
-    if (entry.isDirectory()) {
-      files.push(...collectMarkdownFiles(fullPath))
-      continue
-    }
-
-    if (entry.isFile() && entry.name.endsWith('.md')) {
-      files.push(fullPath)
-    }
-  }
-
-  return files
-}
 
 function resolveLanguageFromPath(filePath) {
   const normalized = filePath.replaceAll('\\', '/')
@@ -61,7 +43,7 @@ function buildPostSummaries() {
     throw new Error(`Posts directory not found: ${POSTS_DIR}`)
   }
 
-  const files = collectMarkdownFiles(POSTS_DIR)
+  const files = collectPostMarkdownFiles(POSTS_DIR)
   const summaries = files.map((filePath) => {
     const rawContent = fs.readFileSync(filePath, 'utf-8')
     const { data, content } = matter(rawContent)

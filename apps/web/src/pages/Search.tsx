@@ -6,9 +6,9 @@ import {
   buildBlogSearchDocs,
   normalizeQuery,
   searchBlogDocs,
-} from '@/components/search/blogSearch'
-import { Seo } from '@/components/seo/Seo'
-import { getAllPosts } from '@/lib/content'
+} from '@/lib/search/blogSearch'
+import { Seo } from '@/app/seo/Seo'
+import { getAllPosts } from '@/lib/content/posts'
 
 export function Search() {
   const { t, i18n } = useTranslation()

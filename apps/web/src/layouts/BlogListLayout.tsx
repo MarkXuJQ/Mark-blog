@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { LeftSidebarWidget, StatsWidget } from '@/components/blog/BlogWidgets'
 import { MobileBlogDrawer } from '@/components/blog/MobileBlogDrawer'
 import { ReaderModeToggle } from '@/components/blog/ReaderModeToggle'
-import { getAllPostSummaries } from '@/lib/content'
-import { cn } from '@/lib/utils'
+import { getAllPostSummaries } from '@/lib/content/postSummaries'
+import { cn } from '@/lib/classNames'
 
 export type BlogListOutletContext = {
   simpleMode: boolean
@@ -27,6 +27,7 @@ export function BlogListLayout() {
   )
 
   useEffect(() => {
+    if (window.__PRERENDER__) return
     setIsMounted(true)
   }, [])
 
