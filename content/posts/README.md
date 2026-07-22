@@ -214,13 +214,13 @@ $$
 
 先判断新能力属于哪一类，再放入唯一对应的位置：
 
-| 类型           | 示例                               | 实现位置                                        |
-| -------------- | ---------------------------------- | ----------------------------------------------- |
-| 纯样式文章块   | 图片网格、提示框                   | `apps/web/src/assets/styles/article-blocks.css` |
-| DOM 交互增强   | 拖动相册、图片灯箱                 | `apps/web/src/hooks/useArticleXxx.ts`           |
+| 类型           | 示例                                   | 实现位置                                          |
+| -------------- | -------------------------------------- | ------------------------------------------------- |
+| 纯样式文章块   | 图片网格、提示框                       | `apps/web/src/assets/styles/article-blocks.css` |
+| DOM 交互增强   | 拖动相册、图片灯箱                     | `apps/web/src/hooks/useArticleXxx.ts`           |
 | 结构化 Embed   | `WebsiteCard`、`ArticleReferences` | `apps/web/src/lib/article/embeds`               |
-| React 页面组件 | About 页面使用的卡片               | `apps/web/src/components/article`               |
-| 共享数据与校验 | URL、属性和展示模型                | `apps/web/src/lib/article`                      |
+| React 页面组件 | About 页面使用的卡片                   | `apps/web/src/components/article`               |
+| 共享数据与校验 | URL、属性和展示模型                    | `apps/web/src/lib/article`                      |
 
 新增文章块时遵守以下约定：
 

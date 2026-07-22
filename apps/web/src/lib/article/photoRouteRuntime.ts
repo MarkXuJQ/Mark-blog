@@ -69,7 +69,10 @@ function stopData(stops: PhotoRouteStop[]) {
   }
 }
 
-function formatDuration(stop: PhotoRouteStop, isZh: boolean) {
+function formatDuration(
+  stop: PhotoRouteStop,
+  isZh: boolean
+): string | null {
   if (!stop.startsAt || !stop.endsAt) {
     return isZh ? '未记录停留时间' : 'No recorded duration'
   }
@@ -77,6 +80,7 @@ function formatDuration(stop: PhotoRouteStop, isZh: boolean) {
     0,
     Math.round((Date.parse(stop.endsAt) - Date.parse(stop.startsAt)) / 60_000)
   )
+  if (minutes === 0) return null
   if (isZh) {
     if (minutes < 60) return `停留 ${minutes} 分钟`
     const hours = Math.floor(minutes / 60)
@@ -191,15 +195,26 @@ function createPopupContent(
   const title = document.createElement('span')
   title.className = 'article-photo-route-popup__title'
   title.textContent = stop.label?.trim() || `${isZh ? '停留点' : 'Stop'} ${String(index + 1).padStart(2, '0')}`
-  const meta = document.createElement('span')
+  const meta = document.createElement('div')
   meta.className = 'article-photo-route-popup__meta'
+  const appendMetaLine = (text: string | null) => {
+    if (!text) return
+    const line = document.createElement('span')
+    line.className = 'article-photo-route-popup__meta-line'
+    line.textContent = text
+    meta.append(line)
+  }
   if (stop.startsAt) {
     const startsAt = formatStart(stop, locale, isZh)
-    meta.textContent = isZh
-      ? `${formatDuration(stop, true)} · ${startsAt} 开始记录`
-      : `${formatDuration(stop, false)} · Starts at ${startsAt}`
+    const duration = formatDuration(stop, isZh)
+    const startLabel = isZh
+      ? `${startsAt} 开始记录`
+      : `Starts at ${startsAt}`
+    appendMetaLine(duration)
+    appendMetaLine(startLabel)
   } else {
-    meta.textContent = `${formatDuration(stop, isZh)} · ${formatStart(stop, locale, isZh)}`
+    appendMetaLine(formatDuration(stop, isZh))
+    appendMetaLine(formatStart(stop, locale, isZh))
   }
   const coordinateText = `${stop.latitude.toFixed(6)}, ${stop.longitude.toFixed(6)}`
   const coordinates = document.createElement('span')
@@ -293,6 +308,8 @@ export async function mountArticlePhotoRoute(figure: HTMLElement) {
   const firstPoint = route.path[0]
   let popup: MapLibrePopup | null = null
   let animationFrame = 0
+  let autoPlayObserver: IntersectionObserver | null = null
+  let hasPlayed = false
   let disposed = false
   const map: MapLibreMap = new maplibregl.Map({
     container: mapContainer,
@@ -309,9 +326,12 @@ export async function mountArticlePhotoRoute(figure: HTMLElement) {
   }
 
   const handlePlay = () => {
+    hasPlayed = true
     window.cancelAnimationFrame(animationFrame)
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setProgress(1)
+      playButton.disabled = false
+      playButton.textContent = isZh ? '重新播放' : 'Replay route'
       return
     }
     const startedAt = performance.now()
@@ -343,7 +363,7 @@ export async function mountArticlePhotoRoute(figure: HTMLElement) {
     })
     map.addSource('article-route-progress', {
       type: 'geojson',
-      data: lineData(route.path),
+      data: lineData(route.path, 0),
     })
     map.addSource('article-route-stops', {
       type: 'geojson',
@@ -437,6 +457,26 @@ export async function mountArticlePhotoRoute(figure: HTMLElement) {
     playButton.disabled = false
     playButton.addEventListener('click', handlePlay)
     figure.dataset.photoRouteStatus = 'ready'
+
+    const autoPlay = () => {
+      if (hasPlayed || disposed) return
+      figure.dataset.photoRouteAutoPlayed = 'true'
+      handlePlay()
+    }
+    if ('IntersectionObserver' in window) {
+      autoPlayObserver = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((entry) => entry.isIntersecting)) return
+          autoPlayObserver?.disconnect()
+          autoPlayObserver = null
+          autoPlay()
+        },
+        { threshold: 0.2 }
+      )
+      autoPlayObserver.observe(figure)
+    } else {
+      autoPlay()
+    }
   })
 
   map.on('error', () => {
@@ -448,6 +488,7 @@ export async function mountArticlePhotoRoute(figure: HTMLElement) {
   return () => {
     disposed = true
     window.cancelAnimationFrame(animationFrame)
+    autoPlayObserver?.disconnect()
     playButton.removeEventListener('click', handlePlay)
     popup?.remove()
     map.remove()

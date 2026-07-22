@@ -155,9 +155,15 @@
 }
 
 .article-photo-route-popup__meta {
+  display: grid;
+  gap: 0.12rem;
   color: #d3d2d5;
   font-size: 0.69rem;
   line-height: 1.35;
+}
+
+.article-photo-route-popup__meta-line {
+  display: block;
 }
 
 .article-photo-route-popup__coordinates {

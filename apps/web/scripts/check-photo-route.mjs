@@ -82,15 +82,19 @@ try {
   if (route.cooperativeHintDisplay !== 'none') {
     throw new Error('Cooperative gesture hint should be hidden')
   }
+  await page.waitForSelector('[data-photo-route-auto-played="true"]')
+  await page.waitForFunction(() => (
+    document.querySelector('.article-photo-route__play')?.textContent?.includes('重新播放')
+  ), { timeout: 6_000 })
 
   const mapRect = await page.$eval('.article-photo-route__map', (map) => {
     const rect = map.getBoundingClientRect()
     return { x: rect.x, y: rect.y }
   })
-  const selectedIndex = Math.max(
-    0,
-    routeDocument.stops.findIndex((stop) => stop.label)
-  )
+  const selectedIndex = Math.max(0, routeDocument.stops.findIndex((stop) => (
+    stop.label && stop.startsAt && stop.endsAt &&
+    Math.round((Date.parse(stop.endsAt) - Date.parse(stop.startsAt)) / 60_000) > 0
+  )))
   const selectedStop = route.stopPoints[selectedIndex]
   const selectedStopData = routeDocument.stops[selectedIndex]
   await page.mouse.click(
@@ -105,11 +109,23 @@ try {
       element.querySelector('.article-photo-route-popup__title')
     ).backgroundImage,
     meta: element.querySelector('.article-photo-route-popup__meta')?.textContent?.trim(),
+    metaLines: Array.from(
+      element.querySelectorAll('.article-photo-route-popup__meta-line'),
+      (line) => line.textContent?.trim()
+    ),
     coordinates: element.querySelector('.article-photo-route-popup__coordinates')?.textContent?.trim(),
     actionSvgCount: element.querySelectorAll('.article-photo-route-popup__action svg').length,
   }))
-  if (popup.title !== selectedStopData.label || !popup.meta?.startsWith('停留 ') ||
-      !popup.meta.endsWith('开始记录') ||
+  const selectedDurationMinutes = selectedStopData.startsAt && selectedStopData.endsAt
+    ? Math.max(0, Math.round(
+        (Date.parse(selectedStopData.endsAt) - Date.parse(selectedStopData.startsAt)) / 60_000
+      ))
+    : null
+  const durationIsCorrect = selectedDurationMinutes === 0
+    ? popup.metaLines.length === 1 && !popup.meta?.includes('停留 0 分钟')
+    : popup.metaLines.length === 2 && popup.metaLines[0]?.startsWith('停留 ')
+  if (popup.title !== selectedStopData.label || !durationIsCorrect ||
+      !popup.metaLines.at(-1)?.endsWith('开始记录') ||
       !popup.coordinates?.includes(selectedStopData.latitude.toFixed(6)) ||
       popup.titleBackground !== 'none' || popup.actionSvgCount !== 3) {
     throw new Error(`Unexpected Stop popup: ${JSON.stringify(popup)}`)
@@ -127,7 +143,37 @@ try {
     throw new Error('Opening a Stop popup moved the map')
   }
 
+  const zeroDurationIndex = routeDocument.stops.findIndex((stop) => (
+    stop.startsAt && stop.endsAt &&
+    Math.round((Date.parse(stop.endsAt) - Date.parse(stop.startsAt)) / 60_000) === 0
+  ))
+  if (zeroDurationIndex >= 0) {
+    await page.click('.maplibregl-popup-close-button')
+    const zeroDurationStop = route.stopPoints[zeroDurationIndex]
+    await page.mouse.click(
+      mapRect.x + zeroDurationStop[0],
+      mapRect.y + zeroDurationStop[1]
+    )
+    await page.waitForFunction((label) => (
+      document.querySelector('.article-photo-route-popup__title')?.textContent?.trim() === label
+    ), {}, routeDocument.stops[zeroDurationIndex].label)
+    const zeroDurationMetaLines = await page.$$eval(
+      '.article-photo-route-popup__meta-line',
+      (lines) => lines.map((line) => line.textContent?.trim())
+    )
+    if (
+      zeroDurationMetaLines.length !== 1 ||
+      zeroDurationMetaLines[0]?.includes('停留 0 分钟') ||
+      !zeroDurationMetaLines[0]?.endsWith('开始记录')
+    ) {
+      throw new Error(`Unexpected zero-duration Stop meta: ${JSON.stringify(zeroDurationMetaLines)}`)
+    }
+  }
+
   await page.click('.article-photo-route__play')
+  await page.waitForFunction(() => (
+    document.querySelector('.article-photo-route__play')?.textContent?.includes('播放中')
+  ))
   await page.waitForFunction(() => (
     document.querySelector('.article-photo-route__play')?.textContent?.includes('重新播放')
   ), { timeout: 6_000 })
