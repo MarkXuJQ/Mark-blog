@@ -123,9 +123,16 @@ export function rewriteHtmlImageSrc(html: string): string {
   imgs.forEach((img, index) => {
     const src = img.getAttribute('src') || ''
     const original = getOriginalImageUrl(src)
-    const optimized = getOptimizedImageUrl(original, 'content')
-    img.setAttribute('src', optimized)
+    const isHdr = img.hasAttribute('data-hdr')
+    const displaySrc = isHdr
+      ? original
+      : getOptimizedImageUrl(original, 'content')
+    img.setAttribute('src', displaySrc)
     img.setAttribute('data-original-src', original)
+    if (isHdr) {
+      img.setAttribute('data-hdr-image', 'true')
+      img.classList.add('hdr-image')
+    }
     img.setAttribute('loading', 'eager')
     img.setAttribute('fetchpriority', index === 0 ? 'high' : 'low')
     img.setAttribute('decoding', 'async')
@@ -140,6 +147,9 @@ export function extractOptimizedImageUrlsFromHtml(html: string): string[] {
   const urls = new Set<string>()
 
   doc.querySelectorAll('img').forEach((img) => {
+    if (img.hasAttribute('data-hdr') || img.dataset.hdrImage === 'true') {
+      return
+    }
     const src = img.getAttribute('src') || ''
     if (!src) return
     urls.add(getOptimizedImageUrl(getOriginalImageUrl(src), 'content'))

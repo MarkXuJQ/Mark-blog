@@ -62,7 +62,7 @@ export function MobileBlogDrawer({
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [open])
 
-  const linksLabel = isZh ? '友链' : 'Friends'
+  const linksLabel = isZh ? '朋友们' : 'Friends'
   const signature = isZh
     ? '光阴分百份，此周占二分。'
     : 'One of fifty-two, two percent of the year.'

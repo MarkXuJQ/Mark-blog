@@ -22,7 +22,7 @@ import { useLightbox } from '@/hooks/useLightbox'
 import { getOriginalImageUrl, getOptimizedImageUrl } from '@/lib/image'
 import { cn } from '@/lib/classNames'
 
-type ImageInput = string | { src: string; alt?: string }
+type ImageInput = string | { src: string; alt?: string; hdr?: boolean }
 
 type RawLifePost = {
   id: string
@@ -43,6 +43,7 @@ type LifeImage = {
   original: string
   preview: string
   thumbnail: string
+  hdr: boolean
 }
 
 const lifeYearFiles = import.meta.glob<{ default: RawLifePost[] }>(
@@ -58,10 +59,12 @@ function normalizeImageSrc(input: ImageInput): string {
 
 function normalizeLifeImage(input: ImageInput): LifeImage {
   const original = normalizeImageSrc(input)
+  const hdr = typeof input !== 'string' && input.hdr === true
   return {
     original,
-    preview: getOptimizedImageUrl(original, 'preview'),
+    preview: hdr ? original : getOptimizedImageUrl(original, 'preview'),
     thumbnail: getOptimizedImageUrl(original, 'thumbnail'),
+    hdr,
   }
 }
 
@@ -227,13 +230,14 @@ export function Life() {
   useEffect(() => {
     if (!activePost) return
     if (activeImages.length === 0) return
-    const next =
-      activeImages[(activeImageIndex + 1) % activeImages.length]?.preview
+    const next = activeImages[(activeImageIndex + 1) % activeImages.length]
     const prev =
       activeImages[
         (activeImageIndex - 1 + activeImages.length) % activeImages.length
-      ]?.preview
-    for (const src of [next, prev]) {
+      ]
+    for (const image of [next, prev]) {
+      if (image?.hdr) continue
+      const src = image?.preview
       if (!src) continue
       const img = new Image()
       img.onload = () => {
@@ -649,7 +653,7 @@ export function Life() {
                     {!failedImagesRef.current.has(currentImageSrc) &&
                       currentImageSrc && (
                         <img
-                          src={currentImageSrc}
+                          src={currentImage?.thumbnail}
                           alt=""
                           aria-hidden="true"
                           className="pointer-events-none absolute inset-0 h-full w-full scale-[1.2] object-cover opacity-30 blur-2xl brightness-90"
@@ -681,7 +685,13 @@ export function Life() {
                         <img
                           src={currentImageSrc}
                           alt={activePost.title}
-                          className="h-[42vh] w-full object-contain select-none md:h-[85vh]"
+                          className={cn(
+                            'h-[42vh] w-full object-contain select-none md:h-[85vh]',
+                            currentImage?.hdr && 'hdr-image'
+                          )}
+                          data-hdr-image={
+                            currentImage?.hdr ? 'true' : undefined
+                          }
                           loading="eager"
                           decoding="async"
                           draggable={false}
@@ -724,6 +734,7 @@ export function Life() {
                                   src: img.original,
                                   alt: activePost.title,
                                   description: activePost.meta,
+                                  hdr: img.hdr,
                                 })),
                                 activeImageIndex
                               )
@@ -760,6 +771,7 @@ export function Life() {
                                 src: img.original,
                                 alt: activePost.title,
                                 description: activePost.meta,
+                                hdr: img.hdr,
                               })),
                               activeImageIndex
                             )
