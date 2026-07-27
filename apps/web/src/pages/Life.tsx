@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, type Variants } from 'framer-motion'
 import {
   ChevronLeft,
   ChevronRight,
@@ -45,6 +45,23 @@ type LifeImage = {
   preview: string
   thumbnail: string
   hdr: boolean
+}
+
+type ImageSwitchDirection = -1 | 1
+
+type SwitchImageOptions = {
+  force?: boolean
+  direction?: ImageSwitchDirection
+}
+
+const lifePhotoVariants: Variants = {
+  enter: (direction: ImageSwitchDirection) => ({
+    x: direction > 0 ? '100%' : '-100%',
+  }),
+  center: { x: 0 },
+  exit: (direction: ImageSwitchDirection) => ({
+    x: direction > 0 ? '-100%' : '100%',
+  }),
 }
 
 const lifeYearFiles = import.meta.glob<{ default: RawLifePost[] }>(
@@ -158,7 +175,7 @@ export function Life() {
     [activeId, posts]
   )
   const [activeImageIndex, setActiveImageIndex] = useState(0)
-  const [isImageSwitching, setIsImageSwitching] = useState(false)
+  const [imageDirection, setImageDirection] = useState<ImageSwitchDirection>(1)
   const activeImages = useMemo(() => activePost?.images ?? [], [activePost])
   const contentRef = useRef<HTMLDivElement | null>(null)
   const modalRef = useRef<HTMLDivElement | null>(null)
@@ -166,6 +183,7 @@ export function Life() {
   const failedImagesRef = useRef<Set<string>>(new Set())
   const loadedImagesRef = useRef<Set<string>>(new Set())
   const imageSwitchRequestRef = useRef(0)
+  const imageSwipeStartRef = useRef<{ x: number; y: number } | null>(null)
   const [, forceRerender] = useState(0)
   const currentImage = activeImages[activeImageIndex] ?? activeImages[0] ?? null
   const currentImageSrc = currentImage?.preview ?? ''
@@ -223,7 +241,7 @@ export function Life() {
   useEffect(() => {
     if (!activeId) return
     setActiveImageIndex(0)
-    setIsImageSwitching(false)
+    setImageDirection(1)
     failedImagesRef.current = new Set()
     loadedImagesRef.current = new Set()
     imageSwitchRequestRef.current += 1
@@ -260,35 +278,36 @@ export function Life() {
     }
   }, [])
 
-  const switchToImage = (nextIndex: number, options?: { force?: boolean }) => {
+  const switchToImage = (nextIndex: number, options?: SwitchImageOptions) => {
     if (activeImages.length === 0) return
     if (!options?.force && nextIndex === activeImageIndex) return
 
     const nextSrc = activeImages[nextIndex]?.preview
     if (!nextSrc) return
+    const direction =
+      options?.direction ?? (nextIndex >= activeImageIndex ? 1 : -1)
 
     if (loadedImagesRef.current.has(nextSrc)) {
+      setImageDirection(direction)
       setActiveImageIndex(nextIndex)
-      setIsImageSwitching(false)
       return
     }
 
     const requestId = imageSwitchRequestRef.current + 1
     imageSwitchRequestRef.current = requestId
-    setIsImageSwitching(true)
 
     const img = new Image()
     img.onload = () => {
       loadedImagesRef.current.add(nextSrc)
       if (imageSwitchRequestRef.current !== requestId) return
+      setImageDirection(direction)
       setActiveImageIndex(nextIndex)
-      setIsImageSwitching(false)
     }
     img.onerror = () => {
       failedImagesRef.current.add(nextSrc)
       if (imageSwitchRequestRef.current !== requestId) return
+      setImageDirection(direction)
       setActiveImageIndex(nextIndex)
-      setIsImageSwitching(false)
       forceRerender((x) => x + 1)
     }
     img.src = nextSrc
@@ -298,14 +317,38 @@ export function Life() {
     if (activeImages.length <= 1) return
     const nextIndex =
       activeImageIndex === 0 ? activeImages.length - 1 : activeImageIndex - 1
-    switchToImage(nextIndex)
+    switchToImage(nextIndex, { direction: -1 })
   }
 
   const goNextImage = () => {
     if (activeImages.length <= 1) return
     const nextIndex =
       activeImageIndex === activeImages.length - 1 ? 0 : activeImageIndex + 1
-    switchToImage(nextIndex)
+    switchToImage(nextIndex, { direction: 1 })
+  }
+
+  const handlePhotoTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (!isMobileDetail || event.touches.length !== 1) return
+    const touch = event.touches[0]
+    if (!touch) return
+    imageSwipeStartRef.current = { x: touch.clientX, y: touch.clientY }
+  }
+
+  const handlePhotoTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    const start = imageSwipeStartRef.current
+    imageSwipeStartRef.current = null
+    if (!isMobileDetail || !start || activeImages.length <= 1) return
+
+    const touch = event.changedTouches[0]
+    if (!touch) return
+    const deltaX = touch.clientX - start.x
+    const deltaY = touch.clientY - start.y
+    const isHorizontalSwipe =
+      Math.abs(deltaX) >= 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.15
+    if (!isHorizontalSwipe) return
+
+    if (deltaX < 0) goNextImage()
+    else goPrevImage()
   }
 
   const handleDialogKeyDown = useEffectEvent((e: KeyboardEvent) => {
@@ -583,7 +626,7 @@ export function Life() {
                     <img
                       src={post.images[0]?.thumbnail}
                       alt={post.title}
-                      className="h-auto min-h-[160px] w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] md:min-h-0"
+                      className="h-auto min-h-[160px] w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                       loading="lazy"
                       decoding="async"
                       onError={() =>
@@ -677,9 +720,21 @@ export function Life() {
                           draggable={false}
                         />
                       )}
-                    <div className="relative z-10">
+                    <div
+                      className={cn(
+                        'relative z-10 h-[70svh] w-full touch-pan-y overflow-hidden',
+                        activeImages.length > 1
+                          ? 'md:h-[calc(85vh-5rem)]'
+                          : 'md:h-[85vh]'
+                      )}
+                      onTouchStart={handlePhotoTouchStart}
+                      onTouchEnd={handlePhotoTouchEnd}
+                      onTouchCancel={() => {
+                        imageSwipeStartRef.current = null
+                      }}
+                    >
                       {failedImagesRef.current.has(currentImageSrc) ? (
-                        <div className="flex max-h-[88svh] min-h-[60svh] w-full flex-col items-center justify-center gap-3 text-slate-200 md:h-[85vh] md:max-h-none md:min-h-0">
+                        <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-slate-200">
                           <div className="text-sm">图片加载失败</div>
                           <button
                             type="button"
@@ -697,40 +752,45 @@ export function Life() {
                           </button>
                         </div>
                       ) : (
-                        <img
-                          src={currentImageSrc}
-                          alt={activePost.title}
-                          className={cn(
-                            'h-auto max-h-[88svh] min-h-[60svh] w-full object-contain select-none md:h-[85vh] md:max-h-none md:min-h-0',
-                            currentImage?.hdr && 'hdr-image'
-                          )}
-                          data-hdr-image={
-                            currentImage?.hdr ? 'true' : undefined
-                          }
-                          loading="eager"
-                          decoding="async"
-                          draggable={false}
-                          onLoad={() => {
-                            if (!currentImageSrc) return
-                            loadedImagesRef.current.add(currentImageSrc)
-                            setIsImageSwitching(false)
-                          }}
-                          onError={() => {
-                            const src = currentImageSrc
-                            if (!src) return
-                            failedImagesRef.current.add(src)
-                            setIsImageSwitching(false)
-                            forceRerender((x) => x + 1)
-                          }}
-                        />
-                      )}
-
-                      {isImageSwitching && (
-                        <div className="pointer-events-none absolute inset-0 z-[15] flex items-end justify-center bg-black/15">
-                          <div className="mb-4 rounded-full bg-black/50 px-3 py-1.5 text-xs text-white/90 backdrop-blur">
-                            图片切换中...
-                          </div>
-                        </div>
+                        <AnimatePresence
+                          initial={false}
+                          custom={imageDirection}
+                        >
+                          <motion.img
+                            key={currentImageSrc}
+                            src={currentImageSrc}
+                            alt={activePost.title}
+                            custom={imageDirection}
+                            variants={lifePhotoVariants}
+                            initial="enter"
+                            animate="center"
+                            exit="exit"
+                            transition={{
+                              duration: 0.34,
+                              ease: [0.22, 1, 0.36, 1],
+                            }}
+                            className={cn(
+                              'absolute inset-0 h-full w-full object-contain select-none',
+                              currentImage?.hdr && 'hdr-image'
+                            )}
+                            data-hdr-image={
+                              currentImage?.hdr ? 'true' : undefined
+                            }
+                            loading="eager"
+                            decoding="async"
+                            draggable={false}
+                            onLoad={() => {
+                              if (!currentImageSrc) return
+                              loadedImagesRef.current.add(currentImageSrc)
+                            }}
+                            onError={() => {
+                              const src = currentImageSrc
+                              if (!src) return
+                              failedImagesRef.current.add(src)
+                              forceRerender((x) => x + 1)
+                            }}
+                          />
+                        </AnimatePresence>
                       )}
 
                       {activeImages.length > 1 && (
@@ -799,7 +859,10 @@ export function Life() {
                   </motion.div>
 
                   {activeImages.length > 1 && (
-                    <div className="absolute right-3 bottom-3 left-3 z-[20] flex gap-2 overflow-x-auto rounded-xl bg-black/25 p-2 backdrop-blur">
+                    <div
+                      className="relative z-[20] mx-3 my-2 flex gap-2 overflow-x-auto rounded-xl bg-white/8 p-2"
+                      aria-label="选择照片"
+                    >
                       {activeImages.map((image, idx) => (
                         <button
                           key={`${image.original}-${idx}`}
