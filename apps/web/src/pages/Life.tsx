@@ -19,6 +19,7 @@ import {
   DropdownTrigger,
 } from '@/components/ui/Dropdown'
 import { useLightbox } from '@/hooks/useLightbox'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { getOriginalImageUrl, getOptimizedImageUrl } from '@/lib/image'
 import { cn } from '@/lib/classNames'
 
@@ -90,6 +91,7 @@ export function Life() {
   const title = t('nav.life')
   const description = t('life.description', '生活随笔瀑布流。')
   const { openLightbox } = useLightbox()
+  const isMobileDetail = useMediaQuery('(max-width: 767px)')
   const twikooEnvId =
     import.meta.env.VITE_TWIKOO_ENV_ID ||
     'https://comments.markxu.icu/api/twikoo'
@@ -567,7 +569,9 @@ export function Life() {
                 aria-label={`打开：${post.title}`}
               >
                 <motion.div
-                  layoutId={`life-image-${post.id}`}
+                  layoutId={
+                    isMobileDetail ? undefined : `life-image-${post.id}`
+                  }
                   className="relative min-h-[160px] w-full overflow-hidden rounded-2xl bg-slate-100 dark:bg-[#1f2328]"
                   transition={{ duration: 0.16, ease: 'easeOut' }}
                 >
@@ -579,7 +583,7 @@ export function Life() {
                     <img
                       src={post.images[0]?.thumbnail}
                       alt={post.title}
-                      className="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                      className="h-auto min-h-[160px] w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] md:min-h-0"
                       loading="lazy"
                       decoding="async"
                       onError={() =>
@@ -613,10 +617,10 @@ export function Life() {
       <AnimatePresence>
         {activePost && (
           <motion.div
-            className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
+            className="fixed inset-0 z-[1000] flex items-stretch justify-stretch p-0 md:items-center md:justify-center md:p-4"
+            initial={{ opacity: isMobileDetail ? 1 : 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            exit={{ opacity: isMobileDetail ? 1 : 0 }}
             onWheel={(e) => {
               e.preventDefault()
               e.stopPropagation()
@@ -628,7 +632,7 @@ export function Life() {
               type="button"
               aria-label="关闭"
               onClick={() => setActiveId(null)}
-              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              className="absolute inset-0 hidden bg-black/70 backdrop-blur-sm md:block"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -639,16 +643,27 @@ export function Life() {
               tabIndex={-1}
               role="dialog"
               aria-modal="true"
+              initial={isMobileDetail ? { x: '100%' } : { x: 0 }}
+              animate={{ x: 0 }}
+              exit={isMobileDetail ? { x: '100%' } : { x: 0 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
               className={cn(
-                'relative z-[1001] w-full max-w-5xl overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-2xl',
-                'dark:border-[#2b2f36] dark:bg-[#17191c]'
+                'relative z-[1001] h-[100dvh] w-full max-w-none overflow-hidden rounded-none border-0 bg-white shadow-none outline-none',
+                'dark:bg-[#17191c]',
+                'md:h-auto md:max-w-5xl md:rounded-2xl md:border md:border-slate-200/70 md:shadow-2xl',
+                'md:dark:border-[#2b2f36]'
               )}
             >
-              <div className="flex max-h-[85vh] flex-col md:flex-row">
+              <div
+                ref={isMobileDetail ? contentRef : undefined}
+                className="flex h-full flex-col overflow-y-auto overscroll-contain md:h-auto md:max-h-[85vh] md:flex-row md:overflow-hidden"
+              >
                 <div className="relative shrink-0 bg-black md:w-[66%]">
                   <motion.div
-                    layoutId={`life-image-${activePost.id}`}
-                    className="group relative isolate overflow-hidden rounded-2xl"
+                    layoutId={
+                      isMobileDetail ? undefined : `life-image-${activePost.id}`
+                    }
+                    className="group relative isolate overflow-hidden rounded-none md:rounded-2xl"
                   >
                     {!failedImagesRef.current.has(currentImageSrc) &&
                       currentImageSrc && (
@@ -664,7 +679,7 @@ export function Life() {
                       )}
                     <div className="relative z-10">
                       {failedImagesRef.current.has(currentImageSrc) ? (
-                        <div className="flex h-[42vh] w-full flex-col items-center justify-center gap-3 text-slate-200 md:h-[85vh]">
+                        <div className="flex max-h-[88svh] min-h-[60svh] w-full flex-col items-center justify-center gap-3 text-slate-200 md:h-[85vh] md:max-h-none md:min-h-0">
                           <div className="text-sm">图片加载失败</div>
                           <button
                             type="button"
@@ -686,7 +701,7 @@ export function Life() {
                           src={currentImageSrc}
                           alt={activePost.title}
                           className={cn(
-                            'h-[42vh] w-full object-contain select-none md:h-[85vh]',
+                            'h-auto max-h-[88svh] min-h-[60svh] w-full object-contain select-none md:h-[85vh] md:max-h-none md:min-h-0',
                             currentImage?.hdr && 'hdr-image'
                           )}
                           data-hdr-image={
@@ -814,19 +829,23 @@ export function Life() {
                     type="button"
                     onClick={() => setActiveId(null)}
                     className={cn(
-                      'absolute top-3 right-3 z-[20] inline-flex h-10 w-10 items-center justify-center rounded-full',
+                      'absolute top-3 left-3 z-[20] inline-flex h-10 w-10 items-center justify-center rounded-full md:right-3 md:left-auto',
                       'bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/55',
                       'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60'
                     )}
-                    aria-label="关闭弹层"
+                    aria-label={isMobileDetail ? '返回生活随笔' : '关闭弹层'}
                   >
-                    <X size={18} />
+                    {isMobileDetail ? (
+                      <ChevronLeft size={20} />
+                    ) : (
+                      <X size={18} />
+                    )}
                   </button>
                 </div>
 
                 <div
-                  ref={contentRef}
-                  className="flex flex-1 flex-col overflow-y-scroll overscroll-contain p-5 md:p-6"
+                  ref={isMobileDetail ? undefined : contentRef}
+                  className="flex flex-none flex-col overflow-visible p-5 pb-8 md:min-h-0 md:flex-1 md:overflow-y-scroll md:overscroll-contain md:p-6"
                 >
                   <div className="mb-2 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
                     {activePost.title}
