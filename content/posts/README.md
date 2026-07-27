@@ -45,6 +45,34 @@ image: "https://img.markxu.icu/example.jpg"
 
 `alt` 不要留空，它同时服务图片说明、无障碍访问和灯箱内容。
 
+## HDR 图片
+
+带有 Adobe HDR Gain Map（或兼容增益图）的 JPEG 使用 `HdrImage`。它会跳过会丢失 HDR 信息的 CDN 转码，正文和灯箱都直接显示保留增益图的原文件；普通图片仍按上一节的 Markdown 写法加载优化版本。
+
+```html
+<HdrImage
+  src="https://img.markxu.icu/example-hdr.jpg"
+  alt="夕阳照亮云层与湖面的高光"
+/>
+```
+
+支持的属性：
+
+- `src`：必填，必须指向真正包含 HDR 增益图的源文件；这个标签不会把 SDR 图片转换成 HDR。
+- `alt`：建议填写，用于无障碍访问和灯箱说明；未指定 `caption` 时也会显示为图注。
+- `caption`：可选，用于覆盖默认图注。写成 `caption=""` 可以只保留 `alt` 而不显示图注。
+
+如果 HDR 图片需要放进双列网格或横向相册，可以继续使用原有 HTML 布局，并在对应图片上添加 `data-hdr`：
+
+```html
+<div class="img-grid-2">
+  <img data-hdr src="https://img.markxu.icu/one-hdr.jpg" alt="HDR 图片说明" />
+  <img src="https://img.markxu.icu/two-sdr.jpg" alt="普通图片说明" />
+</div>
+```
+
+只有带 `HdrImage` 或 `data-hdr` 标记的图片会绕过图片转码并开启 HDR 显示范围。HDR 屏幕和兼容浏览器会显示额外高光；其他设备会自动使用 JPEG 内置的 SDR 基础图。因为 HDR 原文件通常较大，应只给确认含有增益图的图片添加标记。
+
 ## 文字环绕图片
 
 `FloatImage` 适合把单张图片插在正文左侧或右侧，让后续文字像 Word 文档一样沿图片另一侧排版。图片仍然支持点击灯箱；在手机等窄屏上会自动恢复为整行显示。

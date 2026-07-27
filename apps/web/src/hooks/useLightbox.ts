@@ -4,6 +4,7 @@ export interface LightboxSlide {
   src: string
   alt?: string
   description?: string
+  hdr?: boolean
 }
 
 export interface LightboxContextValue {

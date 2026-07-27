@@ -34,6 +34,7 @@ export function useArticleImageLightbox(deps: unknown[] = []) {
     const slides = zoomableImages.map((img) => ({
       src: img.dataset.originalSrc || img.currentSrc || img.src,
       alt: img.alt,
+      hdr: img.dataset.hdrImage === 'true',
     }))
 
     const handlers: {

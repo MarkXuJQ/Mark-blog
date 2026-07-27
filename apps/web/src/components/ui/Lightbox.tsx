@@ -8,6 +8,10 @@ import 'yet-another-react-lightbox/plugins/captions.css'
 import { getOriginalImageUrl } from '@/lib/image'
 import { LightboxContext, type LightboxSlide } from '@/hooks/useLightbox'
 
+function isHdrSlide(slide: unknown) {
+  return (slide as LightboxSlide).hdr === true
+}
+
 export function LightboxProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false)
   const [index, setIndex] = useState(0)
@@ -49,6 +53,16 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
         }}
         plugins={[Zoom, Captions]}
         captions={{ showToggle: true, descriptionTextAlign: 'center' }}
+        render={{
+          slideContainer: ({ slide, children }) => (
+            <div
+              data-hdr-image={isHdrSlide(slide) ? 'true' : undefined}
+              style={{ display: 'contents' }}
+            >
+              {children}
+            </div>
+          ),
+        }}
       />
     </LightboxContext.Provider>
   )

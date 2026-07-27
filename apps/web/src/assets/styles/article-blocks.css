@@ -205,6 +205,30 @@
   text-align: center;
 }
 
+.article-hdr-image {
+  clear: both;
+  width: 100%;
+  margin: 1.75rem auto;
+}
+
+.article-hdr-image__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 !important;
+  border-radius: 0.5rem;
+}
+
+.article-hdr-image__caption {
+  display: block;
+  margin: 0.6rem 0 0;
+  color: var(--article-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.55;
+  text-align: center;
+}
+
 .markdown-body
   > :is(
     h1,
@@ -223,7 +247,8 @@
     .article-website-card,
     .article-reference-panel,
     .article-photo-route,
-    .article-aside-note
+    .article-aside-note,
+    .article-hdr-image
   ) {
   clear: both;
 }
