@@ -169,8 +169,12 @@ export function useArticleCodeBlockEnhancements(
             activeLabels.plainText
           )
           const lineCount = getCodeLineCount(rawCode)
+          const showLineNumbers = pre.dataset.lineNumbers !== 'false'
 
-          pre.classList.add('md-code-pre', 'line-numbers')
+          pre.classList.add('md-code-pre')
+          if (showLineNumbers) {
+            pre.classList.add('line-numbers')
+          }
           pre.classList.add(`language-${prismLanguage || 'plain'}`)
           code.classList.add('md-code-content')
 
@@ -234,13 +238,17 @@ export function useArticleCodeBlockEnhancements(
           if (prismLanguage && Prism.languages[prismLanguage]) {
             Prism.highlightElement(code)
           }
-          Prism.plugins.lineNumbers?.resize?.(pre)
+          if (showLineNumbers) {
+            Prism.plugins.lineNumbers?.resize?.(pre)
+          }
 
           const handleWrapToggle = () => {
             const nextWrapped = frame.getAttribute('data-wrap') !== 'true'
             frame.setAttribute('data-wrap', String(nextWrapped))
             updateWrapButton(wrapButton, nextWrapped, activeLabels)
-            Prism.plugins.lineNumbers?.resize?.(pre)
+            if (showLineNumbers) {
+              Prism.plugins.lineNumbers?.resize?.(pre)
+            }
           }
 
           const handleCopy = async () => {

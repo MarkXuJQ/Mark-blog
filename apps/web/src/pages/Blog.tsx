@@ -216,7 +216,7 @@ export function Blog() {
 
 function SimpleBlogHeaderLinks() {
   const { t, i18n } = useTranslation()
-  const linksLabel = i18n.language?.startsWith('zh') ? '友链' : 'Friends'
+  const linksLabel = i18n.language?.startsWith('zh') ? '朋友们' : 'Friends'
 
   return (
     <nav

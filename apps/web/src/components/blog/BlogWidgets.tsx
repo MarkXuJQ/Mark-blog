@@ -196,7 +196,7 @@ function ArchiveContent() {
 
 function FriendLinksContent() {
   const { i18n } = useTranslation()
-  const label = i18n.language?.startsWith('zh') ? '友链' : 'Friends'
+  const label = i18n.language?.startsWith('zh') ? '朋友们' : 'Friends'
 
   return (
     <Link to="/links" className={styles.widgetHeader}>

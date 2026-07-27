@@ -157,18 +157,43 @@ function OwnLinkInfoCodeBlock({
   return (
     <aside className={styles.ownInfoCode}>
       <div ref={codeBlockRef} className="markdown-body">
-        <p className={styles.formatHint}>
+        <div className={styles.formatHint}>
           {isZh ? (
             <>
-              申请的格式：
-              <br />
-              你可以按照这个结构来申请，如果有多余的信息也可以，但我会选择性的展示哦。
+              <p>申请的格式：</p>
+              <div className="mt-2 space-y-2">
+                <p>
+                  你可以按照这个给出的范例来申请，有多余的信息也可以，但我会选择性的展示哦。
+                </p>
+                <p>
+                  当然，如果你在下面留下一个简单的表情，我也会尝试添加你的网站。
+                </p>
+                <p>
+                  挂我的链接不是必要的，当然我会很感激你也可以在你的站点展示我的网页。
+                </p>
+              </div>
             </>
           ) : (
-            "Format requirement: you can apply using this structure. It's ok if you have extra information, but I will selectively display them. :)"
+            <>
+              <p>How to say hello:</p>
+              <div className="mt-2 space-y-2">
+                <p>
+                  You can use the example below and include extra information if
+                  you like; I will choose what fits the page.
+                </p>
+                <p>
+                  Even a simple emoji in the comments is enough for me to try
+                  finding and adding your site.
+                </p>
+                <p>
+                  Linking back is never required, though I would be very
+                  grateful if you choose to share my page on yours.
+                </p>
+              </div>
+            </>
           )}
-        </p>
-        <pre>
+        </div>
+        <pre data-line-numbers="false">
           <code className="language-json">{code}</code>
         </pre>
       </div>

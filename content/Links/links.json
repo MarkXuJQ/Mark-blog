@@ -13,28 +13,48 @@
       "description": "一位软件工程师的个人网站，分享工程实践、产品构建和创业相关的思考。"
     },
     {
-      "name": "Josh W. Comeau",
-      "url": "https://www.joshwcomeau.com/",
-      "avatar": "joshwcomeau",
-      "description": "Josh W. Comeau 的前端教学网站，内容围绕 React、CSS、动画和交互体验展开。"
-    },
-    {
       "name": "Pathos.page",
       "url": "https://pathos.page/",
       "avatar": "pathos",
       "description": "一位法哲学研究者的博客，记录学术写作、问题意识和社会观察。"
     },
     {
-      "name": "张洪Heo",
-      "url": "https://blog.zhheo.com/",
-      "avatar": "zhheo",
-      "description": "张洪Heo 的个人博客，分享设计、前端开发、AI 应用和自研工具。"
-    },
-    {
       "name": "纸鹿摸鱼处",
       "url": "https://blog.zhilu.site/",
       "avatar": "zhilu",
       "description": "纸鹿至麓不知路，支炉制露不止漉。"
+    },
+    {
+      "name": "Innei",
+      "url": "https://innei.in/",
+      "avatar": "innei",
+      "description": "Innei's personal blog on frontend and full-stack development — TypeScript, React, Next.js, AI engineering, indie hacking, travel and life."
+    },
+    {
+      "name": "Victor Zhou",
+      "url": "https://victorzhou.com/",
+      "avatar": "victorzhou",
+      "description": "Victor Zhou 的个人博客，分享 Web 开发、机器学习、Python、Gatsby 和安全等工程笔记。"
+    },
+    {
+      "name": "Armin Ronacher",
+      "url": "https://lucumr.pocoo.org/",
+      "avatar": "lucumr",
+      "description": "Armin Ronacher 的长期个人博客，记录 Python、Flask、Rust、开源工程和软件设计思考。"
+    }
+  ],
+  "neighbors": [
+    {
+      "name": "Josh W. Comeau",
+      "url": "https://www.joshwcomeau.com/",
+      "avatar": "joshwcomeau",
+      "description": "Josh W. Comeau 的前端教学网站，内容围绕 React、CSS、动画和交互体验展开。"
+    },
+    {
+      "name": "张洪Heo",
+      "url": "https://blog.zhheo.com/",
+      "avatar": "zhheo",
+      "description": "张洪Heo 的个人博客，分享设计、前端开发、AI 应用和自研工具。"
     },
     {
       "name": "dbushell.com",
@@ -55,12 +75,6 @@
       "description": "苏剑林维护的长期中文科学博客，内容横跨数学、自然科学、机器学习和生活随笔。"
     },
     {
-      "name": "Innei",
-      "url": "https://innei.in/",
-      "avatar": "innei",
-      "description": "Innei's personal blog on frontend and full-stack development — TypeScript, React, Next.js, AI engineering, indie hacking, travel and life."
-    },
-    {
       "name": "水拍石",
       "url": "https://www.leitao.cn/",
       "avatar": "leitao",
@@ -73,30 +87,22 @@
       "description": "记录 Unreal Engine、Vulkan、图形渲染、移动端性能与底层工程问题的技术博客。"
     },
     {
-      "name": "Victor Zhou",
-      "url": "https://victorzhou.com/",
-      "avatar": "victorzhou",
-      "description": "Victor Zhou 的个人博客，分享 Web 开发、机器学习、Python、Gatsby 和安全等工程笔记。"
-    },
-    {
-      "name": "Armin Ronacher",
-      "url": "https://lucumr.pocoo.org/",
-      "avatar": "lucumr",
-      "description": "Armin Ronacher 的长期个人博客，记录 Python、Flask、Rust、开源工程和软件设计思考。"
-    }
-  ],
-  "neighbors": [
-    {
-      "name": "Innei",
-      "url": "https://innei.in/",
-      "avatar": "innei",
-      "description": "Innei's personal blog on frontend and full-stack development — TypeScript, React, Next.js, AI engineering, indie hacking, travel and life."
-    },
-    {
       "name": "TT清沫uk",
       "url": "https://ttquk.github.io/",
       "avatar": "ttquk",
       "description": "TT清沫ukの博客"
+    },
+    {
+      "name": "哈喽！林墨白",
+      "url": "https://blog.lmb.blue/",
+      "avatar": "lmb",
+      "description": "沉墨满纸，一笑若白。"
+    },
+    {
+      "name": "YUNYI BLOG",
+      "url": "https://www.yunyitang.me/",
+      "avatar": "yunyitang",
+      "description": "这里是 Yunyi 的个人博客，基本上啥都写：开发心得分享，日常吐槽吹水，偶尔也会写点正经文字。"
     }
   ]
 }
