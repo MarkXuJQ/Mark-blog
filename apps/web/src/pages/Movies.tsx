@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Clapperboard, Search, Star } from 'lucide-react'
 import { RiDoubanLine } from 'react-icons/ri'
 import { MovieGuestbook } from '@/components/movies/MovieGuestbook'
@@ -73,6 +74,7 @@ const DOUBAN_PROFILE_URL =
   'https://www.douban.com/people/191287070/?_i=3746089pLWPXRI,3746152pLWPXRI'
 const TMDB_PROFILE_URL = 'https://www.themoviedb.org/u/MarkXu269'
 const CINEMA_REVEAL_TEXT = 'CINEMA'
+const CINEMA_BACKGROUND_INTERVAL_MS = 6000
 const CINEMA_STILL_IMAGES = [
   '/images/movies/cinema/interstellar.jpg',
   '/images/movies/cinema/walter-mitty.jpg',
@@ -456,12 +458,21 @@ export function Movies() {
   const [cinemaLetterImages, setCinemaLetterImages] = useState(() =>
     CINEMA_STILL_IMAGES.slice(0, CINEMA_REVEAL_TEXT.length)
   )
+  const [cinemaBackgroundIndex, setCinemaBackgroundIndex] = useState(0)
+  const [activeCinemaLetterIndex, setActiveCinemaLetterIndex] = useState<
+    number | null
+  >(null)
 
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const tmdbLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
 
   const title = t('nav.movies')
   const description = t('movies.description')
+  const cinemaBackgroundImage =
+    cinemaLetterImages[
+      activeCinemaLetterIndex ??
+        cinemaBackgroundIndex % Math.max(cinemaLetterImages.length, 1)
+    ] ?? CINEMA_STILL_IMAGES[0]
 
   const movieOverrides = movieOverridesRaw as Record<string, MovieOverride>
 
@@ -565,6 +576,25 @@ export function Movies() {
 
   useEffect(() => {
     if (window.__PRERENDER__) return
+    if (activeCinemaLetterIndex !== null || cinemaLetterImages.length <= 1) {
+      return
+    }
+
+    const timer = window.setTimeout(() => {
+      setCinemaBackgroundIndex(
+        (current) => (current + 1) % cinemaLetterImages.length
+      )
+    }, CINEMA_BACKGROUND_INTERVAL_MS)
+
+    return () => window.clearTimeout(timer)
+  }, [
+    activeCinemaLetterIndex,
+    cinemaBackgroundIndex,
+    cinemaLetterImages.length,
+  ])
+
+  useEffect(() => {
+    if (window.__PRERENDER__) return
 
     if (viewMode !== 'tmdb') {
       setTmdbStatus('idle')
@@ -662,41 +692,74 @@ export function Movies() {
     <>
       <Seo title={title} description={description} />
 
-      <div className="mx-auto w-full max-w-6xl px-4 py-8 xl:max-w-[70vw]">
-        <section className="mb-8 pb-8">
-          <div className="max-w-3xl">
-            <div
-              aria-hidden="true"
-              className="-mb-6 sm:-mb-8 md:-mb-10 lg:-mb-12"
-            >
-              <RevealText
-                text={CINEMA_REVEAL_TEXT}
-                align="left"
-                textColor="text-slate-200 dark:text-white/10"
-                overlayColor="text-amber-400/70 dark:text-amber-200/40"
-                imageStartPosition="40% center"
-                imageHoverPosition="52% center"
-                fontSize="text-[clamp(4.25rem,17vw,9.5rem)]"
-                letterDelay={0.065}
-                overlayDelay={0.045}
-                overlayDuration={0.45}
-                springDuration={720}
-                letterImages={cinemaLetterImages}
-                className="max-w-[44rem]"
+      <div className="relative isolate w-full pt-28">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+        >
+          <div className="absolute inset-0 opacity-42 saturate-[0.82] sm:opacity-46 lg:opacity-50 dark:opacity-36">
+            <AnimatePresence initial={false}>
+              <motion.img
+                key={cinemaBackgroundImage}
+                src={cinemaBackgroundImage}
+                alt=""
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.25, ease: 'easeInOut' }}
+                className="absolute inset-0 h-full w-full object-cover object-center"
+                loading="eager"
+                decoding="async"
+                draggable={false}
               />
-            </div>
-            <div className="relative z-10 mb-4 text-[0.72rem] font-medium tracking-[0.28em] text-slate-500 uppercase dark:text-slate-400">
-              {locale === 'zh-CN' ? '观影档案' : 'Movie Archive'}
-            </div>
-            <h1 className="relative z-10 -mt-1 text-4xl font-semibold tracking-[-0.04em] text-slate-950 sm:-mt-2 sm:text-5xl dark:text-slate-50">
-              {title}
-            </h1>
-            <p className="mt-4 max-w-2xl text-[0.98rem] leading-7 text-slate-600 dark:text-slate-400">
-              {description}
-            </p>
+            </AnimatePresence>
           </div>
-        </section>
+          <div className="absolute inset-0 bg-[var(--page-background)] opacity-18 dark:opacity-28" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,color-mix(in_srgb,var(--page-background)_32%,transparent)_0%,transparent_38%,var(--page-background)_100%)]" />
+        </div>
 
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-8 xl:max-w-[70vw]">
+          <section className="pb-12 sm:pb-16">
+            <div className="max-w-3xl">
+              <div
+                aria-hidden="true"
+                className="-mb-6 sm:-mb-8 md:-mb-10 lg:-mb-12"
+              >
+                <RevealText
+                  text={CINEMA_REVEAL_TEXT}
+                  align="left"
+                  textColor="text-slate-200 dark:text-white/10"
+                  overlayColor="text-amber-400/70 dark:text-amber-200/40"
+                  imageStartPosition="40% center"
+                  imageHoverPosition="52% center"
+                  fontSize="text-[clamp(4.25rem,17vw,9.5rem)]"
+                  letterDelay={0.065}
+                  overlayDelay={0.045}
+                  overlayDuration={0.45}
+                  springDuration={720}
+                  letterImages={cinemaLetterImages}
+                  className="max-w-[44rem]"
+                  onActiveLetterChange={(index) => {
+                    setActiveCinemaLetterIndex(index)
+                    if (index !== null) setCinemaBackgroundIndex(index)
+                  }}
+                />
+              </div>
+              <div className="relative z-10 mb-4 text-[0.72rem] font-medium tracking-[0.28em] text-slate-500 uppercase dark:text-slate-400">
+                {locale === 'zh-CN' ? '观影档案' : 'Movie Archive'}
+              </div>
+              <h1 className="relative z-10 -mt-1 text-4xl font-semibold tracking-[-0.04em] text-slate-950 sm:-mt-2 sm:text-5xl dark:text-slate-50">
+                {title}
+              </h1>
+              <p className="mt-4 max-w-2xl text-[0.98rem] leading-7 text-slate-600 dark:text-slate-400">
+                {description}
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div className="mx-auto w-full max-w-6xl px-4 pb-8 xl:max-w-[70vw]">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,3.8fr)_minmax(280px,1.2fr)] lg:items-start xl:grid-cols-[minmax(0,4fr)_minmax(296px,1.15fr)]">
           <div className="min-w-0">
             <WatchActivityCalendar

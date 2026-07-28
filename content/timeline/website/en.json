@@ -1,5 +1,57 @@
 [
   {
+    "date": "2026-07-27",
+    "title": "HDR, Life Notes, and Article Components Reached a New Stage",
+    "description": "This week brought photographed life back to the site more faithfully: HDR keeps more of the light and atmosphere, while Life Notes now feels much more like browsing an album on a phone. At the same time, frequently used cards, asides, floated images, and travel routes became reusable article components, leaving less scaffolding to rebuild and more room for the stories themselves.",
+    "categories": [
+      {
+        "title": "HDR and Faithful Images",
+        "items": [
+          {
+            "id": "article-life-20260727-1",
+            "content": "Added the HdrImage article component and data-hdr authoring syntax so only explicitly marked HDR originals can use the wider dynamic range, while ordinary images continue to render safely as SDR",
+            "date": "2026-07-27"
+          },
+          {
+            "id": "article-life-20260727-2",
+            "content": "Carried HDR metadata through article lightboxes and Life Notes albums, keeping HDR photos on their untransformed originals so compatible displays can show the extra highlights while other devices retain a normal base image",
+            "date": "2026-07-27"
+          }
+        ]
+      },
+      {
+        "title": "Life Notes and the Mobile Album",
+        "items": [
+          {
+            "id": "article-life-20260727-4",
+            "content": "Fixed the dark gap below landscape cover photos in the two-column mobile masonry grid: wide photos now fill the card with a restrained crop, while portrait photos keep their natural height",
+            "date": "2026-07-27"
+          },
+          {
+            "id": "article-life-20260727-5",
+            "content": "Replaced the cramped centered mobile popup with a full-screen detail page that slides in from the right, placing photos, writing, and comments in one continuous vertical reading flow and restoring the list position on return",
+            "date": "2026-07-27"
+          },
+          {
+            "id": "article-life-20260727-6",
+            "content": "Standardized the mobile photo stage at 70% of the screen height, moved the thumbnail picker below the photo, added swipe gestures and directional transitions on both mobile and desktop, and removed the sudden darkening during image changes",
+            "date": "2026-07-27"
+          }
+        ]
+      },
+      {
+        "title": "Mobile Reading Details",
+        "items": [
+          {
+            "id": "article-life-20260727-12",
+            "content": "Fixed long mobile table content escaping its cell and covering neighboring text, allowing headers, long links, and continuous strings to wrap naturally within their own columns",
+            "date": "2026-07-27"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-07-06",
     "title": "Applied to Join Travellings!",
     "description": "Prepared the site for joining Travellings by tightening external entry points, contact information, and blog-reading metadata so visitors can understand the site, reach the maintainer, and estimate reading effort more easily.",

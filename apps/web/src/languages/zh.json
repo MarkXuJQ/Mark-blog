@@ -297,7 +297,9 @@
     }
   },
   "life": {
-    "description": "记录日常与照片集。"
+    "description": "记录日常与照片集。",
+    "photoCount": "{{count}} 张照片",
+    "unknownLocation": "地点未记录"
   },
   "about": {
     "title": "关于我",

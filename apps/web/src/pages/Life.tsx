@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, type Variants } from 'framer-motion'
 import {
   ChevronLeft,
   ChevronRight,
@@ -9,6 +9,8 @@ import {
   ListFilter,
   ChevronDown,
   ArrowDown,
+  Images,
+  MapPin,
 } from 'lucide-react'
 import { DeferredComments } from '@/components/comments/DeferredComments'
 import { getTwikooApi, loadTwikooScript } from '@/lib/comments/twikooLoader'
@@ -19,8 +21,11 @@ import {
   DropdownTrigger,
 } from '@/components/ui/Dropdown'
 import { useLightbox } from '@/hooks/useLightbox'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { getOriginalImageUrl, getOptimizedImageUrl } from '@/lib/image'
 import { cn } from '@/lib/classNames'
+import lifeIsStrangeBackground from '@/assets/background/lifeisStrange.webp'
 
 type ImageInput = string | { src: string; alt?: string; hdr?: boolean }
 
@@ -44,6 +49,25 @@ type LifeImage = {
   preview: string
   thumbnail: string
   hdr: boolean
+}
+
+type ImageSwitchDirection = -1 | 1
+
+type SwitchImageOptions = {
+  force?: boolean
+  direction?: ImageSwitchDirection
+}
+
+const FEATURED_CAROUSEL_INTERVAL_MS = 5000
+
+const lifePhotoVariants: Variants = {
+  enter: (direction: ImageSwitchDirection) => ({
+    x: direction > 0 ? '100%' : '-100%',
+  }),
+  center: { x: 0 },
+  exit: (direction: ImageSwitchDirection) => ({
+    x: direction > 0 ? '-100%' : '100%',
+  }),
 }
 
 const lifeYearFiles = import.meta.glob<{ default: RawLifePost[] }>(
@@ -90,6 +114,8 @@ export function Life() {
   const title = t('nav.life')
   const description = t('life.description', '生活随笔瀑布流。')
   const { openLightbox } = useLightbox()
+  const isMobileDetail = useMediaQuery('(max-width: 767px)')
+  const prefersReducedMotion = usePrefersReducedMotion()
   const twikooEnvId =
     import.meta.env.VITE_TWIKOO_ENV_ID ||
     'https://comments.markxu.icu/api/twikoo'
@@ -134,13 +160,25 @@ export function Life() {
     )
   }, [selectedCities])
 
-  const displayPosts = useMemo(() => {
+  const filteredPosts = useMemo(() => {
     const hasCityFilter = selectedCityList.length > 0
-    const filtered = hasCityFilter
+    return hasCityFilter
       ? posts.filter((p) => p.city && selectedCities[p.city])
       : posts
+  }, [posts, selectedCities, selectedCityList.length])
 
-    const sorted = [...filtered].sort((a, b) => {
+  const featuredPost = useMemo(() => {
+    return (
+      [...filteredPosts].sort((a, b) => {
+        const dateDifference =
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        return dateDifference || a.id.localeCompare(b.id)
+      })[0] ?? null
+    )
+  }, [filteredPosts])
+
+  const displayPosts = useMemo(() => {
+    const sorted = [...filteredPosts].sort((a, b) => {
       const aTime = new Date(a.date).getTime()
       const bTime = new Date(b.date).getTime()
       if (aTime === bTime) return a.id.localeCompare(b.id)
@@ -148,7 +186,53 @@ export function Life() {
     })
 
     return sorted
-  }, [posts, selectedCities, selectedCityList.length, sortOrder])
+  }, [filteredPosts, sortOrder])
+
+  const regularPosts = useMemo(
+    () => displayPosts.filter((post) => post.id !== featuredPost?.id),
+    [displayPosts, featuredPost]
+  )
+
+  const featuredPostId = featuredPost?.id ?? null
+  const featuredImageCount = featuredPost?.images.length ?? 0
+  const [featuredImageIndex, setFeaturedImageIndex] = useState(0)
+  const [isFeaturedVisible, setIsFeaturedVisible] = useState(true)
+  const [isPageVisible, setIsPageVisible] = useState(() =>
+    typeof document === 'undefined'
+      ? true
+      : document.visibilityState !== 'hidden'
+  )
+  const featuredSectionRef = useRef<HTMLElement | null>(null)
+  const requestedActiveImageIndexRef = useRef(0)
+  const safeFeaturedImageIndex = Math.min(
+    featuredImageIndex,
+    Math.max(featuredImageCount - 1, 0)
+  )
+  const featuredImage =
+    featuredPost?.images[safeFeaturedImageIndex] ??
+    featuredPost?.images[0] ??
+    null
+  const featuredImageSrc = featuredImage
+    ? getOptimizedImageUrl(featuredImage.original, 'cover')
+    : ''
+  const featuredImageFailureKey = featuredPostId
+    ? `${featuredPostId}:${safeFeaturedImageIndex}`
+    : ''
+  const featuredNextImageIndex =
+    featuredImageCount > 1
+      ? (safeFeaturedImageIndex + 1) % featuredImageCount
+      : null
+  const featuredNextImage =
+    featuredNextImageIndex === null
+      ? null
+      : (featuredPost?.images[featuredNextImageIndex] ?? null)
+  const featuredNextImageSrc = featuredNextImage
+    ? getOptimizedImageUrl(featuredNextImage.original, 'cover')
+    : ''
+  const featuredNextImageFailureKey =
+    featuredPostId && featuredNextImageIndex !== null
+      ? `${featuredPostId}:${featuredNextImageIndex}`
+      : ''
 
   const [activeId, setActiveId] = useState<string | null>(null)
   const activePost = useMemo(
@@ -156,7 +240,7 @@ export function Life() {
     [activeId, posts]
   )
   const [activeImageIndex, setActiveImageIndex] = useState(0)
-  const [isImageSwitching, setIsImageSwitching] = useState(false)
+  const [imageDirection, setImageDirection] = useState<ImageSwitchDirection>(1)
   const activeImages = useMemo(() => activePost?.images ?? [], [activePost])
   const contentRef = useRef<HTMLDivElement | null>(null)
   const modalRef = useRef<HTMLDivElement | null>(null)
@@ -164,9 +248,15 @@ export function Life() {
   const failedImagesRef = useRef<Set<string>>(new Set())
   const loadedImagesRef = useRef<Set<string>>(new Set())
   const imageSwitchRequestRef = useRef(0)
+  const imageSwipeStartRef = useRef<{ x: number; y: number } | null>(null)
   const [, forceRerender] = useState(0)
   const currentImage = activeImages[activeImageIndex] ?? activeImages[0] ?? null
   const currentImageSrc = currentImage?.preview ?? ''
+
+  const openPost = (postId: string, imageIndex = 0) => {
+    requestedActiveImageIndexRef.current = imageIndex
+    setActiveId(postId)
+  }
 
   const handleCardMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     const target = event.currentTarget
@@ -219,13 +309,91 @@ export function Life() {
   }, [posts, refreshCommentCounts, twikooEnvId])
 
   useEffect(() => {
-    if (!activeId) return
-    setActiveImageIndex(0)
-    setIsImageSwitching(false)
+    setFeaturedImageIndex(0)
+  }, [featuredPostId])
+
+  useEffect(() => {
+    const updatePageVisibility = () => {
+      setIsPageVisible(document.visibilityState !== 'hidden')
+    }
+
+    updatePageVisibility()
+    document.addEventListener('visibilitychange', updatePageVisibility)
+    return () =>
+      document.removeEventListener('visibilitychange', updatePageVisibility)
+  }, [])
+
+  useEffect(() => {
+    const section = featuredSectionRef.current
+    if (!section || typeof IntersectionObserver === 'undefined') {
+      setIsFeaturedVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsFeaturedVisible(Boolean(entry?.isIntersecting))
+      },
+      { threshold: 0.08 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [featuredPostId])
+
+  useEffect(() => {
+    if (!featuredPost || featuredImageCount <= 1) return
+
+    const nextIndex = (safeFeaturedImageIndex + 1) % featuredImageCount
+    const nextImage = featuredPost.images[nextIndex]
+    if (!nextImage) return
+
+    const preload = new Image()
+    preload.decoding = 'async'
+    preload.src = getOptimizedImageUrl(nextImage.original, 'cover')
+  }, [featuredImageCount, featuredPost, safeFeaturedImageIndex])
+
+  useEffect(() => {
+    if (
+      featuredImageCount <= 1 ||
+      prefersReducedMotion ||
+      !isFeaturedVisible ||
+      !isPageVisible ||
+      activeId
+    ) {
+      return
+    }
+
+    const timer = window.setTimeout(() => {
+      setFeaturedImageIndex(
+        (current) =>
+          (Math.min(current, featuredImageCount - 1) + 1) % featuredImageCount
+      )
+    }, FEATURED_CAROUSEL_INTERVAL_MS)
+
+    return () => window.clearTimeout(timer)
+  }, [
+    activeId,
+    featuredImageCount,
+    featuredImageIndex,
+    isFeaturedVisible,
+    isPageVisible,
+    prefersReducedMotion,
+  ])
+
+  useEffect(() => {
+    if (!activeId || !activePost) return
+    const requestedIndex = Math.min(
+      Math.max(requestedActiveImageIndexRef.current, 0),
+      Math.max(activePost.images.length - 1, 0)
+    )
+    requestedActiveImageIndexRef.current = 0
+    setActiveImageIndex(requestedIndex)
+    setImageDirection(1)
     failedImagesRef.current = new Set()
     loadedImagesRef.current = new Set()
     imageSwitchRequestRef.current += 1
-  }, [activeId])
+  }, [activeId, activePost])
 
   useEffect(() => {
     if (!activePost) return
@@ -258,35 +426,36 @@ export function Life() {
     }
   }, [])
 
-  const switchToImage = (nextIndex: number, options?: { force?: boolean }) => {
+  const switchToImage = (nextIndex: number, options?: SwitchImageOptions) => {
     if (activeImages.length === 0) return
     if (!options?.force && nextIndex === activeImageIndex) return
 
     const nextSrc = activeImages[nextIndex]?.preview
     if (!nextSrc) return
+    const direction =
+      options?.direction ?? (nextIndex >= activeImageIndex ? 1 : -1)
 
     if (loadedImagesRef.current.has(nextSrc)) {
+      setImageDirection(direction)
       setActiveImageIndex(nextIndex)
-      setIsImageSwitching(false)
       return
     }
 
     const requestId = imageSwitchRequestRef.current + 1
     imageSwitchRequestRef.current = requestId
-    setIsImageSwitching(true)
 
     const img = new Image()
     img.onload = () => {
       loadedImagesRef.current.add(nextSrc)
       if (imageSwitchRequestRef.current !== requestId) return
+      setImageDirection(direction)
       setActiveImageIndex(nextIndex)
-      setIsImageSwitching(false)
     }
     img.onerror = () => {
       failedImagesRef.current.add(nextSrc)
       if (imageSwitchRequestRef.current !== requestId) return
+      setImageDirection(direction)
       setActiveImageIndex(nextIndex)
-      setIsImageSwitching(false)
       forceRerender((x) => x + 1)
     }
     img.src = nextSrc
@@ -296,14 +465,38 @@ export function Life() {
     if (activeImages.length <= 1) return
     const nextIndex =
       activeImageIndex === 0 ? activeImages.length - 1 : activeImageIndex - 1
-    switchToImage(nextIndex)
+    switchToImage(nextIndex, { direction: -1 })
   }
 
   const goNextImage = () => {
     if (activeImages.length <= 1) return
     const nextIndex =
       activeImageIndex === activeImages.length - 1 ? 0 : activeImageIndex + 1
-    switchToImage(nextIndex)
+    switchToImage(nextIndex, { direction: 1 })
+  }
+
+  const handlePhotoTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (!isMobileDetail || event.touches.length !== 1) return
+    const touch = event.touches[0]
+    if (!touch) return
+    imageSwipeStartRef.current = { x: touch.clientX, y: touch.clientY }
+  }
+
+  const handlePhotoTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    const start = imageSwipeStartRef.current
+    imageSwipeStartRef.current = null
+    if (!isMobileDetail || !start || activeImages.length <= 1) return
+
+    const touch = event.changedTouches[0]
+    if (!touch) return
+    const deltaX = touch.clientX - start.x
+    const deltaY = touch.clientY - start.y
+    const isHorizontalSwipe =
+      Math.abs(deltaX) >= 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.15
+    if (!isHorizontalSwipe) return
+
+    if (deltaX < 0) goNextImage()
+    else goPrevImage()
   }
 
   const handleDialogKeyDown = useEffectEvent((e: KeyboardEvent) => {
@@ -438,18 +631,179 @@ export function Life() {
     <>
       <Seo title={title} description={description} />
 
-      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 md:py-10">
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              {title}
-            </h1>
-            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-              {description}
-            </p>
+      <div className="relative isolate z-10 w-full pt-28">
+        {featuredPost && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+          >
+            <img
+              src={lifeIsStrangeBackground}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover object-[center_42%] opacity-42 saturate-[0.82] sm:opacity-46 lg:opacity-50 dark:opacity-36"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              draggable={false}
+            />
+            <div className="absolute inset-0 bg-[var(--page-background)] opacity-18 dark:opacity-28" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_bottom,color-mix(in_srgb,var(--page-background)_32%,transparent)_0%,transparent_38%,var(--page-background)_100%)]" />
           </div>
+        )}
 
-          <div className="flex flex-wrap items-center gap-3">
+        <div className="relative z-10 mx-auto w-full max-w-5xl px-4 pt-4 sm:px-6 sm:pt-5 md:pt-7">
+          <h1 className="sr-only">{title}</h1>
+
+          {featuredPost && (
+            <section ref={featuredSectionRef} className="relative mb-3 sm:mb-4">
+              <div className="relative">
+                <div className="relative isolate pt-1 [clip-path:inset(-4rem_-4rem_3rem_-4rem)]">
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute top-6 left-1/2 z-0 h-[calc(100%+1.5rem)] w-[84%] -translate-x-[52%] -rotate-[2deg] bg-[#f1f2f0] shadow-[0_14px_35px_-24px_rgba(15,23,42,0.5)] ring-1 ring-black/5 sm:w-[80%] md:w-[76%] dark:bg-[#e6e7e4]"
+                  />
+
+                  {featuredNextImageSrc && (
+                    <motion.div
+                      key={featuredNextImageFailureKey}
+                      aria-hidden="true"
+                      initial={prefersReducedMotion ? false : { y: 18 }}
+                      animate={{ y: 0 }}
+                      transition={{
+                        duration: 0.62,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                      className="pointer-events-none absolute top-3 left-1/2 z-10 h-[calc(100%+1.5rem)] w-[86%] -translate-x-[48%] rotate-[1.6deg] bg-[#fafafa] p-1.5 shadow-[0_18px_45px_-24px_rgba(15,23,42,0.62)] ring-1 ring-black/5 sm:w-[82%] sm:p-2 md:w-[78%]"
+                    >
+                      <div className="aspect-video w-full overflow-hidden bg-slate-200">
+                        {failedCoverIds[featuredNextImageFailureKey] ? (
+                          <div className="h-full w-full bg-slate-300" />
+                        ) : (
+                          <img
+                            src={featuredNextImageSrc}
+                            alt=""
+                            className="h-full w-full object-cover"
+                            loading="eager"
+                            decoding="async"
+                            draggable={false}
+                            onError={() =>
+                              setFailedCoverIds((prev) => ({
+                                ...prev,
+                                [featuredNextImageFailureKey]: true,
+                              }))
+                            }
+                          />
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      openPost(featuredPost.id, safeFeaturedImageIndex)
+                    }
+                    className={cn(
+                      'group relative z-[15] mx-auto block w-[84%] bg-[#fafafa] p-1.5 pb-0 text-left',
+                      'shadow-[0_22px_55px_-30px_rgba(15,23,42,0.7),0_4px_14px_-8px_rgba(15,23,42,0.28)] ring-1 ring-black/5',
+                      'transition-transform duration-300 ease-out hover:-translate-y-1',
+                      'focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500/70',
+                      'sm:w-[80%] sm:p-2 sm:pb-0 md:w-[74%] lg:w-[72%]'
+                    )}
+                    aria-label={`打开：${featuredPost.title}`}
+                  >
+                    <motion.div
+                      layoutId={
+                        isMobileDetail
+                          ? undefined
+                          : `life-image-${featuredPost.id}`
+                      }
+                      className="relative aspect-video w-full overflow-hidden bg-slate-200"
+                      transition={{ duration: 0.16, ease: 'easeOut' }}
+                    >
+                      <AnimatePresence initial={false} custom={1}>
+                        {featuredImageSrc &&
+                          (failedCoverIds[featuredImageFailureKey] ? (
+                            <motion.div
+                              key={`${featuredImageFailureKey}-error`}
+                              custom={1}
+                              variants={lifePhotoVariants}
+                              initial="enter"
+                              animate="center"
+                              exit="exit"
+                              transition={{
+                                duration: 0.62,
+                                ease: [0.22, 1, 0.36, 1],
+                              }}
+                              className="absolute inset-0 flex items-center justify-center bg-slate-700 text-sm text-white/70"
+                            >
+                              图片加载失败
+                            </motion.div>
+                          ) : (
+                            <motion.img
+                              key={featuredImageFailureKey}
+                              src={featuredImageSrc}
+                              alt={featuredPost.title}
+                              custom={1}
+                              variants={lifePhotoVariants}
+                              initial="enter"
+                              animate="center"
+                              exit="exit"
+                              transition={{
+                                duration: 0.62,
+                                ease: [0.22, 1, 0.36, 1],
+                              }}
+                              className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+                              loading="eager"
+                              fetchPriority={
+                                safeFeaturedImageIndex === 0 ? 'high' : 'auto'
+                              }
+                              decoding="async"
+                              draggable={false}
+                              onError={() =>
+                                setFailedCoverIds((prev) => ({
+                                  ...prev,
+                                  [featuredImageFailureKey]: true,
+                                }))
+                              }
+                            />
+                          ))}
+                      </AnimatePresence>
+                    </motion.div>
+
+                    <div className="min-h-[9rem] px-2 pt-3 pb-12 text-slate-900 sm:px-3 sm:pt-4">
+                      <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium text-slate-500 sm:text-sm">
+                        <time dateTime={featuredPost.date}>
+                          {featuredPost.date}
+                        </time>
+                        <span className="flex items-center gap-1">
+                          <MapPin size={14} aria-hidden="true" />
+                          {featuredPost.city ?? t('life.unknownLocation')}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Images size={14} aria-hidden="true" />
+                          {t('life.photoCount', {
+                            count: featuredPost.images.length,
+                          })}
+                        </span>
+                      </div>
+
+                      <p className="line-clamp-2 text-xl font-[var(--font-heading)] font-bold text-balance text-slate-900 sm:text-2xl">
+                        {featuredPost.title}
+                      </p>
+                    </div>
+                  </button>
+                </div>
+
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute bottom-12 left-1/2 z-20 w-[92%] -translate-x-1/2 border-t border-slate-400/55 sm:w-[88%] md:w-[82%] dark:border-white/22"
+                />
+              </div>
+            </section>
+          )}
+
+          <div className="relative z-20 flex flex-wrap items-center justify-end gap-3 pb-8">
             <button
               type="button"
               onClick={() =>
@@ -493,7 +847,10 @@ export function Life() {
                   <ChevronDown size={14} />
                 </DropdownTrigger>
 
-                <DropdownContent align="start" className="w-64 p-2">
+                <DropdownContent
+                  align="end"
+                  className="w-64 max-w-[calc(100vw-2rem)] p-2"
+                >
                   <div className="px-2 py-1 text-xs text-slate-500 dark:text-slate-400">
                     多选城市
                   </div>
@@ -544,9 +901,11 @@ export function Life() {
             )}
           </div>
         </div>
+      </div>
 
+      <div className="relative z-0 mx-auto w-full max-w-5xl px-4 pb-6 sm:px-6 md:pb-10">
         <div className="columns-2 gap-4 md:columns-3 lg:columns-4">
-          {displayPosts.map((post) => (
+          {regularPosts.map((post) => (
             <motion.div
               key={post.id}
               className={cn(
@@ -562,12 +921,14 @@ export function Life() {
             >
               <button
                 type="button"
-                onClick={() => setActiveId(post.id)}
+                onClick={() => openPost(post.id)}
                 className="block w-full text-left focus:outline-none"
                 aria-label={`打开：${post.title}`}
               >
                 <motion.div
-                  layoutId={`life-image-${post.id}`}
+                  layoutId={
+                    isMobileDetail ? undefined : `life-image-${post.id}`
+                  }
                   className="relative min-h-[160px] w-full overflow-hidden rounded-2xl bg-slate-100 dark:bg-[#1f2328]"
                   transition={{ duration: 0.16, ease: 'easeOut' }}
                 >
@@ -579,7 +940,7 @@ export function Life() {
                     <img
                       src={post.images[0]?.thumbnail}
                       alt={post.title}
-                      className="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                      className="h-auto min-h-[160px] w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                       loading="lazy"
                       decoding="async"
                       onError={() =>
@@ -596,12 +957,17 @@ export function Life() {
                   <div className="line-clamp-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
                     {post.title}
                   </div>
-                  <div className="mt-1 flex items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+                  <div className="mt-1.5 flex items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
                     <time dateTime={post.date}>{post.date}</time>
-                    <div className="flex items-center gap-1">
-                      <MessageCircle size={13} />
-                      <span>{commentCounts[post.id] ?? 0}</span>
-                    </div>
+                    <span
+                      className="flex shrink-0 items-center gap-1"
+                      aria-label={t('life.photoCount', {
+                        count: post.images.length,
+                      })}
+                    >
+                      <Images size={13} aria-hidden="true" />
+                      <span>{post.images.length}</span>
+                    </span>
                   </div>
                 </div>
               </button>
@@ -613,10 +979,10 @@ export function Life() {
       <AnimatePresence>
         {activePost && (
           <motion.div
-            className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
+            className="fixed inset-0 z-[1000] flex items-stretch justify-stretch p-0 md:items-center md:justify-center md:p-4"
+            initial={{ opacity: isMobileDetail ? 1 : 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            exit={{ opacity: isMobileDetail ? 1 : 0 }}
             onWheel={(e) => {
               e.preventDefault()
               e.stopPropagation()
@@ -628,7 +994,7 @@ export function Life() {
               type="button"
               aria-label="关闭"
               onClick={() => setActiveId(null)}
-              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              className="absolute inset-0 hidden bg-black/70 backdrop-blur-sm md:block"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -639,16 +1005,27 @@ export function Life() {
               tabIndex={-1}
               role="dialog"
               aria-modal="true"
+              initial={isMobileDetail ? { x: '100%' } : { x: 0 }}
+              animate={{ x: 0 }}
+              exit={isMobileDetail ? { x: '100%' } : { x: 0 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
               className={cn(
-                'relative z-[1001] w-full max-w-5xl overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-2xl',
-                'dark:border-[#2b2f36] dark:bg-[#17191c]'
+                'relative z-10 h-[100dvh] w-full max-w-none overflow-hidden rounded-none border-0 bg-white shadow-none outline-none',
+                'dark:bg-[#17191c]',
+                'md:h-auto md:max-w-5xl md:rounded-2xl md:border md:border-slate-200/70 md:shadow-2xl',
+                'md:dark:border-[#2b2f36]'
               )}
             >
-              <div className="flex max-h-[85vh] flex-col md:flex-row">
+              <div
+                ref={isMobileDetail ? contentRef : undefined}
+                className="flex h-full flex-col overflow-y-auto overscroll-contain md:h-auto md:max-h-[85vh] md:flex-row md:overflow-hidden"
+              >
                 <div className="relative shrink-0 bg-black md:w-[66%]">
                   <motion.div
-                    layoutId={`life-image-${activePost.id}`}
-                    className="group relative isolate overflow-hidden rounded-2xl"
+                    layoutId={
+                      isMobileDetail ? undefined : `life-image-${activePost.id}`
+                    }
+                    className="group relative isolate overflow-hidden rounded-none md:rounded-2xl"
                   >
                     {!failedImagesRef.current.has(currentImageSrc) &&
                       currentImageSrc && (
@@ -662,9 +1039,21 @@ export function Life() {
                           draggable={false}
                         />
                       )}
-                    <div className="relative z-10">
+                    <div
+                      className={cn(
+                        'relative z-10 h-[70svh] w-full touch-pan-y overflow-hidden',
+                        activeImages.length > 1
+                          ? 'md:h-[calc(85vh-5rem)]'
+                          : 'md:h-[85vh]'
+                      )}
+                      onTouchStart={handlePhotoTouchStart}
+                      onTouchEnd={handlePhotoTouchEnd}
+                      onTouchCancel={() => {
+                        imageSwipeStartRef.current = null
+                      }}
+                    >
                       {failedImagesRef.current.has(currentImageSrc) ? (
-                        <div className="flex h-[42vh] w-full flex-col items-center justify-center gap-3 text-slate-200 md:h-[85vh]">
+                        <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-slate-200">
                           <div className="text-sm">图片加载失败</div>
                           <button
                             type="button"
@@ -682,40 +1071,45 @@ export function Life() {
                           </button>
                         </div>
                       ) : (
-                        <img
-                          src={currentImageSrc}
-                          alt={activePost.title}
-                          className={cn(
-                            'h-[42vh] w-full object-contain select-none md:h-[85vh]',
-                            currentImage?.hdr && 'hdr-image'
-                          )}
-                          data-hdr-image={
-                            currentImage?.hdr ? 'true' : undefined
-                          }
-                          loading="eager"
-                          decoding="async"
-                          draggable={false}
-                          onLoad={() => {
-                            if (!currentImageSrc) return
-                            loadedImagesRef.current.add(currentImageSrc)
-                            setIsImageSwitching(false)
-                          }}
-                          onError={() => {
-                            const src = currentImageSrc
-                            if (!src) return
-                            failedImagesRef.current.add(src)
-                            setIsImageSwitching(false)
-                            forceRerender((x) => x + 1)
-                          }}
-                        />
-                      )}
-
-                      {isImageSwitching && (
-                        <div className="pointer-events-none absolute inset-0 z-[15] flex items-end justify-center bg-black/15">
-                          <div className="mb-4 rounded-full bg-black/50 px-3 py-1.5 text-xs text-white/90 backdrop-blur">
-                            图片切换中...
-                          </div>
-                        </div>
+                        <AnimatePresence
+                          initial={false}
+                          custom={imageDirection}
+                        >
+                          <motion.img
+                            key={currentImageSrc}
+                            src={currentImageSrc}
+                            alt={activePost.title}
+                            custom={imageDirection}
+                            variants={lifePhotoVariants}
+                            initial="enter"
+                            animate="center"
+                            exit="exit"
+                            transition={{
+                              duration: 0.34,
+                              ease: [0.22, 1, 0.36, 1],
+                            }}
+                            className={cn(
+                              'absolute inset-0 h-full w-full object-contain select-none',
+                              currentImage?.hdr && 'hdr-image'
+                            )}
+                            data-hdr-image={
+                              currentImage?.hdr ? 'true' : undefined
+                            }
+                            loading="eager"
+                            decoding="async"
+                            draggable={false}
+                            onLoad={() => {
+                              if (!currentImageSrc) return
+                              loadedImagesRef.current.add(currentImageSrc)
+                            }}
+                            onError={() => {
+                              const src = currentImageSrc
+                              if (!src) return
+                              failedImagesRef.current.add(src)
+                              forceRerender((x) => x + 1)
+                            }}
+                          />
+                        </AnimatePresence>
                       )}
 
                       {activeImages.length > 1 && (
@@ -723,7 +1117,7 @@ export function Life() {
                           <button
                             type="button"
                             onClick={goPrevImage}
-                            className="absolute inset-y-0 left-0 w-[10%] cursor-w-resize focus:outline-none"
+                            className="absolute inset-y-0 left-0 z-20 w-[10%] cursor-w-resize focus:outline-none"
                             aria-label="上一张"
                           />
                           <button
@@ -739,13 +1133,13 @@ export function Life() {
                                 activeImageIndex
                               )
                             }
-                            className="absolute inset-y-0 left-[10%] w-[80%] cursor-zoom-in focus:outline-none"
+                            className="absolute inset-y-0 left-[10%] z-20 w-[80%] cursor-zoom-in focus:outline-none"
                             aria-label="打开灯箱"
                           />
                           <button
                             type="button"
                             onClick={goNextImage}
-                            className="absolute inset-y-0 right-0 w-[10%] cursor-e-resize focus:outline-none"
+                            className="absolute inset-y-0 right-0 z-20 w-[10%] cursor-e-resize focus:outline-none"
                             aria-label="下一张"
                           />
 
@@ -756,7 +1150,7 @@ export function Life() {
                             <ChevronRight size={18} />
                           </div>
 
-                          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/45 px-2 py-1 text-xs text-white/90 backdrop-blur">
+                          <div className="pointer-events-none absolute bottom-3 left-1/2 z-30 -translate-x-1/2 rounded-full bg-black/45 px-2 py-1 text-xs text-white/90 backdrop-blur">
                             {activeImageIndex + 1}/{activeImages.length}
                           </div>
                         </>
@@ -776,7 +1170,7 @@ export function Life() {
                               activeImageIndex
                             )
                           }
-                          className="absolute inset-0 cursor-zoom-in focus:outline-none"
+                          className="absolute inset-0 z-20 cursor-zoom-in focus:outline-none"
                           aria-label="打开灯箱"
                         />
                       )}
@@ -784,7 +1178,10 @@ export function Life() {
                   </motion.div>
 
                   {activeImages.length > 1 && (
-                    <div className="absolute right-3 bottom-3 left-3 z-[20] flex gap-2 overflow-x-auto rounded-xl bg-black/25 p-2 backdrop-blur">
+                    <div
+                      className="relative z-20 mx-3 my-2 flex gap-2 overflow-x-auto rounded-xl bg-white/8 p-2"
+                      aria-label="选择照片"
+                    >
                       {activeImages.map((image, idx) => (
                         <button
                           key={`${image.original}-${idx}`}
@@ -814,19 +1211,23 @@ export function Life() {
                     type="button"
                     onClick={() => setActiveId(null)}
                     className={cn(
-                      'absolute top-3 right-3 z-[20] inline-flex h-10 w-10 items-center justify-center rounded-full',
+                      'absolute top-3 left-3 z-30 inline-flex h-10 w-10 items-center justify-center rounded-full md:right-3 md:left-auto',
                       'bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/55',
                       'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60'
                     )}
-                    aria-label="关闭弹层"
+                    aria-label={isMobileDetail ? '返回生活随笔' : '关闭弹层'}
                   >
-                    <X size={18} />
+                    {isMobileDetail ? (
+                      <ChevronLeft size={20} />
+                    ) : (
+                      <X size={18} />
+                    )}
                   </button>
                 </div>
 
                 <div
-                  ref={contentRef}
-                  className="flex flex-1 flex-col overflow-y-scroll overscroll-contain p-5 md:p-6"
+                  ref={isMobileDetail ? undefined : contentRef}
+                  className="flex flex-none flex-col overflow-visible p-5 pb-8 md:min-h-0 md:flex-1 md:overflow-y-scroll md:overscroll-contain md:p-6"
                 >
                   <div className="mb-2 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
                     {activePost.title}

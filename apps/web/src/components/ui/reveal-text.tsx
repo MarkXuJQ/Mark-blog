@@ -18,6 +18,7 @@ interface RevealTextProps {
   imageHoverPosition?: string
   className?: string
   align?: 'left' | 'center' | 'right'
+  onActiveLetterChange?: (index: number | null) => void
 }
 
 const DEFAULT_LETTER_IMAGES = [
@@ -54,6 +55,7 @@ export function RevealText({
   imageHoverPosition = '10% center',
   className,
   align = 'center',
+  onActiveLetterChange,
 }: RevealTextProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [showOverlayText, setShowOverlayText] = useState(false)
@@ -75,6 +77,10 @@ export function RevealText({
 
   return (
     <div
+      onMouseLeave={() => {
+        setHoveredIndex(null)
+        onActiveLetterChange?.(null)
+      }}
       className={cn(
         'relative flex items-center overflow-hidden',
         ALIGNMENT_CLASS_MAP[align],
@@ -85,7 +91,10 @@ export function RevealText({
         {text.split('').map((letter, index) => (
           <motion.span
             key={`${letter}-${index}`}
-            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseEnter={() => {
+              setHoveredIndex(index)
+              onActiveLetterChange?.(index)
+            }}
             onMouseLeave={() => setHoveredIndex(null)}
             className={cn(
               fontSize,

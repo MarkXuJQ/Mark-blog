@@ -31,7 +31,10 @@ export function Dropdown({
     <DropdownContext.Provider
       value={{ isOpen, setIsOpen, toggle: () => setIsOpen(!isOpen) }}
     >
-      <div ref={dropdownRef} className={cn('relative', className)}>
+      <div
+        ref={dropdownRef}
+        className={cn('relative', isOpen && 'z-50', className)}
+      >
         {children}
       </div>
     </DropdownContext.Provider>
@@ -77,7 +80,7 @@ export function DropdownContent({
   return (
     <div
       className={cn(
-        'animate-in fade-in zoom-in-95 absolute top-full z-50 mt-2 min-w-[8rem] rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 duration-150 dark:border-[#2b2f36] dark:bg-[#17191c] dark:ring-white/10',
+        'animate-in fade-in zoom-in-95 absolute top-full z-10 mt-2 max-w-[calc(100vw-2rem)] min-w-[8rem] rounded-lg border border-slate-200 bg-white p-1 shadow-lg ring-1 ring-black/5 duration-150 dark:border-[#2b2f36] dark:bg-[#17191c] dark:ring-white/10',
         align === 'end' ? 'right-0 origin-top-right' : 'left-0 origin-top-left',
         className
       )}

@@ -297,7 +297,9 @@
     }
   },
   "life": {
-    "description": "Daily notes and photo albums."
+    "description": "Daily notes and photo albums.",
+    "photoCount": "{{count}} photos",
+    "unknownLocation": "Location not noted"
   },
   "about": {
     "title": "About Me",

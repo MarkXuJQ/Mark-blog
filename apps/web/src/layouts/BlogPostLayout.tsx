@@ -56,6 +56,19 @@ export function BlogPostLayout() {
   }, [])
 
   useEffect(() => {
+    if (!isMobileTocOpen) return
+
+    window.dispatchEvent(
+      new CustomEvent('app:overlay', { detail: { open: true } })
+    )
+    return () => {
+      window.dispatchEvent(
+        new CustomEvent('app:overlay', { detail: { open: false } })
+      )
+    }
+  }, [isMobileTocOpen])
+
+  useEffect(() => {
     document.documentElement.toggleAttribute('data-simple-reading', simpleMode)
     window.localStorage.setItem(
       READER_MODE_STORAGE_KEY,
@@ -121,26 +134,28 @@ export function BlogPostLayout() {
             onToggle={() => setSimpleMode((prev) => !prev)}
           />
 
-          <button
-            type="button"
-            onClick={() => setIsMobileTocOpen((prev) => !prev)}
-            className="fixed right-6 bottom-6 z-[80] inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:bg-slate-50 lg:hidden dark:border-[var(--border-color)] dark:bg-[color-mix(in_srgb,var(--surface-card)_92%,transparent)] dark:text-[var(--text-secondary)] dark:hover:bg-[var(--surface-card)] dark:hover:text-[var(--text-primary)]"
-            aria-label={t('blog.toc.title')}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              className="h-5 w-5"
-              aria-hidden="true"
+          {!isMobileTocOpen ? (
+            <button
+              type="button"
+              onClick={() => setIsMobileTocOpen(true)}
+              className="fixed right-6 bottom-6 z-[80] inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:bg-slate-50 lg:hidden dark:border-[var(--border-color)] dark:bg-[color-mix(in_srgb,var(--surface-card)_92%,transparent)] dark:text-[var(--text-secondary)] dark:hover:bg-[var(--surface-card)] dark:hover:text-[var(--text-primary)]"
+              aria-label={t('blog.toc.title')}
             >
-              <path
-                fill="currentColor"
-                d="M4 17q-.425 0-.712-.288T3 16t.288-.712T4 15h12q.425 0 .713.288T17 16t-.288.713T16 17zm0-4q-.425 0-.712-.288T3 12t.288-.712T4 11h12q.425 0 .713.288T17 12t-.288.713T16 13zm0-4q-.425 0-.712-.288T3 8t.288-.712T4 7h12q.425 0 .713.288T17 8t-.288.713T16 9zm16 8q-.425 0-.712-.288T19 16t.288-.712T20 15t.713.288T21 16t-.288.713T20 17m0-4q-.425 0-.712-.288T19 12t.288-.712T20 11t.713.288T21 12t-.288.713T20 13m0-4q-.425 0-.712-.288T19 8t.288-.712T20 7t.713.288T21 8t-.288.713T20 9"
-              />
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                className="h-5 w-5"
+                aria-hidden="true"
+              >
+                <path
+                  fill="currentColor"
+                  d="M4 17q-.425 0-.712-.288T3 16t.288-.712T4 15h12q.425 0 .713.288T17 16t-.288.713T16 17zm0-4q-.425 0-.712-.288T3 12t.288-.712T4 11h12q.425 0 .713.288T17 12t-.288.713T16 13zm0-4q-.425 0-.712-.288T3 8t.288-.712T4 7h12q.425 0 .713.288T17 8t-.288.713T16 9zm16 8q-.425 0-.712-.288T19 16t.288-.712T20 15t.713.288T21 16t-.288.713T20 17m0-4q-.425 0-.712-.288T19 12t.288-.712T20 11t.713.288T21 12t-.288.713T20 13m0-4q-.425 0-.712-.288T19 8t.288-.712T20 7t.713.288T21 8t-.288.713T20 9"
+                />
+              </svg>
+            </button>
+          ) : null}
 
           <BlogTocDrawer
             toc={toc}
