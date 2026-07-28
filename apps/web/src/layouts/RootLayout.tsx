@@ -177,9 +177,11 @@ export function RootLayout() {
         )}
       </main>
 
-      <ThemeToggle mode={mode} onModeChange={handleThemeModeChange} />
+      {!isOverlayOpen ? (
+        <ThemeToggle mode={mode} onModeChange={handleThemeModeChange} />
+      ) : null}
       <ThemeCurtain state={themeCurtain} />
-      {areClientInteractionsReady && !hideBackToTop ? (
+      {areClientInteractionsReady && !hideBackToTop && !isOverlayOpen ? (
         <Suspense fallback={null}>
           <LazyDraggableBackToTop />
         </Suspense>

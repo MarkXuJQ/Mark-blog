@@ -1152,7 +1152,7 @@ export function Games() {
                         containerClassName="h-11 gap-1.5 rounded-[1.1rem] px-3 pr-2.5 sm:gap-2 sm:px-3.5 sm:pr-3"
                         labelClassName="hidden sm:inline"
                         buttonClassName="max-w-[6.8rem] gap-1 text-sm"
-                        menuClassName="w-52 max-w-[calc(100vw-2rem)] z-[70]"
+                        menuClassName="w-52 max-w-[calc(100vw-2rem)]"
                       />
                     </div>
                   </div>
@@ -1195,7 +1195,7 @@ export function Games() {
                           containerClassName="h-11 gap-1 rounded-[1.1rem] px-3 pr-2.5"
                           labelClassName="hidden"
                           buttonClassName="max-w-[5.75rem] gap-1 text-sm"
-                          menuClassName="w-52 max-w-[calc(100vw-2rem)] z-[70]"
+                          menuClassName="w-52 max-w-[calc(100vw-2rem)]"
                         />
                       </div>
                     </div>

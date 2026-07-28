@@ -631,7 +631,7 @@ export function Life() {
     <>
       <Seo title={title} description={description} />
 
-      <div className="relative isolate w-full pt-28">
+      <div className="relative isolate z-10 w-full pt-28">
         {featuredPost && (
           <div
             aria-hidden="true"
@@ -655,11 +655,8 @@ export function Life() {
           <h1 className="sr-only">{title}</h1>
 
           {featuredPost && (
-            <section
-              ref={featuredSectionRef}
-              className="relative z-10 mb-3 sm:mb-4"
-            >
-              <div className="relative z-10">
+            <section ref={featuredSectionRef} className="relative mb-3 sm:mb-4">
+              <div className="relative">
                 <div className="relative isolate pt-1 [clip-path:inset(-4rem_-4rem_3rem_-4rem)]">
                   <div
                     aria-hidden="true"
@@ -850,7 +847,10 @@ export function Life() {
                   <ChevronDown size={14} />
                 </DropdownTrigger>
 
-                <DropdownContent align="start" className="w-64 p-2">
+                <DropdownContent
+                  align="end"
+                  className="w-64 max-w-[calc(100vw-2rem)] p-2"
+                >
                   <div className="px-2 py-1 text-xs text-slate-500 dark:text-slate-400">
                     多选城市
                   </div>
@@ -903,7 +903,7 @@ export function Life() {
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-5xl px-4 pb-6 sm:px-6 md:pb-10">
+      <div className="relative z-0 mx-auto w-full max-w-5xl px-4 pb-6 sm:px-6 md:pb-10">
         <div className="columns-2 gap-4 md:columns-3 lg:columns-4">
           {regularPosts.map((post) => (
             <motion.div
@@ -1010,7 +1010,7 @@ export function Life() {
               exit={isMobileDetail ? { x: '100%' } : { x: 0 }}
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
               className={cn(
-                'relative z-[1001] h-[100dvh] w-full max-w-none overflow-hidden rounded-none border-0 bg-white shadow-none outline-none',
+                'relative z-10 h-[100dvh] w-full max-w-none overflow-hidden rounded-none border-0 bg-white shadow-none outline-none',
                 'dark:bg-[#17191c]',
                 'md:h-auto md:max-w-5xl md:rounded-2xl md:border md:border-slate-200/70 md:shadow-2xl',
                 'md:dark:border-[#2b2f36]'
@@ -1117,7 +1117,7 @@ export function Life() {
                           <button
                             type="button"
                             onClick={goPrevImage}
-                            className="absolute inset-y-0 left-0 w-[10%] cursor-w-resize focus:outline-none"
+                            className="absolute inset-y-0 left-0 z-20 w-[10%] cursor-w-resize focus:outline-none"
                             aria-label="上一张"
                           />
                           <button
@@ -1133,13 +1133,13 @@ export function Life() {
                                 activeImageIndex
                               )
                             }
-                            className="absolute inset-y-0 left-[10%] w-[80%] cursor-zoom-in focus:outline-none"
+                            className="absolute inset-y-0 left-[10%] z-20 w-[80%] cursor-zoom-in focus:outline-none"
                             aria-label="打开灯箱"
                           />
                           <button
                             type="button"
                             onClick={goNextImage}
-                            className="absolute inset-y-0 right-0 w-[10%] cursor-e-resize focus:outline-none"
+                            className="absolute inset-y-0 right-0 z-20 w-[10%] cursor-e-resize focus:outline-none"
                             aria-label="下一张"
                           />
 
@@ -1150,7 +1150,7 @@ export function Life() {
                             <ChevronRight size={18} />
                           </div>
 
-                          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/45 px-2 py-1 text-xs text-white/90 backdrop-blur">
+                          <div className="pointer-events-none absolute bottom-3 left-1/2 z-30 -translate-x-1/2 rounded-full bg-black/45 px-2 py-1 text-xs text-white/90 backdrop-blur">
                             {activeImageIndex + 1}/{activeImages.length}
                           </div>
                         </>
@@ -1170,7 +1170,7 @@ export function Life() {
                               activeImageIndex
                             )
                           }
-                          className="absolute inset-0 cursor-zoom-in focus:outline-none"
+                          className="absolute inset-0 z-20 cursor-zoom-in focus:outline-none"
                           aria-label="打开灯箱"
                         />
                       )}
@@ -1179,7 +1179,7 @@ export function Life() {
 
                   {activeImages.length > 1 && (
                     <div
-                      className="relative z-[20] mx-3 my-2 flex gap-2 overflow-x-auto rounded-xl bg-white/8 p-2"
+                      className="relative z-20 mx-3 my-2 flex gap-2 overflow-x-auto rounded-xl bg-white/8 p-2"
                       aria-label="选择照片"
                     >
                       {activeImages.map((image, idx) => (
@@ -1211,7 +1211,7 @@ export function Life() {
                     type="button"
                     onClick={() => setActiveId(null)}
                     className={cn(
-                      'absolute top-3 left-3 z-[20] inline-flex h-10 w-10 items-center justify-center rounded-full md:right-3 md:left-auto',
+                      'absolute top-3 left-3 z-30 inline-flex h-10 w-10 items-center justify-center rounded-full md:right-3 md:left-auto',
                       'bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/55',
                       'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60'
                     )}

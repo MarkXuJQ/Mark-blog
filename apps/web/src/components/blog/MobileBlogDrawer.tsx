@@ -62,6 +62,19 @@ export function MobileBlogDrawer({
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [open])
 
+  useEffect(() => {
+    if (!open) return
+
+    window.dispatchEvent(
+      new CustomEvent('app:overlay', { detail: { open: true } })
+    )
+    return () => {
+      window.dispatchEvent(
+        new CustomEvent('app:overlay', { detail: { open: false } })
+      )
+    }
+  }, [open])
+
   const linksLabel = isZh ? '朋友们' : 'Friends'
   const signature = isZh
     ? '光阴分百份，此周占二分。'
@@ -69,7 +82,7 @@ export function MobileBlogDrawer({
 
   return (
     <>
-      {shouldShowTrigger ? (
+      {shouldShowTrigger && !open ? (
         <button
           type="button"
           className={styles.trigger}
