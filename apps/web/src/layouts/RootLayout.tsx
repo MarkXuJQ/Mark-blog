@@ -59,6 +59,10 @@ export function RootLayout() {
   )
   const themeCurtainTimers = useRef<number[]>([])
   const isHome = pathname === '/'
+  const hasPageBackgroundUnderNav =
+    pathname === '/life' ||
+    pathname.startsWith('/life/') ||
+    pathname === '/movies'
   const hideBackToTop = pathname === '/'
   const supportsLinkPreviews = pathname.startsWith('/blog/')
 
@@ -83,11 +87,7 @@ export function RootLayout() {
     const fromTone = getResolvedThemeTone()
     const toTone = resolveThemeModeTone(nextMode)
 
-    if (
-      nextMode === mode ||
-      prefersReducedMotion() ||
-      fromTone === toTone
-    ) {
+    if (nextMode === mode || prefersReducedMotion() || fromTone === toTone) {
       clearThemeCurtainTimers()
       setThemeCurtain(null)
       setMode(nextMode)
@@ -145,7 +145,7 @@ export function RootLayout() {
       {/* Sticky NavBar Container - Floating Effect */}
       <div
         className={`z-50 w-full transition-transform duration-300 ${
-          isHome
+          isHome || hasPageBackgroundUnderNav
             ? 'pointer-events-none fixed inset-x-0 top-6'
             : 'pointer-events-none sticky top-6 mb-8'
         } ${

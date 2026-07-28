@@ -9,6 +9,8 @@ import {
   ListFilter,
   ChevronDown,
   ArrowDown,
+  Images,
+  MapPin,
 } from 'lucide-react'
 import { DeferredComments } from '@/components/comments/DeferredComments'
 import { getTwikooApi, loadTwikooScript } from '@/lib/comments/twikooLoader'
@@ -20,8 +22,10 @@ import {
 } from '@/components/ui/Dropdown'
 import { useLightbox } from '@/hooks/useLightbox'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { getOriginalImageUrl, getOptimizedImageUrl } from '@/lib/image'
 import { cn } from '@/lib/classNames'
+import lifeIsStrangeBackground from '@/assets/background/lifeisStrange.webp'
 
 type ImageInput = string | { src: string; alt?: string; hdr?: boolean }
 
@@ -53,6 +57,8 @@ type SwitchImageOptions = {
   force?: boolean
   direction?: ImageSwitchDirection
 }
+
+const FEATURED_CAROUSEL_INTERVAL_MS = 5000
 
 const lifePhotoVariants: Variants = {
   enter: (direction: ImageSwitchDirection) => ({
@@ -109,6 +115,7 @@ export function Life() {
   const description = t('life.description', '生活随笔瀑布流。')
   const { openLightbox } = useLightbox()
   const isMobileDetail = useMediaQuery('(max-width: 767px)')
+  const prefersReducedMotion = usePrefersReducedMotion()
   const twikooEnvId =
     import.meta.env.VITE_TWIKOO_ENV_ID ||
     'https://comments.markxu.icu/api/twikoo'
@@ -153,13 +160,25 @@ export function Life() {
     )
   }, [selectedCities])
 
-  const displayPosts = useMemo(() => {
+  const filteredPosts = useMemo(() => {
     const hasCityFilter = selectedCityList.length > 0
-    const filtered = hasCityFilter
+    return hasCityFilter
       ? posts.filter((p) => p.city && selectedCities[p.city])
       : posts
+  }, [posts, selectedCities, selectedCityList.length])
 
-    const sorted = [...filtered].sort((a, b) => {
+  const featuredPost = useMemo(() => {
+    return (
+      [...filteredPosts].sort((a, b) => {
+        const dateDifference =
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        return dateDifference || a.id.localeCompare(b.id)
+      })[0] ?? null
+    )
+  }, [filteredPosts])
+
+  const displayPosts = useMemo(() => {
+    const sorted = [...filteredPosts].sort((a, b) => {
       const aTime = new Date(a.date).getTime()
       const bTime = new Date(b.date).getTime()
       if (aTime === bTime) return a.id.localeCompare(b.id)
@@ -167,7 +186,53 @@ export function Life() {
     })
 
     return sorted
-  }, [posts, selectedCities, selectedCityList.length, sortOrder])
+  }, [filteredPosts, sortOrder])
+
+  const regularPosts = useMemo(
+    () => displayPosts.filter((post) => post.id !== featuredPost?.id),
+    [displayPosts, featuredPost]
+  )
+
+  const featuredPostId = featuredPost?.id ?? null
+  const featuredImageCount = featuredPost?.images.length ?? 0
+  const [featuredImageIndex, setFeaturedImageIndex] = useState(0)
+  const [isFeaturedVisible, setIsFeaturedVisible] = useState(true)
+  const [isPageVisible, setIsPageVisible] = useState(() =>
+    typeof document === 'undefined'
+      ? true
+      : document.visibilityState !== 'hidden'
+  )
+  const featuredSectionRef = useRef<HTMLElement | null>(null)
+  const requestedActiveImageIndexRef = useRef(0)
+  const safeFeaturedImageIndex = Math.min(
+    featuredImageIndex,
+    Math.max(featuredImageCount - 1, 0)
+  )
+  const featuredImage =
+    featuredPost?.images[safeFeaturedImageIndex] ??
+    featuredPost?.images[0] ??
+    null
+  const featuredImageSrc = featuredImage
+    ? getOptimizedImageUrl(featuredImage.original, 'cover')
+    : ''
+  const featuredImageFailureKey = featuredPostId
+    ? `${featuredPostId}:${safeFeaturedImageIndex}`
+    : ''
+  const featuredNextImageIndex =
+    featuredImageCount > 1
+      ? (safeFeaturedImageIndex + 1) % featuredImageCount
+      : null
+  const featuredNextImage =
+    featuredNextImageIndex === null
+      ? null
+      : (featuredPost?.images[featuredNextImageIndex] ?? null)
+  const featuredNextImageSrc = featuredNextImage
+    ? getOptimizedImageUrl(featuredNextImage.original, 'cover')
+    : ''
+  const featuredNextImageFailureKey =
+    featuredPostId && featuredNextImageIndex !== null
+      ? `${featuredPostId}:${featuredNextImageIndex}`
+      : ''
 
   const [activeId, setActiveId] = useState<string | null>(null)
   const activePost = useMemo(
@@ -187,6 +252,11 @@ export function Life() {
   const [, forceRerender] = useState(0)
   const currentImage = activeImages[activeImageIndex] ?? activeImages[0] ?? null
   const currentImageSrc = currentImage?.preview ?? ''
+
+  const openPost = (postId: string, imageIndex = 0) => {
+    requestedActiveImageIndexRef.current = imageIndex
+    setActiveId(postId)
+  }
 
   const handleCardMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     const target = event.currentTarget
@@ -239,13 +309,91 @@ export function Life() {
   }, [posts, refreshCommentCounts, twikooEnvId])
 
   useEffect(() => {
-    if (!activeId) return
-    setActiveImageIndex(0)
+    setFeaturedImageIndex(0)
+  }, [featuredPostId])
+
+  useEffect(() => {
+    const updatePageVisibility = () => {
+      setIsPageVisible(document.visibilityState !== 'hidden')
+    }
+
+    updatePageVisibility()
+    document.addEventListener('visibilitychange', updatePageVisibility)
+    return () =>
+      document.removeEventListener('visibilitychange', updatePageVisibility)
+  }, [])
+
+  useEffect(() => {
+    const section = featuredSectionRef.current
+    if (!section || typeof IntersectionObserver === 'undefined') {
+      setIsFeaturedVisible(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsFeaturedVisible(Boolean(entry?.isIntersecting))
+      },
+      { threshold: 0.08 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [featuredPostId])
+
+  useEffect(() => {
+    if (!featuredPost || featuredImageCount <= 1) return
+
+    const nextIndex = (safeFeaturedImageIndex + 1) % featuredImageCount
+    const nextImage = featuredPost.images[nextIndex]
+    if (!nextImage) return
+
+    const preload = new Image()
+    preload.decoding = 'async'
+    preload.src = getOptimizedImageUrl(nextImage.original, 'cover')
+  }, [featuredImageCount, featuredPost, safeFeaturedImageIndex])
+
+  useEffect(() => {
+    if (
+      featuredImageCount <= 1 ||
+      prefersReducedMotion ||
+      !isFeaturedVisible ||
+      !isPageVisible ||
+      activeId
+    ) {
+      return
+    }
+
+    const timer = window.setTimeout(() => {
+      setFeaturedImageIndex(
+        (current) =>
+          (Math.min(current, featuredImageCount - 1) + 1) % featuredImageCount
+      )
+    }, FEATURED_CAROUSEL_INTERVAL_MS)
+
+    return () => window.clearTimeout(timer)
+  }, [
+    activeId,
+    featuredImageCount,
+    featuredImageIndex,
+    isFeaturedVisible,
+    isPageVisible,
+    prefersReducedMotion,
+  ])
+
+  useEffect(() => {
+    if (!activeId || !activePost) return
+    const requestedIndex = Math.min(
+      Math.max(requestedActiveImageIndexRef.current, 0),
+      Math.max(activePost.images.length - 1, 0)
+    )
+    requestedActiveImageIndexRef.current = 0
+    setActiveImageIndex(requestedIndex)
     setImageDirection(1)
     failedImagesRef.current = new Set()
     loadedImagesRef.current = new Set()
     imageSwitchRequestRef.current += 1
-  }, [activeId])
+  }, [activeId, activePost])
 
   useEffect(() => {
     if (!activePost) return
@@ -483,18 +631,182 @@ export function Life() {
     <>
       <Seo title={title} description={description} />
 
-      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 md:py-10">
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              {title}
-            </h1>
-            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-              {description}
-            </p>
+      <div className="relative isolate w-full pt-28">
+        {featuredPost && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+          >
+            <img
+              src={lifeIsStrangeBackground}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover object-[center_42%] opacity-42 saturate-[0.82] sm:opacity-46 lg:opacity-50 dark:opacity-36"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              draggable={false}
+            />
+            <div className="absolute inset-0 bg-[var(--page-background)] opacity-18 dark:opacity-28" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_bottom,color-mix(in_srgb,var(--page-background)_32%,transparent)_0%,transparent_38%,var(--page-background)_100%)]" />
           </div>
+        )}
 
-          <div className="flex flex-wrap items-center gap-3">
+        <div className="relative z-10 mx-auto w-full max-w-5xl px-4 pt-4 sm:px-6 sm:pt-5 md:pt-7">
+          <h1 className="sr-only">{title}</h1>
+
+          {featuredPost && (
+            <section
+              ref={featuredSectionRef}
+              className="relative z-10 mb-3 sm:mb-4"
+            >
+              <div className="relative z-10">
+                <div className="relative isolate pt-1 [clip-path:inset(-4rem_-4rem_3rem_-4rem)]">
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute top-6 left-1/2 z-0 h-[calc(100%+1.5rem)] w-[84%] -translate-x-[52%] -rotate-[2deg] bg-[#f1f2f0] shadow-[0_14px_35px_-24px_rgba(15,23,42,0.5)] ring-1 ring-black/5 sm:w-[80%] md:w-[76%] dark:bg-[#e6e7e4]"
+                  />
+
+                  {featuredNextImageSrc && (
+                    <motion.div
+                      key={featuredNextImageFailureKey}
+                      aria-hidden="true"
+                      initial={prefersReducedMotion ? false : { y: 18 }}
+                      animate={{ y: 0 }}
+                      transition={{
+                        duration: 0.62,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                      className="pointer-events-none absolute top-3 left-1/2 z-10 h-[calc(100%+1.5rem)] w-[86%] -translate-x-[48%] rotate-[1.6deg] bg-[#fafafa] p-1.5 shadow-[0_18px_45px_-24px_rgba(15,23,42,0.62)] ring-1 ring-black/5 sm:w-[82%] sm:p-2 md:w-[78%]"
+                    >
+                      <div className="aspect-video w-full overflow-hidden bg-slate-200">
+                        {failedCoverIds[featuredNextImageFailureKey] ? (
+                          <div className="h-full w-full bg-slate-300" />
+                        ) : (
+                          <img
+                            src={featuredNextImageSrc}
+                            alt=""
+                            className="h-full w-full object-cover"
+                            loading="eager"
+                            decoding="async"
+                            draggable={false}
+                            onError={() =>
+                              setFailedCoverIds((prev) => ({
+                                ...prev,
+                                [featuredNextImageFailureKey]: true,
+                              }))
+                            }
+                          />
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      openPost(featuredPost.id, safeFeaturedImageIndex)
+                    }
+                    className={cn(
+                      'group relative z-[15] mx-auto block w-[84%] bg-[#fafafa] p-1.5 pb-0 text-left',
+                      'shadow-[0_22px_55px_-30px_rgba(15,23,42,0.7),0_4px_14px_-8px_rgba(15,23,42,0.28)] ring-1 ring-black/5',
+                      'transition-transform duration-300 ease-out hover:-translate-y-1',
+                      'focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500/70',
+                      'sm:w-[80%] sm:p-2 sm:pb-0 md:w-[74%] lg:w-[72%]'
+                    )}
+                    aria-label={`打开：${featuredPost.title}`}
+                  >
+                    <motion.div
+                      layoutId={
+                        isMobileDetail
+                          ? undefined
+                          : `life-image-${featuredPost.id}`
+                      }
+                      className="relative aspect-video w-full overflow-hidden bg-slate-200"
+                      transition={{ duration: 0.16, ease: 'easeOut' }}
+                    >
+                      <AnimatePresence initial={false} custom={1}>
+                        {featuredImageSrc &&
+                          (failedCoverIds[featuredImageFailureKey] ? (
+                            <motion.div
+                              key={`${featuredImageFailureKey}-error`}
+                              custom={1}
+                              variants={lifePhotoVariants}
+                              initial="enter"
+                              animate="center"
+                              exit="exit"
+                              transition={{
+                                duration: 0.62,
+                                ease: [0.22, 1, 0.36, 1],
+                              }}
+                              className="absolute inset-0 flex items-center justify-center bg-slate-700 text-sm text-white/70"
+                            >
+                              图片加载失败
+                            </motion.div>
+                          ) : (
+                            <motion.img
+                              key={featuredImageFailureKey}
+                              src={featuredImageSrc}
+                              alt={featuredPost.title}
+                              custom={1}
+                              variants={lifePhotoVariants}
+                              initial="enter"
+                              animate="center"
+                              exit="exit"
+                              transition={{
+                                duration: 0.62,
+                                ease: [0.22, 1, 0.36, 1],
+                              }}
+                              className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+                              loading="eager"
+                              fetchPriority={
+                                safeFeaturedImageIndex === 0 ? 'high' : 'auto'
+                              }
+                              decoding="async"
+                              draggable={false}
+                              onError={() =>
+                                setFailedCoverIds((prev) => ({
+                                  ...prev,
+                                  [featuredImageFailureKey]: true,
+                                }))
+                              }
+                            />
+                          ))}
+                      </AnimatePresence>
+                    </motion.div>
+
+                    <div className="min-h-[9rem] px-2 pt-3 pb-12 text-slate-900 sm:px-3 sm:pt-4">
+                      <div className="mb-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium text-slate-500 sm:text-sm">
+                        <time dateTime={featuredPost.date}>
+                          {featuredPost.date}
+                        </time>
+                        <span className="flex items-center gap-1">
+                          <MapPin size={14} aria-hidden="true" />
+                          {featuredPost.city ?? t('life.unknownLocation')}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Images size={14} aria-hidden="true" />
+                          {t('life.photoCount', {
+                            count: featuredPost.images.length,
+                          })}
+                        </span>
+                      </div>
+
+                      <p className="line-clamp-2 text-xl font-[var(--font-heading)] font-bold text-balance text-slate-900 sm:text-2xl">
+                        {featuredPost.title}
+                      </p>
+                    </div>
+                  </button>
+                </div>
+
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute bottom-12 left-1/2 z-20 w-[92%] -translate-x-1/2 border-t border-slate-400/55 sm:w-[88%] md:w-[82%] dark:border-white/22"
+                />
+              </div>
+            </section>
+          )}
+
+          <div className="relative z-20 flex flex-wrap items-center justify-end gap-3 pb-8">
             <button
               type="button"
               onClick={() =>
@@ -589,9 +901,11 @@ export function Life() {
             )}
           </div>
         </div>
+      </div>
 
+      <div className="mx-auto w-full max-w-5xl px-4 pb-6 sm:px-6 md:pb-10">
         <div className="columns-2 gap-4 md:columns-3 lg:columns-4">
-          {displayPosts.map((post) => (
+          {regularPosts.map((post) => (
             <motion.div
               key={post.id}
               className={cn(
@@ -607,7 +921,7 @@ export function Life() {
             >
               <button
                 type="button"
-                onClick={() => setActiveId(post.id)}
+                onClick={() => openPost(post.id)}
                 className="block w-full text-left focus:outline-none"
                 aria-label={`打开：${post.title}`}
               >
@@ -643,12 +957,17 @@ export function Life() {
                   <div className="line-clamp-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
                     {post.title}
                   </div>
-                  <div className="mt-1 flex items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+                  <div className="mt-1.5 flex items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
                     <time dateTime={post.date}>{post.date}</time>
-                    <div className="flex items-center gap-1">
-                      <MessageCircle size={13} />
-                      <span>{commentCounts[post.id] ?? 0}</span>
-                    </div>
+                    <span
+                      className="flex shrink-0 items-center gap-1"
+                      aria-label={t('life.photoCount', {
+                        count: post.images.length,
+                      })}
+                    >
+                      <Images size={13} aria-hidden="true" />
+                      <span>{post.images.length}</span>
+                    </span>
                   </div>
                 </div>
               </button>
