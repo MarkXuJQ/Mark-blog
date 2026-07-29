@@ -237,12 +237,18 @@ async function renderRoutesConcurrently(
 
   async function runWorker() {
     let browserContext
+    let page
 
-    // Isolated contexts prevent concurrent navigations from sharing cookies,
-    // storage, or an in-flight HTTP cache entry that another page may cancel.
     try {
-      browserContext = await browser.createBrowserContext()
-      const page = await createPrerenderPage(browserContext)
+      if (process.env.VERCEL === '1') {
+        // Serverless Chromium can exit when a Puppeteer BrowserContext creates
+        // its first target, so Vercel uses the browser's default context.
+        page = await createPrerenderPage(browser)
+      } else {
+        // Local workers retain isolated storage and request caches.
+        browserContext = await browser.createBrowserContext()
+        page = await createPrerenderPage(browserContext)
+      }
 
       while (nextRouteIndex < routes.length) {
         const routeIndex = nextRouteIndex
@@ -252,6 +258,8 @@ async function renderRoutesConcurrently(
     } finally {
       if (browserContext) {
         await browserContext.close().catch(() => {})
+      } else if (page) {
+        await page.close().catch(() => {})
       }
     }
   }
