@@ -1,4 +1,4 @@
-import { lazy, useEffect, useRef, Suspense, useState } from 'react'
+import { lazy, useRef, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Footer } from '@/components/layout/Footer'
 import {
@@ -9,7 +9,7 @@ import { HomeBlogRailSection } from '@/components/home/HomeBlogRailSection'
 import { HomeHeroSection } from '@/components/home/HomeHeroSection'
 import { useHomePageSceneMotion } from '@/hooks/useHomePageSceneMotion'
 import { useHomePageRuntime } from '@/hooks/useHomePageRuntime'
-import { useHomeGsapReveal } from '@/hooks/useHomeGsapReveal'
+import { useHomeReveal } from '@/hooks/useHomeReveal'
 import { useHomeSectionPager } from '@/hooks/useHomeSectionPager'
 import { Seo } from '@/app/seo/Seo'
 import {
@@ -21,132 +21,6 @@ import {
 import { useDeferredRender } from '@/hooks/useDeferredRender'
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
 import { getImageUrl } from '@/lib/image'
-
-const HOME_DEFERRED_PRELOAD_DELAY_MS = 2400
-const HOME_CHUNK_PRELOAD_DELAY_MS = 2600
-const HOME_CHUNK_PRELOAD_IDLE_TIMEOUT_MS = 3000
-const HOME_CHUNK_PRELOAD_FALLBACK_DELAY_MS = 1000
-const SLOW_NETWORK_TYPES = new Set(['slow-2g', '2g', '3g'])
-
-type NetworkInformation = {
-  effectiveType?: string
-  saveData?: boolean
-}
-
-type NavigatorWithConnection = Navigator & {
-  connection?: NetworkInformation
-}
-
-type IdleCapableWindow = Window & {
-  requestIdleCallback?: (
-    callback: () => void,
-    options?: { timeout?: number }
-  ) => number
-  cancelIdleCallback?: (handle: number) => void
-}
-
-function useDeferredMount(enabled: boolean, delayMs: number) {
-  const [isMounted, setIsMounted] = useState(() => !enabled)
-
-  useEffect(() => {
-    if (!enabled) {
-      setIsMounted(false)
-      return
-    }
-
-    setIsMounted(false)
-    let timeoutHandle = 0
-    let fallbackHandle = 0
-    let idleHandle: number | null = null
-
-    timeoutHandle = window.setTimeout(() => {
-      if (typeof window.requestIdleCallback === 'function') {
-        idleHandle = window.requestIdleCallback(() => {
-          setIsMounted(true)
-        })
-        return
-      }
-
-      fallbackHandle = window.setTimeout(() => {
-        setIsMounted(true)
-      }, 0)
-    }, delayMs)
-
-    return () => {
-      window.clearTimeout(timeoutHandle)
-      window.clearTimeout(fallbackHandle)
-      if (
-        idleHandle !== null &&
-        typeof window.cancelIdleCallback === 'function'
-      ) {
-        window.cancelIdleCallback(idleHandle)
-      }
-    }
-  }, [delayMs, enabled])
-
-  return isMounted
-}
-
-function useHomeChunkPreload() {
-  useEffect(() => {
-    if (window.__PRERENDER__) return
-
-    const connection = (navigator as NavigatorWithConnection).connection
-    if (
-      connection?.saveData ||
-      (connection?.effectiveType &&
-        SLOW_NETWORK_TYPES.has(connection.effectiveType))
-    ) {
-      return
-    }
-
-    const idleWindow = window as IdleCapableWindow
-    let idleHandle: number | null = null
-    let preloadDelayHandle = 0
-    let fallbackHandle = 0
-
-    const preloadChunks = () => {
-      void import('@/components/home/HomeWidgetStackSection')
-      void import('@/components/home/HomeRadarSection')
-    }
-
-    const preloadWhenIdle = () => {
-      if (idleWindow.requestIdleCallback) {
-        idleHandle = idleWindow.requestIdleCallback(preloadChunks, {
-          timeout: HOME_CHUNK_PRELOAD_IDLE_TIMEOUT_MS,
-        })
-        return
-      }
-
-      fallbackHandle = window.setTimeout(
-        preloadChunks,
-        HOME_CHUNK_PRELOAD_FALLBACK_DELAY_MS
-      )
-    }
-
-    const schedulePreload = () => {
-      preloadDelayHandle = window.setTimeout(
-        preloadWhenIdle,
-        HOME_CHUNK_PRELOAD_DELAY_MS
-      )
-    }
-
-    if (document.readyState === 'complete') {
-      schedulePreload()
-    } else {
-      window.addEventListener('load', schedulePreload, { once: true })
-    }
-
-    return () => {
-      window.removeEventListener('load', schedulePreload)
-      window.clearTimeout(preloadDelayHandle)
-      window.clearTimeout(fallbackHandle)
-      if (idleHandle !== null && idleWindow.cancelIdleCallback) {
-        idleWindow.cancelIdleCallback(idleHandle)
-      }
-    }
-  }, [])
-}
 
 const LazyHomeRadarSection = lazy(() =>
   import('@/components/home/HomeRadarSection').then((module) => ({
@@ -160,30 +34,18 @@ const LazyHomeWidgetStackSection = lazy(() =>
   }))
 )
 
-function HomeDeferredScenes({
-  avatarSrc,
-  isCoarsePointer,
-}: {
-  avatarSrc: string
-  isCoarsePointer: boolean
-}) {
+function HomeDeferredScenes({ avatarSrc }: { avatarSrc: string }) {
   const isPrerender =
     typeof window !== 'undefined' && Boolean(window.__PRERENDER__)
-  const shouldPreloadDeferredScenes = useDeferredMount(
-    true,
-    HOME_DEFERRED_PRELOAD_DELAY_MS
-  )
   const {
     targetRef: widgetStackPlaceholderRef,
     shouldRender: shouldRenderWidgetStack,
   } = useDeferredRender<HTMLElement>({
-    rootMargin: isCoarsePointer ? '260px 0px' : '720px 0px',
-    initial: shouldPreloadDeferredScenes,
+    rootMargin: '720px 0px',
   })
   const { targetRef: radarPlaceholderRef, shouldRender: shouldRenderRadar } =
     useDeferredRender<HTMLDivElement>({
-      rootMargin: isCoarsePointer ? '220px 0px' : '640px 0px',
-      initial: shouldPreloadDeferredScenes,
+      rootMargin: '640px 0px',
     })
 
   if (isPrerender) {
@@ -259,8 +121,7 @@ export function Home() {
     enabled: !isCoarsePointer,
     prefersReducedMotion,
   })
-  useHomeGsapReveal(pageRef, { prefersReducedMotion })
-  useHomeChunkPreload()
+  useHomeReveal(pageRef, { prefersReducedMotion })
 
   return (
     <>
@@ -294,10 +155,7 @@ export function Home() {
           sectionPointerEvents={blog.pointerEvents}
         />
 
-        <HomeDeferredScenes
-          avatarSrc={avatarSrc}
-          isCoarsePointer={isCoarsePointer}
-        />
+        <HomeDeferredScenes avatarSrc={avatarSrc} />
 
         <div
           data-home-reveal="footer"
