@@ -15,6 +15,7 @@ const __dirname = path.dirname(__filename)
 const PORT = 4173
 const BASE_URL = `http://localhost:${PORT}`
 const DEFAULT_PRERENDER_CONCURRENCY = 4
+const DEFAULT_VERCEL_PRERENDER_CONCURRENCY = 1
 const MAX_PRERENDER_CONCURRENCY = 8
 const PREVIEW_READY_TIMEOUT_MS = 15000
 const DIST_DIR = path.resolve(__dirname, '../dist')
@@ -36,7 +37,9 @@ function getPrerenderConcurrency() {
   )
 
   if (!Number.isFinite(requestedConcurrency) || requestedConcurrency < 1) {
-    return DEFAULT_PRERENDER_CONCURRENCY
+    return process.env.VERCEL === '1'
+      ? DEFAULT_VERCEL_PRERENDER_CONCURRENCY
+      : DEFAULT_PRERENDER_CONCURRENCY
   }
 
   return Math.min(requestedConcurrency, MAX_PRERENDER_CONCURRENCY)
@@ -233,19 +236,23 @@ async function renderRoutesConcurrently(
   )
 
   async function runWorker() {
+    let browserContext
+
     // Isolated contexts prevent concurrent navigations from sharing cookies,
     // storage, or an in-flight HTTP cache entry that another page may cancel.
-    const browserContext = await browser.createBrowserContext()
-    const page = await createPrerenderPage(browserContext)
-
     try {
+      browserContext = await browser.createBrowserContext()
+      const page = await createPrerenderPage(browserContext)
+
       while (nextRouteIndex < routes.length) {
         const routeIndex = nextRouteIndex
         nextRouteIndex += 1
         renderedPages[routeIndex] = await renderRoute(page, routes[routeIndex])
       }
     } finally {
-      await browserContext.close()
+      if (browserContext) {
+        await browserContext.close().catch(() => {})
+      }
     }
   }
 
@@ -294,10 +301,49 @@ async function waitForPreviewServer(server) {
   )
 }
 
+async function resolveBrowserLaunchOptions() {
+  if (process.env.VERCEL === '1') {
+    console.log('🚀 Running on Vercel, using @sparticuz/chromium')
+    const chromium = (await import('@sparticuz/chromium')).default
+
+    return {
+      args: Array.from(new Set([...chromium.args, '--disable-dev-shm-usage'])),
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+    }
+  }
+
+  return {
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+    ],
+  }
+}
+
+async function renderRoutesInFreshBrowser(
+  routes,
+  launchOptions,
+  concurrency = getPrerenderConcurrency()
+) {
+  let browser
+
+  try {
+    browser = await puppeteer.launch(launchOptions)
+    return await renderRoutesConcurrently(browser, routes, concurrency)
+  } finally {
+    if (browser) {
+      await browser.close().catch(() => {})
+    }
+  }
+}
+
 async function prerender() {
   console.log('📦 Starting prerendering...')
 
-  let browser
   let server
   try {
     // 1. Start Vite Preview Server
@@ -327,42 +373,32 @@ async function prerender() {
     )
     await waitForPreviewServer(server)
 
-    // 2. Launch Puppeteer
-    let launchOptions = {
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    }
-
-    if (process.env.VERCEL) {
-      console.log('🚀 Running on Vercel, using @sparticuz/chromium')
-      try {
-        const chromium = (await import('@sparticuz/chromium')).default
-        launchOptions = {
-          args: chromium.args,
-          defaultViewport: chromium.defaultViewport,
-          executablePath: await chromium.executablePath(),
-          headless: chromium.headless,
-        }
-      } catch (e) {
-        console.error('Failed to load @sparticuz/chromium:', e)
-      }
-    }
-
-    browser = await puppeteer.launch(launchOptions)
-
+    // 2. Launch Puppeteer and render the canonical routes.
+    const launchOptions = await resolveBrowserLaunchOptions()
     const routes = getRoutes()
 
     console.log(`🔍 Found ${routes.length} routes to prerender.`)
-    const firstPass = await renderRoutesConcurrently(browser, routes)
+    let firstPass
+
+    try {
+      firstPass = await renderRoutesInFreshBrowser(routes, launchOptions)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn(
+        `⚠️ Initial Chromium process failed before prerendering completed: ${message}`
+      )
+      firstPass = { renderedPages: [], failedRoutes: routes }
+    }
+
     let renderedPages = firstPass.renderedPages
 
     if (firstPass.failedRoutes.length > 0) {
       console.warn(
-        `🔁 Retrying ${firstPass.failedRoutes.length} failed route${firstPass.failedRoutes.length === 1 ? '' : 's'} sequentially in a fresh browser context.`
+        `🔁 Retrying ${firstPass.failedRoutes.length} failed route${firstPass.failedRoutes.length === 1 ? '' : 's'} sequentially in a fresh Chromium process.`
       )
-      const retry = await renderRoutesConcurrently(
-        browser,
+      const retry = await renderRoutesInFreshBrowser(
         firstPass.failedRoutes,
+        launchOptions,
         1
       )
       renderedPages = [...renderedPages, ...retry.renderedPages]
@@ -383,7 +419,6 @@ async function prerender() {
     process.exitCode = 1
   } finally {
     // Cleanup
-    if (browser) await browser.close()
     if (server && !server.killed) server.kill()
     console.log('✨ Prerendering complete.')
   }
