@@ -47,7 +47,19 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://markxu.icu/blog/Wuhan-food-walk-note1-en</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://markxu.icu/blog/tcp-slow-start-cwnd-growth-cn</loc>
+    <lastmod>2026-07-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://markxu.icu/blog/tcp-slow-start-cwnd-growth-en</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -59,13 +71,31 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://markxu.icu/blog/behind-localhost-en</loc>
+    <lastmod>2026-06-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://markxu.icu/blog/anti-reward-hacking-college-cn</loc>
     <lastmod>2026-06-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://markxu.icu/blog/anti-reward-hacking-college-en</loc>
+    <lastmod>2026-06-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://markxu.icu/blog/Amoy-food-walk-note1-cn</loc>
+    <lastmod>2026-06-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://markxu.icu/blog/Amoy-food-walk-note1-en</loc>
     <lastmod>2026-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -174,6 +204,12 @@
   </url>
   <url>
     <loc>https://markxu.icu/blog/Xian-trip-notes-cn</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://markxu.icu/blog/Xian-trip-notes-en</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>

@@ -167,6 +167,7 @@ function renderFeedViewPage(feedPosts, options) {
       `
     })
     .join('\n')
+    .replace(/[ \t]+$/gm, '')
 
   return `<!doctype html>
 <html lang="${lang}">

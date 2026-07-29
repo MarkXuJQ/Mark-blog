@@ -22,8 +22,22 @@
         <link href="https://markxu.icu/blog/Wuhan-food-walk-note1-cn"/>
         <link rel="enclosure" href="https://img.markxu.icu/img湖北省博.jpg" type="image/jpg"/>
         <updated>2026-07-20T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[在武汉备考二战，周末放一天假，跟着博主的路子出门转转，还顺便看了湖北省博物馆。]]></summary>
-        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img湖北省博.jpg" alt="武汉逛吃日志 1" /> <p>在武汉备考二战，周末放一天假，跟着博主的路子出门转转，还顺便看了湖北省博物馆。</p> <a class="view-full" href="https://markxu.icu/blog/Wuhan-food-walk-note1-cn" target="_blank">点击查看全文</a>]]></content>
+        <summary type="html"><![CDATA[在武汉备考二战，周末放一天假，跟着up主的路子出门转转，看了心心念念的湖北省博物馆，吃了许多美食。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img湖北省博.jpg" alt="武汉逛吃日志 1" /> <p>在武汉备考二战，周末放一天假，跟着up主的路子出门转转，看了心心念念的湖北省博物馆，吃了许多美食。</p> <a class="view-full" href="https://markxu.icu/blog/Wuhan-food-walk-note1-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[A Wuhan Food-Crawl Diary 1]]></title>
+        <id>https://markxu.icu/blog/Wuhan-food-walk-note1-en</id>
+        <link href="https://markxu.icu/blog/Wuhan-food-walk-note1-en"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img湖北省博.jpg" type="image/jpg"/>
+        <updated>2026-07-20T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[[AI-translated] While preparing in Wuhan for a second attempt at the postgraduate entrance examination, I took a day off on the weekend, followed a local creator's route around the city, visited the Hubei Provincial Museum at last, and ate plenty of good food.]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img湖北省博.jpg" alt="A Wuhan Food-Crawl Diary 1" /> <p>[AI-translated] While preparing in Wuhan for a second attempt at the postgraduate entrance examination, I took a day off on the weekend, followed a local creator's route around the city, visited the Hubei Provincial Museum at last, and ate plenty of good food.</p> <a class="view-full" href="https://markxu.icu/blog/Wuhan-food-walk-note1-en" target="_blank">Read full article</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>
@@ -45,6 +59,20 @@
         </author>
     </entry>
     <entry>
+        <title type="html"><![CDATA[TCP Slow-Start Window Growth: A Three-Level Comparison of Textbooks, RFCs, and the Linux Kernel]]></title>
+        <id>https://markxu.icu/blog/tcp-slow-start-cwnd-growth-en</id>
+        <link href="https://markxu.icu/blog/tcp-slow-start-cwnd-growth-en"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img2025408.png" type="image/png"/>
+        <updated>2026-07-06T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[[AI-translated] TCP slow start is often simplified as “the congestion window doubles every RTT,” but textbooks, RFCs, and the Linux kernel describe the same mechanism from different layers. I compare the three views to clarify whether cwnd grows by ACKs, bytes, or complete segments.]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img2025408.png" alt="TCP Slow-Start Window Growth: A Three-Level Comparison of Textbooks, RFCs, and the Linux Kernel" /> <p>[AI-translated] TCP slow start is often simplified as “the congestion window doubles every RTT,” but textbooks, RFCs, and the Linux kernel describe the same mechanism from different layers. I compare the three views to clarify whether cwnd grows by ACKs, bytes, or complete segments.</p> <a class="view-full" href="https://markxu.icu/blog/tcp-slow-start-cwnd-growth-en" target="_blank">Read full article</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[localhost 背后：一趟没有出门的网络旅行]]></title>
         <id>https://markxu.icu/blog/behind-localhost-cn</id>
         <link href="https://markxu.icu/blog/behind-localhost-cn"/>
@@ -52,6 +80,20 @@
         <updated>2026-06-25T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[开发时我们天天访问的 localhost，它到底有没有走网络协议栈？又走了几层网络结构？]]></summary>
         <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgnetwork-layer.png" alt="localhost 背后：一趟没有出门的网络旅行" /> <p>开发时我们天天访问的 localhost，它到底有没有走网络协议栈？又走了几层网络结构？</p> <a class="view-full" href="https://markxu.icu/blog/behind-localhost-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Behind localhost: A Network Journey That Never Leaves Home]]></title>
+        <id>https://markxu.icu/blog/behind-localhost-en</id>
+        <link href="https://markxu.icu/blog/behind-localhost-en"/>
+        <link rel="enclosure" href="https://img.markxu.icu/imgnetwork-layer.png" type="image/png"/>
+        <updated>2026-06-25T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[[AI-translated] Does localhost really pass through the network protocol stack when we use it during development? How many layers of the network are involved?]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgnetwork-layer.png" alt="Behind localhost: A Network Journey That Never Leaves Home" /> <p>[AI-translated] Does localhost really pass through the network protocol stack when we use it during development? How many layers of the network are involved?</p> <a class="view-full" href="https://markxu.icu/blog/behind-localhost-en" target="_blank">Read full article</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>
@@ -73,13 +115,41 @@
         </author>
     </entry>
     <entry>
-        <title type="html"><![CDATA[厦门逛吃日记 1]]></title>
+        <title type="html"><![CDATA[Rejecting Reward Hacking: My Four Years at University]]></title>
+        <id>https://markxu.icu/blog/anti-reward-hacking-college-en</id>
+        <link href="https://markxu.icu/blog/anti-reward-hacking-college-en"/>
+        <link rel="enclosure" href="https://img.markxu.icu/imgb8e606e4235578a4b05bc4b87ae8945f_720.jpg" type="image/jpg"/>
+        <updated>2026-06-14T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[[AI-translated] As I left university, I wanted to record both my memories of those four years and how my choices gradually taught me not to treat grades, rankings, and a résumé as life's only objectives.]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgb8e606e4235578a4b05bc4b87ae8945f_720.jpg" alt="Rejecting Reward Hacking: My Four Years at University" /> <p>[AI-translated] As I left university, I wanted to record both my memories of those four years and how my choices gradually taught me not to treat grades, rankings, and a résumé as life's only objectives.</p> <a class="view-full" href="https://markxu.icu/blog/anti-reward-hacking-college-en" target="_blank">Read full article</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[厦门逛吃日记]]></title>
         <id>https://markxu.icu/blog/Amoy-food-walk-note1-cn</id>
         <link href="https://markxu.icu/blog/Amoy-food-walk-note1-cn"/>
         <link rel="enclosure" href="https://img.markxu.icu/img20260602232937241.png" type="image/png"/>
         <updated>2026-06-02T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[还有几天就要毕业了，对厦门这座城市很是不舍，于是在网上看了几家好吃的店，和同学出门去探一探店，途中也发现了惊喜，当然也有失望。]]></summary>
-        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img20260602232937241.png" alt="厦门逛吃日记 1" /> <p>还有几天就要毕业了，对厦门这座城市很是不舍，于是在网上看了几家好吃的店，和同学出门去探一探店，途中也发现了惊喜，当然也有失望。</p> <a class="view-full" href="https://markxu.icu/blog/Amoy-food-walk-note1-cn" target="_blank">点击查看全文</a>]]></content>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img20260602232937241.png" alt="厦门逛吃日记" /> <p>还有几天就要毕业了，对厦门这座城市很是不舍，于是在网上看了几家好吃的店，和同学出门去探一探店，途中也发现了惊喜，当然也有失望。</p> <a class="view-full" href="https://markxu.icu/blog/Amoy-food-walk-note1-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[A Xiamen Food-Crawl Diary]]></title>
+        <id>https://markxu.icu/blog/Amoy-food-walk-note1-en</id>
+        <link href="https://markxu.icu/blog/Amoy-food-walk-note1-en"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img20260602232937241.png" type="image/png"/>
+        <updated>2026-06-02T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[[AI-translated] With only a few days left before graduation, I was reluctant to leave Xiamen, so a classmate and I visited several interesting eateries around the city—some delightful, others disappointing.]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img20260602232937241.png" alt="A Xiamen Food-Crawl Diary" /> <p>[AI-translated] With only a few days left before graduation, I was reluctant to leave Xiamen, so a classmate and I visited several interesting eateries around the city—some delightful, others disappointing.</p> <a class="view-full" href="https://markxu.icu/blog/Amoy-food-walk-note1-en" target="_blank">Read full article</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>
@@ -332,6 +402,20 @@
         <updated>2023-10-29T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[偶然翻到了当初去西安游玩的游记，虽然也是流水账，但也足以让我回味，也放上来当作记录好了，不至于后面再看到又是一次偶然。]]></summary>
         <content type="html"><![CDATA[<img src="https://img.markxu.icu/img西安.jpg" alt="西安游记" /> <p>偶然翻到了当初去西安游玩的游记，虽然也是流水账，但也足以让我回味，也放上来当作记录好了，不至于后面再看到又是一次偶然。</p> <a class="view-full" href="https://markxu.icu/blog/Xian-trip-notes-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Notes from Xi'an]]></title>
+        <id>https://markxu.icu/blog/Xian-trip-notes-en</id>
+        <link href="https://markxu.icu/blog/Xian-trip-notes-en"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img西安.jpg" type="image/jpg"/>
+        <updated>2023-10-29T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[[AI-translated] I happened to find the travel diary I wrote after visiting Xi'an. It is still a simple day-by-day record, but it brings the trip back to me, so I am publishing it here before finding it by accident all over again.]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img西安.jpg" alt="Notes from Xi'an" /> <p>[AI-translated] I happened to find the travel diary I wrote after visiting Xi'an. It is still a simple day-by-day record, but it brings the trip back to me, so I am publishing it here before finding it by accident all over again.</p> <a class="view-full" href="https://markxu.icu/blog/Xian-trip-notes-en" target="_blank">Read full article</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>

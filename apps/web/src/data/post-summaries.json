@@ -16,6 +16,22 @@
     "category": "Experience"
   },
   {
+    "id": "Wuhan-food-walk-note1-en",
+    "slug": "Wuhan-food-walk-note1-en",
+    "language": "en",
+    "title": "A Wuhan Food-Crawl Diary 1",
+    "date": "2026-07-20",
+    "summary": "[AI-translated] While preparing in Wuhan for a second attempt at the postgraduate entrance examination, I took a day off on the weekend, followed a local creator's route around the city, visited the Hubei Provincial Museum at last, and ate plenty of good food.",
+    "wordCount": 1902,
+    "image": "https://img.markxu.icu/img湖北省博.jpg",
+    "tags": [
+      "Wuhan",
+      "Food",
+      "Travel"
+    ],
+    "category": "Experience"
+  },
+  {
     "id": "tcp-slow-start-cwnd-growth-cn",
     "slug": "tcp-slow-start-cwnd-growth-cn",
     "language": "zh",
@@ -32,6 +48,22 @@
     "category": "tech"
   },
   {
+    "id": "tcp-slow-start-cwnd-growth-en",
+    "slug": "tcp-slow-start-cwnd-growth-en",
+    "language": "en",
+    "title": "TCP Slow-Start Window Growth: A Three-Level Comparison of Textbooks, RFCs, and the Linux Kernel",
+    "date": "2026-07-06",
+    "summary": "[AI-translated] TCP slow start is often simplified as “the congestion window doubles every RTT,” but textbooks, RFCs, and the Linux kernel describe the same mechanism from different layers. I compare the three views to clarify whether cwnd grows by ACKs, bytes, or complete segments.",
+    "wordCount": 2192,
+    "tags": [
+      "Network",
+      "TCP/IP",
+      "Linux",
+      "RFC"
+    ],
+    "category": "tech"
+  },
+  {
     "id": "behind-localhost-cn",
     "slug": "behind-localhost-cn",
     "language": "zh",
@@ -39,6 +71,21 @@
     "date": "2026-06-25",
     "summary": "开发时我们天天访问的 localhost，它到底有没有走网络协议栈？又走了几层网络结构？",
     "wordCount": 2882,
+    "tags": [
+      "Network",
+      "TCP/IP",
+      "localhost"
+    ],
+    "category": "tech"
+  },
+  {
+    "id": "behind-localhost-en",
+    "slug": "behind-localhost-en",
+    "language": "en",
+    "title": "Behind localhost: A Network Journey That Never Leaves Home",
+    "date": "2026-06-25",
+    "summary": "[AI-translated] Does localhost really pass through the network protocol stack when we use it during development? How many layers of the network are involved?",
+    "wordCount": 1940,
     "tags": [
       "Network",
       "TCP/IP",
@@ -65,6 +112,24 @@
     "category": "essay"
   },
   {
+    "id": "anti-reward-hacking-college-en",
+    "slug": "anti-reward-hacking-college-en",
+    "language": "en",
+    "title": "Rejecting Reward Hacking: My Four Years at University",
+    "date": "2026-06-14",
+    "updated": "2026-06-17",
+    "summary": "[AI-translated] As I left university, I wanted to record both my memories of those four years and how my choices gradually taught me not to treat grades, rankings, and a résumé as life's only objectives.",
+    "wordCount": 4205,
+    "image": "https://img.markxu.icu/imgb8e606e4235578a4b05bc4b87ae8945f_720.jpg",
+    "tags": [
+      "College",
+      "Graduation",
+      "Reward Hacking",
+      "Meritocracy"
+    ],
+    "category": "essay"
+  },
+  {
     "id": "Amoy-food-walk-note1-cn",
     "slug": "Amoy-food-walk-note1-cn",
     "language": "zh",
@@ -72,6 +137,22 @@
     "date": "2026-06-02",
     "summary": "还有几天就要毕业了，对厦门这座城市很是不舍，于是在网上看了几家好吃的店，和同学出门去探一探店，途中也发现了惊喜，当然也有失望。",
     "wordCount": 2781,
+    "image": "https://img.markxu.icu/img20260602232937241.png",
+    "tags": [
+      "Amoy",
+      "Food",
+      "Travel"
+    ],
+    "category": "Experience"
+  },
+  {
+    "id": "Amoy-food-walk-note1-en",
+    "slug": "Amoy-food-walk-note1-en",
+    "language": "en",
+    "title": "A Xiamen Food-Crawl Diary",
+    "date": "2026-06-02",
+    "summary": "[AI-translated] With only a few days left before graduation, I was reluctant to leave Xiamen, so a classmate and I visited several interesting eateries around the city—some delightful, others disappointing.",
+    "wordCount": 2028,
     "image": "https://img.markxu.icu/img20260602232937241.png",
     "tags": [
       "Amoy",
@@ -368,6 +449,22 @@
     "updated": "2026-07-01",
     "summary": "偶然翻到了当初去西安游玩的游记，虽然也是流水账，但也足以让我回味，也放上来当作记录好了，不至于后面再看到又是一次偶然。",
     "wordCount": 1459,
+    "image": "https://img.markxu.icu/img西安.jpg",
+    "tags": [
+      "Life",
+      "Travel"
+    ],
+    "category": "Experience"
+  },
+  {
+    "id": "Xian-trip-notes-en",
+    "slug": "Xian-trip-notes-en",
+    "language": "en",
+    "title": "Notes from Xi'an",
+    "date": "2023-10-29",
+    "updated": "2026-07-01",
+    "summary": "[AI-translated] I happened to find the travel diary I wrote after visiting Xi'an. It is still a simple day-by-day record, but it brings the trip back to me, so I am publishing it here before finding it by accident all over again.",
+    "wordCount": 1156,
     "image": "https://img.markxu.icu/img西安.jpg",
     "tags": [
       "Life",
