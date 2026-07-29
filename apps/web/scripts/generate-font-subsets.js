@@ -26,6 +26,7 @@ const textExtensions = new Set([
 
 const fontSourceExtensions = ['.ttf', '.otf', '.woff2', '.woff']
 const generatedDir = path.join(projectRoot, '.generated')
+const SKIP_FONT_GENERATION_ENV = 'SKIP_FONT_GENERATION'
 
 const alibabaMediumFontOutput = path.join(
   projectRoot,
@@ -47,6 +48,13 @@ const montserratFontOutput = path.join(
   projectRoot,
   'src/assets/fonts/Montserrat-Subset.woff2'
 )
+const requiredFontOutputs = [
+  alibabaMediumFontOutput,
+  alibabaSemiBoldFontOutput,
+  pixelFontOutput,
+  nerdFontOutput,
+  montserratFontOutput,
+]
 
 const chineseTextPath = path.join(generatedDir, 'font-chinese-chars.txt')
 const alibabaSemiBoldTextPath = path.join(
@@ -548,7 +556,34 @@ function logOutput(filePath) {
   console.log(`Generated ${path.basename(filePath)} (${formatBytes(size)})`)
 }
 
+function isTruthy(value) {
+  if (!value) return false
+  const normalized = String(value).trim().toLowerCase()
+  return normalized === '1' || normalized === 'true' || normalized === 'yes'
+}
+
+function getFontGenerationSkipReason() {
+  if (isTruthy(process.env[SKIP_FONT_GENERATION_ENV])) {
+    return `${SKIP_FONT_GENERATION_ENV}=${process.env[SKIP_FONT_GENERATION_ENV]}`
+  }
+
+  if (isTruthy(process.env.VERCEL)) {
+    return 'VERCEL environment detected'
+  }
+
+  return ''
+}
+
 async function main() {
+  const skipReason = getFontGenerationSkipReason()
+  if (skipReason) {
+    requiredFontOutputs.forEach(verifyOutputExists)
+    console.log(
+      `Skipping font subset generation (${skipReason}). Reusing ${requiredFontOutputs.length} committed subset fonts.`
+    )
+    return
+  }
+
   ensureDir(generatedDir)
   ensureDir(path.dirname(alibabaMediumFontOutput))
 

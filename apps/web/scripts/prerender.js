@@ -14,26 +14,41 @@ const __dirname = path.dirname(__filename)
 // Configuration
 const PORT = 4173
 const BASE_URL = `http://localhost:${PORT}`
+const DEFAULT_PRERENDER_CONCURRENCY = 4
+const MAX_PRERENDER_CONCURRENCY = 8
+const PREVIEW_READY_TIMEOUT_MS = 15000
 const DIST_DIR = path.resolve(__dirname, '../dist')
+const SPA_FALLBACK_PATH = path.join(DIST_DIR, 'spa.html')
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
 const MOVIE_REVIEWS_DIR = path.resolve(
   __dirname,
   '../../../content/movies/reviews'
 )
 
-function resolvePostSlugs(filePath) {
+function isVercelPreviewDeployment() {
+  return process.env.VERCEL === '1' && process.env.VERCEL_ENV === 'preview'
+}
+
+function getPrerenderConcurrency() {
+  const requestedConcurrency = Number.parseInt(
+    process.env.PRERENDER_CONCURRENCY || '',
+    10
+  )
+
+  if (!Number.isFinite(requestedConcurrency) || requestedConcurrency < 1) {
+    return DEFAULT_PRERENDER_CONCURRENCY
+  }
+
+  return Math.min(requestedConcurrency, MAX_PRERENDER_CONCURRENCY)
+}
+
+function resolvePostSlug(filePath) {
   const fileSlug = path.basename(filePath, '.md')
   const content = fs.readFileSync(filePath, 'utf-8')
   const { data } = matter(content)
-  const slug =
-    typeof data.slug === 'string' && data.slug.trim()
-      ? data.slug.trim()
-      : fileSlug
-  const aliases = Array.isArray(data.aliases)
-    ? data.aliases.filter((alias) => typeof alias === 'string' && alias.trim())
-    : []
-
-  return Array.from(new Set([slug, ...aliases, fileSlug]))
+  return typeof data.slug === 'string' && data.slug.trim()
+    ? data.slug.trim()
+    : fileSlug
 }
 
 // Utility to verify dist exists
@@ -42,6 +57,42 @@ if (!fs.existsSync(DIST_DIR)) {
     `Build directory not found: ${DIST_DIR}. Run 'pnpm build' first (without prerender step).`
   )
   process.exit(1)
+}
+
+function prepareSpaFallback() {
+  const indexPath = path.join(DIST_DIR, 'index.html')
+  if (!fs.existsSync(indexPath)) {
+    throw new Error(`Vite entry HTML not found: ${indexPath}`)
+  }
+
+  const indexHtml = fs.readFileSync(indexPath, 'utf8')
+  const isUnrenderedViteShell = /<div\s+id=["']root["']\s*>\s*<\/div>/.test(
+    indexHtml
+  )
+
+  if (isUnrenderedViteShell) {
+    fs.copyFileSync(indexPath, SPA_FALLBACK_PATH)
+    console.log('🧭 Preserved the unrendered SPA fallback at /spa.html.')
+    return
+  }
+
+  if (fs.existsSync(SPA_FALLBACK_PATH)) {
+    console.log('🧭 Reusing the existing unrendered SPA fallback.')
+    return
+  }
+
+  throw new Error(
+    "The Vite entry HTML is already prerendered and no SPA fallback exists. Run 'vite build' before prerendering again."
+  )
+}
+
+prepareSpaFallback()
+
+if (isVercelPreviewDeployment()) {
+  console.log(
+    '🚀 Skipping full-page prerendering for this Vercel Preview deployment. SPA routing remains available.'
+  )
+  process.exit(0)
 }
 
 // Get all routes
@@ -62,9 +113,7 @@ function getRoutes() {
   if (fs.existsSync(POSTS_DIR)) {
     const files = collectPostMarkdownFiles(POSTS_DIR)
     files.forEach((filePath) => {
-      resolvePostSlugs(filePath).forEach((slug) => {
-        routes.push(`/blog/${slug}`)
-      })
+      routes.push(`/blog/${resolvePostSlug(filePath)}`)
     })
   }
 
@@ -81,32 +130,203 @@ function getRoutes() {
   return Array.from(new Set(routes))
 }
 
+async function createPrerenderPage(browserContext) {
+  const page = await browserContext.newPage()
+  await page.evaluateOnNewDocument(() => {
+    window.__PRERENDER__ = true
+  })
+
+  await page.setRequestInterception(true)
+  page.on('request', (request) => {
+    const requestUrl = request.url()
+    const isLocalRequest = requestUrl.startsWith(BASE_URL)
+    const isDataRequest =
+      requestUrl.startsWith('data:') || requestUrl.startsWith('blob:')
+    const requestAction =
+      isLocalRequest || isDataRequest ? request.continue() : request.abort()
+
+    requestAction.catch(() => {})
+  })
+
+  return page
+}
+
+async function renderRoute(page, route) {
+  const url = `${BASE_URL}${route}`
+  const start = Date.now()
+
+  try {
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 })
+
+    await page.waitForFunction(
+      (expectedPath) => {
+        const root = document.getElementById('root')
+        const canonicalHref = document.querySelector(
+          'link[rel="canonical"]'
+        )?.href
+        let canonicalMatchesRoute = false
+
+        if (canonicalHref) {
+          try {
+            const normalizePath = (value) =>
+              decodeURIComponent(value).replace(/\/+$/, '') || '/'
+            canonicalMatchesRoute =
+              normalizePath(new URL(canonicalHref).pathname) ===
+              normalizePath(expectedPath)
+          } catch {
+            canonicalMatchesRoute = false
+          }
+        }
+
+        return (
+          !!root &&
+          root.childElementCount > 0 &&
+          !document.querySelector('[data-prerender-fallback="true"]') &&
+          canonicalMatchesRoute
+        )
+      },
+      {
+        // Chromium may throttle request-intercepted background pages. Interval
+        // polling stays reliable when several prerender pages run in parallel.
+        polling: 100,
+        timeout: 10000,
+      },
+      route
+    )
+
+    const html = await page.content()
+    let filePath
+    if (route === '/') {
+      filePath = path.join(DIST_DIR, 'index.html')
+    } else {
+      const routePath = route.startsWith('/') ? route.slice(1) : route
+      filePath = path.join(DIST_DIR, routePath, 'index.html')
+    }
+
+    const finalHtml = html.startsWith('<!DOCTYPE')
+      ? html
+      : `<!DOCTYPE html>${html}`
+
+    console.log(
+      `✅ [${Date.now() - start}ms] Prerendered: ${route} -> ${filePath.replace(DIST_DIR, '')}`
+    )
+
+    return { filePath, html: finalHtml }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.error(`❌ Failed to prerender ${route}:`, message)
+    return null
+  }
+}
+
+async function renderRoutesConcurrently(
+  browser,
+  routes,
+  requestedConcurrency = getPrerenderConcurrency()
+) {
+  const concurrency = Math.min(requestedConcurrency, routes.length)
+  const renderedPages = new Array(routes.length)
+  let nextRouteIndex = 0
+
+  console.log(
+    `🧵 Prerendering with ${concurrency} concurrent browser page${concurrency === 1 ? '' : 's'}.`
+  )
+
+  async function runWorker() {
+    // Isolated contexts prevent concurrent navigations from sharing cookies,
+    // storage, or an in-flight HTTP cache entry that another page may cancel.
+    const browserContext = await browser.createBrowserContext()
+    const page = await createPrerenderPage(browserContext)
+
+    try {
+      while (nextRouteIndex < routes.length) {
+        const routeIndex = nextRouteIndex
+        nextRouteIndex += 1
+        renderedPages[routeIndex] = await renderRoute(page, routes[routeIndex])
+      }
+    } finally {
+      await browserContext.close()
+    }
+  }
+
+  await Promise.all(Array.from({ length: concurrency }, () => runWorker()))
+  return {
+    renderedPages: renderedPages.filter(Boolean),
+    failedRoutes: routes.filter((_route, index) => !renderedPages[index]),
+  }
+}
+
+async function waitForPreviewServer(server) {
+  const startedAt = Date.now()
+  let serverExit = null
+
+  server.once('exit', (code, signal) => {
+    serverExit = { code, signal }
+  })
+
+  while (Date.now() - startedAt < PREVIEW_READY_TIMEOUT_MS) {
+    if (serverExit) {
+      const reason = serverExit.signal
+        ? `signal ${serverExit.signal}`
+        : `exit code ${serverExit.code}`
+      throw new Error(`Vite preview server stopped before startup (${reason}).`)
+    }
+
+    try {
+      const response = await fetch(BASE_URL, {
+        signal: AbortSignal.timeout(1000),
+      })
+      if (response.ok) {
+        console.log(
+          `⚡ Preview server ready in ${Date.now() - startedAt}ms at ${BASE_URL}.`
+        )
+        return
+      }
+    } catch {
+      // The server may still be binding the port; retry until the deadline.
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 150))
+  }
+
+  throw new Error(
+    `Vite preview server did not become ready within ${PREVIEW_READY_TIMEOUT_MS}ms.`
+  )
+}
+
 async function prerender() {
   console.log('📦 Starting prerendering...')
 
-  // 1. Start Vite Preview Server
-  const require = createRequire(import.meta.url)
-  const vitePackageJsonPath = require.resolve('vite/package.json')
-  const viteCliPath = path.resolve(
-    path.dirname(vitePackageJsonPath),
-    'bin',
-    'vite.js'
-  )
-
-  const server = spawn(
-    process.execPath,
-    [viteCliPath, 'preview', '--port', PORT.toString()],
-    {
-      cwd: path.resolve(__dirname, '..'),
-      stdio: 'inherit',
-    }
-  )
-
-  // Wait for server to be ready
-  await new Promise((resolve) => setTimeout(resolve, 3000))
-
   let browser
+  let server
   try {
+    // 1. Start Vite Preview Server
+    const require = createRequire(import.meta.url)
+    const vitePackageJsonPath = require.resolve('vite/package.json')
+    const viteCliPath = path.resolve(
+      path.dirname(vitePackageJsonPath),
+      'bin',
+      'vite.js'
+    )
+
+    server = spawn(
+      process.execPath,
+      [
+        viteCliPath,
+        'preview',
+        '--host',
+        '127.0.0.1',
+        '--port',
+        PORT.toString(),
+        '--strictPort',
+      ],
+      {
+        cwd: path.resolve(__dirname, '..'),
+        stdio: 'inherit',
+      }
+    )
+    await waitForPreviewServer(server)
+
     // 2. Launch Puppeteer
     let launchOptions = {
       headless: true,
@@ -130,83 +350,27 @@ async function prerender() {
 
     browser = await puppeteer.launch(launchOptions)
 
-    const page = await browser.newPage()
-    await page.evaluateOnNewDocument(() => {
-      window.__PRERENDER__ = true
-    })
-
-    await page.setRequestInterception(true)
-    page.on('request', (request) => {
-      const requestUrl = request.url()
-      const isLocalRequest = requestUrl.startsWith(BASE_URL)
-      const isDataRequest =
-        requestUrl.startsWith('data:') || requestUrl.startsWith('blob:')
-      if (isLocalRequest || isDataRequest) {
-        request.continue()
-      } else {
-        request.abort()
-      }
-    })
-
     const routes = getRoutes()
-    const renderedPages = []
 
     console.log(`🔍 Found ${routes.length} routes to prerender.`)
+    const firstPass = await renderRoutesConcurrently(browser, routes)
+    let renderedPages = firstPass.renderedPages
 
-    for (const route of routes) {
-      const url = `${BASE_URL}${route}`
-      const start = Date.now()
+    if (firstPass.failedRoutes.length > 0) {
+      console.warn(
+        `🔁 Retrying ${firstPass.failedRoutes.length} failed route${firstPass.failedRoutes.length === 1 ? '' : 's'} sequentially in a fresh browser context.`
+      )
+      const retry = await renderRoutesConcurrently(
+        browser,
+        firstPass.failedRoutes,
+        1
+      )
+      renderedPages = [...renderedPages, ...retry.renderedPages]
 
-      try {
-        // Navigate to page
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 })
-
-        // Wait for a key element to ensure React has mounted
-        await page.waitForFunction(
-          () => {
-            const root = document.getElementById('root')
-            return (
-              !!root &&
-              root.childElementCount > 0 &&
-              !document.querySelector('[data-prerender-fallback="true"]')
-            )
-          },
-          { timeout: 10000 }
+      if (retry.failedRoutes.length > 0) {
+        throw new Error(
+          `Prerendering failed after retry: ${retry.failedRoutes.join(', ')}`
         )
-
-        // Let Helmet finish flushing meta tags into <head>
-        await new Promise((resolve) => setTimeout(resolve, 120))
-
-        // Get HTML
-        const html = await page.content()
-
-        // Determine output path
-        // / -> dist/index.html
-        // /blog -> dist/blog/index.html
-        // /blog/slug -> dist/blog/slug/index.html
-        let filePath
-        if (route === '/') {
-          filePath = path.join(DIST_DIR, 'index.html')
-        } else {
-          const routePath = route.startsWith('/') ? route.slice(1) : route
-          const dirPath = path.join(DIST_DIR, routePath)
-          if (!fs.existsSync(dirPath)) {
-            fs.mkdirSync(dirPath, { recursive: true })
-          }
-          filePath = path.join(dirPath, 'index.html')
-        }
-
-        // Re-inject <!DOCTYPE html> if missing (page.content() usually includes it but let's be safe)
-        const finalHtml = html.startsWith('<!DOCTYPE')
-          ? html
-          : `<!DOCTYPE html>${html}`
-        renderedPages.push({ filePath, html: finalHtml })
-
-        console.log(
-          `✅ [${Date.now() - start}ms] Prerendered: ${route} -> ${filePath.replace(DIST_DIR, '')}`
-        )
-      } catch (err) {
-        console.error(`❌ Failed to prerender ${route}:`, err.message)
       }
     }
 
@@ -216,13 +380,12 @@ async function prerender() {
     })
   } catch (error) {
     console.error('🔥 Prerender failed:', error)
-    process.exit(1)
+    process.exitCode = 1
   } finally {
     // Cleanup
     if (browser) await browser.close()
-    server.kill()
+    if (server && !server.killed) server.kill()
     console.log('✨ Prerendering complete.')
-    process.exit(0)
   }
 }
 

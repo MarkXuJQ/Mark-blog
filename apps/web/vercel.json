@@ -1,4 +1,194 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "PUPPETEER_SKIP_DOWNLOAD=true pnpm install --frozen-lockfile",
+  "ignoreCommand": "node scripts/vercel-ignore-build.js",
+  "redirects": [
+    {
+      "source": "/blog/1.chaoshan-travel-notes",
+      "destination": "/blog/chaoshan-trip-notes-en",
+      "permanent": true
+    },
+    {
+      "source": "/blog/1.潮汕游记",
+      "destination": "/blog/chaoshan-trip-notes-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/10.why-I-recommend-everyone-to-write-blog",
+      "destination": "/blog/why-I-recommend-everyone-to-write-blog-en",
+      "permanent": true
+    },
+    {
+      "source": "/blog/10.为什么我推荐每一个大学生都写博客？",
+      "destination": "/blog/why-I-recommend-everyone-to-write-blog-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/11.计算机都学些什么？",
+      "destination": "/blog/what-do-computer-science-majors-learn-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/12.厦门逛吃日志1",
+      "destination": "/blog/Amoy-food-walk-note1-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/13.毕业感想",
+      "destination": "/blog/anti-reward-hacking-college-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/14.localhost的背后",
+      "destination": "/blog/behind-localhost-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/15.西安游记\\(补）",
+      "destination": "/blog/Xian-trip-notes-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/16.慢启动协议的窗口增长",
+      "destination": "/blog/tcp-slow-start-cwnd-growth-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/17.武汉探店游记 1",
+      "destination": "/blog/Wuhan-food-walk-note1-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/2.guangzhou-travel-notes",
+      "destination": "/blog/guangzhou-trip-notes-en",
+      "permanent": true
+    },
+    {
+      "source": "/blog/2.广州游记",
+      "destination": "/blog/guangzhou-trip-notes-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/3.My-first-blog",
+      "destination": "/blog/first-blog-post-en",
+      "permanent": true
+    },
+    {
+      "source": "/blog/3.第一篇博客",
+      "destination": "/blog/first-blog-post-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/4.prompt-only-open-source",
+      "destination": "/blog/prompt-only-open-source-en",
+      "permanent": true
+    },
+    {
+      "source": "/blog/4.当开源只剩下一段 Prompt：我发现了一种“离谱”的开源方式",
+      "destination": "/blog/prompt-only-open-source-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/5.mac-terminal-setup-notes",
+      "destination": "/blog/mac-terminal-setup-notes-en",
+      "permanent": true
+    },
+    {
+      "source": "/blog/5.配置Mac终端日记",
+      "destination": "/blog/mac-terminal-setup-notes-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/6.大学四年，我的几个“小抽屉”",
+      "destination": "/blog/university-info-drawers-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/7.my-graduation-project",
+      "destination": "/blog/my-graduation-project-en",
+      "permanent": true
+    },
+    {
+      "source": "/blog/7.我的毕业设计",
+      "destination": "/blog/my-graduation-project-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/8.ai-through-meme-death-stranding-2",
+      "destination": "/blog/ai-through-meme-death-stranding-2-en",
+      "permanent": true
+    },
+    {
+      "source": "/blog/8.从MEME的视角看AI——死亡搁浅2游玩启发",
+      "destination": "/blog/ai-through-meme-death-stranding-2-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/9.上网的小工具推荐",
+      "destination": "/blog/websurf-tools-recommendation-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Amoy-food-walk-note1",
+      "destination": "/blog/Amoy-food-walk-note1-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/My-first-blog",
+      "destination": "/blog/first-blog-post-en",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Wuhan-food-walk-note1",
+      "destination": "/blog/Wuhan-food-walk-note1-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/Xian-trip-notes",
+      "destination": "/blog/Xian-trip-notes-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/anti-reward-hacking-college",
+      "destination": "/blog/anti-reward-hacking-college-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/behind-localhost",
+      "destination": "/blog/behind-localhost-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/chaoshan-travel-notes",
+      "destination": "/blog/chaoshan-trip-notes-en",
+      "permanent": true
+    },
+    {
+      "source": "/blog/guangzhou-travel-notes",
+      "destination": "/blog/guangzhou-trip-notes-en",
+      "permanent": true
+    },
+    {
+      "source": "/blog/tcp-slow-start-cwnd-growth",
+      "destination": "/blog/tcp-slow-start-cwnd-growth-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/university-info-drawers",
+      "destination": "/blog/university-info-drawers-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/websurf-tools-recommendation",
+      "destination": "/blog/websurf-tools-recommendation-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/what-do-computer-science-majors-learn",
+      "destination": "/blog/what-do-computer-science-majors-learn-cn",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
@@ -149,7 +339,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/spa.html"
     }
   ]
 }

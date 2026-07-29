@@ -95,7 +95,7 @@ export function Seo({
   const allSchemas = [...defaultSchemas, ...structuredData]
 
   return (
-    <Helmet htmlAttributes={{ lang }} key={i18n.language}>
+    <Helmet defer={false} htmlAttributes={{ lang }} key={i18n.language}>
       {/* Basic Meta Tags */}
       <title>{siteTitle}</title>
       <meta name="description" content={description} />
