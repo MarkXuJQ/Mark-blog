@@ -29,8 +29,18 @@
       "permanent": true
     },
     {
+      "source": "/blog/12.amoy-food-walk-note1",
+      "destination": "/blog/Amoy-food-walk-note1-en",
+      "permanent": true
+    },
+    {
       "source": "/blog/12.厦门逛吃日志1",
       "destination": "/blog/Amoy-food-walk-note1-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/13.anti-reward-hacking-college",
+      "destination": "/blog/anti-reward-hacking-college-en",
       "permanent": true
     },
     {
@@ -39,8 +49,18 @@
       "permanent": true
     },
     {
+      "source": "/blog/14.behind-localhost",
+      "destination": "/blog/behind-localhost-en",
+      "permanent": true
+    },
+    {
       "source": "/blog/14.localhost的背后",
       "destination": "/blog/behind-localhost-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/15.xian-trip-notes",
+      "destination": "/blog/Xian-trip-notes-en",
       "permanent": true
     },
     {
@@ -49,8 +69,18 @@
       "permanent": true
     },
     {
+      "source": "/blog/16.tcp-slow-start-cwnd-growth",
+      "destination": "/blog/tcp-slow-start-cwnd-growth-en",
+      "permanent": true
+    },
+    {
       "source": "/blog/16.慢启动协议的窗口增长",
       "destination": "/blog/tcp-slow-start-cwnd-growth-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/17.wuhan-food-walk-note1",
+      "destination": "/blog/Wuhan-food-walk-note1-en",
       "permanent": true
     },
     {
@@ -129,33 +159,8 @@
       "permanent": true
     },
     {
-      "source": "/blog/Amoy-food-walk-note1",
-      "destination": "/blog/Amoy-food-walk-note1-cn",
-      "permanent": true
-    },
-    {
       "source": "/blog/My-first-blog",
       "destination": "/blog/first-blog-post-en",
-      "permanent": true
-    },
-    {
-      "source": "/blog/Wuhan-food-walk-note1",
-      "destination": "/blog/Wuhan-food-walk-note1-cn",
-      "permanent": true
-    },
-    {
-      "source": "/blog/Xian-trip-notes",
-      "destination": "/blog/Xian-trip-notes-cn",
-      "permanent": true
-    },
-    {
-      "source": "/blog/anti-reward-hacking-college",
-      "destination": "/blog/anti-reward-hacking-college-cn",
-      "permanent": true
-    },
-    {
-      "source": "/blog/behind-localhost",
-      "destination": "/blog/behind-localhost-cn",
       "permanent": true
     },
     {
@@ -166,11 +171,6 @@
     {
       "source": "/blog/guangzhou-travel-notes",
       "destination": "/blog/guangzhou-trip-notes-en",
-      "permanent": true
-    },
-    {
-      "source": "/blog/tcp-slow-start-cwnd-growth",
-      "destination": "/blog/tcp-slow-start-cwnd-growth-cn",
       "permanent": true
     },
     {
