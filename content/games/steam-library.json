@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-20T06:38:25.142Z",
+  "generatedAt": "2026-07-30T12:00:39.076Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -33,9 +33,9 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 158912,
-        "totalNegative": 166035,
-        "totalReviews": 324947,
+        "totalPositive": 159567,
+        "totalNegative": 166208,
+        "totalReviews": 325775,
         "positivePercent": 49
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1781071959",
@@ -64,9 +64,9 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 455804,
-        "totalNegative": 57641,
-        "totalReviews": 513445,
+        "totalPositive": 456513,
+        "totalNegative": 57706,
+        "totalReviews": 514219,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
@@ -93,9 +93,9 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 821070,
-        "totalNegative": 27200,
-        "totalReviews": 848270,
+        "totalPositive": 822560,
+        "totalNegative": 27263,
+        "totalReviews": 849823,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
@@ -124,9 +124,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 849743,
-        "totalNegative": 28422,
-        "totalReviews": 878165,
+        "totalPositive": 850943,
+        "totalNegative": 28476,
+        "totalReviews": 879419,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991",
@@ -153,12 +153,12 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 324079,
-        "totalNegative": 52385,
-        "totalReviews": 376464,
+        "totalPositive": 324512,
+        "totalNegative": 52419,
+        "totalReviews": 376931,
         "positivePercent": 86
       },
-      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1740607040",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1784651829",
       "shortDescription": "Expand your empire, advance your culture and go head-to-head against history’s greatest leaders. Will your civilization stand the test of time?",
       "releaseDate": "20 Oct, 2016",
       "developers": [
@@ -184,9 +184,9 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 164740,
-        "totalNegative": 20892,
-        "totalReviews": 185632,
+        "totalPositive": 165065,
+        "totalNegative": 20935,
+        "totalReviews": 186000,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1777476997",

@@ -1,5 +1,20 @@
 [
   {
+    "id": "queue-implementation-decision-tree-cn",
+    "slug": "queue-implementation-decision-tree-cn",
+    "language": "zh",
+    "title": "队列的实现方式——从约束条件到决策树",
+    "date": "2026-07-30",
+    "summary": "回顾数据结构，发现队列的实现方式总是做错，于是想了个办法，利用决策树把考虑因素列出来，方便自己全面的了解和后续的复习。",
+    "wordCount": 504,
+    "tags": [
+      "Data Structure",
+      "Computer Science",
+      "408"
+    ],
+    "category": "tech"
+  },
+  {
     "id": "Wuhan-food-walk-note1-cn",
     "slug": "Wuhan-food-walk-note1-cn",
     "language": "zh",
@@ -43,7 +58,8 @@
       "Network",
       "TCP/IP",
       "Linux",
-      "RFC"
+      "RFC",
+      "408"
     ],
     "category": "tech"
   },
@@ -74,7 +90,8 @@
     "tags": [
       "Network",
       "TCP/IP",
-      "localhost"
+      "localhost",
+      "408"
     ],
     "category": "tech"
   },
