@@ -54,7 +54,7 @@
     "title": "TCP Slow-Start Window Growth: A Three-Level Comparison of Textbooks, RFCs, and the Linux Kernel",
     "date": "2026-07-06",
     "summary": "[AI-translated] TCP slow start is often simplified as “the congestion window doubles every RTT,” but textbooks, RFCs, and the Linux kernel describe the same mechanism from different layers. I compare the three views to clarify whether cwnd grows by ACKs, bytes, or complete segments.",
-    "wordCount": 2192,
+    "wordCount": 2199,
     "tags": [
       "Network",
       "TCP/IP",
