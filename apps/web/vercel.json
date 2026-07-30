@@ -89,6 +89,11 @@
       "permanent": true
     },
     {
+      "source": "/blog/18.队列的实现方式选择",
+      "destination": "/blog/queue-implementation-decision-tree-cn",
+      "permanent": true
+    },
+    {
       "source": "/blog/2.guangzhou-travel-notes",
       "destination": "/blog/guangzhou-trip-notes-en",
       "permanent": true
@@ -171,6 +176,11 @@
     {
       "source": "/blog/guangzhou-travel-notes",
       "destination": "/blog/guangzhou-trip-notes-en",
+      "permanent": true
+    },
+    {
+      "source": "/blog/queue-implementation-decision-tree",
+      "destination": "/blog/queue-implementation-decision-tree-cn",
       "permanent": true
     },
     {

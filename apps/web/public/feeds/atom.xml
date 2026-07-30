@@ -3,7 +3,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://markxu.icu</id>
     <title>Mark的自留地</title>
-    <updated>2026-07-20T00:00:00.000Z</updated>
+    <updated>2026-07-30T00:00:00.000Z</updated>
     <generator>Mark Xu Blog Generator</generator>
     <author>
         <name>Mark Xu</name>
@@ -16,6 +16,20 @@
     <logo>https://markxu.icu/images/IMG_1766.JPG</logo>
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
+    <entry>
+        <title type="html"><![CDATA[队列的实现方式——从约束条件到决策树]]></title>
+        <id>https://markxu.icu/blog/queue-implementation-decision-tree-cn</id>
+        <link href="https://markxu.icu/blog/queue-implementation-decision-tree-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/imgqueue.png" type="image/png"/>
+        <updated>2026-07-30T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[回顾数据结构，发现队列的实现方式总是做错，于是想了个办法，利用决策树把考虑因素列出来，方便自己全面的了解和后续的复习。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgqueue.png" alt="队列的实现方式——从约束条件到决策树" /> <p>回顾数据结构，发现队列的实现方式总是做错，于是想了个办法，利用决策树把考虑因素列出来，方便自己全面的了解和后续的复习。</p> <a class="view-full" href="https://markxu.icu/blog/queue-implementation-decision-tree-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[武汉逛吃日志 1]]></title>
         <id>https://markxu.icu/blog/Wuhan-food-walk-note1-cn</id>
