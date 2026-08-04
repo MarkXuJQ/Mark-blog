@@ -7,6 +7,7 @@
     "life": "Life",
     "movies": "Movies",
     "games": "Games",
+    "projects": "Lab",
     "about": "About",
     "others": "Others",
     "links": "Friends"
@@ -300,6 +301,22 @@
     "description": "Daily notes and photo albums.",
     "photoCount": "{{count}} photos",
     "unknownLocation": "Location not noted"
+  },
+  "projects": {
+    "title": "Lab",
+    "description": "A small shelf for strange ideas that made it all the way into code.",
+    "source": "View source",
+    "cards": {
+      "fingerblock": {
+        "title": "Finger Block",
+        "alt": "Preview of the Finger Block game interface"
+      },
+      "website": {
+        "title": "Mark's blog",
+        "alt": "Preview of Mark's blog homepage"
+      }
+    },
+    "live": "Play online"
   },
   "about": {
     "title": "About Me",

@@ -110,6 +110,7 @@ function getRoutes() {
     '/links',
     '/movies',
     '/games',
+    '/projects',
   ]
 
   // Add blog post routes

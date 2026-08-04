@@ -3,6 +3,12 @@ import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { NavLink, Link, useLocation } from 'react-router-dom'
 import { ChevronDown, Menu, X, Sun, Moon, Monitor } from 'lucide-react'
+import { FaPhotoFilm } from 'react-icons/fa6'
+import { HiMiniBeaker } from 'react-icons/hi2'
+import { IoGameController } from 'react-icons/io5'
+import { RiLinksLine, RiMovie2Line } from 'react-icons/ri'
+import { TbTimeline } from 'react-icons/tb'
+import type { IconType } from 'react-icons'
 import { cn } from '@/lib/classNames'
 import type { ThemeMode } from '@/hooks/useTheme'
 import { SearchTriggerInput } from '@/components/search/SearchTriggerInput'
@@ -18,6 +24,12 @@ import { useDropdown } from '@/hooks/useDropdown'
 interface NavBarProps {
   mode: ThemeMode
   onModeChange: (mode: ThemeMode) => void
+}
+
+interface NavItem {
+  to: string
+  label: string
+  icon: IconType
 }
 
 function NavDropdownTrigger({
@@ -43,13 +55,7 @@ function NavDropdownTrigger({
   )
 }
 
-function NavDropdown({
-  title,
-  items,
-}: {
-  title: string
-  items: { to: string; label: string }[]
-}) {
+function NavDropdown({ title, items }: { title: string; items: NavItem[] }) {
   const location = useLocation()
 
   // Check if any child is active to highlight the parent
@@ -68,7 +74,8 @@ function NavDropdown({
               to={item.to}
               className={({ isActive }) => styles.dropdown.item(isActive)}
             >
-              {item.label}
+              <item.icon className={styles.dropdown.icon} aria-hidden="true" />
+              <span className="truncate">{item.label}</span>
             </NavLink>
           </DropdownItem>
         ))}
@@ -94,23 +101,25 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
   const currentLang = i18n.language
   const isZh = currentLang?.startsWith('zh')
 
-  const otherItems = [
-    { to: '/timeline', label: t('nav.timeline') },
-    { to: '/life', label: t('nav.life') },
-    { to: '/movies', label: t('nav.movies') },
-    { to: '/games', label: t('nav.games') },
+  const otherItems: NavItem[] = [
+    { to: '/timeline', label: t('nav.timeline'), icon: TbTimeline },
+    { to: '/life', label: t('nav.life'), icon: FaPhotoFilm },
+    { to: '/movies', label: t('nav.movies'), icon: RiMovie2Line },
+    { to: '/games', label: t('nav.games'), icon: IoGameController },
+    {
+      to: '/projects',
+      label: t('nav.projects'),
+      icon: HiMiniBeaker,
+    },
   ]
   const mobilePrimaryItems = [
     { to: '/', label: t('nav.homepage') },
     { to: '/blog', label: t('nav.blog') },
     { to: '/about', label: t('nav.about') },
-    { to: '/timeline', label: t('nav.timeline') },
   ]
-  const mobileOtherItems = [
-    { to: '/life', label: t('nav.life') },
-    { to: '/movies', label: t('nav.movies') },
-    { to: '/games', label: t('nav.games') },
-    { to: '/links', label: t('nav.links') },
+  const mobileOtherItems: NavItem[] = [
+    ...otherItems,
+    { to: '/links', label: t('nav.links'), icon: RiLinksLine },
   ]
 
   return (
@@ -226,7 +235,13 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
                   to={item.to}
                   className={({ isActive }) => styles.mobile.link(isActive)}
                 >
-                  {item.label}
+                  {'icon' in item ? (
+                    <item.icon
+                      className="mr-2 h-4 w-4 shrink-0"
+                      aria-hidden="true"
+                    />
+                  ) : null}
+                  <span className="truncate">{item.label}</span>
                 </NavLink>
               ))}
             </div>
@@ -331,13 +346,14 @@ const styles = {
           : 'font-normal text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
       ),
     label: 'inline-flex w-[3.75rem] justify-center truncate text-center',
-    menu: 'absolute top-full right-0 mt-2 w-max min-w-0 origin-top-right rounded-lg bg-white p-1 shadow-lg dark:bg-[#17191c]',
+    menu: 'translate-x-2 grid w-[14rem] grid-cols-2 gap-1',
     item: (isActive: boolean) =>
       cn(
-        'block whitespace-nowrap rounded-md px-4 py-2 text-sm transition-colors',
+        'flex min-w-0 items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
         isActive
           ? 'bg-slate-100 text-slate-900 dark:bg-[#23262c] dark:text-slate-100'
           : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-[#23262c] dark:hover:text-slate-200'
       ),
+    icon: 'h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500',
   },
 }
