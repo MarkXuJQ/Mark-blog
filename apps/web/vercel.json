@@ -349,8 +349,7 @@
     },
     {
       "source": "/lab/fingerblock",
-      "destination": "/lab/fingerblock/",
-      "permanent": false
+      "destination": "/lab/fingerblock/"
     },
     {
       "source": "/lab/fingerblock/",
