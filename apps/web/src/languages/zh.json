@@ -306,16 +306,9 @@
     "title": "实验室",
     "description": "把一些奇怪的想法做出来，再认真地放在这里。",
     "source": "查看源码",
-    "cards": {
-      "fingerblock": {
-        "title": "Finger Block",
-        "alt": "Finger Block 游戏主界面预览"
-      },
-      "website": {
-        "title": "Mark的博客",
-        "alt": "Mark的博客首页预览"
-      }
-    },
+    "open": "打开界面",
+    "flip": "查看项目介绍",
+    "flipBack": "返回项目预览",
     "live": "在线试玩"
   },
   "about": {

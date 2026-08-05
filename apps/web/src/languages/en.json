@@ -306,16 +306,9 @@
     "title": "Lab",
     "description": "A small shelf for strange ideas that made it all the way into code.",
     "source": "View source",
-    "cards": {
-      "fingerblock": {
-        "title": "Finger Block",
-        "alt": "Preview of the Finger Block game interface"
-      },
-      "website": {
-        "title": "Mark's blog",
-        "alt": "Preview of Mark's blog homepage"
-      }
-    },
+    "open": "Open app",
+    "flip": "View project details",
+    "flipBack": "Back to preview",
     "live": "Play online"
   },
   "about": {
