@@ -1,0 +1,147 @@
+{
+  "sections": [
+    {
+      "id": "games",
+      "title": {
+        "zh": "游戏",
+        "en": "Games"
+      },
+      "projects": [
+        {
+          "id": "fingerblock",
+          "title": {
+            "zh": "Finger Block",
+            "en": "Finger Block"
+          },
+          "description": {
+            "zh": "一款使用摄像头识别手势进行互动的节奏游戏，也支持触屏操作。",
+            "en": "A camera-controlled rhythm game with gesture interaction and touch controls."
+          },
+          "alt": {
+            "zh": "Finger Block 游戏主界面预览",
+            "en": "Preview of the Finger Block game interface"
+          },
+          "preview": {
+            "src": "/images/fingerblock-preview.png",
+            "avifSrc": "/images/fingerblock-preview.avif"
+          },
+          "links": [
+            {
+              "type": "game",
+              "href": "/lab/fingerblock/",
+              "localHref": "https://finger-block.vercel.app/",
+              "labelKey": "live"
+            },
+            {
+              "type": "github",
+              "href": "https://github.com/MarkXuJQ/finger-block",
+              "labelKey": "source"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "website",
+      "title": {
+        "zh": "网页",
+        "en": "Website"
+      },
+      "projects": [
+        {
+          "id": "website",
+          "title": {
+            "zh": "Mark的博客",
+            "en": "Mark's blog"
+          },
+          "description": {
+            "zh": "这个网站本身：用来记录生活、分享想法，也收纳一些实验性的项目。",
+            "en": "The website itself: a place to record life, share ideas, and collect small experiments."
+          },
+          "alt": {
+            "zh": "Mark的博客首页预览",
+            "en": "Preview of Mark's blog homepage"
+          },
+          "preview": {
+            "src": "/images/mark-blog-preview.png",
+            "avifSrc": "/images/mark-blog-preview.avif"
+          },
+          "links": [
+            {
+              "type": "github",
+              "href": "https://github.com/MarkXuJQ/Mark-blog",
+              "labelKey": "source"
+            }
+          ]
+        },
+        {
+          "id": "travelTracker",
+          "title": {
+            "zh": "Travel Tracker",
+            "en": "Travel Tracker"
+          },
+          "description": {
+            "zh": "一个记录旅行足迹、地点和个人路线的地图工具。",
+            "en": "A map tool for recording journeys, places, and personal travel routes."
+          },
+          "alt": {
+            "zh": "Travel Tracker 旅行足迹地图预览",
+            "en": "Preview of the Travel Tracker map interface"
+          },
+          "preview": {
+            "src": "/images/traveltracker-preview.png",
+            "avifSrc": "/images/traveltracker-preview.avif"
+          },
+          "links": [
+            {
+              "type": "computer",
+              "href": "https://travel.markxu.icu",
+              "labelKey": "open"
+            },
+            {
+              "type": "github",
+              "href": "https://github.com/MarkXuJQ/Travel-tracker",
+              "labelKey": "source"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "widgets",
+      "title": {
+        "zh": "Widgets",
+        "en": "Widgets"
+      },
+      "projects": [
+        {
+          "id": "yearProgress",
+          "title": {
+            "zh": "Year Progress",
+            "en": "Year Progress"
+          },
+          "description": {
+            "zh": "一个 macOS 小组件，用简洁的圆环和进度条展示当年的时间进度。",
+            "en": "A macOS widget that shows the progress of the current year with a circular ring and progress bar."
+          },
+          "alt": {
+            "zh": "Year Progress macOS 小组件图标预览",
+            "en": "Preview of the Year Progress macOS widget icon"
+          },
+          "preview": {
+            "src": "/images/yearprogress-preview.png",
+            "avifSrc": "/images/yearprogress-preview.avif",
+            "objectFit": "contain"
+          },
+          "links": [
+            {
+              "type": "github",
+              "href": "https://github.com/MarkXuJQ/YearProgress",
+              "labelKey": "source"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

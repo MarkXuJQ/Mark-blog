@@ -53,6 +53,9 @@ const MovieReviewPost = createPreloadableComponent(() =>
 const Games = createPreloadableComponent(() =>
   import('./pages/Games').then((module) => module.Games)
 )
+const Projects = createPreloadableComponent(() =>
+  import('./pages/Projects').then((module) => module.Projects)
+)
 const Search = createPreloadableComponent(() =>
   import('./pages/Search').then((module) => module.Search)
 )
@@ -84,6 +87,7 @@ export async function preloadCurrentRoute(pathname: string) {
       return [MovieReviewPost]
     }
     if (normalizedPathname === '/games') return [Games]
+    if (normalizedPathname === '/projects') return [Projects]
     return [NotFound]
   })()
 
@@ -254,6 +258,14 @@ function App() {
               element={
                 <LazyRoute>
                   <Games />
+                </LazyRoute>
+              }
+            />
+            <Route
+              path="projects"
+              element={
+                <LazyRoute>
+                  <Projects />
                 </LazyRoute>
               }
             />

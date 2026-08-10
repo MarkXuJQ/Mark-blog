@@ -41,6 +41,16 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://markxu.icu/projects</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://markxu.icu/lab/fingerblock/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://markxu.icu/blog/queue-implementation-decision-tree-cn</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>weekly</changefreq>

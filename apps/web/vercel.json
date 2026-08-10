@@ -348,6 +348,18 @@
       "destination": "/feeds/en/index.html"
     },
     {
+      "source": "/lab/fingerblock",
+      "destination": "/lab/fingerblock/"
+    },
+    {
+      "source": "/lab/fingerblock/",
+      "destination": "https://finger-block.vercel.app/"
+    },
+    {
+      "source": "/lab/fingerblock/(.*)",
+      "destination": "https://finger-block.vercel.app/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/spa.html"
     }

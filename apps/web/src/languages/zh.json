@@ -7,6 +7,7 @@
     "life": "生活随笔",
     "movies": "影视",
     "games": "游戏",
+    "projects": "实验室",
     "about": "关于",
     "others": "其他入口",
     "links": "朋友们"
@@ -300,6 +301,15 @@
     "description": "记录日常与照片集。",
     "photoCount": "{{count}} 张照片",
     "unknownLocation": "地点未记录"
+  },
+  "projects": {
+    "title": "实验室",
+    "description": "把一些奇怪的想法做出来，再认真地放在这里。",
+    "source": "查看源码",
+    "open": "打开界面",
+    "flip": "查看项目介绍",
+    "flipBack": "返回项目预览",
+    "live": "在线试玩"
   },
   "about": {
     "title": "关于我",

@@ -7,6 +7,7 @@
     "life": "Life",
     "movies": "Movies",
     "games": "Games",
+    "projects": "Lab",
     "about": "About",
     "others": "Others",
     "links": "Friends"
@@ -300,6 +301,15 @@
     "description": "Daily notes and photo albums.",
     "photoCount": "{{count}} photos",
     "unknownLocation": "Location not noted"
+  },
+  "projects": {
+    "title": "Lab",
+    "description": "A small shelf for strange ideas that made it all the way into code.",
+    "source": "View source",
+    "open": "Open app",
+    "flip": "View project details",
+    "flipBack": "Back to preview",
+    "live": "Play online"
   },
   "about": {
     "title": "About Me",
