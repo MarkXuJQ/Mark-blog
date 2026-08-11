@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 import {
   useParams,
   Link,
@@ -29,6 +29,7 @@ import {
 import { Card } from '@/components/ui/Card'
 import { useArticleCodeBlockEnhancements } from '@/hooks/useArticleCodeBlockEnhancements'
 import { useArticleImageLightbox } from '@/hooks/useArticleImageLightbox'
+import { useArticleProgressiveImages } from '@/hooks/useArticleProgressiveImages'
 import { useArticlePhotoScroll } from '@/hooks/useArticlePhotoScroll'
 import { useArticlePhotoRoutes } from '@/hooks/useArticlePhotoRoutes'
 import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
@@ -43,11 +44,7 @@ import {
   estimateReadingTimeFromWordCount,
 } from '@/lib/content/readingTime'
 import { cn } from '@/lib/classNames'
-import {
-  extractOptimizedImageUrlsFromHtml,
-  getImageUrl,
-  getOptimizedImageUrl,
-} from '@/lib/image'
+import { getImageUrl, getOptimizedImageUrl } from '@/lib/image'
 import type { BlogPostOutletContext } from '@/layouts/BlogPostLayout'
 import '@/assets/styles/article-blocks.css'
 
@@ -80,6 +77,7 @@ export function BlogPost() {
   }, [hasMath])
 
   const contentRef = useArticleImageLightbox([contentHtml, simpleMode])
+  useArticleProgressiveImages(contentRef, [contentHtml, simpleMode])
   useArticleCodeBlockEnhancements(
     contentRef,
     {
@@ -151,26 +149,6 @@ export function BlogPost() {
     })
   }, [hasHighlightQuery, slug])
 
-  useEffect(() => {
-    if (!post) return
-
-    const urls = extractOptimizedImageUrlsFromHtml(post.content)
-    const links = urls.map((url) => {
-      const link = document.createElement('link')
-      link.rel = 'preload'
-      link.as = 'image'
-      link.href = url
-      link.fetchPriority = 'low'
-      link.referrerPolicy = 'no-referrer'
-      document.head.appendChild(link)
-      return link
-    })
-
-    return () => {
-      links.forEach((link) => link.remove())
-    }
-  }, [post])
-
   if (!post) {
     return (
       <div className="mx-auto max-w-4xl">
@@ -192,6 +170,9 @@ export function BlogPost() {
   const originalCoverImage = post.image ? getImageUrl(post.image) : ''
   const coverImage = originalCoverImage
     ? getOptimizedImageUrl(originalCoverImage, 'cover')
+    : ''
+  const coverThumbnail = originalCoverImage
+    ? getOptimizedImageUrl(originalCoverImage, 'thumbnail')
     : ''
   const hasCoverImage = Boolean(coverImage)
   const siteUrl = getSiteUrl()
@@ -340,13 +321,11 @@ export function BlogPost() {
           <>
             <section className="relative isolate min-h-[22rem] sm:min-h-[26rem]">
               <div className="absolute inset-0">
-                <img
-                  src={coverImage}
+                <ProgressiveCoverImage
+                  placeholderSrc={coverThumbnail}
+                  highSrc={coverImage}
                   alt={post.title}
                   data-original-src={originalCoverImage}
-                  loading="eager"
-                  decoding="async"
-                  fetchPriority="high"
                   referrerPolicy="no-referrer"
                   className="h-full w-full object-cover object-center"
                 />
@@ -541,6 +520,59 @@ const MarkdownContent = memo(function MarkdownContent({
     />
   )
 })
+
+function ProgressiveCoverImage({
+  placeholderSrc,
+  highSrc,
+  alt,
+  ...props
+}: React.ComponentProps<'img'> & {
+  placeholderSrc: string
+  highSrc: string
+}) {
+  const [src, setSrc] = useState(placeholderSrc || highSrc)
+
+  useEffect(() => {
+    let cancelled = false
+    setSrc(placeholderSrc || highSrc)
+
+    if (!highSrc || highSrc === placeholderSrc) return
+
+    const request = new Image()
+    request.decoding = 'async'
+    request.fetchPriority = 'high'
+    request.onload = () => {
+      const commit = () => {
+        if (!cancelled) setSrc(highSrc)
+      }
+
+      if (typeof request.decode === 'function') {
+        void request
+          .decode()
+          .catch(() => undefined)
+          .then(commit)
+      } else {
+        commit()
+      }
+    }
+    request.src = highSrc
+
+    return () => {
+      cancelled = true
+    }
+  }, [highSrc, placeholderSrc])
+
+  return (
+    <img
+      {...props}
+      alt={alt}
+      src={src}
+      loading="eager"
+      decoding="async"
+      fetchPriority="high"
+    />
+  )
+}
 
 const styles = {
   postCard:

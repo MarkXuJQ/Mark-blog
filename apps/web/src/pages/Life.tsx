@@ -1198,6 +1198,7 @@ export function Life() {
                                   description: activePost.meta,
                                   hdr: img.hdr,
                                   optimized: !img.hdr,
+                                  originalSrc: img.original,
                                 })),
                                 activeImageIndex
                               )
@@ -1236,6 +1237,7 @@ export function Life() {
                                 description: activePost.meta,
                                 hdr: img.hdr,
                                 optimized: !img.hdr,
+                                originalSrc: img.original,
                               })),
                               activeImageIndex
                             )
