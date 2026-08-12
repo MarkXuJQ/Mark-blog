@@ -5,6 +5,10 @@ export interface LightboxSlide {
   alt?: string
   description?: string
   hdr?: boolean
+  /** Keep an already optimized source instead of unwrapping it to the original. */
+  optimized?: boolean
+  /** Internal original source used when a deferred HDR slide becomes current. */
+  originalSrc?: string
 }
 
 export interface LightboxContextValue {

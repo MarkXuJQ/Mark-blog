@@ -47,43 +47,48 @@ export function BlogRelatedPosts({
 
   return (
     <aside className={styles.wrapper}>
-      <div className={styles.header}>
-        <span className={styles.title}>{t('blog.recommend.title')}</span>
-      </div>
-      <ul className={styles.list}>
-        {recommendations.map((post, index) => {
-          const hasImage = Boolean(post.image)
-          return (
-            <li key={post.id} className={styles.item}>
-              <Link to={`/blog/${post.slug}`} className={styles.link}>
-                <article className={styles.card}>
-                  <div className={styles.media} aria-hidden="true">
-                    {hasImage && post.image ? (
-                      <>
-                        <img
-                          src={getOptimizedImageUrl(post.image, 'thumbnail')}
-                          alt=""
-                          className={styles.image}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        <span className={styles.imageOverlay} />
-                      </>
-                    ) : (
-                      <DefaultRelatedPostCover index={index} />
-                    )}
-                  </div>
+      <div className={styles.panel}>
+        <div className={styles.header}>
+          <span className={styles.title}>{t('blog.recommend.title')}</span>
+        </div>
+        <ul className={styles.list}>
+          {recommendations.map((post, index) => {
+            const hasImage = Boolean(post.image)
+            return (
+              <li key={post.id} className={styles.item}>
+                {index > 0 ? (
+                  <div className={styles.separator} aria-hidden="true" />
+                ) : null}
+                <Link to={`/blog/${post.slug}`} className={styles.link}>
+                  <article className={styles.card}>
+                    <div className={styles.media} aria-hidden="true">
+                      {hasImage && post.image ? (
+                        <>
+                          <img
+                            src={getOptimizedImageUrl(post.image, 'thumbnail')}
+                            alt=""
+                            className={styles.image}
+                            loading="lazy"
+                            decoding="async"
+                          />
+                          <span className={styles.imageOverlay} />
+                        </>
+                      ) : (
+                        <DefaultRelatedPostCover index={index} />
+                      )}
+                    </div>
 
-                  <div className={styles.content}>
-                    <h4 className={styles.postTitle}>{post.title}</h4>
-                    <time className={styles.postMeta}>{post.date}</time>
-                  </div>
-                </article>
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
+                    <div className={styles.content}>
+                      <h4 className={styles.postTitle}>{post.title}</h4>
+                      <time className={styles.postMeta}>{post.date}</time>
+                    </div>
+                  </article>
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
     </aside>
   )
 }
@@ -145,23 +150,28 @@ function DefaultRelatedPostCover({ index }: { index: number }) {
 
 const styles = {
   wrapper: 'hidden lg:block',
-  header:
-    'mb-3 flex items-center justify-between text-sm font-semibold text-[var(--text-secondary)]',
-  title: 'tracking-[0.02em]',
-  list: 'space-y-2.5',
-  item: 'list-none',
-  link: 'group block rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--page-background)]',
-  card: cn(
-    'relative grid min-h-[74px] grid-cols-[4.25rem_1fr] items-stretch overflow-hidden rounded-xl',
-    'border border-slate-200/70 bg-white/80',
+  panel: cn(
+    'overflow-hidden rounded-2xl border border-slate-200/70 bg-white/80',
     'shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur-sm',
-    'transition-[background-color,box-shadow,transform] duration-200 ease-out',
-    'group-hover:-translate-y-0.5 group-hover:bg-white/90',
-    'group-hover:shadow-[0_18px_34px_-26px_rgba(15,23,42,0.55)]',
-    'dark:border-0 dark:bg-[#17191c] dark:shadow-none dark:group-hover:bg-[#1b2026]'
+    'dark:border-0 dark:bg-[#17191c] dark:shadow-none'
+  ),
+  header:
+    'flex items-center px-4 pb-2.5 pt-3 text-sm font-semibold text-[var(--text-secondary)]',
+  title: 'tracking-[0.02em]',
+  list: 'm-0',
+  item: 'list-none',
+  separator:
+    'mx-[15%] border-t border-slate-200/70 dark:border-[color-mix(in_srgb,var(--border-color)_80%,transparent)]',
+  link: cn(
+    'group block px-3.5 py-2 focus:outline-none focus-visible:ring-2',
+    'focus-visible:ring-[var(--brand-400)] focus-visible:ring-inset',
+    'transition-colors hover:bg-slate-50/80 dark:hover:bg-[#1b2026]'
+  ),
+  card: cn(
+    'relative grid grid-cols-[4.5rem_1fr] items-stretch overflow-hidden'
   ),
   media: cn(
-    'relative m-2 mr-0 flex min-h-[58px] overflow-hidden rounded-lg',
+    'relative flex aspect-[3/2] h-auto w-full self-center overflow-hidden rounded-lg',
     'bg-slate-100/80',
     'dark:bg-[#141210]'
   ),
@@ -174,11 +184,12 @@ const styles = {
   ),
   fallbackCover:
     'absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105',
-  content: cn('flex min-w-0 flex-col justify-center px-3 py-2.5 text-left'),
+  content: cn('flex min-w-0 flex-col justify-center px-3.5 py-1.5 text-left'),
   postTitle: cn(
-    'line-clamp-2 text-sm font-semibold leading-snug text-[var(--text-primary)] transition-colors',
+    'line-clamp-2 text-sm font-semibold leading-[1.3] text-[var(--text-primary)] transition-colors',
     'group-hover:text-[color-mix(in_srgb,var(--brand-600)_82%,var(--text-primary)_18%)]',
     'dark:group-hover:text-[color-mix(in_srgb,var(--brand-400)_82%,var(--text-primary)_18%)]'
   ),
-  postMeta: 'mt-1.5 text-[10px] font-medium text-[var(--text-disabled)]',
+  postMeta:
+    'mt-1 text-[11px] font-medium leading-4 text-[var(--text-disabled)]',
 }

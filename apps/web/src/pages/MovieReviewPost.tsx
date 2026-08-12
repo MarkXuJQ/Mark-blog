@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Star } from 'lucide-react'
@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/Card'
 import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
 import { getMovieReviewBySlug } from '@/lib/content/movieReviews'
 import { cn } from '@/lib/classNames'
+import { useArticleProgressiveImages } from '@/hooks/useArticleProgressiveImages'
 
 export function MovieReviewPost() {
   const { slug } = useParams()
@@ -19,6 +20,8 @@ export function MovieReviewPost() {
 
     return decorateArticleContent(review.content, i18n.language)
   }, [i18n.language, review])
+  const contentRef = useRef<HTMLDivElement>(null)
+  useArticleProgressiveImages(contentRef, [contentHtml])
 
   if (!review) {
     return (
@@ -68,6 +71,7 @@ export function MovieReviewPost() {
           </div>
 
           <div
+            ref={contentRef}
             className="markdown-body"
             dangerouslySetInnerHTML={{ __html: contentHtml }}
           />

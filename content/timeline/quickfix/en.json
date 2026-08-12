@@ -1,5 +1,16 @@
 [
   {
+    "id": "qf-20260811",
+    "date": "2026-08-11",
+    "content": [
+      "Improved the Life and blog image pipeline: added HDR and staged mobile loading with thumbnail, intermediate, original, and fallback variants",
+      "Fixed lightbox, browser-back, mobile overlay, drawer, and dropdown interaction issues",
+      "Refined Vercel prerendering, browser contexts, redirects, and build scripts, and removed the homepage reveal dependency on GSAP",
+      "Added the Projects page with entries and previews",
+      "Refined related posts in the article sidebar into one panel with 3:2 thumbnails, tighter rows, and shorter dividers between posts"
+    ]
+  },
+  {
     "id": "qf-20260722",
     "date": "2026-07-22",
     "content": [

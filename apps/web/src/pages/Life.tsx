@@ -1,5 +1,6 @@
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router-dom'
 import { AnimatePresence, motion, type Variants } from 'framer-motion'
 import {
   ChevronLeft,
@@ -59,6 +60,8 @@ type SwitchImageOptions = {
 }
 
 const FEATURED_CAROUSEL_INTERVAL_MS = 5000
+const LIFE_DETAIL_POST_PARAM = 'lifePost'
+const LIFE_DETAIL_IMAGE_PARAM = 'lifePhoto'
 
 const lifePhotoVariants: Variants = {
   enter: (direction: ImageSwitchDirection) => ({
@@ -111,6 +114,7 @@ function splitLifeContent(content: string): string[][] {
 
 export function Life() {
   const { t } = useTranslation()
+  const [searchParams, setSearchParams] = useSearchParams()
   const title = t('nav.life')
   const description = t('life.description', '生活随笔瀑布流。')
   const { openLightbox } = useLightbox()
@@ -213,7 +217,10 @@ export function Life() {
     featuredPost?.images[0] ??
     null
   const featuredImageSrc = featuredImage
-    ? getOptimizedImageUrl(featuredImage.original, 'cover')
+    ? getOptimizedImageUrl(
+        featuredImage.original,
+        isMobileDetail ? 'thumbnail' : 'cover'
+      )
     : ''
   const featuredImageFailureKey = featuredPostId
     ? `${featuredPostId}:${safeFeaturedImageIndex}`
@@ -227,7 +234,10 @@ export function Life() {
       ? null
       : (featuredPost?.images[featuredNextImageIndex] ?? null)
   const featuredNextImageSrc = featuredNextImage
-    ? getOptimizedImageUrl(featuredNextImage.original, 'cover')
+    ? getOptimizedImageUrl(
+        featuredNextImage.original,
+        isMobileDetail ? 'thumbnail' : 'cover'
+      )
     : ''
   const featuredNextImageFailureKey =
     featuredPostId && featuredNextImageIndex !== null
@@ -246,16 +256,61 @@ export function Life() {
   const modalRef = useRef<HTMLDivElement | null>(null)
   const lastFocusedRef = useRef<HTMLElement | null>(null)
   const failedImagesRef = useRef<Set<string>>(new Set())
-  const loadedImagesRef = useRef<Set<string>>(new Set())
-  const imageSwitchRequestRef = useRef(0)
   const imageSwipeStartRef = useRef<{ x: number; y: number } | null>(null)
   const [, forceRerender] = useState(0)
   const currentImage = activeImages[activeImageIndex] ?? activeImages[0] ?? null
   const currentImageSrc = currentImage?.preview ?? ''
 
+  const requestedPostId = searchParams.get(LIFE_DETAIL_POST_PARAM)
+  const requestedImageIndex = Number.parseInt(
+    searchParams.get(LIFE_DETAIL_IMAGE_PARAM) ?? '0',
+    10
+  )
+  const initialImageIndex = Number.isFinite(requestedImageIndex)
+    ? Math.max(requestedImageIndex, 0)
+    : 0
+
+  const updateDetailImageUrl = (imageIndex: number) => {
+    setSearchParams(
+      (previous) => {
+        if (!previous.has(LIFE_DETAIL_POST_PARAM)) return previous
+        const next = new URLSearchParams(previous)
+        next.set(LIFE_DETAIL_IMAGE_PARAM, String(imageIndex))
+        return next
+      },
+      { replace: true }
+    )
+  }
+
   const openPost = (postId: string, imageIndex = 0) => {
     requestedActiveImageIndexRef.current = imageIndex
-    setActiveId(postId)
+    setSearchParams((previous) => {
+      const next = new URLSearchParams(previous)
+      next.set(LIFE_DETAIL_POST_PARAM, postId)
+      if (imageIndex > 0) {
+        next.set(LIFE_DETAIL_IMAGE_PARAM, String(imageIndex))
+      } else {
+        next.delete(LIFE_DETAIL_IMAGE_PARAM)
+      }
+      return next
+    })
+  }
+
+  const closePost = () => {
+    if (!searchParams.has(LIFE_DETAIL_POST_PARAM)) {
+      setActiveId(null)
+      return
+    }
+
+    setSearchParams(
+      (previous) => {
+        const next = new URLSearchParams(previous)
+        next.delete(LIFE_DETAIL_POST_PARAM)
+        next.delete(LIFE_DETAIL_IMAGE_PARAM)
+        return next
+      },
+      { replace: true }
+    )
   }
 
   const handleCardMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -350,8 +405,11 @@ export function Life() {
 
     const preload = new Image()
     preload.decoding = 'async'
-    preload.src = getOptimizedImageUrl(nextImage.original, 'cover')
-  }, [featuredImageCount, featuredPost, safeFeaturedImageIndex])
+    preload.src = getOptimizedImageUrl(
+      nextImage.original,
+      isMobileDetail ? 'thumbnail' : 'cover'
+    )
+  }, [featuredImageCount, featuredPost, isMobileDetail, safeFeaturedImageIndex])
 
   useEffect(() => {
     if (
@@ -382,6 +440,11 @@ export function Life() {
   ])
 
   useEffect(() => {
+    requestedActiveImageIndexRef.current = initialImageIndex
+    setActiveId(requestedPostId)
+  }, [initialImageIndex, requestedPostId])
+
+  useEffect(() => {
     if (!activeId || !activePost) return
     const requestedIndex = Math.min(
       Math.max(requestedActiveImageIndexRef.current, 0),
@@ -391,32 +454,31 @@ export function Life() {
     setActiveImageIndex(requestedIndex)
     setImageDirection(1)
     failedImagesRef.current = new Set()
-    loadedImagesRef.current = new Set()
-    imageSwitchRequestRef.current += 1
   }, [activeId, activePost])
 
   useEffect(() => {
-    if (!activePost) return
-    if (activeImages.length === 0) return
-    const next = activeImages[(activeImageIndex + 1) % activeImages.length]
-    const prev =
-      activeImages[
-        (activeImageIndex - 1 + activeImages.length) % activeImages.length
-      ]
-    for (const image of [next, prev]) {
-      if (image?.hdr) continue
-      const src = image?.preview
-      if (!src) continue
-      const img = new Image()
-      img.onload = () => {
-        loadedImagesRef.current.add(src)
-      }
-      img.onerror = () => {
-        failedImagesRef.current.add(src)
-      }
-      img.src = src
+    if (!isMobileDetail || !activePost || activeImages.length === 0) return
+
+    const indices = new Set([activeImageIndex])
+    if (activeImages.length > 1) {
+      indices.add(
+        activeImageIndex === 0 ? activeImages.length - 1 : activeImageIndex - 1
+      )
+      indices.add(
+        activeImageIndex === activeImages.length - 1 ? 0 : activeImageIndex + 1
+      )
     }
-  }, [activePost, activeImages, activeImageIndex])
+
+    for (const index of indices) {
+      const image = activeImages[index]
+      if (!image || image.hdr || !image.preview) continue
+
+      const preload = new Image()
+      preload.decoding = 'async'
+      preload.fetchPriority = index === activeImageIndex ? 'high' : 'low'
+      preload.src = image.preview
+    }
+  }, [activeImageIndex, activeImages, activePost, isMobileDetail])
 
   useEffect(() => {
     return () => {
@@ -430,35 +492,28 @@ export function Life() {
     if (activeImages.length === 0) return
     if (!options?.force && nextIndex === activeImageIndex) return
 
-    const nextSrc = activeImages[nextIndex]?.preview
-    if (!nextSrc) return
+    if (!activeImages[nextIndex]) return
     const direction =
       options?.direction ?? (nextIndex >= activeImageIndex ? 1 : -1)
 
-    if (loadedImagesRef.current.has(nextSrc)) {
-      setImageDirection(direction)
-      setActiveImageIndex(nextIndex)
-      return
-    }
+    setImageDirection(direction)
+    setActiveImageIndex(nextIndex)
+    updateDetailImageUrl(nextIndex)
 
-    const requestId = imageSwitchRequestRef.current + 1
-    imageSwitchRequestRef.current = requestId
-
-    const img = new Image()
-    img.onload = () => {
-      loadedImagesRef.current.add(nextSrc)
-      if (imageSwitchRequestRef.current !== requestId) return
-      setImageDirection(direction)
-      setActiveImageIndex(nextIndex)
+    // Normal changes are rendered immediately with the thumbnail fallback. A
+    // forced retry still primes the display URL before the image is redrawn.
+    if (options?.force) {
+      const retrySrc = activeImages[nextIndex]?.preview
+      if (!retrySrc) return
+      const retry = new Image()
+      retry.decoding = 'async'
+      retry.onload = () => forceRerender((x) => x + 1)
+      retry.onerror = () => {
+        failedImagesRef.current.add(retrySrc)
+        forceRerender((x) => x + 1)
+      }
+      retry.src = retrySrc
     }
-    img.onerror = () => {
-      failedImagesRef.current.add(nextSrc)
-      if (imageSwitchRequestRef.current !== requestId) return
-      setImageDirection(direction)
-      setActiveImageIndex(nextIndex)
-      forceRerender((x) => x + 1)
-    }
-    img.src = nextSrc
   }
 
   const goPrevImage = () => {
@@ -503,7 +558,7 @@ export function Life() {
     const target = e.target as HTMLElement | null
     const tag = target?.tagName?.toLowerCase()
     if (tag === 'input' || tag === 'textarea') return
-    if (e.key === 'Escape') setActiveId(null)
+    if (e.key === 'Escape') closePost()
     if (e.key === 'ArrowLeft') {
       e.preventDefault()
       goPrevImage()
@@ -993,7 +1048,7 @@ export function Life() {
             <motion.button
               type="button"
               aria-label="关闭"
-              onClick={() => setActiveId(null)}
+              onClick={closePost}
               className="absolute inset-0 hidden bg-black/70 backdrop-blur-sm md:block"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1041,10 +1096,10 @@ export function Life() {
                       )}
                     <div
                       className={cn(
-                        'relative z-10 h-[70svh] w-full touch-pan-y overflow-hidden',
+                        'relative z-10 aspect-[4/3] h-auto w-full touch-pan-y overflow-hidden',
                         activeImages.length > 1
-                          ? 'md:h-[calc(85vh-5rem)]'
-                          : 'md:h-[85vh]'
+                          ? 'md:aspect-auto md:h-[calc(85vh-5rem)]'
+                          : 'md:aspect-auto md:h-[85vh]'
                       )}
                       onTouchStart={handlePhotoTouchStart}
                       onTouchEnd={handlePhotoTouchEnd}
@@ -1075,9 +1130,26 @@ export function Life() {
                           initial={false}
                           custom={imageDirection}
                         >
+                          {currentImage?.thumbnail && (
+                            <img
+                              src={currentImage.thumbnail}
+                              alt=""
+                              aria-hidden="true"
+                              className="pointer-events-none absolute inset-0 z-0 h-full w-full object-contain"
+                              loading="eager"
+                              decoding="async"
+                              draggable={false}
+                            />
+                          )}
                           <motion.img
                             key={currentImageSrc}
                             src={currentImageSrc}
+                            srcSet={
+                              currentImage?.hdr
+                                ? undefined
+                                : `${currentImage?.thumbnail} 420w, ${currentImage?.preview} 1280w`
+                            }
+                            sizes="(max-width: 767px) 100vw, 66vw"
                             alt={activePost.title}
                             custom={imageDirection}
                             variants={lifePhotoVariants}
@@ -1089,7 +1161,7 @@ export function Life() {
                               ease: [0.22, 1, 0.36, 1],
                             }}
                             className={cn(
-                              'absolute inset-0 h-full w-full object-contain select-none',
+                              'absolute inset-0 z-[1] h-full w-full object-contain select-none',
                               currentImage?.hdr && 'hdr-image'
                             )}
                             data-hdr-image={
@@ -1098,10 +1170,6 @@ export function Life() {
                             loading="eager"
                             decoding="async"
                             draggable={false}
-                            onLoad={() => {
-                              if (!currentImageSrc) return
-                              loadedImagesRef.current.add(currentImageSrc)
-                            }}
                             onError={() => {
                               const src = currentImageSrc
                               if (!src) return
@@ -1125,10 +1193,12 @@ export function Life() {
                             onClick={() =>
                               openLightbox(
                                 activeImages.map((img) => ({
-                                  src: img.original,
+                                  src: img.hdr ? img.original : img.preview,
                                   alt: activePost.title,
                                   description: activePost.meta,
                                   hdr: img.hdr,
+                                  optimized: !img.hdr,
+                                  originalSrc: img.original,
                                 })),
                                 activeImageIndex
                               )
@@ -1162,10 +1232,12 @@ export function Life() {
                           onClick={() =>
                             openLightbox(
                               activeImages.map((img) => ({
-                                src: img.original,
+                                src: img.hdr ? img.original : img.preview,
                                 alt: activePost.title,
                                 description: activePost.meta,
                                 hdr: img.hdr,
+                                optimized: !img.hdr,
+                                originalSrc: img.original,
                               })),
                               activeImageIndex
                             )
@@ -1209,7 +1281,7 @@ export function Life() {
 
                   <button
                     type="button"
-                    onClick={() => setActiveId(null)}
+                    onClick={closePost}
                     className={cn(
                       'absolute top-3 left-3 z-30 inline-flex h-10 w-10 items-center justify-center rounded-full md:right-3 md:left-auto',
                       'bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/55',
