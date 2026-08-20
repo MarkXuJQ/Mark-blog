@@ -958,13 +958,13 @@ export function Life() {
         </div>
       </div>
 
-      <div className="relative z-0 mx-auto w-full max-w-5xl px-4 pb-6 sm:px-6 md:pb-10">
+      <div className="relative z-0 mx-auto w-full max-w-6xl px-4 pb-6 sm:px-6 md:pb-10">
         <div className="columns-2 gap-4 md:columns-3 lg:columns-4">
           {regularPosts.map((post) => (
             <motion.div
               key={post.id}
               className={cn(
-                'group relative mb-4 inline-block w-full rounded-2xl',
+                'group relative mb-4 inline-block w-full rounded-md',
                 'text-left transition-transform duration-200 ease-out',
                 '[transform:perspective(1200px)_rotateX(var(--x-rotate,0deg))_rotateY(var(--y-rotate,0deg))]',
                 'will-change-transform',
@@ -984,7 +984,7 @@ export function Life() {
                   layoutId={
                     isMobileDetail ? undefined : `life-image-${post.id}`
                   }
-                  className="relative min-h-[160px] w-full overflow-hidden rounded-2xl bg-slate-100 dark:bg-[#1f2328]"
+                  className="relative min-h-[160px] w-full overflow-hidden rounded-md bg-slate-100 dark:bg-[#1f2328]"
                   transition={{ duration: 0.16, ease: 'easeOut' }}
                 >
                   {failedCoverIds[post.id] ? (

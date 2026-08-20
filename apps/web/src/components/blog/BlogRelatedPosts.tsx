@@ -151,7 +151,7 @@ function DefaultRelatedPostCover({ index }: { index: number }) {
 const styles = {
   wrapper: 'hidden lg:block',
   panel: cn(
-    'overflow-hidden rounded-2xl border border-slate-200/70 bg-white/80',
+    'overflow-hidden rounded-2xl border border-slate-200/70 bg-white/80 pb-1',
     'shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur-sm',
     'dark:border-0 dark:bg-[#17191c] dark:shadow-none'
   ),

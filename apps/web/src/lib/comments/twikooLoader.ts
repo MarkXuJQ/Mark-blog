@@ -10,6 +10,20 @@ export interface TwikooApi {
     urls: string[]
     includeReply?: boolean
   }) => Promise<Array<{ url: string; count: number }>>
+  getRecentComments?: (options: {
+    envId: string
+    urls?: string[]
+    includeReply?: boolean
+    pageSize?: number
+  }) => Promise<TwikooRecentComment[]>
+}
+
+export interface TwikooRecentComment {
+  id: string
+  url: string
+  nick: string
+  created: number
+  commentText?: string
 }
 
 declare global {

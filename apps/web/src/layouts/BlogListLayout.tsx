@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LeftSidebarWidget, StatsWidget } from '@/components/blog/BlogWidgets'
+import { RecentCommentsWidget } from '@/components/blog/RecentCommentsWidget'
 import { MobileBlogDrawer } from '@/components/blog/MobileBlogDrawer'
 import { ReaderModeToggle } from '@/components/blog/ReaderModeToggle'
 import { getAllPostSummaries } from '@/lib/content/postSummaries'
@@ -68,6 +69,7 @@ export function BlogListLayout() {
         <aside className={cn(styles.rightSidebar, simpleMode && '!hidden')}>
           <div className={styles.stickyWrapper}>
             <StatsWidget posts={posts} />
+            <RecentCommentsWidget />
           </div>
         </aside>
       </div>

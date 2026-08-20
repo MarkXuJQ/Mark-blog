@@ -87,6 +87,12 @@
         "lastUpdate": "最后更新",
         "wordCount": "全站字数",
         "days": "天"
+      },
+      "recentComments": {
+        "title": "最近评论",
+        "anonymous": "匿名访客",
+        "empty": "暂时还没有评论",
+        "unavailable": "评论暂时无法加载"
       }
     },
     "toc": {
