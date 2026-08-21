@@ -249,6 +249,10 @@ export function BlogPost() {
         </Link>
 
         <header className={styles.simpleReadingHeader}>
+          <h1 className={styles.simpleReadingTitle} data-article-heading="true">
+            {post.title}
+          </h1>
+
           <div className={styles.simpleReadingMeta}>
             {post.category ? <CategoryLabel category={post.category} /> : null}
             <time dateTime={post.date} className={metaItemClass}>
@@ -273,10 +277,6 @@ export function BlogPost() {
               <span>{t('blog.readingTime', { minutes: readingMinutes })}</span>
             </span>
           </div>
-
-          <h1 className={styles.simpleReadingTitle} data-article-heading="true">
-            {post.title}
-          </h1>
         </header>
 
         <MarkdownContent
@@ -355,7 +355,14 @@ export function BlogPost() {
 
               <div className="relative flex min-h-[22rem] flex-col justify-end px-5 py-5 pt-24 sm:min-h-[26rem] sm:px-8 sm:py-8 sm:pt-28">
                 <div className="max-w-3xl translate-y-2 sm:translate-y-3">
-                  <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/90 drop-shadow-[0_2px_12px_rgba(15,23,42,0.58)]">
+                  <h1
+                    className="max-w-3xl text-3xl font-medium tracking-tight text-white drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)] sm:text-4xl md:text-5xl"
+                    data-article-heading="true"
+                  >
+                    {post.title}
+                  </h1>
+
+                  <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/90 drop-shadow-[0_2px_12px_rgba(15,23,42,0.58)]">
                     {post.category ? (
                       <CategoryLabel
                         category={post.category}
@@ -386,13 +393,6 @@ export function BlogPost() {
                       </span>
                     </span>
                   </div>
-
-                  <h1
-                    className="max-w-3xl text-3xl font-medium tracking-tight text-white drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)] sm:text-4xl md:text-5xl"
-                    data-article-heading="true"
-                  >
-                    {post.title}
-                  </h1>
                 </div>
               </div>
             </section>
@@ -439,6 +439,13 @@ export function BlogPost() {
                   ) : null}
                 </div>
 
+                <h1
+                  className={styles.plainPostTitle}
+                  data-article-heading="true"
+                >
+                  {post.title}
+                </h1>
+
                 <div className={styles.plainPostMeta}>
                   {post.category ? (
                     <CategoryLabel category={post.category} />
@@ -467,13 +474,6 @@ export function BlogPost() {
                     </span>
                   </span>
                 </div>
-
-                <h1
-                  className={styles.plainPostTitle}
-                  data-article-heading="true"
-                >
-                  {post.title}
-                </h1>
               </header>
 
               <MarkdownContent
@@ -595,7 +595,7 @@ const styles = {
     'not-prose mb-10 border-b border-slate-200/70 pb-8 dark:border-slate-800/80',
   plainPostTopRow: 'mb-8 flex items-start justify-between gap-4 sm:mb-9',
   plainPostMeta:
-    'mb-4 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500 dark:text-slate-400',
+    'mt-4 mb-4 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500 dark:text-slate-400',
   plainPostTags:
     'flex flex-wrap items-center gap-x-3 gap-y-1 sm:max-w-[42%] sm:shrink-0 sm:justify-end',
   plainPostTag:

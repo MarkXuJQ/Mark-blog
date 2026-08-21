@@ -87,6 +87,12 @@
         "lastUpdate": "Last Update",
         "wordCount": "Total Words",
         "days": "Days"
+      },
+      "recentComments": {
+        "title": "Recent Comments",
+        "anonymous": "Anonymous visitor",
+        "empty": "No comments yet",
+        "unavailable": "Comments are temporarily unavailable"
       }
     },
     "toc": {
