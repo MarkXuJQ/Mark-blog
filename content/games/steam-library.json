@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-30T12:00:39.076Z",
+  "generatedAt": "2026-08-21T12:23:54.617Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -15,7 +15,7 @@
     "totalMinutes": 171131,
     "totalRecentMinutes": 0,
     "totalUnlockedAchievements": 1917,
-    "totalAvailableAchievements": 7313,
+    "totalAvailableAchievements": 7323,
     "featuredAppId": 2246340
   },
   "featured": [
@@ -33,12 +33,12 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 159567,
-        "totalNegative": 166208,
-        "totalReviews": 325775,
+        "totalPositive": 161024,
+        "totalNegative": 167218,
+        "totalReviews": 328242,
         "positivePercent": 49
       },
-      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1781071959",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1786607644",
       "shortDescription": "The unbridled force of nature runs wild and relentless, with environments transforming drastically from one moment to the next. This is a story of monsters and humans and their struggles to live in harmony in a world of duality.",
       "releaseDate": "27 Feb, 2025",
       "developers": [
@@ -64,9 +64,9 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 456513,
-        "totalNegative": 57706,
-        "totalReviews": 514219,
+        "totalPositive": 457806,
+        "totalNegative": 57832,
+        "totalReviews": 515638,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
@@ -93,9 +93,9 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 822560,
-        "totalNegative": 27263,
-        "totalReviews": 849823,
+        "totalPositive": 826413,
+        "totalNegative": 27437,
+        "totalReviews": 853850,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
@@ -124,9 +124,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 850943,
-        "totalNegative": 28476,
-        "totalReviews": 879419,
+        "totalPositive": 853551,
+        "totalNegative": 28585,
+        "totalReviews": 882136,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/ad9240e088f953a84aee814034c50a6a92bf4516/header.jpg?t=1768303991",
@@ -153,9 +153,9 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 324512,
-        "totalNegative": 52419,
-        "totalReviews": 376931,
+        "totalPositive": 325533,
+        "totalNegative": 52473,
+        "totalReviews": 378006,
         "positivePercent": 86
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1784651829",
@@ -184,12 +184,12 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 165065,
-        "totalNegative": 20935,
-        "totalReviews": 186000,
+        "totalPositive": 166335,
+        "totalNegative": 21136,
+        "totalReviews": 187471,
         "positivePercent": 89
       },
-      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1777476997",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1786633104",
       "shortDescription": "In this action-adventure game, set sail for Ancient Greece to alter its fate. Fight in visceral battles on land and sea, shape your destiny from outcast to legend, and uncover secrets of your past.",
       "releaseDate": "5 Oct, 2018",
       "developers": [
@@ -1458,7 +1458,7 @@
       "communityUrl": "https://steamcommunity.com/app/3527290",
       "achievementStats": {
         "unlockedCount": 2,
-        "totalCount": 54
+        "totalCount": 64
       }
     },
     {
