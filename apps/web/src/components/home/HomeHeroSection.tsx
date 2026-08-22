@@ -147,7 +147,6 @@ export function HomeHeroSection({
     ? ['自留地', '小屋', '小破站', '内陆帝国']
     : ['Backyard', 'little site', 'tiny nook', 'Inland Empire']
   const introText = t('home.intro')
-  const descriptionText = t('home.description')
   const titleStagger = prefersReducedMotion ? 0 : 0.018
   const copyStagger = prefersReducedMotion ? 0 : 0.035
 
@@ -195,6 +194,7 @@ export function HomeHeroSection({
                 className={cn(
                   styles.title,
                   titleClass,
+                  styles.heroTitle,
                   'heading-brand',
                   'no-heading-letter-spacing'
                 )}
@@ -323,21 +323,6 @@ export function HomeHeroSection({
                     {introText}
                   </VerticalCutReveal>
                 </p>
-                <p>
-                  <VerticalCutReveal
-                    splitBy="words"
-                    staggerDuration={copyStagger}
-                    staggerFrom="first"
-                    reverse
-                    transition={{
-                      ...HERO_COPY_REVEAL_TRANSITION,
-                      delay: prefersReducedMotion ? 0 : 0.68,
-                    }}
-                    containerClassName="inline-flex"
-                  >
-                    {descriptionText}
-                  </VerticalCutReveal>
-                </p>
               </div>
 
               <div className={styles.heroFooter}>
@@ -386,15 +371,16 @@ const styles = {
   heroContentLight: 'text-black',
   heroContentDark: 'text-white',
   heroContentInner:
-    'mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.96fr)] lg:gap-12',
+    'mx-auto grid w-full min-w-0 max-w-7xl grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.96fr)] lg:gap-12',
   heroCopy:
-    'home-hero-copy-enter order-2 flex flex-col items-center text-center lg:order-1 lg:items-start lg:text-left',
+    'home-hero-copy-enter order-2 flex min-w-0 w-full [container-type:inline-size] flex-col items-center text-center lg:order-1 lg:items-start lg:text-left',
   title: cn(
-    'mt-2 max-w-4xl text-center text-4xl font-semibold tracking-tight sm:text-6xl lg:mt-6 lg:text-left lg:text-7xl'
+    'mt-2 w-full max-w-full text-center text-5xl font-bold leading-[1.08] tracking-normal sm:text-6xl lg:mt-6 lg:text-left lg:text-[clamp(4rem,12cqw,5rem)] lg:leading-[1.02]'
   ),
-  titleLine: 'inline-block',
+  heroTitle: 'hero-title',
+  titleLine: 'inline-block max-w-full',
   titleTailLine:
-    'inline-flex flex-wrap items-baseline justify-center lg:justify-start',
+    'inline-flex max-w-full flex-wrap items-baseline justify-center lg:justify-start',
   titleNameGroup: 'inline-flex flex-nowrap items-baseline whitespace-nowrap',
   titleNameSpace: 'whitespace-pre',
   titleRotateBadge:
@@ -423,5 +409,5 @@ const styles = {
   dotLight: 'bg-black/26',
   dotDark: 'bg-white/55',
   heroVisualWrap:
-    'home-hero-visual-enter order-1 relative flex w-full items-center justify-center lg:order-2 lg:justify-end',
+    'home-hero-visual-enter order-1 relative flex min-w-0 w-full items-center justify-center lg:order-2 lg:justify-end',
 }
