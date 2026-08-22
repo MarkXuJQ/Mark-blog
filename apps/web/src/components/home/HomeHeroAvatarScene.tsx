@@ -97,11 +97,13 @@ function projectTilt(beta: number, gamma: number) {
 }
 
 function SceneTag({
+  label,
   value,
   className,
   isDarkMode,
   style,
 }: {
+  label: string
   value: string
   className: string
   isDarkMode: boolean
@@ -116,6 +118,7 @@ function SceneTag({
         isDarkMode ? styles.tagDark : styles.tagLight
       )}
     >
+      <span className={styles.tagLabel}>{label}</span>
       <span className={styles.tagValue}>{value}</span>
     </motion.div>
   )
@@ -478,13 +481,15 @@ export function HomeHeroAvatarScene({
             />
 
             <SceneTag
-              value={isZh ? '技术 / 设计 / 体验' : 'Code / Design / Motion'}
+              label={isZh ? '想要学习' : 'Want to learn'}
+              value={isZh ? '技术/设计/体验' : 'Code / Design / Motion'}
               className={styles.tagA}
               isDarkMode={isDarkMode}
               style={{ x: tagAX, y: tagAY }}
             />
             <SceneTag
-              value={isZh ? 'Blog / 生活 / 影视' : 'Blog / Life / Movies'}
+              label={isZh ? '这里有' : "You'll find"}
+              value={isZh ? 'Blog/生活/影视' : 'Blog / Life / Movies'}
               className={styles.tagB}
               isDarkMode={isDarkMode}
               style={{ x: tagAX, y: tagAY }}
@@ -565,7 +570,8 @@ export function HomeHeroAvatarScene({
               />
 
               <SceneTag
-                value={isZh ? '旅行 / 音乐 / 游戏' : 'Travel / Music / Games'}
+                label={isZh ? '喜欢' : 'I like'}
+                value={isZh ? '旅行/音乐/游戏' : 'Travel / Music / Games'}
                 className={styles.tagC}
                 isDarkMode={isDarkMode}
                 style={{ x: tagAX, y: tagAY }}
@@ -638,9 +644,11 @@ const styles = {
     'opacity-35 mix-blend-screen bg-[radial-gradient(circle_at_16%_22%,rgba(226,232,240,0.12)_0_0.8px,transparent_1px),radial-gradient(circle_at_76%_36%,rgba(186,230,253,0.1)_0_0.9px,transparent_1.2px),radial-gradient(circle_at_34%_76%,rgba(226,232,240,0.1)_0_0.7px,transparent_1px),radial-gradient(circle_at_62%_82%,rgba(186,230,253,0.08)_0_0.8px,transparent_1px)] bg-[length:18px_18px,24px_24px,22px_22px,28px_28px]',
   glare:
     'pointer-events-none absolute left-1/2 top-1/2 hidden h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/35 blur-3xl lg:block',
-  tag: 'absolute z-20 hidden max-w-[12rem] rounded-2xl px-4 py-3 text-left backdrop-blur-xl shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] lg:flex',
+  tag: 'absolute z-20 hidden max-w-[12rem] flex-col gap-1 rounded-2xl px-4 py-3 text-left backdrop-blur-xl shadow-[0_20px_60px_-40px_rgba(15,23,42,0.8)] lg:flex',
   tagLight: 'bg-white/72 text-black',
   tagDark: 'bg-slate-950/48 text-white',
+  tagLabel:
+    'text-[0.62rem] font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400',
   tagValue: 'text-sm font-medium leading-5 text-black dark:text-white',
   tagA: 'left-3 top-4 sm:left-5 sm:top-6',
   tagB: 'right-3 top-12 sm:right-6 sm:top-16',

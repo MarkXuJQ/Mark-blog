@@ -6,7 +6,7 @@ import { ChevronDown, Menu, X, Sun, Moon, Monitor } from 'lucide-react'
 import { FaPhotoFilm } from 'react-icons/fa6'
 import { HiMiniBeaker } from 'react-icons/hi2'
 import { IoGameController } from 'react-icons/io5'
-import { RiLinksLine, RiMovie2Line } from 'react-icons/ri'
+import { RiMovie2Line } from 'react-icons/ri'
 import { TbTimeline } from 'react-icons/tb'
 import type { IconType } from 'react-icons'
 import { cn } from '@/lib/classNames'
@@ -115,12 +115,10 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
   const mobilePrimaryItems = [
     { to: '/', label: t('nav.homepage') },
     { to: '/blog', label: t('nav.blog') },
+    { to: '/timeline', label: t('nav.timeline') },
     { to: '/about', label: t('nav.about') },
   ]
-  const mobileOtherItems: NavItem[] = [
-    ...otherItems,
-    { to: '/links', label: t('nav.links'), icon: RiLinksLine },
-  ]
+  const mobileOtherItems = otherItems.filter((item) => item.to !== '/timeline')
 
   return (
     <header className={styles.header}>
