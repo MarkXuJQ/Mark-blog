@@ -75,6 +75,28 @@
           ]
         },
         {
+          "id": "helloMarkxu",
+          "title": {
+            "zh": "Hello MarkXu",
+            "en": "Hello MarkXu"
+          },
+          "description": {
+            "zh": "写给偶然扫码来到这里的陌生人的见面页，收集个人网站与社交媒体入口。",
+            "en": "A small hello page for strangers who happen to scan the QR code, with links to my website and social profiles."
+          },
+          "alt": {
+            "zh": "Hello MarkXu 见面页",
+            "en": "Hello MarkXu landing page"
+          },
+          "links": [
+            {
+              "type": "computer",
+              "href": "https://hello.markxu.icu/",
+              "labelKey": "open"
+            }
+          ]
+        },
+        {
           "id": "travelTracker",
           "title": {
             "zh": "Travel Tracker",
