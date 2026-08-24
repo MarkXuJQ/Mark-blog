@@ -29,7 +29,7 @@ type RawProject = {
   title: ProjectLocale
   description: ProjectLocale
   alt: ProjectLocale
-  preview: {
+  preview?: {
     src: string
     avifSrc?: string
     objectFit?: 'cover' | 'contain'
@@ -62,6 +62,7 @@ type ProjectCardProps = {
   title: string
   description: string
   preview?: ProjectPreview
+  links: ProjectLink[]
 }
 
 type ProjectSectionProps = {
@@ -157,7 +158,7 @@ function FlipCornerButton({
   )
 }
 
-function ProjectCard({ title, description, preview }: ProjectCardProps) {
+function ProjectCard({ title, description, preview, links }: ProjectCardProps) {
   const [isPinned, setIsPinned] = useState(false)
   const isFlipped = isPinned
 
@@ -176,6 +177,26 @@ function ProjectCard({ title, description, preview }: ProjectCardProps) {
           <h2 className="p-4 pr-16 text-xl font-bold tracking-tight text-slate-900 sm:p-6 dark:text-slate-100">
             {title}
           </h2>
+          {!preview ? (
+            <div className="flex flex-wrap gap-2 px-4 pb-4 sm:px-6">
+              {links.map((link) => {
+                const LinkIcon = link.icon
+
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-slate-200/80 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:outline-none dark:border-white/10 dark:text-slate-300 dark:hover:border-white/20 dark:hover:text-white"
+                  >
+                    <LinkIcon className="h-4 w-4" aria-hidden="true" />
+                    {link.label}
+                  </a>
+                )
+              })}
+            </div>
+          ) : null}
           <FlipCornerButton
             isFlipped={isFlipped}
             isPinned={isPinned}
@@ -249,18 +270,25 @@ export function Projects() {
     id: section.id,
     title: section.title[locale],
     projects: section.projects.map((project) => ({
+      links: project.links.map((link) => ({
+        href: localPreview && link.localHref ? link.localHref : link.href,
+        label: t(`projects.${link.labelKey}`),
+        icon: PROJECT_LINK_ICONS[link.type],
+      })),
       id: project.id,
       title: project.title[locale],
       description: project.description[locale],
-      preview: {
-        ...project.preview,
-        alt: project.alt[locale],
-        links: project.links.map((link) => ({
-          href: localPreview && link.localHref ? link.localHref : link.href,
-          label: t(`projects.${link.labelKey}`),
-          icon: PROJECT_LINK_ICONS[link.type],
-        })),
-      },
+      preview: project.preview
+        ? {
+            ...project.preview,
+            alt: project.alt[locale],
+            links: project.links.map((link) => ({
+              href: localPreview && link.localHref ? link.localHref : link.href,
+              label: t(`projects.${link.labelKey}`),
+              icon: PROJECT_LINK_ICONS[link.type],
+            })),
+          }
+        : undefined,
     })),
   }))
 

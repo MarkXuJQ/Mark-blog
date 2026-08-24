@@ -14,7 +14,7 @@
             "en": "Finger Block"
           },
           "description": {
-            "zh": "一款使用摄像头识别手势进行互动的节奏游戏，也支持触屏操作。",
+            "zh": "一款使用摄像头识别手势进行互动的节奏游戏，也支持触屏操作。但最好还是用电脑玩，手机和平板的优化有点差。（My bad）",
             "en": "A camera-controlled rhythm game with gesture interaction and touch controls."
           },
           "alt": {
@@ -55,7 +55,7 @@
             "en": "Mark's blog"
           },
           "description": {
-            "zh": "这个网站本身：用来记录生活、分享想法，也收纳一些实验性的项目。",
+            "zh": "这个网站本身：用来记录生活、分享想法，也收纳一些实验性的项目。（你就在这里哦）",
             "en": "The website itself: a place to record life, share ideas, and collect small experiments."
           },
           "alt": {
@@ -70,6 +70,37 @@
             {
               "type": "github",
               "href": "https://github.com/MarkXuJQ/Mark-blog",
+              "labelKey": "source"
+            }
+          ]
+        },
+        {
+          "id": "helloMarkxu",
+          "title": {
+            "zh": "Hello MarkXu",
+            "en": "Hello MarkXu"
+          },
+          "description": {
+            "zh": "一个社会实验的小项目，一直想要尝试看看会有多少人会扫别人衣服上的二维码。写给偶然扫码来到这里的陌生人的见面页，看看事情会如何发展。",
+            "en": "A small hello page for strangers who happen to scan the QR code, with links to my website and social profiles."
+          },
+          "alt": {
+            "zh": "Hello MarkXu 见面页",
+            "en": "Hello MarkXu landing page"
+          },
+          "preview": {
+            "src": "/images/hello-markxu-preview.png",
+            "avifSrc": "/images/hello-markxu-preview.avif"
+          },
+          "links": [
+            {
+              "type": "computer",
+              "href": "https://hello.markxu.icu/",
+              "labelKey": "open"
+            },
+            {
+              "type": "github",
+              "href": "https://github.com/MarkXuJQ/hello-markxu",
               "labelKey": "source"
             }
           ]
@@ -121,7 +152,7 @@
             "en": "Year Progress"
           },
           "description": {
-            "zh": "一个 macOS 小组件，用简洁的圆环和进度条展示当年的时间进度。",
+            "zh": "一个 macOS 小组件，用简洁的圆环和进度条展示当年的时间进度。早期比着学的一个很简单的小工具，其实也没什么用，嘿嘿。",
             "en": "A macOS widget that shows the progress of the current year with a circular ring and progress bar."
           },
           "alt": {

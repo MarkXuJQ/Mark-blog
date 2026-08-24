@@ -481,15 +481,15 @@ export function HomeHeroAvatarScene({
             />
 
             <SceneTag
-              label={isZh ? '技术方向' : 'Focus'}
-              value={isZh ? '技术 / 设计 / 体验' : 'Code / Design / Motion'}
+              label={isZh ? '想要学习' : 'Want to learn'}
+              value={isZh ? '技术/设计/体验' : 'Code / Design / Motion'}
               className={styles.tagA}
               isDarkMode={isDarkMode}
               style={{ x: tagAX, y: tagAY }}
             />
             <SceneTag
-              label={isZh ? '内容模块' : 'Modules'}
-              value={isZh ? 'Blog / 生活 / 影视' : 'Blog / Life / Movies'}
+              label={isZh ? '这里有' : "You'll find"}
+              value={isZh ? 'Blog/生活/影视' : 'Blog / Life / Movies'}
               className={styles.tagB}
               isDarkMode={isDarkMode}
               style={{ x: tagAX, y: tagAY }}
@@ -570,8 +570,8 @@ export function HomeHeroAvatarScene({
               />
 
               <SceneTag
-                label={isZh ? '生活模块' : 'Modules'}
-                value={isZh ? '旅行 / 音乐 / 游戏' : 'Travel / Music / Games'}
+                label={isZh ? '喜欢' : 'I like'}
+                value={isZh ? '旅行/音乐/游戏' : 'Travel / Music / Games'}
                 className={styles.tagC}
                 isDarkMode={isDarkMode}
                 style={{ x: tagAX, y: tagAY }}

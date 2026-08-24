@@ -227,6 +227,10 @@ export function BlogPost() {
     { name: post.title, url: postUrl },
   ])
   const metaItemClass = 'inline-flex items-center gap-1.5 leading-none'
+  const hasDistinctUpdatedDate = Boolean(
+    post.updated && post.updated !== post.date
+  )
+  const updatedTimeMetaClass = cn(metaItemClass, 'hidden sm:inline-flex')
   const readingTimeMetaClass = cn(metaItemClass, 'hidden sm:inline-flex')
 
   if (simpleMode) {
@@ -260,8 +264,8 @@ export function BlogPost() {
               <span>{post.date}</span>
             </time>
 
-            {post.updated && post.updated !== post.date ? (
-              <time dateTime={post.updated} className={metaItemClass}>
+            {hasDistinctUpdatedDate ? (
+              <time dateTime={post.updated} className={updatedTimeMetaClass}>
                 <LuHammer className="h-4 w-4" aria-hidden="true" />
                 <span>{post.updated}</span>
               </time>
@@ -331,7 +335,7 @@ export function BlogPost() {
                 />
               </div>
 
-              <div className="absolute top-5 right-5 left-5 z-10 flex items-center justify-between gap-4 sm:top-8 sm:right-8 sm:left-8">
+              <div className="absolute top-5 right-5 left-5 z-10 flex flex-col items-start gap-3 sm:top-8 sm:right-8 sm:left-8 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                 <Link
                   to="/blog"
                   className="inline-flex w-fit shrink-0 items-center rounded-full border border-white/18 bg-black/18 px-3 py-1.5 text-sm font-medium text-white/95 shadow-sm backdrop-blur transition-colors hover:bg-black/28"
@@ -340,11 +344,11 @@ export function BlogPost() {
                 </Link>
 
                 {post.tags && post.tags.length > 0 ? (
-                  <div className="flex max-w-[48%] shrink-0 flex-wrap justify-end gap-2">
+                  <div className="flex w-full max-w-full min-w-0 flex-wrap justify-start gap-2 sm:w-auto sm:max-w-[48%] sm:shrink-0 sm:justify-end">
                     {post.tags?.map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-full border border-white/18 bg-white/12 px-3 py-1 text-xs font-medium text-white/90 backdrop-blur"
+                        className="max-w-full rounded-full border border-white/18 bg-white/12 px-3 py-1 text-xs font-medium break-words text-white/90 backdrop-blur"
                       >
                         {`#${tag}`}
                       </span>
@@ -353,7 +357,7 @@ export function BlogPost() {
                 ) : null}
               </div>
 
-              <div className="relative flex min-h-[22rem] flex-col justify-end px-5 py-5 pt-24 sm:min-h-[26rem] sm:px-8 sm:py-8 sm:pt-28">
+              <div className="relative flex min-h-[22rem] flex-col justify-end px-5 py-5 pt-32 sm:min-h-[26rem] sm:px-8 sm:py-8 sm:pt-28">
                 <div className="max-w-3xl translate-y-2 sm:translate-y-3">
                   <h1
                     className="max-w-3xl text-3xl font-medium tracking-tight text-white drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)] sm:text-4xl md:text-5xl"
@@ -374,8 +378,11 @@ export function BlogPost() {
                       <span>{post.date}</span>
                     </time>
 
-                    {post.updated && post.updated !== post.date ? (
-                      <time dateTime={post.updated} className={metaItemClass}>
+                    {hasDistinctUpdatedDate ? (
+                      <time
+                        dateTime={post.updated}
+                        className={updatedTimeMetaClass}
+                      >
                         <LuHammer className="h-4 w-4" aria-hidden="true" />
                         <span>{post.updated}</span>
                       </time>
@@ -455,8 +462,11 @@ export function BlogPost() {
                     <span>{post.date}</span>
                   </time>
 
-                  {post.updated && post.updated !== post.date ? (
-                    <time dateTime={post.updated} className={metaItemClass}>
+                  {hasDistinctUpdatedDate ? (
+                    <time
+                      dateTime={post.updated}
+                      className={updatedTimeMetaClass}
+                    >
                       <LuHammer className="h-4 w-4" aria-hidden="true" />
                       <span>{post.updated}</span>
                     </time>
@@ -581,7 +591,7 @@ const styles = {
   notFoundTitle: 'mb-4 text-2xl font-bold text-slate-900 dark:text-slate-100',
   notFoundLink: 'text-blue-600 hover:underline dark:text-blue-400',
   backLink: cn(
-    'inline-flex h-5 items-center text-sm font-medium leading-none transition-colors',
+    'inline-flex h-5 shrink-0 items-center text-sm font-medium leading-none transition-colors',
     'text-slate-500 hover:text-slate-800',
     'dark:text-slate-400 dark:hover:text-slate-200'
   ),
@@ -593,13 +603,14 @@ const styles = {
   ),
   plainPostHeader:
     'not-prose mb-10 border-b border-slate-200/70 pb-8 dark:border-slate-800/80',
-  plainPostTopRow: 'mb-8 flex items-start justify-between gap-4 sm:mb-9',
+  plainPostTopRow:
+    'mb-8 flex min-w-0 flex-col items-start gap-3 sm:mb-9 sm:flex-row sm:items-start sm:justify-between sm:gap-4',
   plainPostMeta:
     'mt-4 mb-4 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500 dark:text-slate-400',
   plainPostTags:
-    'flex flex-wrap items-center gap-x-3 gap-y-1 sm:max-w-[42%] sm:shrink-0 sm:justify-end',
+    'flex w-full min-w-0 max-w-full flex-wrap items-center gap-x-3 gap-y-1 sm:w-auto sm:max-w-[42%] sm:shrink-0 sm:justify-end',
   plainPostTag:
-    'inline-flex h-5 items-center text-sm font-medium leading-none text-slate-500 transition-colors dark:text-slate-400',
+    'inline-flex min-h-5 max-w-full items-center text-sm font-medium leading-none whitespace-normal break-words text-slate-500 transition-colors dark:text-slate-400',
   plainPostTitle:
     'm-0 max-w-3xl text-3xl font-medium tracking-tight text-[var(--article-heading)] md:text-4xl',
   simpleReadingArticle: cn(

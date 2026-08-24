@@ -8,6 +8,7 @@ import {
   RiZhihuFill,
 } from 'react-icons/ri'
 import { RiRssLine } from 'react-icons/ri'
+import { SiXiaohongshu } from 'react-icons/si'
 
 const TRAVELLINGS_URL = 'https://www.travellings.cn/go.html'
 
@@ -89,6 +90,20 @@ export function Footer({
             aria-label="Zhihu"
           >
             <RiZhihuFill size={20} />
+          </a>
+          <a
+            href="https://www.xiaohongshu.com/user/profile/62f4f889000000001e01e89e"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              'transition-colors',
+              isHomeVariant
+                ? 'hover:text-white'
+                : 'hover:text-[var(--text-primary)]'
+            )}
+            aria-label="小红书"
+          >
+            <SiXiaohongshu size={20} />
           </a>
           <a
             href={TRAVELLINGS_URL}
