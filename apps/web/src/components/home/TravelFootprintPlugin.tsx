@@ -12,7 +12,6 @@ import {
 import { ExternalLink, MousePointer2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/classNames'
-import { useDeferredRender } from '@/hooks/useDeferredRender'
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
 import markTravelRecord from '@content/travel/records/mark.json'
 import worldFootprintBaseSvg from '../../assets/travel/world-footprint-base.svg'
@@ -409,9 +408,6 @@ function TravelFootprintMapPanel({
   style?: MotionStyle
 }) {
   const [isMapInteractive, setIsMapInteractive] = useState(false)
-  const { targetRef, shouldRender } = useDeferredRender<HTMLDivElement>({
-    rootMargin: '320px 0px',
-  })
 
   return (
     <motion.section
@@ -419,7 +415,6 @@ function TravelFootprintMapPanel({
       style={style}
     >
       <div
-        ref={targetRef}
         className={cn(
           styles.embedViewport,
           isMapInteractive && styles.embedViewportInteractive
@@ -448,34 +443,21 @@ function TravelFootprintMapPanel({
             <span>{isZh ? '进行交互' : 'Interact'}</span>
           </button>
         </div>
-        {shouldRender ? (
-          <>
-            <iframe
-              title={isZh ? '旅行地图交互窗口' : 'Interactive travel map'}
-              src={EMBED_MAP_URL}
-              loading="lazy"
-              referrerPolicy="strict-origin-when-cross-origin"
-              className={cn(
-                styles.embedFrame,
-                !isMapInteractive && styles.embedFrameLocked
-              )}
-            />
-            {!isMapInteractive ? (
-              <div aria-hidden="true" className={styles.embedInteractionVeil} />
-            ) : null}
-          </>
-        ) : (
-          <div
-            aria-hidden="true"
-            className={cn(styles.embedFrame, styles.embedPlaceholder)}
-          >
-            <div className={styles.embedPlaceholderGlow} />
-            <div className={styles.embedPlaceholderGrid} />
-            <span className={styles.embedPlaceholderLabel}>
-              {isZh ? '接近视口时再加载地图' : 'Loads as you get closer'}
-            </span>
-          </div>
-        )}
+        <>
+          <iframe
+            title={isZh ? '旅行地图交互窗口' : 'Interactive travel map'}
+            src={EMBED_MAP_URL}
+            loading="eager"
+            referrerPolicy="strict-origin-when-cross-origin"
+            className={cn(
+              styles.embedFrame,
+              !isMapInteractive && styles.embedFrameLocked
+            )}
+          />
+          {!isMapInteractive ? (
+            <div aria-hidden="true" className={styles.embedInteractionVeil} />
+          ) : null}
+        </>
       </div>
     </motion.section>
   )
@@ -570,12 +552,4 @@ const styles = {
   embedFrameLocked: 'pointer-events-none saturate-[0.92]',
   embedInteractionVeil:
     'absolute inset-2 rounded-[20px] bg-[radial-gradient(circle_at_50%_42%,rgba(255,255,255,0.035)_0%,rgba(255,255,255,0)_48%)]',
-  embedPlaceholder:
-    'flex items-center justify-center overflow-hidden bg-[linear-gradient(180deg,#0f171d_0%,#101921_52%,#0d141a_100%)] text-center',
-  embedPlaceholderGlow:
-    'pointer-events-none absolute inset-[14%] rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.16)_0%,rgba(34,211,238,0.06)_34%,rgba(34,211,238,0)_72%)] blur-3xl',
-  embedPlaceholderGrid:
-    'pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04)_0px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_0px,transparent_1px)] [background-size:20px_20px] opacity-40',
-  embedPlaceholderLabel:
-    'relative z-10 max-w-[18ch] px-6 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-cyan-100/62',
 }

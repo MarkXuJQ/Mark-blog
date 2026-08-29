@@ -1,5 +1,20 @@
 [
   {
+    "id": "websurf-tools-recommendation-cn",
+    "slug": "websurf-tools-recommendation-cn",
+    "language": "zh",
+    "title": "前端特效组件分享",
+    "date": "2026-08-29",
+    "summary": "分享下最近我在网上看到的很炫酷的前端组件，现在有了ai的加持，这些特效用起来都很方便了，大家可以多去尝试！",
+    "wordCount": 43,
+    "tags": [
+      "Tools",
+      "Websites",
+      "Sources"
+    ],
+    "category": "Share"
+  },
+  {
     "id": "queue-implementation-decision-tree-cn",
     "slug": "queue-implementation-decision-tree-cn",
     "language": "zh",

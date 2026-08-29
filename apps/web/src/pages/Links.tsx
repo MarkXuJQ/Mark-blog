@@ -23,7 +23,7 @@ export function Links() {
       name: t('siteTitle'),
       url: siteUrl,
       avatar: toAbsoluteUrl('/images/IMG_1766.JPG', siteUrl),
-      description: '慢慢更新，慢慢打磨，认真分享，认真生活！',
+      description: '来给生活加点料！',
     }
   }, [t])
 
