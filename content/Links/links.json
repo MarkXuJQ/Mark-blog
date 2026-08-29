@@ -109,6 +109,30 @@
       "url": "https://lunarithm.space/",
       "avatar": "https://lunarithm.space/favicon-32x32.png",
       "description": "冰轮舞韵，代码凝魂。"
+    },
+    {
+      "name": "雾语",
+      "url": "https://foglog.cn/",
+      "avatar": "https://db.picspot.cn/foglog/favicon.ico",
+      "description": "迷雾轻语，雅意深藏"
+    },
+    {
+      "name": "时隐重工",
+      "url": "https://shiyin.cafe/",
+      "avatar": "https://shiyin.cafe/upload/Y10.svg",
+      "description": "兴趣使然的未来主义建造者"
+    },
+    {
+      "name": "Mayx的博客",
+      "url": "https://mayx.eu.org/",
+      "avatar": "https://mayx.eu.org/favicon.ico",
+      "description": "Mayx 的个人博客，记录文章与思考。"
+    },
+    {
+      "name": "Oil® — 欧呦",
+      "url": "https://www.oiloil.org/",
+      "avatar": "https://www.oiloil.org/icon.png",
+      "description": "Oil 的个人作品、AI 工具实操、产品开发与开源项目记录。"
     }
   ]
 }
