@@ -24,6 +24,7 @@ import { Seo } from '@/app/seo/Seo'
 import { Pagination } from '@/components/ui/Pagination'
 import { SelectMenu } from '@/components/ui/SelectMenu'
 import { cn } from '@/lib/classNames'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 
 type LoadStatus = 'loading' | 'ready' | 'error'
 type GameSort = 'playtime' | 'recent' | 'achievements'
@@ -89,7 +90,7 @@ class SteamDashboardError extends Error {
   }
 }
 
-const ITEMS_PER_PAGE = 18
+const GAME_LIBRARY_ROWS_PER_PAGE = 3
 const FEATURED_RAIL_DEFAULT_SPEED_PERCENT = 50
 const FEATURED_RAIL_FIXED_SPEED_PERCENT = 20
 const FEATURED_RAIL_BASE_DURATION_SECONDS = 42
@@ -790,6 +791,20 @@ export function Games() {
   const [sort, setSort] = useState<GameSort>('playtime')
   const [currentPage, setCurrentPage] = useState(1)
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const isSmallScreen = useMediaQuery('(min-width: 640px)')
+  const isMediumScreen = useMediaQuery('(min-width: 768px)')
+  const isLargeScreen = useMediaQuery('(min-width: 1024px)')
+  const isExtraLargeScreen = useMediaQuery('(min-width: 1280px)')
+  const columns = isExtraLargeScreen
+    ? 6
+    : isLargeScreen
+      ? 5
+      : isMediumScreen
+        ? 4
+        : isSmallScreen
+          ? 3
+          : 2
+  const itemsPerPage = columns * GAME_LIBRARY_ROWS_PER_PAGE
 
   useEffect(() => {
     if (window.__PRERENDER__) return
@@ -880,10 +895,7 @@ export function Games() {
     () => dashboard?.featured ?? [],
     [dashboard?.featured]
   )
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredGames.length / ITEMS_PER_PAGE)
-  )
+  const totalPages = Math.max(1, Math.ceil(filteredGames.length / itemsPerPage))
   const hasSearch = search.trim().length > 0
   const isMobileSearchVisible = isMobileSearchOpen || hasSearch
   const searchInputId = 'games-library-search'
@@ -907,8 +919,8 @@ export function Games() {
   }, [isMobileSearchOpen])
 
   const visibleGames = filteredGames.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   )
   const generatedAt = dashboard
     ? formatDateTime(dashboard.generatedAt, locale)
