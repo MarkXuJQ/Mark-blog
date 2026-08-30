@@ -159,6 +159,16 @@ ${posts
 ${reviewPages
   .map(
     (review) => `  <url>
+    <loc>${DOMAIN}/blog/${encodeURIComponent(review.slug)}</loc>
+    ${review.updated ? `<lastmod>${review.updated.split('T')[0]}</lastmod>` : ''}
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>`
+  )
+  .join('\n')}
+${reviewPages
+  .map(
+    (review) => `  <url>
     <loc>${DOMAIN}/movies/reviews/${encodeURIComponent(review.slug)}</loc>
     ${review.updated ? `<lastmod>${review.updated.split('T')[0]}</lastmod>` : ''}
     <changefreq>monthly</changefreq>

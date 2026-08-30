@@ -7,7 +7,7 @@ import { LeftSidebarWidget } from '@/components/blog/BlogWidgets'
 import { ReaderModeToggle } from '@/components/blog/ReaderModeToggle'
 import { useArticleToc } from '@/hooks/useArticleToc'
 import { getAllPostSummaries } from '@/lib/content/postSummaries'
-import { getPostBySlug } from '@/lib/content/posts'
+import { getPostBySlug, getPostLanguageBySlug } from '@/lib/content/posts'
 import { cn } from '@/lib/classNames'
 
 export type BlogPostOutletContext = {
@@ -36,7 +36,10 @@ export function BlogPostLayout() {
       refreshKey: simpleMode,
     }
   )
-  const postLanguage = resolvePostLanguage(slug, i18n.language)
+  const postLanguage = slug
+    ? (getPostLanguageBySlug(slug, i18n.language) ??
+      resolvePostLanguage(slug, i18n.language))
+    : resolvePostLanguage(slug, i18n.language)
   const posts = getAllPostSummaries(postLanguage)
   const currentPost = slug
     ? (getPostBySlug(slug, postLanguage, { fallback: false }) ?? null)

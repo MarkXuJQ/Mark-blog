@@ -3,14 +3,22 @@ import path from 'node:path'
 import process from 'node:process'
 import matter from 'gray-matter'
 import { fileURLToPath } from 'node:url'
-import { countWords } from '../src/lib/content/readingTime.js'
-import { collectPostMarkdownFiles } from './post-files.js'
+import {
+  countWords,
+  normalizeCountableText,
+} from '../src/lib/content/readingTime.js'
+import { collectMarkdownFiles, collectPostMarkdownFiles } from './post-files.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
+const MOVIE_REVIEWS_DIR = path.resolve(
+  __dirname,
+  '../../../content/movies/reviews'
+)
 const OUTPUT_FILE = path.resolve(__dirname, '../src/data/post-summaries.json')
+const MOVIE_REVIEW_SUMMARY_MAX_LENGTH = 140
 
 function resolveLanguageFromPath(filePath) {
   const normalized = filePath.replaceAll('\\', '/')
@@ -36,6 +44,24 @@ function normalizeOptionalStringArray(value) {
 function resolvePostSlug(filePath, data) {
   const fileSlug = path.basename(filePath, '.md')
   return normalizeOptionalString(data.slug) || fileSlug
+}
+
+function buildSummary(content) {
+  const normalized =
+    content
+      .split(/\n\s*\n/)
+      .map((paragraph) => normalizeCountableText(paragraph))
+      .find(
+        (paragraph) =>
+          paragraph.length > 0 &&
+          !/^(?:版权归作者所有|作者[:：]|来源[:：]|https?:\/\/)/i.test(
+            paragraph
+          )
+      ) || normalizeCountableText(content)
+
+  return normalized.length <= MOVIE_REVIEW_SUMMARY_MAX_LENGTH
+    ? normalized
+    : `${normalized.slice(0, MOVIE_REVIEW_SUMMARY_MAX_LENGTH).trimEnd()}…`
 }
 
 function buildPostSummaries() {
@@ -64,6 +90,40 @@ function buildPostSummaries() {
     }
   })
 
+  const reviewSummaries = fs.existsSync(MOVIE_REVIEWS_DIR)
+    ? collectMarkdownFiles(MOVIE_REVIEWS_DIR)
+        .map((filePath) => {
+          const rawContent = fs.readFileSync(filePath, 'utf-8')
+          const { data, content } = matter(rawContent)
+          const slug = path.basename(filePath, '.md')
+
+          if (
+            slug.toLowerCase() === 'readme' ||
+            slug.startsWith('_') ||
+            !data.title ||
+            !data.date ||
+            !data.movieSubjectId
+          ) {
+            return null
+          }
+
+          return {
+            id: slug,
+            slug,
+            language: 'zh',
+            title: String(data.title),
+            date: String(data.date),
+            summary:
+              normalizeOptionalString(data.summary) || buildSummary(content),
+            wordCount: countWords(content),
+            tags: normalizeOptionalStringArray(data.tags),
+            category: 'Experience',
+          }
+        })
+        .filter(Boolean)
+    : []
+
+  summaries.push(...reviewSummaries)
   summaries.sort((left, right) => {
     return new Date(right.date).getTime() - new Date(left.date).getTime()
   })

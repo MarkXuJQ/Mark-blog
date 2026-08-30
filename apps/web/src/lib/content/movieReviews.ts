@@ -1,4 +1,6 @@
 import type { MarkdownPost } from './markdown'
+import { countWords, normalizeCountableText } from './readingTime'
+import type { BlogPost } from './posts'
 
 export interface MovieReview {
   slug: string
@@ -26,6 +28,28 @@ const markdownFiles = import.meta.glob<MarkdownMovieReview>(
 )
 
 let cachedReviews: MovieReview[] | null = null
+let cachedBlogPosts: BlogPost[] | null = null
+
+const MOVIE_REVIEW_BLOG_CATEGORY = 'Experience'
+const REVIEW_SUMMARY_MAX_LENGTH = 140
+
+function buildReviewSummary(content: string): string {
+  const paragraphs = content.match(/<p\b[^>]*>[\s\S]*?<\/p>/gi) ?? [content]
+  const normalized =
+    paragraphs
+      .map((paragraph) => normalizeCountableText(paragraph))
+      .find(
+        (paragraph) =>
+          paragraph.length > 0 &&
+          !/^(?:版权归作者所有|作者[:：]|来源[:：]|https?:\/\/)/i.test(
+            paragraph
+          )
+      ) ?? normalizeCountableText(content)
+
+  if (normalized.length <= REVIEW_SUMMARY_MAX_LENGTH) return normalized
+
+  return `${normalized.slice(0, REVIEW_SUMMARY_MAX_LENGTH).trimEnd()}…`
+}
 
 function toReview(
   path: string,
@@ -48,7 +72,7 @@ function toReview(
     slug,
     title,
     date,
-    summary,
+    summary: summary || buildReviewSummary(html),
     movieSubjectId,
     movieTitle: String(attributes.movieTitle || '').trim() || undefined,
     rating:
@@ -85,4 +109,26 @@ export function getMovieReviewBySubjectId(
   return getAllMovieReviews().find(
     (review) => review.movieSubjectId === subjectId
   )
+}
+
+function toMovieReviewBlogPost(review: MovieReview): BlogPost {
+  return {
+    id: review.slug,
+    title: review.title,
+    slug: review.slug,
+    sourceSlug: review.slug,
+    date: review.date,
+    summary: review.summary,
+    wordCount: countWords(review.content),
+    tags: review.tags,
+    category: MOVIE_REVIEW_BLOG_CATEGORY,
+    content: review.content,
+  }
+}
+
+export function getAllMovieReviewBlogPosts(): BlogPost[] {
+  if (cachedBlogPosts) return cachedBlogPosts
+
+  cachedBlogPosts = getAllMovieReviews().map(toMovieReviewBlogPost)
+  return cachedBlogPosts
 }

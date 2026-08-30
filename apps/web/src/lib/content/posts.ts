@@ -1,4 +1,5 @@
 import type { MarkdownPost } from './markdown'
+import { getAllMovieReviewBlogPosts } from './movieReviews'
 import { getAllPostSummaries } from './postSummaries'
 
 export interface BlogPostSummary {
@@ -108,7 +109,12 @@ export function getAllPosts(language?: string): BlogPost[] {
     .filter(([path]) => resolveFolderFromPath(path) === folder)
     .map(([path, module]) => parsePost(path, module))
     .filter((post): post is BlogPost => Boolean(post))
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+  if (normalizedLanguage === 'zh') {
+    posts.push(...getAllMovieReviewBlogPosts())
+  }
+
+  posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   cachedPosts[normalizedLanguage] = posts
   return posts
@@ -120,14 +126,19 @@ function getAllPostMatchesAcrossLanguages(): Array<{
 }> {
   if (cachedAllPostMatches) return cachedAllPostMatches
 
-  cachedAllPostMatches = Object.entries(markdownFiles)
-    .map(([path, module]) => {
+  cachedAllPostMatches = [
+    ...Object.entries(markdownFiles).map(([path, module]) => {
       const post = parsePost(path, module)
       if (!post) return null
       const folder = resolveFolderFromPath(path)
       if (!folder) return null
       return { post, language: FOLDER_TO_LANGUAGE[folder] }
-    })
+    }),
+    ...getAllMovieReviewBlogPosts().map((post) => ({
+      post,
+      language: 'zh' as const,
+    })),
+  ]
     .filter((item): item is { post: BlogPost; language: PostLanguage } =>
       Boolean(item)
     )
