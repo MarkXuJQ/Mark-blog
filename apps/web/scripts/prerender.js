@@ -127,6 +127,7 @@ function getRoutes() {
     files.forEach((filePath) => {
       const slug = path.basename(filePath, '.md')
       if (slug.toLowerCase() === 'readme' || slug.startsWith('_')) return
+      routes.push(`/blog/${slug}`)
       routes.push(`/movies/reviews/${slug}`)
     })
   }

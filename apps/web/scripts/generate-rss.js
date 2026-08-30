@@ -4,7 +4,8 @@ import process from 'node:process'
 import matter from 'gray-matter'
 import { fileURLToPath } from 'node:url'
 import { Feed } from 'feed'
-import { collectPostMarkdownFiles } from './post-files.js'
+import { normalizeCountableText } from '../src/lib/content/readingTime.js'
+import { collectMarkdownFiles, collectPostMarkdownFiles } from './post-files.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -18,6 +19,10 @@ console.log(
 )
 
 const POSTS_DIR = path.resolve(__dirname, '../../../content/posts')
+const MOVIE_REVIEWS_DIR = path.resolve(
+  __dirname,
+  '../../../content/movies/reviews'
+)
 const PUBLIC_DIR = path.resolve(__dirname, '../public')
 const DIST_DIR = path.resolve(__dirname, '../dist')
 const FEEDS_DIR = path.join(PUBLIC_DIR, 'feeds')
@@ -26,6 +31,7 @@ const FEEDS_EN_DIR = path.join(FEEDS_DIR, 'en')
 const DIST_FEEDS_DIR = path.join(DIST_DIR, 'feeds')
 const DIST_FEEDS_ZH_DIR = path.join(DIST_FEEDS_DIR, 'zh')
 const DIST_FEEDS_EN_DIR = path.join(DIST_FEEDS_DIR, 'en')
+const MOVIE_REVIEW_SUMMARY_MAX_LENGTH = 140
 
 console.log(`Scanning posts in: ${POSTS_DIR}`)
 
@@ -49,7 +55,25 @@ const resolvePostSlug = (filePath, data) => {
     : path.basename(filePath, '.md')
 }
 
-const allPosts = files.map((filePath) => {
+const buildReviewSummary = (content) => {
+  const normalized =
+    content
+      .split(/\n\s*\n/)
+      .map((paragraph) => normalizeCountableText(paragraph))
+      .find(
+        (paragraph) =>
+          paragraph.length > 0 &&
+          !/^(?:版权归作者所有|作者[:：]|来源[:：]|https?:\/\/)/i.test(
+            paragraph
+          )
+      ) || normalizeCountableText(content)
+
+  return normalized.length <= MOVIE_REVIEW_SUMMARY_MAX_LENGTH
+    ? normalized
+    : `${normalized.slice(0, MOVIE_REVIEW_SUMMARY_MAX_LENGTH).trimEnd()}…`
+}
+
+const regularPosts = files.map((filePath) => {
   const content = fs.readFileSync(filePath, 'utf-8')
   const { data, content: markdownContent } = matter(content)
   const slug = resolvePostSlug(filePath, data)
@@ -94,6 +118,58 @@ const allPosts = files.map((filePath) => {
       : undefined,
   }
 })
+
+const reviewFiles = fs.existsSync(MOVIE_REVIEWS_DIR)
+  ? collectMarkdownFiles(MOVIE_REVIEWS_DIR)
+  : []
+
+const reviewPosts = reviewFiles
+  .map((filePath) => {
+    const slug = path.basename(filePath, '.md')
+    if (slug.toLowerCase() === 'readme' || slug.startsWith('_')) return null
+
+    const rawContent = fs.readFileSync(filePath, 'utf-8')
+    const { data, content: markdownContent } = matter(rawContent)
+    if (!data.title || !data.date || !data.movieSubjectId) return null
+
+    const summary =
+      typeof data.summary === 'string' && data.summary.trim()
+        ? data.summary.trim()
+        : buildReviewSummary(markdownContent)
+
+    let coverImage = data.image || undefined
+    if (coverImage && !coverImage.startsWith('http')) {
+      coverImage = `${DOMAIN}${coverImage}`
+    }
+    if (!coverImage) {
+      const imageMatch = markdownContent.match(/!\[.*?\]\(([^)\s]+)/)
+      if (imageMatch && imageMatch[1]) {
+        coverImage = imageMatch[1].startsWith('http')
+          ? imageMatch[1]
+          : `${DOMAIN}${imageMatch[1]}`
+      }
+    }
+
+    const postUrl = `${DOMAIN}/blog/${encodeURIComponent(slug)}`
+    return {
+      slug,
+      language: 'zh',
+      date: data.date ? new Date(data.date) : new Date(),
+      updated: data.updated ? new Date(data.updated) : null,
+      title: data.title || slug,
+      description: summary,
+      content: `<p>${summary}</p><a class="view-full" href="${postUrl}" target="_blank">点击查看全文</a>`,
+      image: coverImage
+        ? {
+            url: coverImage,
+            type: coverImage.endsWith('.png') ? 'image/png' : 'image/jpeg',
+          }
+        : undefined,
+    }
+  })
+  .filter(Boolean)
+
+const allPosts = [...regularPosts, ...reviewPosts]
 
 const dedupeBySlug = (inputPosts) => {
   const postsBySlug = new Map()

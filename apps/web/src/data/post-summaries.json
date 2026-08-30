@@ -1,12 +1,12 @@
 [
   {
-    "id": "websurf-tools-recommendation-cn",
-    "slug": "websurf-tools-recommendation-cn",
+    "id": "frontend-effects-resources-cn",
+    "slug": "frontend-effects-resources-cn",
     "language": "zh",
-    "title": "前端特效组件分享",
+    "title": "现在做网页特效有多简单？一些前端组件与动画资源分享",
     "date": "2026-08-29",
     "summary": "分享下最近我在网上看到的很炫酷的前端组件，现在有了ai的加持，这些特效用起来都很方便了，大家可以多去尝试！",
-    "wordCount": 43,
+    "wordCount": 1525,
     "tags": [
       "Tools",
       "Websites",
@@ -15,13 +15,27 @@
     "category": "Share"
   },
   {
+    "id": "龙餐厅",
+    "slug": "龙餐厅",
+    "language": "zh",
+    "title": "欢迎来龙餐馆",
+    "date": "2026-08-13",
+    "summary": "只是看到有人说不错就来看了，完全没有任何期待，主演是谁也不知道，以为欢迎来到龙餐厅是成龙演的喜剧呢。但是电影开头看到沈腾老师也很惊喜。",
+    "wordCount": 993,
+    "tags": [
+      "Movies",
+      "Review"
+    ],
+    "category": "Experience"
+  },
+  {
     "id": "queue-implementation-decision-tree-cn",
     "slug": "queue-implementation-decision-tree-cn",
     "language": "zh",
     "title": "队列的实现方式——从约束条件到决策树",
     "date": "2026-07-30",
     "summary": "回顾数据结构，发现队列的实现方式总是做错，于是想了个办法，利用决策树把考虑因素列出来，方便自己全面的了解和后续的复习。",
-    "wordCount": 504,
+    "wordCount": 513,
     "tags": [
       "Data Structure",
       "Computer Science",
@@ -442,6 +456,62 @@
     "category": "essay"
   },
   {
+    "id": "ProjectHailMary",
+    "slug": "ProjectHailMary",
+    "language": "zh",
+    "title": "挽救计划",
+    "date": "2026-03-21",
+    "summary": "看完爽到的电影，在我心里的科幻可以排前三的水平，让我想起一开始喜欢电影的感觉，一种处在梦中和幻想的感觉，感谢这些造梦人，也很喜欢高司令的演出😋",
+    "wordCount": 65,
+    "tags": [
+      "Movies",
+      "Review"
+    ],
+    "category": "Experience"
+  },
+  {
+    "id": "Nixinrensheng",
+    "slug": "Nixinrensheng",
+    "language": "zh",
+    "title": "逆行人生",
+    "date": "2026-03-18",
+    "summary": "片子前一段值4颗星，结尾扣一个，立意再加一个，社会是需要这种作品来反映社会现实和问题的，但是结尾却为了避免舆论，强行写了个这种结局，不是说不能有好结局，这是这样结尾有些草草了事，虎头蛇尾。",
+    "wordCount": 84,
+    "tags": [
+      "Movies",
+      "Review"
+    ],
+    "category": "Experience"
+  },
+  {
+    "id": "Her",
+    "slug": "Her",
+    "language": "zh",
+    "title": "她",
+    "date": "2025-12-05",
+    "summary": "看的有点沉不住气，剧情总体不多，发展的有点点慢，但同时也给观众很多的时间去沉浸在电影要表达的情感里。",
+    "wordCount": 672,
+    "tags": [
+      "Movies",
+      "Review"
+    ],
+    "category": "Experience"
+  },
+  {
+    "id": "EVA",
+    "slug": "EVA",
+    "language": "zh",
+    "title": "天鹰战士：最后的冲击",
+    "date": "2025-11-02",
+    "summary": "俄狄浦斯和耶稣救世的结合，但同时故事一直以淀真嗣的视角展开，也很好的体现了个人情感以及成长的意义，前面有很长的铺垫，使得故事虽然很经典，但不落于俗套，在大一只看过TV的前几集就没兴趣继续看下去了，这次大四重新看，自己的阅历长了不少，更能理解并一定程度上感受到作者表达的意图，后面想…",
+    "wordCount": 138,
+    "tags": [
+      "Movies",
+      "Review"
+    ],
+    "category": "Experience"
+  },
+  {
     "id": "guangzhou-trip-notes-cn",
     "slug": "guangzhou-trip-notes-cn",
     "language": "zh",
@@ -534,6 +604,20 @@
     "tags": [
       "Life",
       "Travel"
+    ],
+    "category": "Experience"
+  },
+  {
+    "id": "太阳照常升起",
+    "slug": "太阳照常升起",
+    "language": "zh",
+    "title": "太阳照常升起",
+    "date": "2022-09-24",
+    "summary": "今天把暑假里看到一半的《太阳照常升起》看完了，有些恍惚，好久没有这种心里空落落，又有点受惊的感觉了，电影没有看懂，但一句弹幕又似乎让我明白了，“没有看明白，但感受到了”, 或许我确确实实的感受到了。感觉这部全是隐喻的电影可以给人很多思考，思考没有限制，便有了离奇的脑洞，有的无趣，…",
+    "wordCount": 322,
+    "tags": [
+      "Movies",
+      "Review"
     ],
     "category": "Experience"
   }

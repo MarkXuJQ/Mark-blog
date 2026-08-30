@@ -94,6 +94,11 @@
       "permanent": true
     },
     {
+      "source": "/blog/19.前端特效组件分享",
+      "destination": "/blog/frontend-effects-resources-cn",
+      "permanent": true
+    },
+    {
       "source": "/blog/2.guangzhou-travel-notes",
       "destination": "/blog/guangzhou-trip-notes-en",
       "permanent": true
@@ -171,6 +176,11 @@
     {
       "source": "/blog/chaoshan-travel-notes",
       "destination": "/blog/chaoshan-trip-notes-en",
+      "permanent": true
+    },
+    {
+      "source": "/blog/frontend-effects-resources",
+      "destination": "/blog/frontend-effects-resources-cn",
       "permanent": true
     },
     {
