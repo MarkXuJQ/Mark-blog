@@ -1,12 +1,10 @@
 import { lazy, useRef, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Footer } from '@/components/layout/Footer'
-import {
-  HomeRadarPlaceholder,
-  HomeWidgetStackPlaceholder,
-} from '@/components/home/HomeDeferredPlaceholders'
+import { HomeRadarPlaceholder } from '@/components/home/HomeDeferredPlaceholders'
 import { HomeBlogRailSection } from '@/components/home/HomeBlogRailSection'
 import { HomeHeroSection } from '@/components/home/HomeHeroSection'
+import { HomeWidgetStackSection } from '@/components/home/HomeWidgetStackSection'
 import { useHomePageSceneMotion } from '@/hooks/useHomePageSceneMotion'
 import { useHomePageRuntime } from '@/hooks/useHomePageRuntime'
 import { useHomeReveal } from '@/hooks/useHomeReveal'
@@ -28,51 +26,20 @@ const LazyHomeRadarSection = lazy(() =>
   }))
 )
 
-const LazyHomeWidgetStackSection = lazy(() =>
-  import('@/components/home/HomeWidgetStackSection').then((module) => ({
-    default: module.HomeWidgetStackSection,
-  }))
-)
-
 function HomeDeferredScenes({ avatarSrc }: { avatarSrc: string }) {
   const isPrerender =
     typeof window !== 'undefined' && Boolean(window.__PRERENDER__)
-  const {
-    targetRef: widgetStackPlaceholderRef,
-    shouldRender: shouldRenderWidgetStack,
-  } = useDeferredRender<HTMLElement>({
-    rootMargin: '720px 0px',
-  })
   const { targetRef: radarPlaceholderRef, shouldRender: shouldRenderRadar } =
     useDeferredRender<HTMLDivElement>({
       rootMargin: '640px 0px',
     })
 
-  if (isPrerender) {
-    return (
-      <>
-        <HomeWidgetStackPlaceholder
-          placeholderRef={widgetStackPlaceholderRef}
-        />
-        <HomeRadarPlaceholder placeholderRef={radarPlaceholderRef} />
-      </>
-    )
-  }
-
   return (
     <>
-      {shouldRenderWidgetStack ? (
-        <Suspense fallback={<HomeWidgetStackPlaceholder />}>
-          <div className="snap-start">
-            <LazyHomeWidgetStackSection />
-          </div>
-        </Suspense>
-      ) : (
-        <HomeWidgetStackPlaceholder
-          placeholderRef={widgetStackPlaceholderRef}
-        />
-      )}
-      {shouldRenderRadar ? (
+      <div className="snap-start">
+        <HomeWidgetStackSection />
+      </div>
+      {!isPrerender && shouldRenderRadar ? (
         <Suspense fallback={<HomeRadarPlaceholder />}>
           <LazyHomeRadarSection avatarSrc={avatarSrc} />
         </Suspense>
