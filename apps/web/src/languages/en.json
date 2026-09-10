@@ -317,6 +317,11 @@
   "projects": {
     "title": "Lab",
     "description": "A small shelf for strange ideas that made it all the way into code.",
+    "layout": {
+      "label": "Layout",
+      "list": "List",
+      "grid": "Grid"
+    },
     "source": "View source",
     "open": "Open app",
     "flip": "View project details",

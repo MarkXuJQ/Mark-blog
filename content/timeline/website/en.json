@@ -1,5 +1,37 @@
 [
   {
+    "date": "2026-09-10",
+    "title": "Continued Improving the Site's Features and Experience",
+    "description": "Recent work brought together the Lab, movies, games, comments, and image experience into one focused round of refinement, making the site easier to explore and browse.",
+    "categories": [
+      {
+        "title": "Recent Updates",
+        "items": [
+          {
+            "id": "site-update-20260910-1",
+            "content": "Added the Lab page for projects and small tools such as Finger Block, Travel Tracker, and Year Progress",
+            "date": "2026-08-05"
+          },
+          {
+            "id": "site-update-20260910-2",
+            "content": "Refined movie cards and added list / grid switching to the movies and games pages",
+            "date": "2026-09-10"
+          },
+          {
+            "id": "site-update-20260910-3",
+            "content": "Added a recent comments component to the overview page so new conversations are easier to notice",
+            "date": "2026-08-20"
+          },
+          {
+            "id": "site-update-20260910-4",
+            "content": "Improved the image fetching and progressive loading pipeline across thumbnails, originals, fallbacks, and HDR images",
+            "date": "2026-08-11"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-07-27",
     "title": "HDR, Life Notes, and Article Components Reached a New Stage",
     "description": "This week brought photographed life back to the site more faithfully: HDR keeps more of the light and atmosphere, while Life Notes now feels much more like browsing an album on a phone. At the same time, frequently used cards, asides, floated images, and travel routes became reusable article components, leaving less scaffolding to rebuild and more room for the stories themselves.",

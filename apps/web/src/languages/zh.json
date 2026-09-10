@@ -317,6 +317,11 @@
   "projects": {
     "title": "实验室",
     "description": "把一些奇怪的想法做出来，再认真地放在这里。",
+    "layout": {
+      "label": "布局",
+      "list": "列表",
+      "grid": "格子"
+    },
     "source": "查看源码",
     "open": "打开界面",
     "flip": "查看项目介绍",

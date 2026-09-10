@@ -874,7 +874,7 @@ function GameListItem({
       aria-label={`${openStoreLabel}: ${displayName}`}
       className="group flex min-w-0 items-stretch gap-3 border-b border-slate-200/70 py-3 outline-none first:pt-1 last:border-b-0 dark:border-[#2b2f36]"
     >
-      <div className="relative aspect-[16/9] w-[38%] max-w-[12rem] shrink-0 self-start overflow-hidden rounded-[0.9rem] bg-[linear-gradient(135deg,#0f172a_0%,#334155_48%,#0f766e_100%)] shadow-[0_8px_22px_-18px_rgba(15,23,42,0.38)] transition duration-300 group-hover:brightness-105 group-focus-visible:ring-2 group-focus-visible:ring-emerald-500 dark:shadow-none">
+      <div className="relative min-h-[5.5rem] w-[38%] max-w-[12rem] shrink-0 self-stretch overflow-hidden rounded-[0.9rem] bg-[linear-gradient(135deg,#0f172a_0%,#334155_48%,#0f766e_100%)] shadow-[0_8px_22px_-18px_rgba(15,23,42,0.38)] transition duration-300 group-hover:brightness-105 group-focus-visible:ring-2 group-focus-visible:ring-emerald-500 dark:shadow-none">
         <span className="absolute inset-0 flex items-center justify-center px-2 text-center text-[0.68rem] font-semibold text-white/80">
           {displayName}
         </span>
@@ -892,7 +892,7 @@ function GameListItem({
         />
       </div>
 
-      <div className="min-w-0 flex-1 py-0.5">
+      <div className="flex min-h-[6.5rem] min-w-0 flex-1 flex-col py-0.5">
         <h3 className="line-clamp-2 text-[0.98rem] leading-snug font-semibold text-slate-900 transition-colors group-hover:text-emerald-700 dark:text-slate-100 dark:group-hover:text-emerald-300">
           {displayName}
         </h3>
@@ -902,7 +902,7 @@ function GameListItem({
           </p>
         ) : null}
 
-        <div className="mt-3 flex min-w-0 items-end gap-3">
+        <div className="mt-auto mb-auto flex min-w-0 items-center gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-2 text-[0.68rem] leading-4 text-slate-600 dark:text-slate-400">
               <span className="truncate font-semibold text-slate-800 dark:text-slate-200">
