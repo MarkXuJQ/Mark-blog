@@ -206,6 +206,9 @@
     },
     "searchPlaceholder": "搜索片名、原名、平台或备注…",
     "filters": {
+      "label": "筛选",
+      "allMovies": "全部影片",
+      "withReviews": "有影评",
       "allPlatforms": "全部平台",
       "newestFirst": "最新观看优先",
       "oldestFirst": "最早观看优先"
@@ -228,14 +231,17 @@
       "backToMovies": "返回影视页",
       "notFoundTitle": "未找到影评",
       "hasReviewBadge": "有影评",
-      "readReview": "查看影评",
-      "onlyWithReviewsOn": "仅看有影评",
-      "onlyWithReviewsOff": "全部影片"
+      "readReview": "查看影评"
     }
   },
   "games": {
     "description": "这里存放着通过Steam API获取的游戏库数据。真得感谢Valve吧！",
     "loading": "正在同步 Steam 游戏库数据…",
+    "layout": {
+      "label": "布局",
+      "list": "列表",
+      "grid": "格子"
+    },
     "hero": {
       "eyebrow": "Steam Library",
       "title": "{{name}} 的游戏库",
@@ -278,6 +284,7 @@
       "sortLabel": "排序",
       "playtime": "累计 {{hours}} 小时",
       "achievementMissing": "无 Steam 成就",
+      "recentPlaytimeShort": "近两周 {{hours}} h",
       "recentPlaytime": "近两周 {{hours}} 小时",
       "neverPlayed": "尚未启动",
       "noResults": "没有符合当前条件的游戏。"

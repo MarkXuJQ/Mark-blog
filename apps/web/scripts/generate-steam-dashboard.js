@@ -31,6 +31,28 @@ function writeDashboardFile(payload) {
   fs.renameSync(tempFile, OUTPUT_FILE)
 }
 
+function mergeLocalizedNames(payload, previousPayload) {
+  const namesByAppId = new Map(
+    (Array.isArray(previousPayload?.games) ? previousPayload.games : [])
+      .filter((game) => game?.nameZh)
+      .map((game) => [game.appid, game.nameZh])
+  )
+
+  const addNames = (games) =>
+    Array.isArray(games)
+      ? games.map((game) => {
+          const nameZh = namesByAppId.get(game.appid)
+          return nameZh ? { ...game, nameZh } : game
+        })
+      : games
+
+  return {
+    ...payload,
+    games: addNames(payload.games),
+    featured: addNames(payload.featured),
+  }
+}
+
 function formatSyncError(error) {
   if (error instanceof SteamConfigError) {
     return `${error.code}: ${error.message}`
@@ -50,7 +72,19 @@ async function main() {
   console.log(`Steam profile: ${config.steamId}`)
 
   try {
-    const payload = await createSteamStaticLibrary(config)
+    let previousPayload = null
+    try {
+      previousPayload = JSON.parse(
+        await fs.promises.readFile(OUTPUT_FILE, 'utf8')
+      )
+    } catch {
+      previousPayload = null
+    }
+
+    const payload = mergeLocalizedNames(
+      await createSteamStaticLibrary(config),
+      previousPayload
+    )
 
     writeDashboardFile(payload)
 

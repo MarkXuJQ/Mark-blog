@@ -7,6 +7,8 @@ import {
   Trophy,
   X,
 } from 'lucide-react'
+import { LuList } from 'react-icons/lu'
+import { RiGalleryView2 } from 'react-icons/ri'
 import {
   startTransition,
   type ReactNode,
@@ -23,11 +25,13 @@ import { useReducedMotion } from 'framer-motion'
 import { Seo } from '@/app/seo/Seo'
 import { Pagination } from '@/components/ui/Pagination'
 import { SelectMenu } from '@/components/ui/SelectMenu'
+import { SegmentedToggle } from '@/components/ui/SegmentedToggle'
 import { cn } from '@/lib/classNames'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 
 type LoadStatus = 'loading' | 'ready' | 'error'
 type GameSort = 'playtime' | 'recent' | 'achievements'
+type CardLayout = 'list' | 'grid'
 
 interface SteamProfile {
   steamId: string
@@ -56,6 +60,8 @@ interface SteamAchievementStats {
 interface SteamGame {
   appid: number
   name: string
+  nameZh?: string
+  headerImage?: string
   playtimeMinutes: number
   recentPlaytimeMinutes: number
   iconUrl: string
@@ -91,6 +97,7 @@ class SteamDashboardError extends Error {
 }
 
 const GAME_LIBRARY_ROWS_PER_PAGE = 3
+const GAME_LIBRARY_LIST_ITEMS_PER_PAGE = 12
 const FEATURED_RAIL_DEFAULT_SPEED_PERCENT = 50
 const FEATURED_RAIL_FIXED_SPEED_PERCENT = 20
 const FEATURED_RAIL_BASE_DURATION_SECONDS = 42
@@ -175,6 +182,62 @@ function formatDateTime(input: string, locale: string) {
 
 function getSteamLibraryCoverUrl(appid: number) {
   return `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${appid}/library_600x900.jpg`
+}
+
+function getSteamLibraryHeaderUrl(appid: number) {
+  return `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${appid}/header.jpg`
+}
+
+function getGameDisplayName(game: SteamGame, isZh: boolean) {
+  return isZh && game.nameZh?.trim() ? game.nameZh.trim() : game.name
+}
+
+const ACHIEVEMENT_MEDAL_SKY = 'rgba(56,189,248,1)'
+const ACHIEVEMENT_MEDAL_GOLD = 'rgba(251,191,36,1)'
+
+function GameAchievementMedal() {
+  return (
+    <svg
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-8 w-8 drop-shadow-[0_1px_3px_rgba(56,189,248,0.35)]"
+      aria-hidden="true"
+    >
+      <path
+        d="M401.92 888.32L371.2 750.08l-130.56 57.6 175.36-348.16 161.28 80.64z"
+        fill={ACHIEVEMENT_MEDAL_GOLD}
+      />
+      <path
+        d="M396.8 926.72L362.24 768l-148.48 66.56 197.12-392.96 184.32 92.16L396.8 926.72z m-16.64-194.56l26.88 119.04 153.6-305.92L422.4 476.16 268.8 782.08l111.36-49.92z"
+        fill={ACHIEVEMENT_MEDAL_SKY}
+      />
+      <path
+        d="M624.64 888.32l30.72-138.24 130.56 57.6-175.36-348.16-161.28 80.64z"
+        fill={ACHIEVEMENT_MEDAL_GOLD}
+      />
+      <path
+        d="M629.76 926.72L432.64 533.76l184.32-92.16 197.12 392.96L665.6 768l-35.84 158.72zM467.2 545.28l153.6 305.92 26.88-119.04 111.36 49.92-153.6-305.92-138.24 69.12z"
+        fill={ACHIEVEMENT_MEDAL_SKY}
+      />
+      <path
+        d="M719.36 609.28l-96 11.52-70.4 65.28-84.48-46.08-96 11.52-40.96-88.32-84.48-47.36 19.2-94.72-40.96-87.04 70.4-66.56 19.2-94.72 96-11.52 70.4-66.56 84.48 47.36 96-11.52 40.96 88.32 84.48 47.36-19.2 94.72 40.96 87.04-70.4 66.56z"
+        fill={ACHIEVEMENT_MEDAL_SKY}
+      />
+      <path
+        d="M554.24 702.72l-89.6-49.92-101.12 12.8-42.24-92.16-89.6-49.92 19.2-99.84-42.24-92.16 74.24-69.12 19.2-99.84 101.12-12.8 74.24-69.12 89.6 49.92 101.12-12.8 42.24 92.16 89.6 49.92-17.92 98.56 42.24 92.16-74.24 69.12-19.2 99.84-101.12 12.8-75.52 70.4z m-83.2-76.8l79.36 44.8 66.56-62.72 90.88-11.52 17.92-89.6 66.56-62.72-38.4-83.2 17.92-89.6-80.64-44.8-38.4-83.2-89.6 12.8-80.64-44.8-66.56 62.72-90.88 11.52-17.92 89.6-66.56 62.72 38.4 83.2-17.92 89.6 80.64 44.8 38.4 83.2 90.88-12.8z"
+        fill={ACHIEVEMENT_MEDAL_SKY}
+      />
+      <path
+        d="M353.28 390.4a166.4 166.4 0 1 0 332.8 0 166.4 166.4 0 1 0-332.8 0Z"
+        fill={ACHIEVEMENT_MEDAL_GOLD}
+      />
+      <path
+        d="M519.68 569.6c-98.56 0-179.2-80.64-179.2-179.2s80.64-179.2 179.2-179.2 179.2 80.64 179.2 179.2c-1.28 98.56-80.64 179.2-179.2 179.2z m0-332.8c-84.48 0-153.6 69.12-153.6 153.6s69.12 153.6 153.6 153.6 153.6-69.12 153.6-153.6c-1.28-84.48-69.12-153.6-153.6-153.6z"
+        fill={ACHIEVEMENT_MEDAL_SKY}
+      />
+    </svg>
+  )
 }
 
 function buildInitials(name: string) {
@@ -356,6 +419,7 @@ function FeaturedGameCard(props: {
     releaseDateLabel,
     ariaHidden,
   } = props
+  const displayName = getGameDisplayName(game, locale.startsWith('zh'))
 
   return (
     <article
@@ -365,7 +429,7 @@ function FeaturedGameCard(props: {
       {game.headerImage ? (
         <img
           src={game.headerImage}
-          alt={game.name}
+          alt={displayName}
           width={920}
           height={430}
           loading="lazy"
@@ -379,14 +443,14 @@ function FeaturedGameCard(props: {
       <div className="relative flex h-full flex-col justify-between p-4 sm:p-5">
         <div className="flex items-start gap-3">
           <GameIcon
-            name={game.name}
+            name={displayName}
             iconUrl={game.iconUrl}
             className="h-11 w-11 shrink-0 bg-white/10 sm:h-12 sm:w-12"
           />
 
           <div className="min-w-0 flex-1">
             <h3 className="line-clamp-2 text-xl leading-tight font-semibold text-white sm:text-2xl">
-              {game.name}
+              {displayName}
             </h3>
           </div>
         </div>
@@ -571,7 +635,7 @@ function FeaturedGameRail(props: {
   }
 
   return (
-    <div className="relative -mx-5 sm:mx-0">
+    <div className="relative -mx-4 sm:mx-0">
       <div
         className={cn(
           'relative cursor-grab touch-pan-y overflow-hidden select-none',
@@ -659,6 +723,7 @@ function FeaturedGameRailSegment({
 
 function GameShowcaseTile({
   game,
+  displayName,
   locale,
   playtimeLabel,
   statusLabel,
@@ -667,6 +732,7 @@ function GameShowcaseTile({
   openStoreLabel,
 }: {
   game: SteamGame
+  displayName: string
   locale: string
   playtimeLabel: string
   statusLabel: string | null
@@ -708,19 +774,19 @@ function GameShowcaseTile({
       href={game.storeUrl}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`${openStoreLabel}: ${game.name}`}
+      aria-label={`${openStoreLabel}: ${displayName}`}
       className="group relative block rounded-[13px] transition-[filter,transform] duration-200 ease-out outline-none [transform-style:preserve-3d] hover:brightness-105 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#17191c]"
       onPointerLeave={resetTilt}
       onPointerMove={handlePointerMove}
     >
       <div className="relative aspect-[2/3] overflow-hidden rounded-[13px] bg-[linear-gradient(135deg,#0f172a_0%,#334155_48%,#0f766e_100%)] shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-shadow duration-200 group-hover:shadow-[0_18px_42px_-28px_rgba(15,23,42,0.75)] dark:shadow-none">
         <div className="absolute inset-0 flex items-center justify-center px-4 text-center text-sm font-semibold text-white/80">
-          {game.name}
+          {displayName}
         </div>
 
         <img
           src={getSteamLibraryCoverUrl(game.appid)}
-          alt={game.name}
+          alt={displayName}
           width={600}
           height={900}
           loading="lazy"
@@ -730,7 +796,7 @@ function GameShowcaseTile({
 
         <div className="absolute inset-x-2 top-2 translate-y-1 rounded-[10px] bg-slate-950/78 p-2.5 text-white opacity-0 shadow-lg backdrop-blur-md transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
           <p className="line-clamp-2 text-[0.68rem] leading-tight font-semibold">
-            {game.name}
+            {displayName}
           </p>
 
           <div className="mt-2 flex items-center justify-between gap-2 text-[0.66rem] text-slate-200/90">
@@ -778,19 +844,136 @@ function GameShowcaseTile({
   )
 }
 
+function GameListItem({
+  game,
+  displayName,
+  locale,
+  playtimeShortLabel,
+  recentPlaytimeLabel,
+  openStoreLabel,
+}: {
+  game: SteamGame
+  displayName: string
+  locale: string
+  playtimeShortLabel: string
+  recentPlaytimeLabel: string
+  openStoreLabel: string
+}) {
+  const achievementProgress = getAchievementProgress(game)
+  const hasAchievements = achievementProgress.totalCount > 0
+  const isComplete =
+    hasAchievements &&
+    achievementProgress.unlockedCount >= achievementProgress.totalCount
+  const imageUrl = game.headerImage || getSteamLibraryHeaderUrl(game.appid)
+
+  return (
+    <a
+      href={game.storeUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${openStoreLabel}: ${displayName}`}
+      className="group flex min-w-0 items-stretch gap-3 border-b border-slate-200/70 py-3 outline-none first:pt-1 last:border-b-0 dark:border-[#2b2f36]"
+    >
+      <div className="relative aspect-[16/9] w-[38%] max-w-[12rem] shrink-0 self-start overflow-hidden rounded-[0.9rem] bg-[linear-gradient(135deg,#0f172a_0%,#334155_48%,#0f766e_100%)] shadow-[0_8px_22px_-18px_rgba(15,23,42,0.38)] transition duration-300 group-hover:brightness-105 group-focus-visible:ring-2 group-focus-visible:ring-emerald-500 dark:shadow-none">
+        <span className="absolute inset-0 flex items-center justify-center px-2 text-center text-[0.68rem] font-semibold text-white/80">
+          {displayName}
+        </span>
+        <img
+          src={imageUrl}
+          alt={displayName}
+          width={616}
+          height={353}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]"
+          onError={(event) => {
+            event.currentTarget.style.display = 'none'
+          }}
+        />
+      </div>
+
+      <div className="min-w-0 flex-1 py-0.5">
+        <h3 className="line-clamp-2 text-[0.98rem] leading-snug font-semibold text-slate-900 transition-colors group-hover:text-emerald-700 dark:text-slate-100 dark:group-hover:text-emerald-300">
+          {displayName}
+        </h3>
+        {displayName !== game.name ? (
+          <p className="mt-0.5 line-clamp-1 text-xs text-slate-500 dark:text-slate-400">
+            {game.name}
+          </p>
+        ) : null}
+
+        <div className="mt-3 flex min-w-0 items-end gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2 text-[0.68rem] leading-4 text-slate-600 dark:text-slate-400">
+              <span className="truncate font-semibold text-slate-800 dark:text-slate-200">
+                {playtimeShortLabel}
+              </span>
+              <span className="shrink-0 truncate text-slate-500/70 dark:text-slate-400/70">
+                {recentPlaytimeLabel}
+              </span>
+            </div>
+
+            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200/80 dark:bg-white/10">
+              {achievementProgress.widthPercent > 0 ? (
+                <div
+                  className={cn(
+                    'h-full rounded-full',
+                    achievementProgress.fillClassName
+                  )}
+                  style={{ width: `${achievementProgress.widthPercent}%` }}
+                />
+              ) : null}
+            </div>
+          </div>
+
+          <div
+            className="flex w-[3.75rem] shrink-0 flex-col items-center justify-end gap-0.5 text-[0.72rem] leading-4 font-semibold text-slate-700 tabular-nums dark:text-slate-200"
+            title={
+              hasAchievements
+                ? `${achievementProgress.unlockedCount} / ${achievementProgress.totalCount}`
+                : undefined
+            }
+            aria-label={
+              hasAchievements
+                ? `${achievementProgress.unlockedCount} / ${achievementProgress.totalCount}`
+                : undefined
+            }
+          >
+            <span className="flex h-8 items-center justify-center">
+              {isComplete ? <GameAchievementMedal /> : null}
+            </span>
+            <span>
+              {hasAchievements
+                ? `${formatInteger(achievementProgress.unlockedCount, locale)} / ${formatInteger(achievementProgress.totalCount, locale)}`
+                : '— / —'}
+            </span>
+          </div>
+        </div>
+      </div>
+    </a>
+  )
+}
+
 export function Games() {
   const { t, i18n } = useTranslation()
   const title = t('nav.games')
   const description = t('games.description')
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
+  const isZh = i18n.language?.startsWith('zh') ?? false
   const [status, setStatus] = useState<LoadStatus>('loading')
   const [dashboard, setDashboard] = useState<SteamDashboard | null>(null)
   const [errorCode, setErrorCode] = useState<string>('')
   const [search, setSearch] = useState('')
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
   const [sort, setSort] = useState<GameSort>('playtime')
+  const [cardLayout, setCardLayout] = useState<CardLayout>('list')
   const [currentPage, setCurrentPage] = useState(1)
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const listRef = useRef<HTMLElement | null>(null)
+  const previousListStateRef = useRef<{
+    cardLayout: CardLayout
+    currentPage: number
+  } | null>(null)
   const isSmallScreen = useMediaQuery('(min-width: 640px)')
   const isMediumScreen = useMediaQuery('(min-width: 768px)')
   const isLargeScreen = useMediaQuery('(min-width: 1024px)')
@@ -803,8 +986,11 @@ export function Games() {
         ? 4
         : isSmallScreen
           ? 3
-          : 2
-  const itemsPerPage = columns * GAME_LIBRARY_ROWS_PER_PAGE
+          : 3
+  const itemsPerPage =
+    cardLayout === 'list'
+      ? GAME_LIBRARY_LIST_ITEMS_PER_PAGE
+      : columns * GAME_LIBRARY_ROWS_PER_PAGE
 
   useEffect(() => {
     if (window.__PRERENDER__) return
@@ -839,11 +1025,15 @@ export function Games() {
 
   const filteredGames = useMemo(() => {
     const allGames = dashboard?.games ?? []
-    const normalizedQuery = deferredSearch.trim().toLocaleLowerCase()
+    const normalizedQuery = deferredSearch.trim().toLocaleLowerCase(locale)
 
     const nextGames = normalizedQuery
       ? allGames.filter((game) =>
-          game.name.toLocaleLowerCase().includes(normalizedQuery)
+          [game.name, game.nameZh]
+            .filter(Boolean)
+            .some((name) =>
+              name!.toLocaleLowerCase(locale).includes(normalizedQuery)
+            )
         )
       : [...allGames]
 
@@ -855,7 +1045,10 @@ export function Games() {
         if (right.playtimeMinutes !== left.playtimeMinutes) {
           return right.playtimeMinutes - left.playtimeMinutes
         }
-        return left.name.localeCompare(right.name, locale)
+        return getGameDisplayName(left, isZh).localeCompare(
+          getGameDisplayName(right, isZh),
+          locale
+        )
       }
 
       if (sort === 'achievements') {
@@ -870,7 +1063,10 @@ export function Games() {
         if (right.playtimeMinutes !== left.playtimeMinutes) {
           return right.playtimeMinutes - left.playtimeMinutes
         }
-        return left.name.localeCompare(right.name, locale)
+        return getGameDisplayName(left, isZh).localeCompare(
+          getGameDisplayName(right, isZh),
+          locale
+        )
       }
 
       if (right.playtimeMinutes !== left.playtimeMinutes) {
@@ -879,11 +1075,14 @@ export function Games() {
       if (right.recentPlaytimeMinutes !== left.recentPlaytimeMinutes) {
         return right.recentPlaytimeMinutes - left.recentPlaytimeMinutes
       }
-      return left.name.localeCompare(right.name, locale)
+      return getGameDisplayName(left, isZh).localeCompare(
+        getGameDisplayName(right, isZh),
+        locale
+      )
     })
 
     return nextGames
-  }, [dashboard?.games, deferredSearch, locale, sort])
+  }, [dashboard?.games, deferredSearch, isZh, locale, sort])
 
   useEffect(() => {
     startTransition(() => {
@@ -905,6 +1104,24 @@ export function Games() {
       setCurrentPage(totalPages)
     }
   }, [currentPage, totalPages])
+
+  useEffect(() => {
+    if (window.__PRERENDER__) return
+
+    const previousState = previousListStateRef.current
+    previousListStateRef.current = { cardLayout, currentPage }
+    if (cardLayout !== 'list') return
+
+    if (
+      !previousState ||
+      (previousState.cardLayout === cardLayout &&
+        previousState.currentPage === currentPage)
+    ) {
+      return
+    }
+
+    listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [cardLayout, currentPage])
 
   useEffect(() => {
     if (!isMobileSearchOpen) return
@@ -945,6 +1162,11 @@ export function Games() {
     { value: 'recent', label: t('games.sort.recent') },
     { value: 'achievements', label: t('games.sort.achievements') },
   ]
+
+  const handleLayoutChange = (layout: CardLayout) => {
+    setCardLayout(layout)
+    setCurrentPage(1)
+  }
 
   return (
     <>
@@ -1124,22 +1346,25 @@ export function Games() {
                 )}
               </section>
 
-              <section className="mt-10 rounded-[28px] border border-slate-200/70 bg-white/80 p-5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur sm:p-6 dark:border-0 dark:bg-[#17191c] dark:shadow-none">
+              <section
+                ref={listRef}
+                className="mt-10 scroll-mt-28 rounded-[28px] border border-slate-200/70 bg-white/80 p-5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur sm:p-6 dark:border-0 dark:bg-[#17191c] dark:shadow-none"
+              >
                 <div className="relative">
-                  <div className="hidden items-center justify-between gap-4 sm:flex">
-                    <h2 className="min-w-0 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+                  <div className="hidden min-w-0 items-center gap-4 sm:flex">
+                    <h2 className="shrink-0 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
                       {t('games.library.title')}
                     </h2>
 
-                    <div className="flex shrink-0 items-center gap-2.5">
-                      <label className="flex h-11 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3.5 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition dark:border-[#2b2f36] dark:bg-[#17191c] dark:shadow-none">
+                    <div className="flex min-w-0 flex-1 items-center justify-end gap-2.5">
+                      <label className="flex h-11 max-w-[15rem] min-w-0 flex-1 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3.5 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition dark:border-[#2b2f36] dark:bg-[#17191c] dark:shadow-none">
                         <Search className="h-4 w-4 shrink-0 text-slate-500 dark:text-slate-400" />
                         <input
                           type="search"
                           value={search}
                           onChange={(event) => setSearch(event.target.value)}
                           placeholder={t('games.library.searchPlaceholder')}
-                          className="w-[15rem] min-w-0 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+                          className="w-full min-w-0 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
                         />
 
                         {hasSearch ? (
@@ -1166,6 +1391,36 @@ export function Games() {
                         buttonClassName="max-w-[6.8rem] gap-1 text-sm"
                         menuClassName="w-52 max-w-[calc(100vw-2rem)]"
                       />
+
+                      <SegmentedToggle
+                        value={cardLayout}
+                        onValueChange={handleLayoutChange}
+                        ariaLabel={t('games.layout.label')}
+                        size="sm"
+                        className="shrink-0"
+                        buttonClassName="h-8 w-8 px-0"
+                        items={[
+                          {
+                            value: 'grid',
+                            ariaLabel: t('games.layout.grid'),
+                            tooltip: t('games.layout.grid'),
+                            content: (
+                              <RiGalleryView2
+                                className="h-4 w-4"
+                                aria-hidden="true"
+                              />
+                            ),
+                          },
+                          {
+                            value: 'list',
+                            ariaLabel: t('games.layout.list'),
+                            tooltip: t('games.layout.list'),
+                            content: (
+                              <LuList className="h-4 w-4" aria-hidden="true" />
+                            ),
+                          },
+                        ]}
+                      />
                     </div>
                   </div>
 
@@ -1178,23 +1433,20 @@ export function Games() {
                           : 'translate-x-0 opacity-100'
                       )}
                     >
-                      <h2 className="min-w-0 flex-1 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+                      <h2 className="min-w-0 flex-1 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
                         {t('games.library.title')}
                       </h2>
 
-                      <div className="flex shrink-0 items-center gap-2">
+                      <div className="flex shrink-0 items-center gap-1.5">
                         <button
                           type="button"
                           onClick={() => setIsMobileSearchOpen(true)}
                           aria-controls={searchInputId}
                           aria-expanded={isMobileSearchVisible}
                           aria-label={t('games.library.searchToggle')}
-                          className="inline-flex h-11 max-w-[6.5rem] items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3 text-sm font-medium text-slate-500 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition hover:border-slate-300 hover:text-slate-700 hover:shadow-sm dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:shadow-none dark:hover:border-[#3a3f48] dark:hover:text-slate-100"
+                          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition hover:border-slate-300 hover:text-slate-700 hover:shadow-sm dark:border-[#2b2f36] dark:bg-[#17191c] dark:text-slate-300 dark:shadow-none dark:hover:border-[#3a3f48] dark:hover:text-slate-100"
                         >
-                          <Search className="h-4 w-4 shrink-0" />
-                          <span className="truncate">
-                            {t('games.library.searchToggle')}
-                          </span>
+                          <Search className="h-4 w-4" />
                         </button>
 
                         <SelectMenu
@@ -1204,17 +1456,50 @@ export function Games() {
                           label={t('games.library.sortLabel')}
                           ariaLabel={t('games.library.sortLabel')}
                           className="shrink-0"
-                          containerClassName="h-11 gap-1 rounded-[1.1rem] px-3 pr-2.5"
+                          containerClassName="h-10 gap-1 rounded-[1.1rem] px-2.5 pr-2"
                           labelClassName="hidden"
-                          buttonClassName="max-w-[5.75rem] gap-1 text-sm"
+                          buttonClassName="max-w-[5.25rem] gap-1 text-sm"
                           menuClassName="w-52 max-w-[calc(100vw-2rem)]"
+                        />
+
+                        <SegmentedToggle
+                          value={cardLayout}
+                          onValueChange={handleLayoutChange}
+                          ariaLabel={t('games.layout.label')}
+                          size="sm"
+                          className="shrink-0"
+                          buttonClassName="h-8 w-8 px-0"
+                          items={[
+                            {
+                              value: 'grid',
+                              ariaLabel: t('games.layout.grid'),
+                              tooltip: t('games.layout.grid'),
+                              content: (
+                                <RiGalleryView2
+                                  className="h-4 w-4"
+                                  aria-hidden="true"
+                                />
+                              ),
+                            },
+                            {
+                              value: 'list',
+                              ariaLabel: t('games.layout.list'),
+                              tooltip: t('games.layout.list'),
+                              content: (
+                                <LuList
+                                  className="h-4 w-4"
+                                  aria-hidden="true"
+                                />
+                              ),
+                            },
+                          ]}
                         />
                       </div>
                     </div>
 
                     <label
                       className={cn(
-                        'absolute inset-0 flex h-11 min-w-0 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition duration-200 dark:border-[#2b2f36] dark:bg-[#17191c] dark:shadow-none',
+                        'absolute inset-0 flex h-11 min-w-0 items-center gap-2 rounded-full border border-slate-200 bg-white px-3 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition duration-200 dark:border-[#2b2f36] dark:bg-[#17191c] dark:shadow-none',
                         isMobileSearchVisible
                           ? 'translate-x-0 opacity-100'
                           : 'pointer-events-none translate-x-3 opacity-0'
@@ -1278,11 +1563,29 @@ export function Games() {
                 </div>
 
                 {visibleGames.length > 0 ? (
-                  <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                  <div
+                    className={cn(
+                      'mt-4',
+                      cardLayout === 'grid'
+                        ? 'grid grid-cols-3 gap-3 sm:grid-cols-3 sm:gap-3.5 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
+                        : 'space-y-0'
+                    )}
+                  >
                     {visibleGames.map((game) => {
+                      const displayName = getGameDisplayName(game, isZh)
                       const playtimeLabel = t('games.library.playtime', {
                         hours: formatHours(game.playtimeMinutes, locale),
                       })
+                      const playtimeShortLabel = `${formatHours(game.playtimeMinutes, locale)} h`
+                      const recentPlaytimeLabel = t(
+                        'games.library.recentPlaytimeShort',
+                        {
+                          hours: formatHours(
+                            game.recentPlaytimeMinutes,
+                            locale
+                          ),
+                        }
+                      )
                       const statusLabel =
                         game.playtimeMinutes <= 0
                           ? t('games.library.neverPlayed')
@@ -1303,10 +1606,11 @@ export function Games() {
                             )
                           : t('games.library.achievementMissing')
 
-                      return (
+                      return cardLayout === 'grid' ? (
                         <GameShowcaseTile
                           key={game.appid}
                           game={game}
+                          displayName={displayName}
                           locale={locale}
                           playtimeLabel={playtimeLabel}
                           statusLabel={statusLabel}
@@ -1314,6 +1618,16 @@ export function Games() {
                           achievementMissingLabel={t(
                             'games.library.achievementMissing'
                           )}
+                          openStoreLabel={t('games.actions.openStore')}
+                        />
+                      ) : (
+                        <GameListItem
+                          key={game.appid}
+                          game={game}
+                          displayName={displayName}
+                          locale={locale}
+                          playtimeShortLabel={playtimeShortLabel}
+                          recentPlaytimeLabel={recentPlaytimeLabel}
                           openStoreLabel={t('games.actions.openStore')}
                         />
                       )

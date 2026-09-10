@@ -558,6 +558,7 @@ function mergeStaticGameWithLiveGame(staticGame, liveGame) {
       typeof liveGame.communityUrl === 'string' && liveGame.communityUrl.trim()
         ? liveGame.communityUrl
         : staticGame.communityUrl,
+    nameZh: staticGame.nameZh,
     achievementStats: staticGame.achievementStats ?? null,
   }
 }

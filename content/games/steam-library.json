@@ -48,7 +48,8 @@
         "Action",
         "Adventure",
         "RPG"
-      ]
+      ],
+      "nameZh": "怪物猎人：荒野"
     },
     {
       "appid": 582010,
@@ -77,7 +78,8 @@
       ],
       "genres": [
         "Action"
-      ]
+      ],
+      "nameZh": "怪物猎人：世界"
     },
     {
       "appid": 1086940,
@@ -108,7 +110,8 @@
         "Adventure",
         "RPG",
         "Strategy"
-      ]
+      ],
+      "nameZh": "博德之门3"
     },
     {
       "appid": 292030,
@@ -137,7 +140,8 @@
       ],
       "genres": [
         "RPG"
-      ]
+      ],
+      "nameZh": "巫师 3：狂猎 - 完全版."
     },
     {
       "appid": 289070,
@@ -168,7 +172,8 @@
       ],
       "genres": [
         "Strategy"
-      ]
+      ],
+      "nameZh": "文明 VI"
     },
     {
       "appid": 812140,
@@ -201,7 +206,8 @@
         "Action",
         "Adventure",
         "RPG"
-      ]
+      ],
+      "nameZh": "刺客信条：奥德赛"
     }
   ],
   "games": [
@@ -217,7 +223,8 @@
       "achievementStats": {
         "unlockedCount": 50,
         "totalCount": 50
-      }
+      },
+      "nameZh": "怪物猎人：荒野"
     },
     {
       "appid": 582010,
@@ -231,7 +238,8 @@
       "achievementStats": {
         "unlockedCount": 64,
         "totalCount": 100
-      }
+      },
+      "nameZh": "怪物猎人：世界"
     },
     {
       "appid": 1086940,
@@ -245,7 +253,8 @@
       "achievementStats": {
         "unlockedCount": 38,
         "totalCount": 54
-      }
+      },
+      "nameZh": "博德之门3"
     },
     {
       "appid": 292030,
@@ -259,7 +268,8 @@
       "achievementStats": {
         "unlockedCount": 48,
         "totalCount": 78
-      }
+      },
+      "nameZh": "巫师 3：狂猎 - 完全版."
     },
     {
       "appid": 289070,
@@ -273,7 +283,8 @@
       "achievementStats": {
         "unlockedCount": 59,
         "totalCount": 320
-      }
+      },
+      "nameZh": "文明 VI"
     },
     {
       "appid": 812140,
@@ -287,7 +298,8 @@
       "achievementStats": {
         "unlockedCount": 67,
         "totalCount": 93
-      }
+      },
+      "nameZh": "刺客信条：奥德赛"
     },
     {
       "appid": 1091500,
@@ -301,7 +313,8 @@
       "achievementStats": {
         "unlockedCount": 42,
         "totalCount": 57
-      }
+      },
+      "nameZh": "赛博朋克 2077"
     },
     {
       "appid": 1174180,
@@ -315,7 +328,8 @@
       "achievementStats": {
         "unlockedCount": 21,
         "totalCount": 51
-      }
+      },
+      "nameZh": "荒野大镖客：救赎2"
     },
     {
       "appid": 2358720,
@@ -329,7 +343,8 @@
       "achievementStats": {
         "unlockedCount": 75,
         "totalCount": 81
-      }
+      },
+      "nameZh": "黑神话：悟空"
     },
     {
       "appid": 1868140,
@@ -343,7 +358,8 @@
       "achievementStats": {
         "unlockedCount": 43,
         "totalCount": 43
-      }
+      },
+      "nameZh": "潜水员戴夫 DAVE THE DIVER"
     },
     {
       "appid": 1903340,
@@ -357,7 +373,8 @@
       "achievementStats": {
         "unlockedCount": 42,
         "totalCount": 55
-      }
+      },
+      "nameZh": "光与影：33号远征队"
     },
     {
       "appid": 2322010,
@@ -371,7 +388,8 @@
       "achievementStats": {
         "unlockedCount": 40,
         "totalCount": 48
-      }
+      },
+      "nameZh": "战神：诸神黄昏"
     },
     {
       "appid": 2868840,
@@ -382,7 +400,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/2868840",
       "communityUrl": "https://steamcommunity.com/app/2868840",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "杀戮尖塔2"
     },
     {
       "appid": 431960,
@@ -396,7 +415,8 @@
       "achievementStats": {
         "unlockedCount": 5,
         "totalCount": 17
-      }
+      },
+      "nameZh": "Wallpaper Engine：壁纸引擎"
     },
     {
       "appid": 1145360,
@@ -410,7 +430,8 @@
       "achievementStats": {
         "unlockedCount": 25,
         "totalCount": 49
-      }
+      },
+      "nameZh": "哈迪斯"
     },
     {
       "appid": 242050,
@@ -424,7 +445,8 @@
       "achievementStats": {
         "unlockedCount": 0,
         "totalCount": 60
-      }
+      },
+      "nameZh": "刺客信条 IV：黑旗"
     },
     {
       "appid": 1817070,
@@ -438,7 +460,8 @@
       "achievementStats": {
         "unlockedCount": 74,
         "totalCount": 78
-      }
+      },
+      "nameZh": "漫威蜘蛛侠：重制版"
     },
     {
       "appid": 1659420,
@@ -452,7 +475,8 @@
       "achievementStats": {
         "unlockedCount": 26,
         "totalCount": 101
-      }
+      },
+      "nameZh": "神秘海域：盗贼遗产合集"
     },
     {
       "appid": 1850570,
@@ -466,7 +490,8 @@
       "achievementStats": {
         "unlockedCount": 47,
         "totalCount": 63
-      }
+      },
+      "nameZh": "死亡搁浅：导演剪辑版"
     },
     {
       "appid": 3167550,
@@ -480,7 +505,8 @@
       "achievementStats": {
         "unlockedCount": 55,
         "totalCount": 55
-      }
+      },
+      "nameZh": "动物栏：桌面牧场"
     },
     {
       "appid": 271590,
@@ -494,7 +520,8 @@
       "achievementStats": {
         "unlockedCount": 14,
         "totalCount": 77
-      }
+      },
+      "nameZh": "侠盗猎车手5"
     },
     {
       "appid": 814380,
@@ -508,7 +535,8 @@
       "achievementStats": {
         "unlockedCount": 25,
         "totalCount": 34
-      }
+      },
+      "nameZh": "只狼：影逝二度"
     },
     {
       "appid": 208650,
@@ -522,7 +550,8 @@
       "achievementStats": {
         "unlockedCount": 64,
         "totalCount": 113
-      }
+      },
+      "nameZh": "蝙蝠侠：阿卡姆骑士"
     },
     {
       "appid": 1057090,
@@ -536,7 +565,8 @@
       "achievementStats": {
         "unlockedCount": 19,
         "totalCount": 37
-      }
+      },
+      "nameZh": "奥日与精灵意志"
     },
     {
       "appid": 275850,
@@ -550,7 +580,8 @@
       "achievementStats": {
         "unlockedCount": 13,
         "totalCount": 27
-      }
+      },
+      "nameZh": "无人深空"
     },
     {
       "appid": 646570,
@@ -564,7 +595,8 @@
       "achievementStats": {
         "unlockedCount": 20,
         "totalCount": 46
-      }
+      },
+      "nameZh": "杀戮尖塔"
     },
     {
       "appid": 2001120,
@@ -578,7 +610,8 @@
       "achievementStats": {
         "unlockedCount": 11,
         "totalCount": 20
-      }
+      },
+      "nameZh": "双影奇境"
     },
     {
       "appid": 997070,
@@ -592,7 +625,8 @@
       "achievementStats": {
         "unlockedCount": 30,
         "totalCount": 50
-      }
+      },
+      "nameZh": "漫威复仇者联盟"
     },
     {
       "appid": 553850,
@@ -606,7 +640,8 @@
       "achievementStats": {
         "unlockedCount": 26,
         "totalCount": 38
-      }
+      },
+      "nameZh": "地狱潜者2"
     },
     {
       "appid": 2651280,
@@ -620,7 +655,8 @@
       "achievementStats": {
         "unlockedCount": 42,
         "totalCount": 43
-      }
+      },
+      "nameZh": "漫威蜘蛛侠2"
     },
     {
       "appid": 33230,
@@ -631,7 +667,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/33230",
       "communityUrl": "https://steamcommunity.com/app/33230",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "刺客信条 II"
     },
     {
       "appid": 2050650,
@@ -645,7 +682,8 @@
       "achievementStats": {
         "unlockedCount": 19,
         "totalCount": 46
-      }
+      },
+      "nameZh": "生化危机4"
     },
     {
       "appid": 588650,
@@ -659,7 +697,8 @@
       "achievementStats": {
         "unlockedCount": 57,
         "totalCount": 121
-      }
+      },
+      "nameZh": "死亡细胞"
     },
     {
       "appid": 319630,
@@ -673,7 +712,8 @@
       "achievementStats": {
         "unlockedCount": 23,
         "totalCount": 60
-      }
+      },
+      "nameZh": "奇异人生"
     },
     {
       "appid": 3167020,
@@ -687,7 +727,8 @@
       "achievementStats": {
         "unlockedCount": 33,
         "totalCount": 55
-      }
+      },
+      "nameZh": "逃离鸭科夫"
     },
     {
       "appid": 632470,
@@ -701,7 +742,8 @@
       "achievementStats": {
         "unlockedCount": 12,
         "totalCount": 45
-      }
+      },
+      "nameZh": "极乐迪斯科"
     },
     {
       "appid": 48190,
@@ -712,7 +754,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/48190",
       "communityUrl": "https://steamcommunity.com/app/48190",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "刺客信条：兄弟会"
     },
     {
       "appid": 880940,
@@ -740,7 +783,8 @@
       "achievementStats": {
         "unlockedCount": 13,
         "totalCount": 20
-      }
+      },
+      "nameZh": "双人成行"
     },
     {
       "appid": 1088850,
@@ -754,7 +798,8 @@
       "achievementStats": {
         "unlockedCount": 49,
         "totalCount": 59
-      }
+      },
+      "nameZh": "漫威银河护卫队"
     },
     {
       "appid": 1817190,
@@ -768,7 +813,8 @@
       "achievementStats": {
         "unlockedCount": 35,
         "totalCount": 50
-      }
+      },
+      "nameZh": "蜘蛛侠：迈尔斯·莫拉莱斯"
     },
     {
       "appid": 55230,
@@ -782,7 +828,8 @@
       "achievementStats": {
         "unlockedCount": 34,
         "totalCount": 83
-      }
+      },
+      "nameZh": "黑道圣徒：The Third"
     },
     {
       "appid": 1888930,
@@ -796,7 +843,8 @@
       "achievementStats": {
         "unlockedCount": 5,
         "totalCount": 29
-      }
+      },
+      "nameZh": "最后生还者 第一部"
     },
     {
       "appid": 870780,
@@ -810,7 +858,8 @@
       "achievementStats": {
         "unlockedCount": 49,
         "totalCount": 67
-      }
+      },
+      "nameZh": "控制"
     },
     {
       "appid": 1446780,
@@ -824,7 +873,8 @@
       "achievementStats": {
         "unlockedCount": 4,
         "totalCount": 100
-      }
+      },
+      "nameZh": "怪物猎人：崛起"
     },
     {
       "appid": 203160,
@@ -838,7 +888,8 @@
       "achievementStats": {
         "unlockedCount": 17,
         "totalCount": 50
-      }
+      },
+      "nameZh": "古墓丽影"
     },
     {
       "appid": 753640,
@@ -852,7 +903,8 @@
       "achievementStats": {
         "unlockedCount": 4,
         "totalCount": 31
-      }
+      },
+      "nameZh": "星际拓荒"
     },
     {
       "appid": 209000,
@@ -866,7 +918,8 @@
       "achievementStats": {
         "unlockedCount": 10,
         "totalCount": 60
-      }
+      },
+      "nameZh": "蝙蝠侠：阿卡姆起源"
     },
     {
       "appid": 3949040,
@@ -880,7 +933,8 @@
       "achievementStats": {
         "unlockedCount": 20,
         "totalCount": 96
-      }
+      },
+      "nameZh": "我们到了吗？"
     },
     {
       "appid": 391220,
@@ -894,7 +948,8 @@
       "achievementStats": {
         "unlockedCount": 25,
         "totalCount": 143
-      }
+      },
+      "nameZh": "古墓丽影：崛起"
     },
     {
       "appid": 829110,
@@ -908,7 +963,8 @@
       "achievementStats": {
         "unlockedCount": 24,
         "totalCount": 75
-      }
+      },
+      "nameZh": "乐高 DC 超级反派"
     },
     {
       "appid": 647830,
@@ -922,7 +978,8 @@
       "achievementStats": {
         "unlockedCount": 6,
         "totalCount": 75
-      }
+      },
+      "nameZh": "LEGO® Marvel Super Heroes 2"
     },
     {
       "appid": 1222670,
@@ -933,7 +990,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1222670",
       "communityUrl": "https://steamcommunity.com/app/1222670",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "模拟人生4"
     },
     {
       "appid": 35140,
@@ -947,7 +1005,8 @@
       "achievementStats": {
         "unlockedCount": 26,
         "totalCount": 47
-      }
+      },
+      "nameZh": "蝙蝠侠：阿卡姆疯人院年度版"
     },
     {
       "appid": 1172380,
@@ -961,7 +1020,8 @@
       "achievementStats": {
         "unlockedCount": 4,
         "totalCount": 39
-      }
+      },
+      "nameZh": "星球大战绝地：陨落的武士团"
     },
     {
       "appid": 261570,
@@ -975,7 +1035,8 @@
       "achievementStats": {
         "unlockedCount": 22,
         "totalCount": 50
-      }
+      },
+      "nameZh": "奥日与黑暗森林"
     },
     {
       "appid": 3065170,
@@ -1000,7 +1061,8 @@
       "achievementStats": {
         "unlockedCount": 7,
         "totalCount": 80
-      }
+      },
+      "nameZh": "羞辱"
     },
     {
       "appid": 435150,
@@ -1014,7 +1076,8 @@
       "achievementStats": {
         "unlockedCount": 3,
         "totalCount": 97
-      }
+      },
+      "nameZh": "神界：原罪2"
     },
     {
       "appid": 1222700,
@@ -1028,7 +1091,8 @@
       "achievementStats": {
         "unlockedCount": 6,
         "totalCount": 14
-      }
+      },
+      "nameZh": "逃出生天"
     },
     {
       "appid": 414340,
@@ -1042,7 +1106,8 @@
       "achievementStats": {
         "unlockedCount": 13,
         "totalCount": 14
-      }
+      },
+      "nameZh": "地狱之刃：塞娜的献祭"
     },
     {
       "appid": 249130,
@@ -1056,7 +1121,8 @@
       "achievementStats": {
         "unlockedCount": 11,
         "totalCount": 45
-      }
+      },
+      "nameZh": "LEGO® Marvel™ Super Heroes"
     },
     {
       "appid": 346110,
@@ -1070,7 +1136,8 @@
       "achievementStats": {
         "unlockedCount": 3,
         "totalCount": 32
-      }
+      },
+      "nameZh": "方舟：生存进化"
     },
     {
       "appid": 206420,
@@ -1084,7 +1151,8 @@
       "achievementStats": {
         "unlockedCount": 11,
         "totalCount": 73
-      }
+      },
+      "nameZh": "黑道圣徒 IV"
     },
     {
       "appid": 3590,
@@ -1098,7 +1166,8 @@
       "achievementStats": {
         "unlockedCount": 0,
         "totalCount": 21
-      }
+      },
+      "nameZh": "植物大战僵尸：年度版"
     },
     {
       "appid": 489830,
@@ -1112,7 +1181,8 @@
       "achievementStats": {
         "unlockedCount": 2,
         "totalCount": 75
-      }
+      },
+      "nameZh": "上古卷轴5：天际特别版"
     },
     {
       "appid": 688420,
@@ -1126,7 +1196,8 @@
       "achievementStats": {
         "unlockedCount": 9,
         "totalCount": 11
-      }
+      },
+      "nameZh": "北境之地"
     },
     {
       "appid": 670290,
@@ -1140,7 +1211,8 @@
       "achievementStats": {
         "unlockedCount": 2,
         "totalCount": 13
-      }
+      },
+      "nameZh": "真实台球3D - Pool"
     },
     {
       "appid": 2379780,
@@ -1154,7 +1226,8 @@
       "achievementStats": {
         "unlockedCount": 7,
         "totalCount": 31
-      }
+      },
+      "nameZh": "小丑牌"
     },
     {
       "appid": 1151640,
@@ -1168,7 +1241,8 @@
       "achievementStats": {
         "unlockedCount": 10,
         "totalCount": 79
-      }
+      },
+      "nameZh": "地平线：零之曙光 完全版"
     },
     {
       "appid": 728880,
@@ -1182,7 +1256,8 @@
       "achievementStats": {
         "unlockedCount": 6,
         "totalCount": 54
-      }
+      },
+      "nameZh": "胡闹厨房2"
     },
     {
       "appid": 1237970,
@@ -1196,7 +1271,8 @@
       "achievementStats": {
         "unlockedCount": 7,
         "totalCount": 50
-      }
+      },
+      "nameZh": "泰坦陨落2"
     },
     {
       "appid": 1238840,
@@ -1210,7 +1286,8 @@
       "achievementStats": {
         "unlockedCount": 5,
         "totalCount": 50
-      }
+      },
+      "nameZh": "战地1"
     },
     {
       "appid": 993090,
@@ -1277,7 +1354,8 @@
       "achievementStats": {
         "unlockedCount": 3,
         "totalCount": 61
-      }
+      },
+      "nameZh": "刺客信条：幻景"
     },
     {
       "appid": 200260,
@@ -1291,7 +1369,8 @@
       "achievementStats": {
         "unlockedCount": 7,
         "totalCount": 64
-      }
+      },
+      "nameZh": "Batman: Arkham City - Game of the Year Edition"
     },
     {
       "appid": 619150,
@@ -1347,7 +1426,8 @@
       "achievementStats": {
         "unlockedCount": 3,
         "totalCount": 26
-      }
+      },
+      "nameZh": "速速上菜！"
     },
     {
       "appid": 2238040,
@@ -1361,7 +1441,8 @@
       "achievementStats": {
         "unlockedCount": 26,
         "totalCount": 31
-      }
+      },
+      "nameZh": "瞎闹猎车手"
     },
     {
       "appid": 2138710,
@@ -1417,7 +1498,8 @@
       "achievementStats": {
         "unlockedCount": 4,
         "totalCount": 21
-      }
+      },
+      "nameZh": "小兵大战 - Warpips"
     },
     {
       "appid": 945360,
@@ -1445,7 +1527,8 @@
       "achievementStats": {
         "unlockedCount": 1,
         "totalCount": 45
-      }
+      },
+      "nameZh": "Ghostrunner - 幽灵行者"
     },
     {
       "appid": 3527290,
@@ -1487,7 +1570,8 @@
       "achievementStats": {
         "unlockedCount": 8,
         "totalCount": 151
-      }
+      },
+      "nameZh": "人类一败涂地 / Human Fall Flat"
     },
     {
       "appid": 15100,
@@ -1498,7 +1582,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/15100",
       "communityUrl": "https://steamcommunity.com/app/15100",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "Assassin's Creed™: Director's Cut Edition"
     },
     {
       "appid": 49520,
@@ -1554,7 +1639,8 @@
       "achievementStats": {
         "unlockedCount": 3,
         "totalCount": 80
-      }
+      },
+      "nameZh": "生化奇兵：无限 完全版"
     },
     {
       "appid": 373420,
@@ -1568,7 +1654,8 @@
       "achievementStats": {
         "unlockedCount": 0,
         "totalCount": 54
-      }
+      },
+      "nameZh": "神界：原罪增强版"
     },
     {
       "appid": 227300,
@@ -1713,7 +1800,8 @@
       "achievementStats": {
         "unlockedCount": 3,
         "totalCount": 66
-      }
+      },
+      "nameZh": "Just Cause™ 3"
     },
     {
       "appid": 557600,
@@ -1738,7 +1826,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/2229850",
       "communityUrl": "https://steamcommunity.com/app/2229850",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "《命令与征服：红色警戒 2 及尤里的复仇》"
     },
     {
       "appid": 1102130,
@@ -1780,7 +1869,8 @@
       "achievementStats": {
         "unlockedCount": 2,
         "totalCount": 48
-      }
+      },
+      "nameZh": "底特律：化身为人"
     },
     {
       "appid": 20900,
@@ -1791,7 +1881,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/20900",
       "communityUrl": "https://steamcommunity.com/app/20900",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "The Witcher: Enhanced Edition Director's Cut"
     },
     {
       "appid": 336240,
@@ -1819,7 +1910,8 @@
       "achievementStats": {
         "unlockedCount": 5,
         "totalCount": 54
-      }
+      },
+      "nameZh": "围攻"
     },
     {
       "appid": 377160,
@@ -1875,7 +1967,8 @@
       "achievementStats": {
         "unlockedCount": 2,
         "totalCount": 32
-      }
+      },
+      "nameZh": "过山车之星"
     },
     {
       "appid": 17480,
@@ -1886,7 +1979,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/17480",
       "communityUrl": "https://steamcommunity.com/app/17480",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "《命令与征服™：红色警戒 3》"
     },
     {
       "appid": 206440,
@@ -1900,7 +1994,8 @@
       "achievementStats": {
         "unlockedCount": 0,
         "totalCount": 1
-      }
+      },
+      "nameZh": "To the Moon《去月球》"
     },
     {
       "appid": 366250,
@@ -1942,7 +2037,8 @@
       "achievementStats": {
         "unlockedCount": 0,
         "totalCount": 1
-      }
+      },
+      "nameZh": "反恐精英2"
     },
     {
       "appid": 260230,
@@ -1984,7 +2080,8 @@
       "achievementStats": {
         "unlockedCount": 1,
         "totalCount": 27
-      }
+      },
+      "nameZh": "Orwell: Keeping an Eye On You"
     },
     {
       "appid": 683320,
@@ -2026,7 +2123,8 @@
       "achievementStats": {
         "unlockedCount": 3,
         "totalCount": 51
-      }
+      },
+      "nameZh": "传送门2"
     },
     {
       "appid": 537800,
@@ -2040,7 +2138,8 @@
       "achievementStats": {
         "unlockedCount": 3,
         "totalCount": 30
-      }
+      },
+      "nameZh": "轰炸机小队 / Bomber Crew"
     },
     {
       "appid": 48700,
@@ -2068,7 +2167,8 @@
       "achievementStats": {
         "unlockedCount": 1,
         "totalCount": 46
-      }
+      },
+      "nameZh": "巫师之昆特牌"
     },
     {
       "appid": 335300,
@@ -2132,7 +2232,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/7670",
       "communityUrl": "https://steamcommunity.com/app/7670",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "BioShock™"
     },
     {
       "appid": 684410,
@@ -2146,7 +2247,8 @@
       "achievementStats": {
         "unlockedCount": 0,
         "totalCount": 26
-      }
+      },
+      "nameZh": "桥梁工程师传送门"
     },
     {
       "appid": 391540,
@@ -2185,7 +2287,8 @@
       "achievementStats": {
         "unlockedCount": 0,
         "totalCount": 12
-      }
+      },
+      "nameZh": "Castle Crashers®"
     },
     {
       "appid": 365450,
@@ -2210,7 +2313,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/3390",
       "communityUrl": "https://steamcommunity.com/app/3390",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "Feeding Frenzy 2 Deluxe"
     },
     {
       "appid": 312610,
@@ -2235,7 +2339,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/219740",
       "communityUrl": "https://steamcommunity.com/app/219740",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "饥荒"
     },
     {
       "appid": 407530,
@@ -2246,7 +2351,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/407530",
       "communityUrl": "https://steamcommunity.com/app/407530",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "ARK: The Survival Of The Fittest"
     },
     {
       "appid": 911400,
@@ -2257,7 +2363,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/911400",
       "communityUrl": "https://steamcommunity.com/app/911400",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "刺客信条3：高清重制版"
     },
     {
       "appid": 498240,
@@ -2312,7 +2419,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/8850",
       "communityUrl": "https://steamcommunity.com/app/8850",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "BioShock® 2"
     },
     {
       "appid": 409720,
@@ -2323,7 +2431,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/409720",
       "communityUrl": "https://steamcommunity.com/app/409720",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "生化奇兵2 重制版"
     },
     {
       "appid": 409710,
@@ -2334,7 +2443,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/409710",
       "communityUrl": "https://steamcommunity.com/app/409710",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "生化奇兵 重制版"
     },
     {
       "appid": 397540,
@@ -2345,7 +2455,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/397540",
       "communityUrl": "https://steamcommunity.com/app/397540",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "无主之地3"
     },
     {
       "appid": 261640,
@@ -2367,7 +2478,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1042490",
       "communityUrl": "https://steamcommunity.com/app/1042490",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "海之呼唤"
     },
     {
       "appid": 1515950,
@@ -2400,7 +2512,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/2881650",
       "communityUrl": "https://steamcommunity.com/app/2881650",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "前方高能"
     },
     {
       "appid": 383180,
@@ -2411,7 +2524,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/383180",
       "communityUrl": "https://steamcommunity.com/app/383180",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "Dead Island: Riptide Definitive Edition"
     },
     {
       "appid": 520720,
@@ -2433,7 +2547,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/323720",
       "communityUrl": "https://steamcommunity.com/app/323720",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "Decay: The Mare"
     },
     {
       "appid": 403640,
@@ -2455,7 +2570,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/614570",
       "communityUrl": "https://steamcommunity.com/app/614570",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "Dishonored®: Death of the Outsider™"
     },
     {
       "appid": 1294660,
@@ -2466,7 +2582,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1294660",
       "communityUrl": "https://steamcommunity.com/app/1294660",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "《Divine Knockout》（DKO）"
     },
     {
       "appid": 230230,
@@ -2510,7 +2627,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/289130",
       "communityUrl": "https://steamcommunity.com/app/289130",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "无尽帝国"
     },
     {
       "appid": 1496790,
@@ -2532,7 +2650,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/3240220",
       "communityUrl": "https://steamcommunity.com/app/3240220",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "Grand Theft Auto V 增强版"
     },
     {
       "appid": 815370,
@@ -2543,7 +2662,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/815370",
       "communityUrl": "https://steamcommunity.com/app/815370",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "绿色地狱"
     },
     {
       "appid": 220,
@@ -2620,7 +2740,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/283270",
       "communityUrl": "https://steamcommunity.com/app/283270",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "Jagged Alliance 1: Gold Edition"
     },
     {
       "appid": 1977170,
@@ -2631,7 +2752,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1977170",
       "communityUrl": "https://steamcommunity.com/app/1977170",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "退潮"
     },
     {
       "appid": 8190,
@@ -2686,7 +2808,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/2149010",
       "communityUrl": "https://steamcommunity.com/app/2149010",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "小小梦魇 强化版"
     },
     {
       "appid": 1507190,
@@ -2697,7 +2820,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1507190",
       "communityUrl": "https://steamcommunity.com/app/1507190",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "Machinika: Museum"
     },
     {
       "appid": 1030840,
@@ -2708,7 +2832,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1030840",
       "communityUrl": "https://steamcommunity.com/app/1030840",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "《四海兄弟: 最终版》​"
     },
     {
       "appid": 43110,
@@ -2730,7 +2855,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/412020",
       "communityUrl": "https://steamcommunity.com/app/412020",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "地铁：离乡"
     },
     {
       "appid": 1449560,
@@ -2741,7 +2867,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1449560",
       "communityUrl": "https://steamcommunity.com/app/1449560",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "地铁：离乡"
     },
     {
       "appid": 43160,
@@ -2785,7 +2912,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/489520",
       "communityUrl": "https://steamcommunity.com/app/489520",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "随从大师"
     },
     {
       "appid": 613900,
@@ -2807,7 +2935,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1466640",
       "communityUrl": "https://steamcommunity.com/app/1466640",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "九十六号公路"
     },
     {
       "appid": 742420,
@@ -2840,7 +2969,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/750920",
       "communityUrl": "https://steamcommunity.com/app/750920",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "Shadow of the Tomb Raider: Definitive Edition"
     },
     {
       "appid": 418240,
@@ -2862,7 +2992,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1579380",
       "communityUrl": "https://steamcommunity.com/app/1579380",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "Shadow Tactics: 爱子的选择 Aiko's Choice"
     },
     {
       "appid": 1176710,
@@ -2873,7 +3004,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1176710",
       "communityUrl": "https://steamcommunity.com/app/1176710",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "星际小队 / Space Crew: Legendary Edition"
     },
     {
       "appid": 1237980,
@@ -2884,7 +3016,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1237980",
       "communityUrl": "https://steamcommunity.com/app/1237980",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "星际大战 战地风云™"
     },
     {
       "appid": 571310,
@@ -2917,7 +3050,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/46510",
       "communityUrl": "https://steamcommunity.com/app/46510",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "Syberia II"
     },
     {
       "appid": 1180660,
@@ -2950,7 +3084,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/646910",
       "communityUrl": "https://steamcommunity.com/app/646910",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "The Crew™ 2"
     },
     {
       "appid": 1449690,
@@ -2972,7 +3107,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/518790",
       "communityUrl": "https://steamcommunity.com/app/518790",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "《猎人：荒野的召唤™》"
     },
     {
       "appid": 475150,
@@ -3016,7 +3152,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/35720",
       "communityUrl": "https://steamcommunity.com/app/35720",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "Trine 2: Complete Story"
     },
     {
       "appid": 1436700,
@@ -3060,7 +3197,8 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/268500",
       "communityUrl": "https://steamcommunity.com/app/268500",
-      "achievementStats": null
+      "achievementStats": null,
+      "nameZh": "XCOM® 2"
     },
     {
       "appid": 570780,
