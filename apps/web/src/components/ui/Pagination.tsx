@@ -68,7 +68,7 @@ export function Pagination({
   return (
     <nav
       className={cn(
-        'scrollbar-hide mt-12 flex max-w-full min-w-0 items-center justify-start gap-1 overflow-x-auto px-1 sm:justify-center sm:gap-2',
+        'scrollbar-hide mt-12 flex max-w-full min-w-0 items-center justify-center gap-1 overflow-x-auto px-1 sm:gap-2',
         className
       )}
       aria-label="Pagination"
@@ -76,7 +76,7 @@ export function Pagination({
       <button
         onClick={() => onPageChange(1)}
         disabled={currentPage === 1}
-        className="shrink-0 rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+        className="hidden shrink-0 rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 sm:inline-flex dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
         aria-label="First page"
       >
         <ChevronsLeft size={18} />
@@ -126,7 +126,7 @@ export function Pagination({
       <button
         onClick={() => onPageChange(totalPages)}
         disabled={currentPage === totalPages}
-        className="shrink-0 rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+        className="hidden shrink-0 rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 sm:inline-flex dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
         aria-label="Last page"
       >
         <ChevronsRight size={18} />

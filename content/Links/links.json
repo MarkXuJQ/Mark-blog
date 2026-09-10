@@ -133,6 +133,18 @@
       "url": "https://www.oiloil.org/",
       "avatar": "https://www.oiloil.org/icon.png",
       "description": "Oil 的个人作品、AI 工具实操、产品开发与开源项目记录。"
+    },
+    {
+      "name": "Catarium",
+      "url": "https://eofs791.github.io",
+      "avatar": "https://resource.catarium.me/avatar.ico",
+      "description": "见崎的猫箱"
+    },
+    {
+      "name": "手里有只毛毛虫",
+      "url": "https://www.krjojo.com/",
+      "avatar": "https://www.krjojo.com/krjojo.avif",
+      "description": "号角声起 - 等你启航"
     }
   ]
 }

@@ -825,60 +825,62 @@ export function Movies() {
                     />
                   </label>
 
-                  <SelectMenu
-                    value={movieFilter}
-                    options={[
-                      {
-                        value: 'all',
-                        label: t('movies.filters.allMovies'),
-                      },
-                      {
-                        value: 'reviews',
-                        label: t('movies.filters.withReviews'),
-                      },
-                    ]}
-                    onValueChange={setMovieFilter}
-                    label={t('movies.filters.label')}
-                    ariaLabel={t('movies.filters.label')}
-                    className="shrink-0"
-                    containerClassName="h-9 gap-1.5 rounded-[1.1rem] px-3 pr-2.5"
-                    labelClassName="hidden sm:inline"
-                    buttonClassName="max-w-[7rem] gap-1 text-sm"
-                    menuClassName="w-52 max-w-[calc(100vw-2rem)]"
-                  />
+                  <div className="flex shrink-0 items-center gap-2.5">
+                    <SelectMenu
+                      value={movieFilter}
+                      options={[
+                        {
+                          value: 'all',
+                          label: t('movies.filters.allMovies'),
+                        },
+                        {
+                          value: 'reviews',
+                          label: t('movies.filters.withReviews'),
+                        },
+                      ]}
+                      onValueChange={setMovieFilter}
+                      label={t('movies.filters.label')}
+                      ariaLabel={t('movies.filters.label')}
+                      className="shrink-0"
+                      containerClassName="h-10 gap-1 rounded-[1.1rem] px-2.5 pr-2 sm:h-11 sm:gap-2 sm:px-3.5 sm:pr-3"
+                      labelClassName="hidden sm:inline"
+                      buttonClassName="max-w-[5.25rem] gap-1 text-sm sm:max-w-[6.8rem]"
+                      menuClassName="w-52 max-w-[calc(100vw-2rem)]"
+                    />
 
-                  <SegmentedToggle
-                    value={cardLayout}
-                    onValueChange={(layout) => {
-                      setCardLayout(layout)
-                      setCurrentPage(1)
-                    }}
-                    ariaLabel={t('movies.layout.label')}
-                    size="sm"
-                    className="shrink-0"
-                    buttonClassName="h-8 w-8 px-0"
-                    items={[
-                      {
-                        value: 'grid',
-                        ariaLabel: t('movies.layout.grid'),
-                        tooltip: t('movies.layout.grid'),
-                        content: (
-                          <RiGalleryView2
-                            className="h-4 w-4"
-                            aria-hidden="true"
-                          />
-                        ),
-                      },
-                      {
-                        value: 'list',
-                        ariaLabel: t('movies.layout.list'),
-                        tooltip: t('movies.layout.list'),
-                        content: (
-                          <LuList className="h-4 w-4" aria-hidden="true" />
-                        ),
-                      },
-                    ]}
-                  />
+                    <SegmentedToggle
+                      value={cardLayout}
+                      onValueChange={(layout) => {
+                        setCardLayout(layout)
+                        setCurrentPage(1)
+                      }}
+                      ariaLabel={t('movies.layout.label')}
+                      size="sm"
+                      className="shrink-0"
+                      buttonClassName="h-8 w-8 px-0"
+                      items={[
+                        {
+                          value: 'grid',
+                          ariaLabel: t('movies.layout.grid'),
+                          tooltip: t('movies.layout.grid'),
+                          content: (
+                            <RiGalleryView2
+                              className="h-4 w-4"
+                              aria-hidden="true"
+                            />
+                          ),
+                        },
+                        {
+                          value: 'list',
+                          ariaLabel: t('movies.layout.list'),
+                          tooltip: t('movies.layout.list'),
+                          content: (
+                            <LuList className="h-4 w-4" aria-hidden="true" />
+                          ),
+                        },
+                      ]}
+                    />
+                  </div>
                 </div>
               </div>
             </section>

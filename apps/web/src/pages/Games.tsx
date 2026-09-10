@@ -192,6 +192,54 @@ function getGameDisplayName(game: SteamGame, isZh: boolean) {
   return isZh && game.nameZh?.trim() ? game.nameZh.trim() : game.name
 }
 
+const ACHIEVEMENT_MEDAL_SKY = 'rgba(56,189,248,1)'
+const ACHIEVEMENT_MEDAL_GOLD = 'rgba(251,191,36,1)'
+
+function GameAchievementMedal() {
+  return (
+    <svg
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-8 w-8 drop-shadow-[0_1px_3px_rgba(56,189,248,0.35)]"
+      aria-hidden="true"
+    >
+      <path
+        d="M401.92 888.32L371.2 750.08l-130.56 57.6 175.36-348.16 161.28 80.64z"
+        fill={ACHIEVEMENT_MEDAL_GOLD}
+      />
+      <path
+        d="M396.8 926.72L362.24 768l-148.48 66.56 197.12-392.96 184.32 92.16L396.8 926.72z m-16.64-194.56l26.88 119.04 153.6-305.92L422.4 476.16 268.8 782.08l111.36-49.92z"
+        fill={ACHIEVEMENT_MEDAL_SKY}
+      />
+      <path
+        d="M624.64 888.32l30.72-138.24 130.56 57.6-175.36-348.16-161.28 80.64z"
+        fill={ACHIEVEMENT_MEDAL_GOLD}
+      />
+      <path
+        d="M629.76 926.72L432.64 533.76l184.32-92.16 197.12 392.96L665.6 768l-35.84 158.72zM467.2 545.28l153.6 305.92 26.88-119.04 111.36 49.92-153.6-305.92-138.24 69.12z"
+        fill={ACHIEVEMENT_MEDAL_SKY}
+      />
+      <path
+        d="M719.36 609.28l-96 11.52-70.4 65.28-84.48-46.08-96 11.52-40.96-88.32-84.48-47.36 19.2-94.72-40.96-87.04 70.4-66.56 19.2-94.72 96-11.52 70.4-66.56 84.48 47.36 96-11.52 40.96 88.32 84.48 47.36-19.2 94.72 40.96 87.04-70.4 66.56z"
+        fill={ACHIEVEMENT_MEDAL_SKY}
+      />
+      <path
+        d="M554.24 702.72l-89.6-49.92-101.12 12.8-42.24-92.16-89.6-49.92 19.2-99.84-42.24-92.16 74.24-69.12 19.2-99.84 101.12-12.8 74.24-69.12 89.6 49.92 101.12-12.8 42.24 92.16 89.6 49.92-17.92 98.56 42.24 92.16-74.24 69.12-19.2 99.84-101.12 12.8-75.52 70.4z m-83.2-76.8l79.36 44.8 66.56-62.72 90.88-11.52 17.92-89.6 66.56-62.72-38.4-83.2 17.92-89.6-80.64-44.8-38.4-83.2-89.6 12.8-80.64-44.8-66.56 62.72-90.88 11.52-17.92 89.6-66.56 62.72 38.4 83.2-17.92 89.6 80.64 44.8 38.4 83.2 90.88-12.8z"
+        fill={ACHIEVEMENT_MEDAL_SKY}
+      />
+      <path
+        d="M353.28 390.4a166.4 166.4 0 1 0 332.8 0 166.4 166.4 0 1 0-332.8 0Z"
+        fill={ACHIEVEMENT_MEDAL_GOLD}
+      />
+      <path
+        d="M519.68 569.6c-98.56 0-179.2-80.64-179.2-179.2s80.64-179.2 179.2-179.2 179.2 80.64 179.2 179.2c-1.28 98.56-80.64 179.2-179.2 179.2z m0-332.8c-84.48 0-153.6 69.12-153.6 153.6s69.12 153.6 153.6 153.6 153.6-69.12 153.6-153.6c-1.28-84.48-69.12-153.6-153.6-153.6z"
+        fill={ACHIEVEMENT_MEDAL_SKY}
+      />
+    </svg>
+  )
+}
+
 function buildInitials(name: string) {
   const chars = Array.from(name.trim())
   if (chars.length === 0) return 'GM'
@@ -800,26 +848,22 @@ function GameListItem({
   game,
   displayName,
   locale,
-  playtimeLabel,
-  statusLabel,
-  achievementLabel,
-  achievementMissingLabel,
+  playtimeShortLabel,
+  recentPlaytimeLabel,
   openStoreLabel,
 }: {
   game: SteamGame
   displayName: string
   locale: string
-  playtimeLabel: string
-  statusLabel: string | null
-  achievementLabel: string
-  achievementMissingLabel: string
+  playtimeShortLabel: string
+  recentPlaytimeLabel: string
   openStoreLabel: string
 }) {
   const achievementProgress = getAchievementProgress(game)
-  const achievementPercent =
-    achievementProgress.totalCount > 0
-      ? Math.round(achievementProgress.ratio * 100)
-      : 0
+  const hasAchievements = achievementProgress.totalCount > 0
+  const isComplete =
+    hasAchievements &&
+    achievementProgress.unlockedCount >= achievementProgress.totalCount
   const imageUrl = game.headerImage || getSteamLibraryHeaderUrl(game.appid)
 
   return (
@@ -858,28 +902,52 @@ function GameListItem({
           </p>
         ) : null}
 
-        <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[0.68rem] leading-4 text-slate-600 dark:text-slate-400">
-          <span className="font-semibold text-slate-800 dark:text-slate-200">
-            {playtimeLabel}
-          </span>
-          {statusLabel ? <span>{statusLabel}</span> : null}
-          <span>
-            {achievementProgress.totalCount > 0
-              ? `${achievementLabel} ${formatInteger(achievementPercent, locale)}%`
-              : achievementMissingLabel}
-          </span>
-        </div>
+        <div className="mt-3 flex min-w-0 items-end gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2 text-[0.68rem] leading-4 text-slate-600 dark:text-slate-400">
+              <span className="truncate font-semibold text-slate-800 dark:text-slate-200">
+                {playtimeShortLabel}
+              </span>
+              <span className="shrink-0 truncate text-slate-500/70 dark:text-slate-400/70">
+                {recentPlaytimeLabel}
+              </span>
+            </div>
 
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200/80 dark:bg-white/10">
-          {achievementProgress.widthPercent > 0 ? (
-            <div
-              className={cn(
-                'h-full rounded-full',
-                achievementProgress.fillClassName
-              )}
-              style={{ width: `${achievementProgress.widthPercent}%` }}
-            />
-          ) : null}
+            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200/80 dark:bg-white/10">
+              {achievementProgress.widthPercent > 0 ? (
+                <div
+                  className={cn(
+                    'h-full rounded-full',
+                    achievementProgress.fillClassName
+                  )}
+                  style={{ width: `${achievementProgress.widthPercent}%` }}
+                />
+              ) : null}
+            </div>
+          </div>
+
+          <div
+            className="flex w-[3.75rem] shrink-0 flex-col items-center justify-end gap-0.5 text-[0.72rem] leading-4 font-semibold text-slate-700 tabular-nums dark:text-slate-200"
+            title={
+              hasAchievements
+                ? `${achievementProgress.unlockedCount} / ${achievementProgress.totalCount}`
+                : undefined
+            }
+            aria-label={
+              hasAchievements
+                ? `${achievementProgress.unlockedCount} / ${achievementProgress.totalCount}`
+                : undefined
+            }
+          >
+            <span className="flex h-8 items-center justify-center">
+              {isComplete ? <GameAchievementMedal /> : null}
+            </span>
+            <span>
+              {hasAchievements
+                ? `${formatInteger(achievementProgress.unlockedCount, locale)} / ${formatInteger(achievementProgress.totalCount, locale)}`
+                : '— / —'}
+            </span>
+          </div>
         </div>
       </div>
     </a>
@@ -898,7 +966,7 @@ export function Games() {
   const [search, setSearch] = useState('')
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
   const [sort, setSort] = useState<GameSort>('playtime')
-  const [cardLayout, setCardLayout] = useState<CardLayout>('grid')
+  const [cardLayout, setCardLayout] = useState<CardLayout>('list')
   const [currentPage, setCurrentPage] = useState(1)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLElement | null>(null)
@@ -1508,6 +1576,16 @@ export function Games() {
                       const playtimeLabel = t('games.library.playtime', {
                         hours: formatHours(game.playtimeMinutes, locale),
                       })
+                      const playtimeShortLabel = `${formatHours(game.playtimeMinutes, locale)} h`
+                      const recentPlaytimeLabel = t(
+                        'games.library.recentPlaytimeShort',
+                        {
+                          hours: formatHours(
+                            game.recentPlaytimeMinutes,
+                            locale
+                          ),
+                        }
+                      )
                       const statusLabel =
                         game.playtimeMinutes <= 0
                           ? t('games.library.neverPlayed')
@@ -1548,12 +1626,8 @@ export function Games() {
                           game={game}
                           displayName={displayName}
                           locale={locale}
-                          playtimeLabel={playtimeLabel}
-                          statusLabel={statusLabel}
-                          achievementLabel={t('games.featured.achievements')}
-                          achievementMissingLabel={t(
-                            'games.library.achievementMissing'
-                          )}
+                          playtimeShortLabel={playtimeShortLabel}
+                          recentPlaytimeLabel={recentPlaytimeLabel}
                           openStoreLabel={t('games.actions.openStore')}
                         />
                       )

@@ -284,6 +284,7 @@
       "sortLabel": "排序",
       "playtime": "累计 {{hours}} 小时",
       "achievementMissing": "无 Steam 成就",
+      "recentPlaytimeShort": "近两周 {{hours}} h",
       "recentPlaytime": "近两周 {{hours}} 小时",
       "neverPlayed": "尚未启动",
       "noResults": "没有符合当前条件的游戏。"

@@ -284,6 +284,7 @@
       "sortLabel": "Sort",
       "playtime": "{{hours}} hrs total",
       "achievementMissing": "No Steam achievements",
+      "recentPlaytimeShort": "Last 2 weeks {{hours}} h",
       "recentPlaytime": "{{hours}} hrs in the last 2 weeks",
       "neverPlayed": "Never launched",
       "noResults": "No games match the current filters."
