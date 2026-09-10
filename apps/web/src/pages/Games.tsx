@@ -1351,20 +1351,20 @@ export function Games() {
                 className="mt-10 scroll-mt-28 rounded-[28px] border border-slate-200/70 bg-white/80 p-5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur sm:p-6 dark:border-0 dark:bg-[#17191c] dark:shadow-none"
               >
                 <div className="relative">
-                  <div className="hidden items-center justify-between gap-4 sm:flex">
-                    <h2 className="min-w-0 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+                  <div className="hidden min-w-0 items-center gap-4 sm:flex">
+                    <h2 className="shrink-0 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
                       {t('games.library.title')}
                     </h2>
 
-                    <div className="flex shrink-0 items-center gap-2.5">
-                      <label className="flex h-11 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3.5 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition dark:border-[#2b2f36] dark:bg-[#17191c] dark:shadow-none">
+                    <div className="flex min-w-0 flex-1 items-center justify-end gap-2.5">
+                      <label className="flex h-11 max-w-[15rem] min-w-0 flex-1 items-center gap-2 rounded-[1.1rem] border border-slate-200 bg-white px-3.5 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition dark:border-[#2b2f36] dark:bg-[#17191c] dark:shadow-none">
                         <Search className="h-4 w-4 shrink-0 text-slate-500 dark:text-slate-400" />
                         <input
                           type="search"
                           value={search}
                           onChange={(event) => setSearch(event.target.value)}
                           placeholder={t('games.library.searchPlaceholder')}
-                          className="w-[15rem] min-w-0 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+                          className="w-full min-w-0 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
                         />
 
                         {hasSearch ? (

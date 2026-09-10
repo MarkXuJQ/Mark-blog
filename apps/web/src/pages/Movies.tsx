@@ -825,7 +825,7 @@ export function Movies() {
                     />
                   </label>
 
-                  <div className="flex shrink-0 items-center gap-2.5">
+                  <div className="ml-auto flex shrink-0 items-center gap-2.5">
                     <SelectMenu
                       value={movieFilter}
                       options={[
@@ -1022,11 +1022,11 @@ export function Movies() {
                         >
                           <div className="mb-3 flex items-start justify-between gap-3">
                             <div className="min-w-0">
-                              <h2 className="line-clamp-2 text-[1.05rem] leading-snug font-semibold text-slate-900 dark:text-slate-100">
+                              <h2 className="line-clamp-2 text-left text-[1.05rem] leading-snug font-semibold text-slate-900 dark:text-slate-100">
                                 {movie.title}
                               </h2>
                               {movie.originalTitle ? (
-                                <p className="mt-1 line-clamp-1 text-sm text-slate-500 dark:text-slate-400">
+                                <p className="mt-1 line-clamp-1 text-left text-sm text-slate-500 dark:text-slate-400">
                                   {movie.originalTitle}
                                 </p>
                               ) : null}
@@ -1065,34 +1065,29 @@ export function Movies() {
                                 />
                               )
                             })}
-                            <span className="ml-1 text-xs text-slate-500 dark:text-slate-400">
-                              {movie.rating
-                                ? t('movies.rating.value', {
-                                    rating: movie.rating,
-                                  })
-                                : t('movies.rating.unrated')}
-                            </span>
                           </div>
 
                           <div className="mt-auto space-y-3">
-                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] leading-5 text-slate-500 dark:text-slate-400">
-                              {metadata.map((item) => (
-                                <span key={item}>{item}</span>
-                              ))}
-                            </div>
-
                             {cardExcerpt ? (
                               <p
                                 className={cn(
                                   'text-sm leading-6 text-slate-600 dark:text-slate-300',
-                                  cardLayout === 'list'
-                                    ? 'line-clamp-3'
-                                    : 'line-clamp-2'
+                                  hasReview
+                                    ? 'line-clamp-1'
+                                    : cardLayout === 'list'
+                                      ? 'line-clamp-3'
+                                      : 'line-clamp-2'
                                 )}
                               >
                                 {cardExcerpt}
                               </p>
                             ) : null}
+
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] leading-5 text-slate-500 dark:text-slate-400">
+                              {metadata.map((item) => (
+                                <span key={item}>{item}</span>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </button>
