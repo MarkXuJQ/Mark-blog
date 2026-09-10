@@ -1,14 +1,17 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Clapperboard, Search, Star } from 'lucide-react'
-import { RiDoubanLine } from 'react-icons/ri'
+import { LuList } from 'react-icons/lu'
+import { RiGalleryView2, RiDoubanLine } from 'react-icons/ri'
 import { MovieGuestbook } from '@/components/movies/MovieGuestbook'
 import { MovieStatsPanel } from '@/components/movies/MovieStatsPanel'
 import { Seo } from '@/app/seo/Seo'
 import { Pagination } from '@/components/ui/Pagination'
 import { RevealText } from '@/components/ui/reveal-text'
+import { SelectMenu } from '@/components/ui/SelectMenu'
+import { SegmentedToggle } from '@/components/ui/SegmentedToggle'
 import { WatchActivityCalendar } from '@/components/movies/WatchActivityCalendar'
 import {
   getMovieReviewBySlug,
@@ -20,6 +23,7 @@ import movieOverridesRaw from '@content/movies/movie-overrides.json'
 
 type ViewMode = 'csv' | 'tmdb'
 type CardLayout = 'list' | 'grid'
+type MovieFilter = 'all' | 'reviews'
 type TmdbStatus = 'idle' | 'loading' | 'ready' | 'error'
 
 interface MovieOverride {
@@ -51,6 +55,7 @@ interface TmdbSearchMovie {
   title?: string
   original_title?: string
   poster_path?: string | null
+  backdrop_path?: string | null
   release_date?: string
 }
 
@@ -59,17 +64,20 @@ interface TmdbEnrichedMovie {
   tmdbTitle: string
   tmdbOriginalTitle: string
   posterUrl: string
+  backdropUrl: string
   releaseDate: string
 }
 
 const ROWS_PER_PAGE = 4
-const BASE_COLUMNS = 2
+const LIST_ITEMS_PER_PAGE = 16
+const BASE_COLUMNS = 3
 const MIN_CARD_WIDTH_MD = 190
 const MIN_CARD_WIDTH_LG = 210
 const GAP_MD = 12
 const GAP_LG = 16
 const DEFAULT_PLATFORM = 'Douban'
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w342'
+const TMDB_BACKDROP_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w780'
 const DOUBAN_PROFILE_URL =
   'https://www.douban.com/people/191287070/?_i=3746089pLWPXRI,3746152pLWPXRI'
 const TMDB_PROFILE_URL = 'https://www.themoviedb.org/u/MarkXu269'
@@ -217,6 +225,12 @@ function normalizePosterUrl(path: string | undefined | null) {
   if (!path) return ''
   if (/^https?:\/\//i.test(path)) return path
   return `${TMDB_IMAGE_BASE_URL}${path}`
+}
+
+function normalizeBackdropUrl(path: string | undefined | null) {
+  if (!path) return ''
+  if (/^https?:\/\//i.test(path)) return path
+  return `${TMDB_BACKDROP_IMAGE_BASE_URL}${path}`
 }
 
 function calculateColumns(containerWidth: number, viewportWidth: number) {
@@ -434,6 +448,7 @@ async function fetchTmdbEnrichment(options: {
     tmdbTitle: result.title?.trim() || '',
     tmdbOriginalTitle: result.original_title?.trim() || '',
     posterUrl: normalizePosterUrl(result.poster_path),
+    backdropUrl: normalizeBackdropUrl(result.backdrop_path),
     releaseDate: result.release_date?.trim() || '',
   } satisfies TmdbEnrichedMovie
 }
@@ -443,8 +458,8 @@ export function Movies() {
   const navigate = useNavigate()
   const [keyword, setKeyword] = useState('')
   const viewMode: ViewMode = 'tmdb'
-  const cardLayout: CardLayout = 'grid'
-  const [onlyWithReviews, setOnlyWithReviews] = useState(false)
+  const [cardLayout, setCardLayout] = useState<CardLayout>('grid')
+  const [movieFilter, setMovieFilter] = useState<MovieFilter>('all')
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
@@ -455,6 +470,11 @@ export function Movies() {
   const [, setTmdbErrorMessage] = useState('')
   const [columns, setColumns] = useState(BASE_COLUMNS)
   const [gridNode, setGridNode] = useState<HTMLDivElement | null>(null)
+  const listRef = useRef<HTMLDivElement | null>(null)
+  const previousListStateRef = useRef<{
+    cardLayout: CardLayout
+    currentPage: number
+  } | null>(null)
   const [cinemaLetterImages, setCinemaLetterImages] = useState(() =>
     CINEMA_STILL_IMAGES.slice(0, CINEMA_REVEAL_TEXT.length)
   )
@@ -485,7 +505,7 @@ export function Movies() {
     const normalizedKeyword = keyword.trim().toLowerCase()
 
     return movieItems.filter((movie) => {
-      if (onlyWithReviews && !movie.reviewSlug) return false
+      if (movieFilter === 'reviews' && !movie.reviewSlug) return false
       if (selectedRating !== null && movie.rating !== selectedRating)
         return false
       if (
@@ -511,9 +531,10 @@ export function Movies() {
 
       return haystack.includes(normalizedKeyword)
     })
-  }, [movieItems, keyword, onlyWithReviews, selectedRating, selectedDateKey])
+  }, [movieItems, keyword, movieFilter, selectedRating, selectedDateKey])
 
-  const itemsPerPage = columns * ROWS_PER_PAGE
+  const itemsPerPage =
+    cardLayout === 'list' ? LIST_ITEMS_PER_PAGE : columns * ROWS_PER_PAGE
   const totalPages = Math.max(
     1,
     Math.ceil(filteredMovies.length / itemsPerPage)
@@ -521,13 +542,31 @@ export function Movies() {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [keyword, onlyWithReviews, selectedRating, selectedDateKey])
+  }, [keyword, movieFilter, selectedRating, selectedDateKey])
 
   useEffect(() => {
     if (currentPage > totalPages) {
       setCurrentPage(totalPages)
     }
   }, [currentPage, totalPages])
+
+  useEffect(() => {
+    if (window.__PRERENDER__) return
+
+    const previousState = previousListStateRef.current
+    previousListStateRef.current = { cardLayout, currentPage }
+    if (cardLayout !== 'list') return
+
+    if (
+      !previousState ||
+      (previousState.cardLayout === cardLayout &&
+        previousState.currentPage === currentPage)
+    ) {
+      return
+    }
+
+    listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [cardLayout, currentPage])
 
   const pageMovies = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage
@@ -771,37 +810,75 @@ export function Movies() {
 
             <section className="mb-6 pb-2">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <label className="relative max-w-xl min-w-0 flex-1 border-b border-slate-200/80 pb-2 dark:border-[#2b2f36]">
-                  <Search
-                    size={16}
-                    className="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2 text-slate-400"
-                  />
-                  <input
-                    type="search"
-                    value={keyword}
-                    onChange={(event) => setKeyword(event.target.value)}
-                    placeholder={t('movies.searchPlaceholder')}
-                    className="w-full bg-transparent py-2 pr-0 pl-7 text-sm text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-200 dark:placeholder:text-slate-500"
-                  />
-                </label>
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <label className="relative max-w-xl min-w-0 flex-1 border-b border-slate-200/80 pb-2 dark:border-[#2b2f36]">
+                    <Search
+                      size={16}
+                      className="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2 text-slate-400"
+                    />
+                    <input
+                      type="search"
+                      value={keyword}
+                      onChange={(event) => setKeyword(event.target.value)}
+                      placeholder={t('movies.searchPlaceholder')}
+                      className="w-full bg-transparent py-2 pr-0 pl-7 text-sm text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-200 dark:placeholder:text-slate-500"
+                    />
+                  </label>
 
-                <div className="flex flex-col gap-3 lg:items-end">
-                  <button
-                    type="button"
-                    onClick={() => setOnlyWithReviews((prev) => !prev)}
-                    className={cn(
-                      'inline-flex w-fit items-center gap-2 border-b pb-1 text-sm transition',
-                      onlyWithReviews
-                        ? 'border-emerald-500 text-emerald-700 dark:border-emerald-400 dark:text-emerald-300'
-                        : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-800 dark:text-slate-400 dark:hover:border-[#3a3f48] dark:hover:text-slate-200'
-                    )}
-                  >
-                    <span className="text-[0.72rem] tracking-[0.18em] uppercase">
-                      {onlyWithReviews
-                        ? t('movies.reviews.onlyWithReviewsOn')
-                        : t('movies.reviews.onlyWithReviewsOff')}
-                    </span>
-                  </button>
+                  <SelectMenu
+                    value={movieFilter}
+                    options={[
+                      {
+                        value: 'all',
+                        label: t('movies.filters.allMovies'),
+                      },
+                      {
+                        value: 'reviews',
+                        label: t('movies.filters.withReviews'),
+                      },
+                    ]}
+                    onValueChange={setMovieFilter}
+                    label={t('movies.filters.label')}
+                    ariaLabel={t('movies.filters.label')}
+                    className="shrink-0"
+                    containerClassName="h-9 gap-1.5 rounded-[1.1rem] px-3 pr-2.5"
+                    labelClassName="hidden sm:inline"
+                    buttonClassName="max-w-[7rem] gap-1 text-sm"
+                    menuClassName="w-52 max-w-[calc(100vw-2rem)]"
+                  />
+
+                  <SegmentedToggle
+                    value={cardLayout}
+                    onValueChange={(layout) => {
+                      setCardLayout(layout)
+                      setCurrentPage(1)
+                    }}
+                    ariaLabel={t('movies.layout.label')}
+                    size="sm"
+                    className="shrink-0"
+                    buttonClassName="h-8 w-8 px-0"
+                    items={[
+                      {
+                        value: 'grid',
+                        ariaLabel: t('movies.layout.grid'),
+                        tooltip: t('movies.layout.grid'),
+                        content: (
+                          <RiGalleryView2
+                            className="h-4 w-4"
+                            aria-hidden="true"
+                          />
+                        ),
+                      },
+                      {
+                        value: 'list',
+                        ariaLabel: t('movies.layout.list'),
+                        tooltip: t('movies.layout.list'),
+                        content: (
+                          <LuList className="h-4 w-4" aria-hidden="true" />
+                        ),
+                      },
+                    ]}
+                  />
                 </div>
               </div>
             </section>
@@ -826,9 +903,13 @@ export function Movies() {
             ) : (
               <>
                 <div
-                  ref={setGridNode}
+                  ref={(node) => {
+                    setGridNode(node)
+                    listRef.current = node
+                  }}
                   className={cn(
-                    cardLayout === 'grid' ? 'grid gap-3 lg:gap-4' : 'space-y-4'
+                    'scroll-mt-28',
+                    cardLayout === 'grid' ? 'grid gap-3 lg:gap-4' : 'space-y-3'
                   )}
                   style={
                     cardLayout === 'grid'
@@ -841,8 +922,12 @@ export function Movies() {
                   {pageMovies.map((movie) => {
                     const watchedAt = formatDate(movie.watchDate, locale)
                     const tmdb = tmdbMap[movie.id] ?? null
-                    const showPoster =
-                      viewMode === 'tmdb' && Boolean(tmdb?.posterUrl)
+                    const movieImageUrl =
+                      cardLayout === 'list'
+                        ? tmdb?.backdropUrl
+                        : tmdb?.posterUrl
+                    const showMovieImage =
+                      viewMode === 'tmdb' && Boolean(movieImageUrl)
                     const reviewPath = movie.reviewSlug
                       ? `/movies/reviews/${encodeURIComponent(movie.reviewSlug)}`
                       : ''
@@ -880,23 +965,28 @@ export function Movies() {
                             : undefined
                         }
                         className={cn(
-                          'group relative flex h-full w-full flex-col overflow-hidden rounded-[1.4rem] border border-slate-200/70 p-3 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur transition-[transform,box-shadow,background-color] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_68px_-40px_rgba(15,23,42,0.4)] dark:border-0 dark:shadow-none',
+                          'group relative flex h-full w-full overflow-hidden rounded-[1.4rem] border border-slate-200/70 p-3 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur transition-[transform,box-shadow,background-color] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_68px_-40px_rgba(15,23,42,0.4)] dark:border-0 dark:shadow-none',
                           hasReview
                             ? 'bg-white/88 dark:bg-[#17191c]/96'
                             : 'bg-white/78 dark:bg-[#17191c]/92',
                           canOpenReview
                             ? 'cursor-pointer focus:ring-2 focus:ring-emerald-300 focus:outline-none dark:focus:ring-emerald-700'
                             : 'cursor-default',
-                          cardLayout === 'grid'
-                            ? 'flex h-full w-full flex-col'
-                            : ''
+                          cardLayout === 'grid' ? 'flex-col' : 'flex-row gap-3'
                         )}
                       >
                         {viewMode === 'tmdb' ? (
-                          <div className="relative mb-4 aspect-[2/3] overflow-hidden rounded-[1.05rem] bg-slate-100 dark:bg-[#1f2328]">
-                            {showPoster ? (
+                          <div
+                            className={cn(
+                              'relative shrink-0 overflow-hidden bg-slate-100 dark:bg-[#1f2328]',
+                              cardLayout === 'grid'
+                                ? 'mb-4 aspect-[2/3] w-full rounded-[1.05rem]'
+                                : 'aspect-[16/9] w-[38%] max-w-[10rem] self-start rounded-[0.9rem] sm:w-[30%] sm:max-w-[12rem]'
+                            )}
+                          >
+                            {showMovieImage ? (
                               <img
-                                src={tmdb?.posterUrl}
+                                src={movieImageUrl}
                                 alt={movie.title}
                                 loading="lazy"
                                 decoding="async"
@@ -922,7 +1012,12 @@ export function Movies() {
                           </div>
                         ) : null}
 
-                        <div className="flex min-w-0 flex-1 flex-col">
+                        <div
+                          className={cn(
+                            'flex min-w-0 flex-1 flex-col',
+                            cardLayout === 'list' && 'pt-0.5'
+                          )}
+                        >
                           <div className="mb-3 flex items-start justify-between gap-3">
                             <div className="min-w-0">
                               <h2 className="line-clamp-2 text-[1.05rem] leading-snug font-semibold text-slate-900 dark:text-slate-100">
@@ -985,7 +1080,14 @@ export function Movies() {
                             </div>
 
                             {cardExcerpt ? (
-                              <p className="line-clamp-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+                              <p
+                                className={cn(
+                                  'text-sm leading-6 text-slate-600 dark:text-slate-300',
+                                  cardLayout === 'list'
+                                    ? 'line-clamp-3'
+                                    : 'line-clamp-2'
+                                )}
+                              >
                                 {cardExcerpt}
                               </p>
                             ) : null}

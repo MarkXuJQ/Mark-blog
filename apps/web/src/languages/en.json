@@ -206,6 +206,9 @@
     },
     "searchPlaceholder": "Search title, original title, platform, or notes...",
     "filters": {
+      "label": "Filter",
+      "allMovies": "All Movies",
+      "withReviews": "With Reviews",
       "allPlatforms": "All Platforms",
       "newestFirst": "Newest Watched First",
       "oldestFirst": "Oldest Watched First"
@@ -228,14 +231,17 @@
       "backToMovies": "Back to Movies",
       "notFoundTitle": "Review not found",
       "hasReviewBadge": "Review",
-      "readReview": "Read Review",
-      "onlyWithReviewsOn": "With Reviews",
-      "onlyWithReviewsOff": "All Movies"
+      "readReview": "Read Review"
     }
   },
   "games": {
     "description": "A Steam-powered page for browsing my steam library, total playtime, and achievement completion.",
     "loading": "Syncing Steam library data…",
+    "layout": {
+      "label": "Layout",
+      "list": "List",
+      "grid": "Grid"
+    },
     "hero": {
       "eyebrow": "Steam Library",
       "title": "{{name}}'s Library",
