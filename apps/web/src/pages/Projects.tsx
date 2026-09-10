@@ -1,12 +1,13 @@
 import type { IconType } from 'react-icons'
 import { useState } from 'react'
 import { IoGameController } from 'react-icons/io5'
-import { LuGithub, LuRefreshCw } from 'react-icons/lu'
-import { RiComputerLine } from 'react-icons/ri'
+import { LuGithub, LuList, LuRefreshCw } from 'react-icons/lu'
+import { RiComputerLine, RiGalleryView2 } from 'react-icons/ri'
 import { useTranslation } from 'react-i18next'
 import projectContent from '@content/projects/projects.json'
 import { Seo } from '@/app/seo/Seo'
 import { Card } from '@/components/ui/Card'
+import { SegmentedToggle } from '@/components/ui/SegmentedToggle'
 
 type ProjectLocale = {
   zh: string
@@ -14,6 +15,7 @@ type ProjectLocale = {
 }
 
 type ProjectLinkType = 'game' | 'github' | 'computer'
+type ProjectLayout = 'list' | 'grid'
 
 type ProjectLabelKey = 'live' | 'source' | 'open'
 
@@ -65,10 +67,14 @@ type ProjectCardProps = {
   links: ProjectLink[]
 }
 
-type ProjectSectionProps = {
+type ProjectSectionData = {
   id: string
   title: string
   projects: ProjectCardProps[]
+}
+
+type ProjectSectionProps = ProjectSectionData & {
+  layout: ProjectLayout
   className?: string
 }
 
@@ -227,10 +233,82 @@ function ProjectCard({ title, description, preview, links }: ProjectCardProps) {
   )
 }
 
+function ProjectListItem({
+  title,
+  description,
+  preview,
+  links,
+}: ProjectCardProps) {
+  return (
+    <Card
+      as="article"
+      className="flex min-w-0 flex-row gap-3 overflow-hidden p-3 sm:gap-5 sm:p-4"
+    >
+      {preview ? (
+        <div className="relative aspect-[16/10] w-[38%] max-w-[16rem] shrink-0 overflow-hidden rounded-xl bg-slate-950 sm:aspect-[16/9] sm:w-52 lg:w-64">
+          <a
+            href={preview.links[0]?.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={preview.links[0]?.label ?? title}
+            className="block h-full w-full focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:outline-none"
+          >
+            <picture className="block h-full w-full">
+              {preview.avifSrc ? (
+                <source srcSet={preview.avifSrc} type="image/avif" />
+              ) : null}
+              <img
+                src={preview.src}
+                alt={preview.alt}
+                className={`h-full w-full ${preview.objectFit === 'contain' ? 'object-contain' : 'object-cover object-top'}`}
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
+          </a>
+        </div>
+      ) : null}
+
+      <div className="flex min-w-0 flex-1 flex-col justify-between gap-4 p-1 sm:p-2">
+        <div className="min-w-0">
+          <h3 className="text-left text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            {title}
+          </h3>
+          <p className="mt-2 line-clamp-3 text-left text-sm leading-6 text-slate-600 dark:text-slate-300">
+            {description}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {links.map((link) => {
+            const LinkIcon = link.icon
+
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={link.label}
+                title={link.label}
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200/80 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:border-slate-300 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:outline-none dark:border-white/10 dark:text-slate-300 dark:hover:border-white/20 dark:hover:text-white"
+              >
+                <LinkIcon className="h-4 w-4" aria-hidden="true" />
+                {link.label}
+              </a>
+            )
+          })}
+        </div>
+      </div>
+    </Card>
+  )
+}
+
 function ProjectSection({
   id,
   title,
   projects,
+  layout,
   className,
 }: ProjectSectionProps) {
   return (
@@ -241,22 +319,31 @@ function ProjectSection({
       >
         {title}
       </h2>
-      <div className="isolate -my-12 flex snap-x snap-mandatory gap-5 overflow-x-auto py-12">
-        {projects.map((project) => (
-          <div
-            key={project.id}
-            className="relative z-0 w-[min(70vw,27rem)] shrink-0 snap-start focus-within:z-20 hover:z-20 md:w-[42.5%]"
-          >
-            <ProjectCard {...project} />
-          </div>
-        ))}
-      </div>
+      {layout === 'grid' ? (
+        <div className="isolate -my-12 flex snap-x snap-mandatory gap-5 overflow-x-auto py-12">
+          {projects.map((project) => (
+            <div
+              key={project.id}
+              className="relative z-0 w-[min(70vw,27rem)] shrink-0 snap-start focus-within:z-20 hover:z-20 md:w-[42.5%]"
+            >
+              <ProjectCard {...project} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {projects.map((project) => (
+            <ProjectListItem key={project.id} {...project} />
+          ))}
+        </div>
+      )}
     </section>
   )
 }
 
 export function Projects() {
   const { t, i18n } = useTranslation()
+  const [layout, setLayout] = useState<ProjectLayout>('list')
   const localPreview =
     typeof window !== 'undefined' &&
     (window.location.hostname === 'localhost' ||
@@ -264,7 +351,7 @@ export function Projects() {
   const locale: 'zh' | 'en' = i18n.resolvedLanguage?.startsWith('zh')
     ? 'zh'
     : 'en'
-  const sections: ProjectSectionProps[] = (
+  const sections: ProjectSectionData[] = (
     projectContent.sections as RawProjectSection[]
   ).map((section) => ({
     id: section.id,
@@ -300,12 +387,43 @@ export function Projects() {
       />
 
       <div className="space-y-10 md:space-y-12">
+        <div className="flex items-center justify-between gap-4">
+          <h1 className="min-w-0 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+            {t('projects.title')}
+          </h1>
+          <SegmentedToggle
+            value={layout}
+            onValueChange={setLayout}
+            ariaLabel={t('projects.layout.label')}
+            size="sm"
+            className="shrink-0"
+            buttonClassName="h-8 w-8 px-0"
+            items={[
+              {
+                value: 'grid',
+                ariaLabel: t('projects.layout.grid'),
+                tooltip: t('projects.layout.grid'),
+                content: (
+                  <RiGalleryView2 className="h-4 w-4" aria-hidden="true" />
+                ),
+              },
+              {
+                value: 'list',
+                ariaLabel: t('projects.layout.list'),
+                tooltip: t('projects.layout.list'),
+                content: <LuList className="h-4 w-4" aria-hidden="true" />,
+              },
+            ]}
+          />
+        </div>
+
         {sections.map((section) => (
           <ProjectSection
             key={section.id}
             id={`projects-${section.id}`}
             title={section.title}
             projects={section.projects}
+            layout={layout}
             className="w-full"
           />
         ))}

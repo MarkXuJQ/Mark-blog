@@ -68,9 +68,9 @@ interface TmdbEnrichedMovie {
   releaseDate: string
 }
 
-const ROWS_PER_PAGE = 4
+const ROWS_PER_PAGE = 5
 const LIST_ITEMS_PER_PAGE = 16
-const BASE_COLUMNS = 3
+const BASE_COLUMNS = 4
 const MIN_CARD_WIDTH_MD = 190
 const MIN_CARD_WIDTH_LG = 210
 const GAP_MD = 12
@@ -234,7 +234,9 @@ function normalizeBackdropUrl(path: string | undefined | null) {
 }
 
 function calculateColumns(containerWidth: number, viewportWidth: number) {
-  if (viewportWidth < 768) return BASE_COLUMNS
+  if (viewportWidth < 540) return 2
+  else if (viewportWidth < 780) return 3
+  if (viewportWidth < 868) return BASE_COLUMNS
   const minCardWidth =
     viewportWidth >= 1024 ? MIN_CARD_WIDTH_LG : MIN_CARD_WIDTH_MD
   const gap = viewportWidth >= 1024 ? GAP_LG : GAP_MD
@@ -983,7 +985,7 @@ export function Movies() {
                               'relative shrink-0 overflow-hidden bg-slate-100 dark:bg-[#1f2328]',
                               cardLayout === 'grid'
                                 ? 'mb-4 aspect-[2/3] w-full rounded-[1.05rem]'
-                                : 'aspect-[16/9] w-[38%] max-w-[10rem] self-start rounded-[0.9rem] sm:w-[30%] sm:max-w-[12rem]'
+                                : 'min-h-[5.5rem] w-[38%] max-w-[10rem] self-stretch rounded-[0.9rem] sm:w-[30%] sm:max-w-[12rem]'
                             )}
                           >
                             {showMovieImage ? (
