@@ -85,7 +85,16 @@
         "articleCount": "文章数目",
         "lastUpdate": "最后更新",
         "wordCount": "全站字数",
-        "days": "天"
+        "days": "天",
+        "units": {
+          "year": "年",
+          "years": "年",
+          "month": "月",
+          "months": "月",
+          "day": "天",
+          "days": "天"
+        },
+        "toggleRunningTime": "点击切换运行时间单位"
       },
       "recentComments": {
         "title": "最近评论",
