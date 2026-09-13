@@ -13,6 +13,7 @@ export interface BlogPostSummary {
   summary: string
   wordCount?: number
   image?: string
+  imageOverlay?: boolean
   tags?: string[]
   category?: string
 }
@@ -83,6 +84,7 @@ function parsePost(path: string, module: MarkdownPost): BlogPost | null {
     updated: attributes.updated,
     summary: attributes.summary,
     image: typeof attributes.image === 'string' ? attributes.image : undefined,
+    imageOverlay: attributes.imageOverlay === true,
     content: html,
     tags: attributes.tags,
     category: attributes.category,

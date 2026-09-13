@@ -335,6 +335,13 @@ export function BlogPost() {
                 />
               </div>
 
+              {post.imageOverlay ? (
+                <div
+                  className="pointer-events-none absolute inset-0 bg-black/35"
+                  aria-hidden="true"
+                />
+              ) : null}
+
               <div className="absolute top-5 right-5 left-5 z-10 flex flex-col items-start gap-3 sm:top-8 sm:right-8 sm:left-8 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                 <Link
                   to="/blog"

@@ -19,6 +19,7 @@ summary: "用于博客列表、搜索和 SEO 的简短摘要。"
 tags: ["Travel", "Food"]
 category: "Experience"
 image: "https://img.markxu.icu/example.jpg"
+imageOverlay: true
 ---
 ```
 
@@ -30,6 +31,7 @@ image: "https://img.markxu.icu/example.jpg"
 - `updated` 仅在文章有实质更新时填写。
 - `category` 当前常用值为 `Experience`、`tech`、`essay`、`share` 和 `project`。
 - `image` 是列表卡片和分享信息使用的封面图。
+- `imageOverlay` 可选，设为 `true` 时会在博客文章详情页的封面背景上添加黑色半透明遮罩，适合背景较浅、需要突出标题文字的封面。
 
 ## 普通图片
 

@@ -37,6 +37,12 @@
       "description": "Victor Zhou 的个人博客，分享 Web 开发、机器学习、Python、Gatsby 和安全等工程笔记。"
     },
     {
+      "name": "Mayx的博客",
+      "url": "https://mayx.eu.org/",
+      "avatar": "https://mayx.eu.org/favicon.ico",
+      "description": "Mayx 的个人博客，记录文章与思考。"
+    },
+    {
       "name": "Armin Ronacher",
       "url": "https://lucumr.pocoo.org/",
       "avatar": "lucumr",
@@ -121,12 +127,6 @@
       "url": "https://shiyin.cafe/",
       "avatar": "https://shiyin.cafe/upload/Y10.svg",
       "description": "兴趣使然的未来主义建造者"
-    },
-    {
-      "name": "Mayx的博客",
-      "url": "https://mayx.eu.org/",
-      "avatar": "https://mayx.eu.org/favicon.ico",
-      "description": "Mayx 的个人博客，记录文章与思考。"
     },
     {
       "name": "Oil® — 欧呦",
