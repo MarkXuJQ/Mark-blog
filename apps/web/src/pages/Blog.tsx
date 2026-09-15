@@ -1,5 +1,13 @@
-import { useState, useMemo, useEffect, type CSSProperties } from 'react'
-import { Link, useOutletContext } from 'react-router-dom'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from 'react'
+import { Link, useLocation, useOutletContext } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BlogFilter } from '@/components/blog/BlogFilter'
 import { BlogPostCard } from '@/components/blog/BlogPostCard'
@@ -14,16 +22,81 @@ import {
 } from '@/lib/seo'
 import { Pagination } from '@/components/ui/Pagination'
 import { StaggeredList } from '@/components/ui/StaggeredList'
-import { useBlogPosts } from '@/hooks/useBlogPosts'
+import { useBlogPosts, type SortBy } from '@/hooks/useBlogPosts'
 import { cn } from '@/lib/classNames'
 import type { BlogListOutletContext } from '@/layouts/BlogListLayout'
 import type { BlogPostSummary } from '@/lib/content/posts'
 
 const ITEMS_PER_PAGE = 10
+const BLOG_VIEW_STATE_KEY_PREFIX = 'blog-view-state:'
+
+type BlogViewState = {
+  currentPage: number
+  scrollY: number
+  searchQuery: string
+  selectedCategory: string | null
+  sortBy: SortBy
+}
+
+function getBlogViewStateKey(language: string) {
+  return `${BLOG_VIEW_STATE_KEY_PREFIX}${language.startsWith('zh') ? 'zh' : 'en'}`
+}
+
+function readBlogViewState(language: string, searchQuery: string) {
+  if (typeof window === 'undefined') return null
+
+  try {
+    const raw = window.sessionStorage.getItem(getBlogViewStateKey(language))
+    if (!raw) return null
+
+    const value = JSON.parse(raw) as Partial<BlogViewState>
+    if (
+      value.searchQuery !== searchQuery ||
+      typeof value.currentPage !== 'number' ||
+      typeof value.scrollY !== 'number' ||
+      (value.sortBy !== 'date' && value.sortBy !== 'updated')
+    ) {
+      return null
+    }
+
+    return {
+      currentPage: Math.max(1, Math.floor(value.currentPage)),
+      scrollY: Math.max(0, value.scrollY),
+      searchQuery,
+      selectedCategory:
+        typeof value.selectedCategory === 'string'
+          ? value.selectedCategory
+          : null,
+      sortBy: value.sortBy,
+    } satisfies BlogViewState
+  } catch {
+    return null
+  }
+}
+
+function writeBlogViewState(language: string, state: BlogViewState) {
+  try {
+    window.sessionStorage.setItem(
+      getBlogViewStateKey(language),
+      JSON.stringify(state)
+    )
+  } catch {
+    // Browsing still works when session storage is unavailable.
+  }
+}
 
 export function Blog() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const location = useLocation()
   const { simpleMode = false } = useOutletContext<BlogListOutletContext>()
+  const routeSearchQuery = useMemo(
+    () => new URLSearchParams(location.search).get('q') || '',
+    [location.search]
+  )
+  const initialViewState = useMemo(
+    () => readBlogViewState(i18n.language, routeSearchQuery),
+    [i18n.language, routeSearchQuery]
+  )
   const siteUrl = getSiteUrl()
   const blogUrl = toAbsoluteUrl('/blog', siteUrl)
   const pageTitle = t('blog.title')
@@ -54,22 +127,108 @@ export function Blog() {
     clearSearch,
     categoryCounts,
     totalPostsCount,
-  } = useBlogPosts()
+  } = useBlogPosts({
+    selectedCategory: initialViewState?.selectedCategory,
+    sortBy: initialViewState?.sortBy,
+  })
 
   // Pagination state
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(
+    initialViewState?.currentPage ?? 1
+  )
+  const shouldRestoreScrollRef = useRef(Boolean(initialViewState))
+  const latestViewStateRef = useRef<BlogViewState>({
+    currentPage,
+    scrollY: initialViewState?.scrollY ?? 0,
+    searchQuery,
+    selectedCategory,
+    sortBy,
+  })
+  const previousFiltersRef = useRef({
+    selectedCategory,
+    searchQuery,
+    sortBy,
+  })
 
   // Reset to page 1 when filters change
   useEffect(() => {
-    setCurrentPage(1)
+    const previousFilters = previousFiltersRef.current
+    const filtersChanged =
+      previousFilters.selectedCategory !== selectedCategory ||
+      previousFilters.searchQuery !== searchQuery ||
+      previousFilters.sortBy !== sortBy
+
+    if (filtersChanged) setCurrentPage(1)
+    previousFiltersRef.current = { selectedCategory, searchQuery, sortBy }
   }, [selectedCategory, searchQuery, sortBy])
 
   // Calculate pagination
   const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE)
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages || 1)
   const currentPosts = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE
+    const start = (safeCurrentPage - 1) * ITEMS_PER_PAGE
     return posts.slice(start, start + ITEMS_PER_PAGE)
-  }, [posts, currentPage])
+  }, [posts, safeCurrentPage])
+
+  useEffect(() => {
+    if (safeCurrentPage !== currentPage) {
+      setCurrentPage(safeCurrentPage)
+    }
+  }, [currentPage, safeCurrentPage])
+
+  latestViewStateRef.current = {
+    currentPage: safeCurrentPage,
+    scrollY: latestViewStateRef.current.scrollY,
+    searchQuery,
+    selectedCategory,
+    sortBy,
+  }
+
+  const saveViewState = useCallback(() => {
+    const nextState = {
+      ...latestViewStateRef.current,
+      scrollY: window.scrollY,
+    }
+    latestViewStateRef.current = nextState
+    writeBlogViewState(i18n.language, nextState)
+  }, [i18n.language])
+
+  useEffect(() => {
+    let frameId = 0
+    const handleScroll = () => {
+      window.cancelAnimationFrame(frameId)
+      frameId = window.requestAnimationFrame(saveViewState)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [saveViewState])
+
+  useEffect(() => {
+    writeBlogViewState(i18n.language, latestViewStateRef.current)
+  }, [currentPage, i18n.language, searchQuery, selectedCategory, sortBy])
+
+  useLayoutEffect(() => {
+    if (!shouldRestoreScrollRef.current) return
+    shouldRestoreScrollRef.current = false
+
+    const targetScrollY = initialViewState?.scrollY ?? 0
+    let secondFrameId = 0
+    const firstFrameId = window.requestAnimationFrame(() => {
+      secondFrameId = window.requestAnimationFrame(() => {
+        window.scrollTo({ top: targetScrollY, behavior: 'instant' })
+      })
+    })
+
+    return () => {
+      window.cancelAnimationFrame(firstFrameId)
+      window.cancelAnimationFrame(secondFrameId)
+    }
+  }, [initialViewState])
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -191,15 +350,24 @@ export function Blog() {
             <StaggeredList className={simpleMode ? 'space-y-0' : 'space-y-6'}>
               {currentPosts.map((post) =>
                 simpleMode ? (
-                  <SimpleBlogPostItem key={post.id} post={post} />
+                  <SimpleBlogPostItem
+                    key={post.id}
+                    post={post}
+                    onOpenPost={saveViewState}
+                  />
                 ) : (
-                  <BlogPostCard key={post.id} post={post} sortBy={sortBy} />
+                  <BlogPostCard
+                    key={post.id}
+                    post={post}
+                    sortBy={sortBy}
+                    onOpenPost={saveViewState}
+                  />
                 )
               )}
             </StaggeredList>
 
             <Pagination
-              currentPage={currentPage}
+              currentPage={safeCurrentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
             />
@@ -243,14 +411,21 @@ function SimpleBlogPostItem({
   post,
   className,
   style,
+  onOpenPost,
 }: {
   post: BlogPostSummary
   className?: string
   style?: CSSProperties
+  onOpenPost?: () => void
 }) {
   return (
     <article className={cn('py-6 first:pt-0', className)} style={style}>
-      <Link to={`/blog/${post.slug}`} className="group block">
+      <Link
+        to={`/blog/${post.slug}`}
+        state={{ fromBlogList: true }}
+        onClick={onOpenPost}
+        className="group block"
+      >
         <h2 className="text-2xl leading-snug font-bold text-[var(--text-primary)] transition-colors group-hover:text-[color-mix(in_srgb,var(--brand-400)_72%,var(--text-primary)_28%)]">
           {post.title}
         </h2>
