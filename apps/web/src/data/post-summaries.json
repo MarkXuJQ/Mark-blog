@@ -6,13 +6,13 @@
     "title": "RSS订阅界面美化方案",
     "date": "2026-09-13",
     "summary": "记录一下网站 RSS 订阅从能用、到美化能看，到某一天突然失效，最后通过朋友们的帮助下，重新做了一版美化方案的过程。",
-    "wordCount": 1995,
+    "wordCount": 2195,
     "image": "https://img.markxu.icu/imgSnipaste_2026-09-13_16-26-53.png",
     "tags": [
-      "Website",
+      "Blog",
       "RSS feeds",
       "Atom",
-      "Frontend"
+      "XSLT"
     ],
     "category": "tech"
   },

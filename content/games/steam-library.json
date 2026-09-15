@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-30T08:06:31.696Z",
+  "generatedAt": "2026-09-15T09:34:57.368Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -15,7 +15,7 @@
     "totalMinutes": 171131,
     "totalRecentMinutes": 0,
     "totalUnlockedAchievements": 1917,
-    "totalAvailableAchievements": 7323,
+    "totalAvailableAchievements": 7341,
     "featuredAppId": 2246340
   },
   "featured": [
@@ -33,14 +33,14 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 161418,
-        "totalNegative": 167385,
-        "totalReviews": 328803,
+        "totalPositive": 162773,
+        "totalNegative": 167482,
+        "totalReviews": 330255,
         "positivePercent": 49
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1787549555",
       "shortDescription": "The unbridled force of nature runs wild and relentless, with environments transforming drastically from one moment to the next. This is a story of monsters and humans and their struggles to live in harmony in a world of duality.",
-      "releaseDate": "27 Feb, 2025",
+      "releaseDate": "Feb 27, 2025",
       "developers": [
         "CAPCOM Co., Ltd."
       ],
@@ -65,14 +65,14 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 458246,
-        "totalNegative": 57856,
-        "totalReviews": 516102,
+        "totalPositive": 459098,
+        "totalNegative": 57918,
+        "totalReviews": 517016,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
       "shortDescription": "Welcome to a new world! In Monster Hunter: World, the latest installment in the series, you can enjoy the ultimate hunting experience, using everything at your disposal to hunt monsters in a new world teeming with surprises and excitement.",
-      "releaseDate": "8 Aug, 2018",
+      "releaseDate": "Aug 8, 2018",
       "developers": [
         "CAPCOM Co., Ltd."
       ],
@@ -95,9 +95,9 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 827773,
-        "totalNegative": 27487,
-        "totalReviews": 855260,
+        "totalPositive": 830017,
+        "totalNegative": 27553,
+        "totalReviews": 857570,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
@@ -127,14 +127,14 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 856723,
-        "totalNegative": 28779,
-        "totalReviews": 885502,
+        "totalPositive": 859106,
+        "totalNegative": 28823,
+        "totalReviews": 887929,
         "positivePercent": 97
       },
-      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/97cca1147b256f450331044255b1dbd2d57d609e/header_alt_assets_4.jpg?t=1787688132",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/97cca1147b256f450331044255b1dbd2d57d609e/header_alt_assets_4.jpg?t=1788333513",
       "shortDescription": "You are Geralt of Rivia, mercenary monster slayer. Before you stands a war-torn, monster-infested continent you can explore at will. Your current contract? Tracking down Ciri — the Child of Prophecy, a living weapon that can alter the shape of the world.",
-      "releaseDate": "18 May, 2015",
+      "releaseDate": "May 18, 2015",
       "developers": [
         "CD PROJEKT RED"
       ],
@@ -157,9 +157,9 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 325869,
-        "totalNegative": 52480,
-        "totalReviews": 378349,
+        "totalPositive": 326573,
+        "totalNegative": 52512,
+        "totalReviews": 379085,
         "positivePercent": 86
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1784651829",
@@ -189,14 +189,14 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 166761,
-        "totalNegative": 21203,
-        "totalReviews": 187964,
+        "totalPositive": 167199,
+        "totalNegative": 21260,
+        "totalReviews": 188459,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1786633104",
       "shortDescription": "In this action-adventure game, set sail for Ancient Greece to alter its fate. Fight in visceral battles on land and sea, shape your destiny from outcast to legend, and uncover secrets of your past.",
-      "releaseDate": "5 Oct, 2018",
+      "releaseDate": "Oct 5, 2018",
       "developers": [
         "Ubisoft Quebec",
         "Ubisoft Montreal",
@@ -1569,7 +1569,7 @@
       "communityUrl": "https://steamcommunity.com/app/477160",
       "achievementStats": {
         "unlockedCount": 8,
-        "totalCount": 151
+        "totalCount": 155
       },
       "nameZh": "人类一败涂地 / Human Fall Flat"
     },
@@ -2022,7 +2022,7 @@
       "communityUrl": "https://steamcommunity.com/app/714010",
       "achievementStats": {
         "unlockedCount": 3,
-        "totalCount": 100
+        "totalCount": 114
       }
     },
     {
