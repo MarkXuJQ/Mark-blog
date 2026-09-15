@@ -1,9 +1,10 @@
-import { memo, useEffect, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useState, type MouseEvent } from 'react'
 import {
   useParams,
   Link,
   useSearchParams,
   useNavigate,
+  useLocation,
   useOutletContext,
 } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -53,6 +54,7 @@ export function BlogPost() {
   const { simpleMode = false } = useOutletContext<BlogPostOutletContext>()
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const post = slug ? getPostBySlug(slug, i18n.language) : undefined
   const articleLanguage = slug
@@ -232,6 +234,24 @@ export function BlogPost() {
   )
   const updatedTimeMetaClass = cn(metaItemClass, 'hidden sm:inline-flex')
   const readingTimeMetaClass = cn(metaItemClass, 'hidden sm:inline-flex')
+  const cameFromBlogList = Boolean(
+    (location.state as { fromBlogList?: boolean } | null)?.fromBlogList
+  )
+  const handleBackToBlog = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (
+      !cameFromBlogList ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return
+    }
+
+    event.preventDefault()
+    navigate(-1)
+  }
 
   if (simpleMode) {
     return (
@@ -248,7 +268,11 @@ export function BlogPost() {
           jsonLd={[blogPostingSchema, breadcrumbSchema]}
         />
 
-        <Link to="/blog" className={styles.simpleReadingBackLink}>
+        <Link
+          to="/blog"
+          onClick={handleBackToBlog}
+          className={styles.simpleReadingBackLink}
+        >
           {`< ${t('blog.back')}`}
         </Link>
 
@@ -335,9 +359,17 @@ export function BlogPost() {
                 />
               </div>
 
+              {post.imageOverlay ? (
+                <div
+                  className="pointer-events-none absolute inset-0 bg-black/35"
+                  aria-hidden="true"
+                />
+              ) : null}
+
               <div className="absolute top-5 right-5 left-5 z-10 flex flex-col items-start gap-3 sm:top-8 sm:right-8 sm:left-8 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                 <Link
                   to="/blog"
+                  onClick={handleBackToBlog}
                   className="inline-flex w-fit shrink-0 items-center rounded-full border border-white/18 bg-black/18 px-3 py-1.5 text-sm font-medium text-white/95 shadow-sm backdrop-blur transition-colors hover:bg-black/28"
                 >
                   {`< ${t('blog.back')}`}
@@ -430,6 +462,7 @@ export function BlogPost() {
                 <div className={styles.plainPostTopRow}>
                   <Link
                     to="/blog"
+                    onClick={handleBackToBlog}
                     className={styles.backLink}
                     data-link-preview="off"
                   >

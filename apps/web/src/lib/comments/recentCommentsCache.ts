@@ -4,7 +4,7 @@ import {
   type TwikooRecentComment,
 } from './twikooLoader'
 
-export const RECENT_COMMENTS_CACHE_TTL_MS = 5 * 60 * 1000
+export const RECENT_COMMENTS_CACHE_TTL_MS = 15 * 60 * 1000
 
 export interface RecentCommentsQuery {
   envId: string

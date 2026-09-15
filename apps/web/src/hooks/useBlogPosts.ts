@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   canonicalBlogCategoryKey,
@@ -11,7 +11,12 @@ import { useSearch } from './useSearch'
 
 export type SortBy = 'date' | 'updated'
 
-export function useBlogPosts() {
+type BlogPostsInitialState = {
+  selectedCategory?: string | null
+  sortBy?: SortBy
+}
+
+export function useBlogPosts(initialState?: BlogPostsInitialState) {
   const { i18n } = useTranslation()
   const allPosts = useMemo(
     () => getAllPostSummaries(i18n.language),
@@ -20,8 +25,11 @@ export function useBlogPosts() {
   const totalPostsCount = allPosts.length
 
   // State
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [sortBy, setSortBy] = useState<SortBy>('date')
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    initialState?.selectedCategory ?? null
+  )
+  const [sortBy, setSortBy] = useState<SortBy>(initialState?.sortBy ?? 'date')
+  const activeLanguageRef = useRef(i18n.language)
 
   // Search Logic
   const searchFn = useCallback((post: BlogPostSummary, query: string) => {
@@ -45,7 +53,10 @@ export function useBlogPosts() {
   })
 
   useEffect(() => {
+    if (activeLanguageRef.current === i18n.language) return
+    activeLanguageRef.current = i18n.language
     setSelectedCategory(null)
+    setSortBy('date')
     if (searchQuery) {
       clearSearch()
     }

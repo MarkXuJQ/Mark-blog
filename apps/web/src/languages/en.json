@@ -85,7 +85,16 @@
         "articleCount": "Articles",
         "lastUpdate": "Last Update",
         "wordCount": "Total Words",
-        "days": "Days"
+        "days": "Days",
+        "units": {
+          "year": "year",
+          "years": "years",
+          "month": "month",
+          "months": "months",
+          "day": "day",
+          "days": "days"
+        },
+        "toggleRunningTime": "Click to switch the running time unit"
       },
       "recentComments": {
         "title": "Recent Comments",

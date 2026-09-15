@@ -232,8 +232,65 @@ interface StatsWidgetProps {
   posts: BlogPostSummary[]
 }
 
+type RunningTimeDisplay = 'days' | 'calendar'
+
+const DAY_IN_MS = 1000 * 60 * 60 * 24
+
+function addCalendarYears(date: Date, years: number) {
+  const next = new Date(date)
+  const day = next.getDate()
+  const month = next.getMonth()
+
+  next.setDate(1)
+  next.setFullYear(next.getFullYear() + years)
+  next.setMonth(month)
+  next.setDate(Math.min(day, new Date(next.getFullYear(), month + 1, 0).getDate()))
+
+  return next
+}
+
+function addCalendarMonths(date: Date, months: number) {
+  const next = new Date(date)
+  const day = next.getDate()
+
+  next.setDate(1)
+  next.setMonth(next.getMonth() + months)
+  next.setDate(Math.min(day, new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate()))
+
+  return next
+}
+
+function getCalendarDuration(startDate: Date, endDate: Date) {
+  const end = new Date(endDate)
+  end.setHours(0, 0, 0, 0)
+
+  if (startDate > end) return { years: 0, months: 0, days: 0 }
+
+  const cursor = new Date(startDate)
+  let years = 0
+  let months = 0
+
+  while (addCalendarYears(cursor, 1) <= end) {
+    cursor.setTime(addCalendarYears(cursor, 1).getTime())
+    years += 1
+  }
+
+  while (addCalendarMonths(cursor, 1) <= end) {
+    cursor.setTime(addCalendarMonths(cursor, 1).getTime())
+    months += 1
+  }
+
+  const days = Math.max(0, Math.floor((end.getTime() - cursor.getTime()) / DAY_IN_MS))
+
+  return { years, months, days }
+}
+
 export function StatsWidget({ posts }: StatsWidgetProps) {
-  const { t } = useTranslation()
+  const { i18n, t } = useTranslation()
+  const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
+  const isZh = locale === 'zh-CN'
+  const [runningTimeDisplay, setRunningTimeDisplay] =
+    useState<RunningTimeDisplay>('days')
 
   // Calculate stats
   const totalPosts = posts.length
@@ -252,6 +309,42 @@ export function StatsWidget({ posts }: StatsWidgetProps) {
     Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1)
   )
 
+  const runningTimeValue = (() => {
+    const formatDurationPart = (
+      value: number,
+      unit: 'year' | 'month' | 'day'
+    ) => {
+      const unitKey =
+        isZh || value !== 1 ? `${unit}s` : unit
+      const unitLabel = t(`blog.sidebar.stats.units.${unitKey}`)
+      return isZh ? `${value}${unitLabel}` : `${value} ${unitLabel}`
+    }
+
+    if (runningTimeDisplay === 'days') {
+      return formatDurationPart(runningDays, 'day')
+    }
+
+    const duration = getCalendarDuration(startDate, new Date())
+    const values = [
+      duration.years > 0
+        ? formatDurationPart(duration.years, 'year')
+        : null,
+      duration.months > 0
+        ? formatDurationPart(duration.months, 'month')
+        : null,
+      duration.days > 0
+        ? formatDurationPart(duration.days, 'day')
+        : null,
+    ].filter((value): value is string => value !== null)
+
+    return values.join(isZh ? '' : ' ') || formatDurationPart(0, 'day')
+  })()
+
+  const totalWordsValue = `${new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  }).format(totalWords / (isZh ? 10000 : 1000))}${isZh ? '万' : 'k'}`
+
   const lastUpdatedString =
     posts.length > 0
       ? new Date(
@@ -262,7 +355,7 @@ export function StatsWidget({ posts }: StatsWidgetProps) {
             })
             .reduce((latest, cur) => (cur.time > latest.time ? cur : latest))
             .dateString
-        ).toLocaleDateString('zh-CN')
+        ).toLocaleDateString(locale)
       : siteStartDateString
 
   return (
@@ -276,7 +369,13 @@ export function StatsWidget({ posts }: StatsWidgetProps) {
         <StatItem
           icon={<Clock size={16} />}
           label={t('blog.sidebar.stats.runningTime')}
-          value={`${runningDays} ${t('blog.sidebar.stats.days')}`}
+          value={runningTimeValue}
+          onClick={() =>
+            setRunningTimeDisplay((current) =>
+              current === 'days' ? 'calendar' : 'days'
+            )
+          }
+          ariaLabel={`${t('blog.sidebar.stats.runningTime')}: ${runningTimeValue}. ${t('blog.sidebar.stats.toggleRunningTime')}`}
         />
         <StatItem
           icon={<FileText size={16} />}
@@ -286,7 +385,7 @@ export function StatsWidget({ posts }: StatsWidgetProps) {
         <StatItem
           icon={<LuWholeWord size={16} />}
           label={t('blog.sidebar.stats.wordCount')}
-          value={(totalWords / 1000).toFixed(1) + 'k'}
+          value={totalWordsValue}
         />
         <StatItem
           icon={<LuHammer size={16} />}
@@ -302,20 +401,39 @@ function StatItem({
   icon,
   label,
   value,
+  onClick,
+  ariaLabel,
 }: {
   icon: React.ReactNode
   label: string
   value: string | number
+  onClick?: () => void
+  ariaLabel?: string
 }) {
-  return (
-    <div className={styles.statItem}>
+  const content = (
+    <>
       <div className={styles.statIconWrapper}>{icon}</div>
       <div className={styles.statContent}>
         <span className={styles.statValue}>{value}</span>
         <span className={styles.statLabel}>{label}</span>
       </div>
-    </div>
+    </>
   )
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        className={cn(styles.statItem, styles.statItemInteractive)}
+        aria-label={ariaLabel ?? label}
+        onClick={onClick}
+      >
+        {content}
+      </button>
+    )
+  }
+
+  return <div className={styles.statItem}>{content}</div>
 }
 
 const styles = {
@@ -350,6 +468,8 @@ const styles = {
   // Stats
   statsGrid: 'grid grid-cols-1 gap-4',
   statItem: 'flex items-center gap-3',
+  statItemInteractive:
+    'w-full cursor-pointer p-0 text-left transition-colors hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 dark:hover:text-blue-400',
   statIconWrapper:
     'flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
   statContent: 'flex flex-col',

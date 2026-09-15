@@ -3,7 +3,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://markxu.icu</id>
     <title>Mark的自留地</title>
-    <updated>2026-08-29T00:00:00.000Z</updated>
+    <updated>2026-09-13T00:00:00.000Z</updated>
     <generator>Mark Xu Blog Generator</generator>
     <author>
         <name>Mark Xu</name>
@@ -16,6 +16,34 @@
     <logo>https://markxu.icu/images/IMG_1766.JPG</logo>
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
+    <entry>
+        <title type="html"><![CDATA[RSS订阅界面美化方案]]></title>
+        <id>https://markxu.icu/blog/rss-feed-beautification-cn</id>
+        <link href="https://markxu.icu/blog/rss-feed-beautification-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/imgSnipaste_2026-09-13_16-26-53.png" type="image/png"/>
+        <updated>2026-09-13T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[记录一下网站 RSS 订阅从能用、到美化能看，到某一天突然失效，最后通过朋友们的帮助下，重新做了一版美化方案的过程。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imgSnipaste_2026-09-13_16-26-53.png" alt="RSS订阅界面美化方案" /> <p>记录一下网站 RSS 订阅从能用、到美化能看，到某一天突然失效，最后通过朋友们的帮助下，重新做了一版美化方案的过程。</p> <a class="view-full" href="https://markxu.icu/blog/rss-feed-beautification-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[为什么我不看好人形机器人？]]></title>
+        <id>https://markxu.icu/blog/why-im-not-bullish-on-humanoid-robots-cn</id>
+        <link href="https://markxu.icu/blog/why-im-not-bullish-on-humanoid-robots-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img20260915182504981.png" type="image/png"/>
+        <updated>2026-08-31T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[我一直不看好人形机器人会成为下一代通用生产力。趁着机器人运动大会重新引发讨论，我想把现在的判断留个档：如果以后被打脸，也能回头看看行业究竟克服了哪些我不看好的问题。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img20260915182504981.png" alt="为什么我不看好人形机器人？" /> <p>我一直不看好人形机器人会成为下一代通用生产力。趁着机器人运动大会重新引发讨论，我想把现在的判断留个档：如果以后被打脸，也能回头看看行业究竟克服了哪些我不看好的问题。</p> <a class="view-full" href="https://markxu.icu/blog/why-im-not-bullish-on-humanoid-robots-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[现在做网页特效有多简单？一些前端组件与动画资源分享]]></title>
         <id>https://markxu.icu/blog/frontend-effects-resources-cn</id>
