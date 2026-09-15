@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T09:34:57.368Z",
+  "generatedAt": "2026-09-15T12:22:36.694Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -33,14 +33,14 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 162773,
-        "totalNegative": 167482,
-        "totalReviews": 330255,
+        "totalPositive": 162786,
+        "totalNegative": 167486,
+        "totalReviews": 330272,
         "positivePercent": 49
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1787549555",
       "shortDescription": "The unbridled force of nature runs wild and relentless, with environments transforming drastically from one moment to the next. This is a story of monsters and humans and their struggles to live in harmony in a world of duality.",
-      "releaseDate": "Feb 27, 2025",
+      "releaseDate": "27 Feb, 2025",
       "developers": [
         "CAPCOM Co., Ltd."
       ],
@@ -65,14 +65,14 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 459098,
-        "totalNegative": 57918,
-        "totalReviews": 517016,
+        "totalPositive": 459110,
+        "totalNegative": 57917,
+        "totalReviews": 517027,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
       "shortDescription": "Welcome to a new world! In Monster Hunter: World, the latest installment in the series, you can enjoy the ultimate hunting experience, using everything at your disposal to hunt monsters in a new world teeming with surprises and excitement.",
-      "releaseDate": "Aug 8, 2018",
+      "releaseDate": "9 Aug, 2018",
       "developers": [
         "CAPCOM Co., Ltd."
       ],
@@ -95,9 +95,9 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 830017,
-        "totalNegative": 27553,
-        "totalReviews": 857570,
+        "totalPositive": 830023,
+        "totalNegative": 27552,
+        "totalReviews": 857575,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
@@ -127,9 +127,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 859106,
+        "totalPositive": 859110,
         "totalNegative": 28823,
-        "totalReviews": 887929,
+        "totalReviews": 887933,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/97cca1147b256f450331044255b1dbd2d57d609e/header_alt_assets_4.jpg?t=1788333513",
@@ -157,14 +157,14 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 326573,
-        "totalNegative": 52512,
-        "totalReviews": 379085,
+        "totalPositive": 326577,
+        "totalNegative": 52511,
+        "totalReviews": 379088,
         "positivePercent": 86
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1784651829",
       "shortDescription": "Expand your empire, advance your culture and go head-to-head against history’s greatest leaders. Will your civilization stand the test of time?",
-      "releaseDate": "20 Oct, 2016",
+      "releaseDate": "Oct 20, 2016",
       "developers": [
         "Firaxis Games",
         "Aspyr (Mac)",
@@ -189,9 +189,9 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 167199,
-        "totalNegative": 21260,
-        "totalReviews": 188459,
+        "totalPositive": 167203,
+        "totalNegative": 21261,
+        "totalReviews": 188464,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1786633104",

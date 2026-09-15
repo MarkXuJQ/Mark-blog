@@ -1,5 +1,13 @@
 [
   {
+  "id": "qf-20260915",
+  "date": "2026-09-15",
+  "content": [
+    "Removed the global RSS feed; switched to language-specific RSS feeds",
+    "Improved scroll position restoration when navigating back to the article list after reading an article"
+  ]
+  },
+  {
     "id": "qf-20260822",
     "date": "2026-08-22",
     "content": [
