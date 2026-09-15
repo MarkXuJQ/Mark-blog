@@ -194,10 +194,9 @@ const dedupeBySlug = (inputPosts) => {
 
 const zhPosts = dedupeBySlug(allPosts.filter((post) => post.language === 'zh'))
 const enPosts = dedupeBySlug(allPosts.filter((post) => post.language === 'en'))
-const posts = dedupeBySlug(allPosts)
 
 console.log(
-  `Found ${posts.length} posts. (zh: ${zhPosts.length}, en: ${enPosts.length})`
+  `Found ${zhPosts.length + enPosts.length} posts. (zh: ${zhPosts.length}, en: ${enPosts.length})`
 )
 
 function renderFeedViewPage(feedPosts, options) {
@@ -606,14 +605,6 @@ ensureDir(FEEDS_DIR)
 ensureDir(FEEDS_ZH_DIR)
 ensureDir(FEEDS_EN_DIR)
 
-const { atomContent, feedViewContent } = writeFeedFiles({
-  atomPath: path.join(FEEDS_DIR, 'atom.xml'),
-  viewPath: path.join(FEEDS_DIR, 'index.html'),
-  feedPosts: posts,
-  viewOptions: FEED_VIEW_OPTIONS.zh,
-  atomUrl: `${DOMAIN}/feeds/atom.xml`,
-})
-
 writeFeedFiles({
   atomPath: path.join(FEEDS_ZH_DIR, 'atom.xml'),
   viewPath: path.join(FEEDS_ZH_DIR, 'index.html'),
@@ -634,14 +625,6 @@ if (fs.existsSync(DIST_DIR)) {
   ensureDir(DIST_FEEDS_DIR)
   ensureDir(DIST_FEEDS_ZH_DIR)
   ensureDir(DIST_FEEDS_EN_DIR)
-
-  const distAtomPath = path.join(DIST_FEEDS_DIR, 'atom.xml')
-  fs.writeFileSync(distAtomPath, atomContent)
-  console.log(`Atom copied to ${distAtomPath}`)
-
-  const distFeedViewPath = path.join(DIST_FEEDS_DIR, 'index.html')
-  fs.writeFileSync(distFeedViewPath, feedViewContent)
-  console.log(`Feed view copied to ${distFeedViewPath}`)
 
   writeFeedFiles({
     atomPath: path.join(DIST_FEEDS_ZH_DIR, 'atom.xml'),

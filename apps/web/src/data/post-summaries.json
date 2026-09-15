@@ -1,12 +1,44 @@
 [
   {
+    "id": "rss-feed-beautification-cn",
+    "slug": "rss-feed-beautification-cn",
+    "language": "zh",
+    "title": "RSS订阅界面美化方案",
+    "date": "2026-09-13",
+    "summary": "记录一下网站 RSS 订阅从能用、到美化能看，到某一天突然失效，最后通过朋友们的帮助下，重新做了一版美化方案的过程。",
+    "wordCount": 1995,
+    "image": "https://img.markxu.icu/imgSnipaste_2026-09-13_16-26-53.png",
+    "tags": [
+      "Website",
+      "RSS feeds",
+      "Atom",
+      "Frontend"
+    ],
+    "category": "tech"
+  },
+  {
+    "id": "why-im-not-bullish-on-humanoid-robots-cn",
+    "slug": "why-im-not-bullish-on-humanoid-robots-cn",
+    "language": "zh",
+    "title": "为什么我不看好人形机器人？",
+    "date": "2026-08-31",
+    "summary": "我一直不看好人形机器人的应用和发展，随着最近的机器人运动大会的顺利举办，我想或许应该留个档，说明我根据我的知识有的现在的判断。如果以后被打脸，也有一个可溯源的理由，看看未来到底是如何克服我不看好的点，以及取得最后的成功的。",
+    "wordCount": 1821,
+    "tags": [
+      "Humanoid-Robots",
+      "Embodied AI",
+      "Case studies"
+    ],
+    "category": "essay"
+  },
+  {
     "id": "frontend-effects-resources-cn",
     "slug": "frontend-effects-resources-cn",
     "language": "zh",
     "title": "现在做网页特效有多简单？一些前端组件与动画资源分享",
     "date": "2026-08-29",
     "summary": "分享下最近我在网上看到的很炫酷的前端组件，现在有了ai的加持，这些特效用起来都很方便了，大家可以多去尝试！",
-    "wordCount": 1525,
+    "wordCount": 1627,
     "tags": [
       "Tools",
       "Websites",

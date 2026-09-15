@@ -239,6 +239,11 @@ export function Blog() {
       <Seo
         title={pageTitle}
         noindex={Boolean(searchQuery)}
+        feedUrl={
+          i18n.language?.startsWith('zh')
+            ? '/feeds/zh/atom.xml'
+            : '/feeds/en/atom.xml'
+        }
         jsonLd={[collectionPageSchema, breadcrumbSchema]}
       />
       <div

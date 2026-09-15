@@ -109,6 +109,16 @@
       "permanent": true
     },
     {
+      "source": "/blog/20.为什么我不看好人形机器人？",
+      "destination": "/blog/why-im-not-bullish-on-humanoid-robots-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/21.rss订阅界面美化",
+      "destination": "/blog/rss-feed-beautification-cn",
+      "permanent": true
+    },
+    {
       "source": "/blog/3.My-first-blog",
       "destination": "/blog/first-blog-post-en",
       "permanent": true
@@ -194,6 +204,11 @@
       "permanent": true
     },
     {
+      "source": "/blog/rss-feed-beautification",
+      "destination": "/blog/rss-feed-beautification-cn",
+      "permanent": true
+    },
+    {
       "source": "/blog/university-info-drawers",
       "destination": "/blog/university-info-drawers-cn",
       "permanent": true
@@ -206,6 +221,11 @@
     {
       "source": "/blog/what-do-computer-science-majors-learn",
       "destination": "/blog/what-do-computer-science-majors-learn-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/why-im-not-bullish-on-humanoid-robots",
+      "destination": "/blog/why-im-not-bullish-on-humanoid-robots-cn",
       "permanent": true
     }
   ],
@@ -252,19 +272,6 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=3600, stale-while-revalidate=86400"
-        }
-      ]
-    },
-    {
-      "source": "/feeds/atom.xml",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600, stale-while-revalidate=86400"
-        },
-        {
-          "key": "Content-Type",
-          "value": "application/xml; charset=utf-8"
         }
       ]
     },
@@ -332,14 +339,6 @@
     {
       "source": "/robots.txt",
       "destination": "/robots.txt"
-    },
-    {
-      "source": "/feeds",
-      "destination": "/feeds/index.html"
-    },
-    {
-      "source": "/feeds/",
-      "destination": "/feeds/index.html"
     },
     {
       "source": "/feeds/zh",

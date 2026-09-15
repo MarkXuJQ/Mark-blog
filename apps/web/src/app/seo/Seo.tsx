@@ -21,6 +21,7 @@ interface SeoProps {
   publishedTime?: string
   modifiedTime?: string
   jsonLd?: JsonLd | JsonLd[]
+  feedUrl?: string
 }
 
 export function Seo({
@@ -34,6 +35,7 @@ export function Seo({
   publishedTime,
   modifiedTime,
   jsonLd,
+  feedUrl,
 }: SeoProps) {
   const location = useLocation()
   const { t, i18n } = useTranslation()
@@ -134,6 +136,14 @@ export function Seo({
       <link rel="alternate" hrefLang="zh-CN" href={zhHref} />
       <link rel="alternate" hrefLang="en-US" href={enHref} />
       <link rel="alternate" hrefLang="x-default" href={canonicalUrl} />
+      {feedUrl ? (
+        <link
+          rel="alternate"
+          type="application/atom+xml"
+          title="Atom Feed"
+          href={feedUrl}
+        />
+      ) : null}
 
       {/* Structured Data */}
       {allSchemas.map((schema, index) => (
