@@ -149,6 +149,7 @@ export function Blog() {
     searchQuery,
     sortBy,
   })
+  const paginationContentRef = useRef<HTMLDivElement>(null)
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -276,6 +277,8 @@ export function Blog() {
                     onSelectCategory={setSelectedCategory}
                     sortBy={sortBy}
                     onToggleSort={toggleSort}
+                    categoryCounts={categoryCounts}
+                    totalPostsCount={totalPostsCount}
                     hideSort
                   />
                 </div>
@@ -299,6 +302,8 @@ export function Blog() {
                   onSelectCategory={setSelectedCategory}
                   sortBy={sortBy}
                   onToggleSort={toggleSort}
+                  categoryCounts={categoryCounts}
+                  totalPostsCount={totalPostsCount}
                   simple
                   hideSort
                 />
@@ -349,7 +354,7 @@ export function Blog() {
         )}
       </div>
 
-      <div>
+      <div ref={paginationContentRef}>
         {currentPosts.length > 0 ? (
           <>
             <StaggeredList className={simpleMode ? 'space-y-0' : 'space-y-6'}>
@@ -375,6 +380,7 @@ export function Blog() {
               currentPage={safeCurrentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
+              contentRef={paginationContentRef}
             />
           </>
         ) : (

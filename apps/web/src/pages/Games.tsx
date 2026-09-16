@@ -970,6 +970,7 @@ export function Games() {
   const [currentPage, setCurrentPage] = useState(1)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLElement | null>(null)
+  const gameResultsRef = useRef<HTMLDivElement | null>(null)
   const previousListStateRef = useRef<{
     cardLayout: CardLayout
     currentPage: number
@@ -1564,6 +1565,7 @@ export function Games() {
 
                 {visibleGames.length > 0 ? (
                   <div
+                    ref={gameResultsRef}
                     className={cn(
                       'mt-4',
                       cardLayout === 'grid'
@@ -1643,6 +1645,7 @@ export function Games() {
                   currentPage={currentPage}
                   totalPages={totalPages}
                   onPageChange={setCurrentPage}
+                  contentRef={gameResultsRef}
                 />
               </section>
             </>

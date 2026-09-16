@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { ChevronDown, ArrowDown } from 'lucide-react'
+import { ArrowDown } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/classNames'
 import type { SortBy } from '@/hooks/useBlogPosts'
@@ -89,7 +89,6 @@ function FilterTrigger({
   selectedCategory: string | null
   simple?: boolean
 }) {
-  const { isOpen } = useDropdown()
   const { t } = useTranslation()
   const meta = getBlogCategoryMeta(selectedCategory)
   const Icon = meta.icon
@@ -113,15 +112,6 @@ function FilterTrigger({
       <span className={cn('min-w-0 truncate', !simple && meta.textClassName)}>
         {label}
       </span>
-      {!simple && (
-        <ChevronDown
-          size={14}
-          className={cn(
-            'transition-transform duration-200',
-            isOpen && 'rotate-180'
-          )}
-        />
-      )}
     </DropdownTrigger>
   )
 }
@@ -170,10 +160,12 @@ function SimpleCategoryOption({
   category,
   selectedCategory,
   onSelectCategory,
+  count,
 }: {
   category?: string | null
   selectedCategory: string | null
   onSelectCategory: (category: string | null) => void
+  count: number
 }) {
   const { t } = useTranslation()
   const isActive = category
@@ -195,8 +187,11 @@ function SimpleCategoryOption({
           'border-[color-mix(in_srgb,var(--brand-400)_78%,transparent)] text-[var(--text-primary)]'
       )}
     >
-      <span className="inline-flex items-center gap-2">
+      <span className="inline-flex items-center gap-1.5">
         <span>{label}</span>
+        <span className="text-xs text-[var(--text-disabled)] tabular-nums">
+          {count}
+        </span>
       </span>
     </button>
   )
@@ -279,6 +274,7 @@ export function BlogFilter({
         <SimpleCategoryOption
           selectedCategory={selectedCategory}
           onSelectCategory={onSelectCategory}
+          count={totalPostsCount}
         />
         {allCategories.map((category) => (
           <SimpleCategoryOption
@@ -286,6 +282,7 @@ export function BlogFilter({
             category={category}
             selectedCategory={selectedCategory}
             onSelectCategory={onSelectCategory}
+            count={categoryCounts[canonicalBlogCategoryKey(category)] ?? 0}
           />
         ))}
 
