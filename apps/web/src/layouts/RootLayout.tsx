@@ -63,7 +63,7 @@ export function RootLayout() {
     pathname === '/life' ||
     pathname.startsWith('/life/') ||
     pathname === '/movies'
-  const hideBackToTop = pathname === '/'
+  const hideBackToTop = pathname === '/' || pathname === '/blog'
   const supportsLinkPreviews = pathname.startsWith('/blog/')
 
   const clearThemeCurtainTimers = () => {

@@ -25,6 +25,7 @@ export function MobileBlogDrawer({
   const location = useLocation()
   const [open, setOpen] = useState(false)
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null)
+  const [footerOffset, setFooterOffset] = useState(0)
   const isZh = i18n.language?.startsWith('zh')
   const shouldShowTrigger =
     location.pathname === '/blog' ||
@@ -63,6 +64,36 @@ export function MobileBlogDrawer({
   }, [open])
 
   useEffect(() => {
+    if (!shouldShowTrigger || open) return
+
+    let frameId = 0
+    const updateFooterOffset = () => {
+      window.cancelAnimationFrame(frameId)
+      frameId = window.requestAnimationFrame(() => {
+        const footer = document.querySelector('footer')
+        if (!footer) {
+          setFooterOffset(0)
+          return
+        }
+
+        const footerTop = footer.getBoundingClientRect().top
+        const overlap = Math.max(0, window.innerHeight - footerTop)
+        setFooterOffset(Math.max(0, overlap - 16))
+      })
+    }
+
+    updateFooterOffset()
+    window.addEventListener('scroll', updateFooterOffset, { passive: true })
+    window.addEventListener('resize', updateFooterOffset)
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      window.removeEventListener('scroll', updateFooterOffset)
+      window.removeEventListener('resize', updateFooterOffset)
+    }
+  }, [open, shouldShowTrigger])
+
+  useEffect(() => {
     if (!open) return
 
     window.dispatchEvent(
@@ -82,134 +113,144 @@ export function MobileBlogDrawer({
 
   return (
     <>
-      {shouldShowTrigger && !open ? (
-        <button
-          type="button"
-          className={styles.trigger}
-          onClick={() => setOpen(true)}
-          data-mobile-blog-drawer-trigger="true"
-          aria-label={isZh ? '打开博客侧栏' : 'Open blog drawer'}
-        >
-          <BiSidebar size={22} className="h-5 w-5" aria-hidden="true" />
-        </button>
-      ) : null}
-
       {portalRoot
         ? createPortal(
-            <AnimatePresence>
-              {open ? (
-                <>
-                  <motion.button
-                    type="button"
-                    className={styles.backdrop}
-                    aria-label={isZh ? '关闭博客侧栏' : 'Close blog drawer'}
-                    onClick={() => setOpen(false)}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.18 }}
-                  />
+            <>
+              {shouldShowTrigger && !open ? (
+                <button
+                  type="button"
+                  className={styles.trigger}
+                  style={{ bottom: `calc(1.5rem + ${footerOffset}px)` }}
+                  onClick={() => setOpen(true)}
+                  data-mobile-blog-drawer-trigger="true"
+                  aria-label={isZh ? '打开博客侧栏' : 'Open blog drawer'}
+                >
+                  <BiSidebar size={22} className="h-5 w-5" aria-hidden="true" />
+                </button>
+              ) : null}
 
-                  <motion.aside
-                    className={styles.drawer}
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label={isZh ? '博客侧栏' : 'Blog drawer'}
-                    initial={{ x: '-100%' }}
-                    animate={{ x: 0 }}
-                    exit={{ x: '-100%' }}
-                    transition={{ type: 'spring', stiffness: 420, damping: 36 }}
-                  >
-                    <div className={styles.profile}>
-                      <div
-                        className={styles.profileBackdrop}
-                        aria-hidden="true"
-                      />
-                      <div className={styles.profileScrim} aria-hidden="true" />
-                      <button
-                        type="button"
-                        className={styles.closeButton}
-                        onClick={() => setOpen(false)}
-                        aria-label={isZh ? '关闭' : 'Close'}
-                      >
-                        <X size={18} aria-hidden="true" />
-                      </button>
-                      <div className={styles.avatarWrapper}>
-                        <img
-                          src={getImageUrl('/images/IMG_1766.JPG')}
-                          alt="Profile Avatar"
-                          width={72}
-                          height={72}
-                          loading="lazy"
-                          decoding="async"
-                          className={styles.avatar}
-                        />
-                      </div>
-                      <h2 className={styles.profileName}>Mark Xu</h2>
-                      <p className={styles.profileSignature}>{signature}</p>
-                    </div>
+              <AnimatePresence>
+                {open ? (
+                  <>
+                    <motion.button
+                      type="button"
+                      className={styles.backdrop}
+                      aria-label={isZh ? '关闭博客侧栏' : 'Close blog drawer'}
+                      onClick={() => setOpen(false)}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.18 }}
+                    />
 
-                    <nav
-                      className={styles.nav}
-                      aria-label={isZh ? '博客导航' : 'Blog navigation'}
+                    <motion.aside
+                      className={styles.drawer}
+                      role="dialog"
+                      aria-modal="true"
+                      aria-label={isZh ? '博客侧栏' : 'Blog drawer'}
+                      initial={{ x: '-100%' }}
+                      animate={{ x: 0 }}
+                      exit={{ x: '-100%' }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 420,
+                        damping: 36,
+                      }}
                     >
-                      <DrawerLink
-                        to="/blog"
-                        icon={<FileText size={18} aria-hidden="true" />}
-                        label={t('nav.blog')}
-                      />
-                      <DrawerLink
-                        to="/archive"
-                        icon={<Layers size={18} aria-hidden="true" />}
-                        label={t('blog.sidebar.archive.title')}
-                      />
-                      <DrawerLink
-                        to="/links"
-                        icon={<RiLinksLine size={18} aria-hidden="true" />}
-                        label={linksLabel}
-                      />
-                      <DrawerExternalLink
-                        href={TRAVELLINGS_URL}
-                        icon={<RiSubwayFill size={18} aria-hidden="true" />}
-                        label={t('travellings.title')}
-                        ariaLabel={t('travellings.aria')}
-                      />
-                    </nav>
+                      <div className={styles.profile}>
+                        <div
+                          className={styles.profileBackdrop}
+                          aria-hidden="true"
+                        />
+                        <div
+                          className={styles.profileScrim}
+                          aria-hidden="true"
+                        />
+                        <button
+                          type="button"
+                          className={styles.closeButton}
+                          onClick={() => setOpen(false)}
+                          aria-label={isZh ? '关闭' : 'Close'}
+                        >
+                          <X size={18} aria-hidden="true" />
+                        </button>
+                        <div className={styles.avatarWrapper}>
+                          <img
+                            src={getImageUrl('/images/IMG_1766.JPG')}
+                            alt="Profile Avatar"
+                            width={72}
+                            height={72}
+                            loading="lazy"
+                            decoding="async"
+                            className={styles.avatar}
+                          />
+                        </div>
+                        <h2 className={styles.profileName}>Mark Xu</h2>
+                        <p className={styles.profileSignature}>{signature}</p>
+                      </div>
 
-                    <div className={styles.modePanel}>
-                      <div>
-                        <p className={styles.modeTitle}>
-                          {isZh ? '阅读模式' : 'Reading Mode'}
-                        </p>
-                        <p className={styles.modeHint}>
+                      <nav
+                        className={styles.nav}
+                        aria-label={isZh ? '博客导航' : 'Blog navigation'}
+                      >
+                        <DrawerLink
+                          to="/blog"
+                          icon={<FileText size={18} aria-hidden="true" />}
+                          label={t('nav.blog')}
+                        />
+                        <DrawerLink
+                          to="/archive"
+                          icon={<Layers size={18} aria-hidden="true" />}
+                          label={t('blog.sidebar.archive.title')}
+                        />
+                        <DrawerLink
+                          to="/links"
+                          icon={<RiLinksLine size={18} aria-hidden="true" />}
+                          label={linksLabel}
+                        />
+                        <DrawerExternalLink
+                          href={TRAVELLINGS_URL}
+                          icon={<RiSubwayFill size={18} aria-hidden="true" />}
+                          label={t('travellings.title')}
+                          ariaLabel={t('travellings.aria')}
+                        />
+                      </nav>
+
+                      <div className={styles.modePanel}>
+                        <div>
+                          <p className={styles.modeTitle}>
+                            {isZh ? '阅读模式' : 'Reading Mode'}
+                          </p>
+                          <p className={styles.modeHint}>
+                            {simpleMode
+                              ? isZh
+                                ? '当前是简洁模式'
+                                : 'Simple mode is on'
+                              : isZh
+                                ? '当前是丰富模式'
+                                : 'Rich mode is on'}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          className={styles.modeButton}
+                          onClick={onToggleMode}
+                          aria-pressed={simpleMode}
+                        >
                           {simpleMode
                             ? isZh
-                              ? '当前是简洁模式'
-                              : 'Simple mode is on'
+                              ? '切回丰富'
+                              : 'Use Rich'
                             : isZh
-                              ? '当前是丰富模式'
-                              : 'Rich mode is on'}
-                        </p>
+                              ? '切到简洁'
+                              : 'Use Simple'}
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        className={styles.modeButton}
-                        onClick={onToggleMode}
-                        aria-pressed={simpleMode}
-                      >
-                        {simpleMode
-                          ? isZh
-                            ? '切回丰富'
-                            : 'Use Rich'
-                          : isZh
-                            ? '切到简洁'
-                            : 'Use Simple'}
-                      </button>
-                    </div>
-                  </motion.aside>
-                </>
-              ) : null}
-            </AnimatePresence>,
+                    </motion.aside>
+                  </>
+                ) : null}
+              </AnimatePresence>
+            </>,
             portalRoot
           )
         : null}
@@ -262,7 +303,7 @@ function DrawerExternalLink({
 
 const styles = {
   trigger:
-    'fixed right-6 bottom-6 z-[80] inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:bg-slate-50 lg:hidden dark:border-[var(--border-color)] dark:bg-[color-mix(in_srgb,var(--surface-card)_92%,transparent)] dark:text-[var(--text-secondary)] dark:hover:bg-[var(--surface-card)] dark:hover:text-[var(--text-primary)]',
+    'fixed right-6 z-[88] inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-[bottom,background-color,color] duration-200 ease-out hover:bg-slate-50 lg:hidden dark:border-[var(--border-color)] dark:bg-[color-mix(in_srgb,var(--surface-card)_92%,transparent)] dark:text-[var(--text-secondary)] dark:hover:bg-[var(--surface-card)] dark:hover:text-[var(--text-primary)]',
   backdrop:
     'fixed inset-0 z-[89] bg-slate-950/24 backdrop-blur-[2px] lg:hidden',
   drawer:

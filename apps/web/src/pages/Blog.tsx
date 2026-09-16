@@ -276,6 +276,8 @@ export function Blog() {
                     onSelectCategory={setSelectedCategory}
                     sortBy={sortBy}
                     onToggleSort={toggleSort}
+                    categoryCounts={categoryCounts}
+                    totalPostsCount={totalPostsCount}
                     hideSort
                   />
                 </div>
@@ -299,6 +301,8 @@ export function Blog() {
                   onSelectCategory={setSelectedCategory}
                   sortBy={sortBy}
                   onToggleSort={toggleSort}
+                  categoryCounts={categoryCounts}
+                  totalPostsCount={totalPostsCount}
                   simple
                   hideSort
                 />
