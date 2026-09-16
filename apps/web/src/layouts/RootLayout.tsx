@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { FloatingControlsContext } from '@/app/providers/FloatingControlsContext'
 import { Footer } from '@/components/layout/Footer'
 import { NavBar } from '@/components/layout/NavBar'
 import { GlobalSearchHost } from '@/components/search/GlobalSearchHost'
@@ -50,6 +51,8 @@ export function RootLayout() {
   const { pathname } = useLocation()
   const isNavBarVisible = useScrollVisibility()
   const [isOverlayOpen, setIsOverlayOpen] = useState(false)
+  const [hasMobileBlogDrawerTrigger, setHasMobileBlogDrawerTrigger] =
+    useState(false)
   const [isTransitionActive, setIsTransitionActive] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [areClientInteractionsReady, setAreClientInteractionsReady] =
@@ -63,7 +66,7 @@ export function RootLayout() {
     pathname === '/life' ||
     pathname.startsWith('/life/') ||
     pathname === '/movies'
-  const hideBackToTop = pathname === '/' || pathname === '/blog'
+  const hideBackToTop = pathname === '/' || hasMobileBlogDrawerTrigger
   const supportsLinkPreviews = pathname.startsWith('/blog/')
 
   const clearThemeCurtainTimers = () => {
@@ -166,7 +169,11 @@ export function RootLayout() {
       <main className="relative z-10 flex flex-1 flex-col">
         {/* Content Container */}
         <div className="relative z-20 flex flex-1 flex-col">
-          <Outlet />
+          <FloatingControlsContext.Provider
+            value={{ setHasMobileBlogDrawerTrigger }}
+          >
+            <Outlet />
+          </FloatingControlsContext.Provider>
         </div>
 
         {/* Footer Container - Pushed to bottom naturally */}

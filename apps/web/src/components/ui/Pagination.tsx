@@ -1,16 +1,6 @@
-import { useEffect, useId, useRef, useState } from 'react'
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from 'lucide-react'
-import {
-  AnimatePresence,
-  LayoutGroup,
-  motion,
-  useReducedMotion,
-} from 'framer-motion'
+import { useEffect, useRef, useState, type RefObject } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { cn } from '@/lib/classNames'
 
 interface PaginationProps {
@@ -18,11 +8,13 @@ interface PaginationProps {
   totalPages: number
   onPageChange: (page: number) => void
   className?: string
+  contentRef?: RefObject<HTMLElement | null>
 }
 
 interface PaginationControlsProps extends PaginationProps {
-  floating: boolean
-  layoutId: string
+  sticky: boolean
+  pageNumbers: (number | '...')[]
+  contentCenterX: number | null
 }
 
 function getPageNumbers(currentPage: number, totalPages: number) {
@@ -46,184 +38,175 @@ function PaginationControls({
   totalPages,
   onPageChange,
   className,
-  floating,
-  layoutId,
+  sticky,
+  pageNumbers,
+  contentCenterX,
 }: PaginationControlsProps) {
   const reduceMotion = useReducedMotion()
-  const iconButtonClass = floating
-    ? 'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-35 dark:text-slate-300 dark:hover:bg-slate-800'
-    : 'shrink-0 rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'
+  const itemSize = sticky
+    ? 'h-8 min-w-8 text-sm'
+    : 'h-8 min-w-8 text-sm sm:h-9 sm:min-w-9'
 
   return (
     <motion.nav
-      layoutId={layoutId}
+      layout
       className={cn(
-        floating
-          ? 'fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-[75] flex -translate-x-1/2 items-center gap-1 rounded-full border border-slate-200/80 bg-white/92 p-1 shadow-[0_10px_30px_-12px_rgba(15,23,42,0.35)] backdrop-blur-md dark:border-[var(--border-color)] dark:bg-[color-mix(in_srgb,var(--surface-card)_92%,transparent)]'
-          : 'scrollbar-hide flex max-w-full min-w-0 items-center justify-center gap-1 overflow-x-auto px-1 sm:gap-2',
+        sticky
+          ? 'fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-[75] flex w-fit max-w-[calc(100vw-2rem)] overflow-x-auto rounded-lg border border-slate-200/80 bg-white/92 shadow-[0_10px_30px_-12px_rgba(15,23,42,0.35)] backdrop-blur-md dark:border-[var(--border-color)] dark:bg-[color-mix(in_srgb,var(--surface-card)_92%,transparent)]'
+          : 'scrollbar-hide flex w-fit max-w-full overflow-x-auto rounded-lg border border-slate-200/80 bg-white shadow-[0_10px_28px_-22px_rgba(15,23,42,0.38)] dark:border-[var(--border-color)] dark:bg-[var(--surface-card)] dark:shadow-none',
         className
       )}
-      aria-label="Pagination"
-      data-pagination-floating={floating ? 'true' : 'false'}
-      initial={reduceMotion ? false : { opacity: 0, scale: 0.94, y: 8 }}
+      style={
+        sticky && contentCenterX !== null
+          ? { left: contentCenterX, translate: '-50% 0' }
+          : undefined
+      }
+      aria-label={`Page ${currentPage} of ${totalPages}`}
+      data-pagination-sticky={sticky ? 'true' : 'false'}
+      initial={reduceMotion ? false : { opacity: 0, scale: 0.96, y: 8 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={reduceMotion ? undefined : { opacity: 0, scale: 0.94, y: 8 }}
+      exit={reduceMotion ? undefined : { opacity: 0, scale: 0.96, y: 8 }}
       transition={
         reduceMotion
           ? { duration: 0 }
           : { type: 'spring', stiffness: 430, damping: 34, mass: 0.72 }
       }
     >
-      {!floating ? (
-        <button
-          type="button"
-          onClick={() => onPageChange(1)}
-          disabled={currentPage === 1}
-          className={cn('hidden sm:inline-flex', iconButtonClass)}
-          aria-label="First page"
-        >
-          <ChevronsLeft size={18} />
-        </button>
-      ) : null}
-
       <button
         type="button"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className={iconButtonClass}
+        className={cn(
+          'flex shrink-0 items-center justify-center text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-35 dark:text-slate-300 dark:hover:bg-slate-800',
+          itemSize,
+          'rounded-l-[7px]'
+        )}
         aria-label="Previous page"
       >
-        <ChevronLeft size={floating ? 17 : 18} />
+        <ChevronLeft size={17} />
       </button>
 
-      {floating ? (
-        <span
-          className="min-w-14 px-1 text-center text-xs font-medium text-slate-600 tabular-nums dark:text-slate-300"
-          aria-live="polite"
-        >
-          {currentPage} / {totalPages}
-        </span>
-      ) : (
-        <div className="mx-1 flex shrink-0 items-center gap-1 sm:mx-2">
-          {getPageNumbers(currentPage, totalPages).map((page, index) =>
-            page === '...' ? (
-              <span
-                key={`ellipsis-${index}`}
-                className="px-2 text-slate-400 select-none"
-              >
-                ...
-              </span>
-            ) : (
-              <button
-                type="button"
-                key={page}
-                onClick={() => onPageChange(page)}
-                className={cn(
-                  'h-8 min-w-[2rem] rounded-lg px-2 text-sm font-medium transition-colors',
-                  currentPage === page
-                    ? 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'
-                )}
-                aria-current={currentPage === page ? 'page' : undefined}
-              >
-                {page}
-              </button>
-            )
-          )}
-        </div>
+      {pageNumbers.map((page, index) =>
+        page === '...' ? (
+          <button
+            type="button"
+            key={`ellipsis-${index}`}
+            disabled
+            className={cn(
+              'shrink-0 text-slate-400 select-none dark:text-slate-500',
+              itemSize
+            )}
+            aria-label="More pages"
+          >
+            ...
+          </button>
+        ) : (
+          <button
+            type="button"
+            key={page}
+            onClick={() => onPageChange(page)}
+            className={cn(
+              'shrink-0 font-medium tabular-nums transition-colors hover:bg-slate-100 dark:hover:bg-slate-800',
+              itemSize,
+              currentPage === page
+                ? 'bg-blue-500/10 text-blue-600 dark:bg-blue-400/15 dark:text-blue-300'
+                : 'text-slate-600 dark:text-slate-300'
+            )}
+            aria-current={currentPage === page ? 'page' : undefined}
+            aria-label={`Page ${page}`}
+          >
+            {page}
+          </button>
+        )
       )}
 
       <button
         type="button"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className={iconButtonClass}
+        className={cn(
+          'flex shrink-0 items-center justify-center text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-35 dark:text-slate-300 dark:hover:bg-slate-800',
+          itemSize,
+          'rounded-r-[7px]'
+        )}
         aria-label="Next page"
       >
-        <ChevronRight size={floating ? 17 : 18} />
+        <ChevronRight size={17} />
       </button>
-
-      {!floating ? (
-        <button
-          type="button"
-          onClick={() => onPageChange(totalPages)}
-          disabled={currentPage === totalPages}
-          className={cn('hidden sm:inline-flex', iconButtonClass)}
-          aria-label="Last page"
-        >
-          <ChevronsRight size={18} />
-        </button>
-      ) : null}
     </motion.nav>
   )
 }
 
 export function Pagination(props: PaginationProps) {
-  const { totalPages } = props
-  const restingPositionRef = useRef<HTMLDivElement>(null)
-  const [isMobile, setIsMobile] = useState(false)
-  const [isAtRestingPosition, setIsAtRestingPosition] = useState(true)
-  const layoutId = `pagination-${useId()}`
+  const { contentRef, currentPage, totalPages } = props
+  const paginationAnchorRef = useRef<HTMLDivElement>(null)
+  const [isPaginationVisible, setIsPaginationVisible] = useState(true)
+  const [hasReachedContent, setHasReachedContent] = useState(!contentRef)
+  const [contentCenterX, setContentCenterX] = useState<number | null>(null)
+  const pageNumbers = getPageNumbers(currentPage, totalPages)
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 639px)')
-    let observer: IntersectionObserver | null = null
+    const anchor = paginationAnchorRef.current
+    if (!anchor) return
 
-    const syncMode = () => {
-      observer?.disconnect()
-      observer = null
-      setIsMobile(mediaQuery.matches)
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsPaginationVisible(entry.isIntersecting),
+      { threshold: 0.2 }
+    )
+    observer.observe(anchor)
 
-      if (!mediaQuery.matches) {
-        setIsAtRestingPosition(true)
-        return
-      }
+    return () => observer.disconnect()
+  }, [])
 
-      const restingPosition = restingPositionRef.current
-      if (!restingPosition) return
-
-      observer = new IntersectionObserver(
-        ([entry]) => setIsAtRestingPosition(entry.isIntersecting),
-        { threshold: 0.2 }
-      )
-      observer.observe(restingPosition)
+  useEffect(() => {
+    const content = contentRef?.current
+    if (!content) {
+      setHasReachedContent(!contentRef)
+      setContentCenterX(null)
+      return
     }
 
-    syncMode()
-    mediaQuery.addEventListener('change', syncMode)
+    let frameId = 0
+    const syncContentPosition = () => {
+      window.cancelAnimationFrame(frameId)
+      frameId = window.requestAnimationFrame(() => {
+        const { left, top, width } = content.getBoundingClientRect()
+        setHasReachedContent(top <= window.innerHeight / 2)
+        setContentCenterX(left + width / 2)
+      })
+    }
+
+    syncContentPosition()
+    window.addEventListener('scroll', syncContentPosition, { passive: true })
+    window.addEventListener('resize', syncContentPosition)
+
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(syncContentPosition)
+    resizeObserver?.observe(content)
 
     return () => {
-      observer?.disconnect()
-      mediaQuery.removeEventListener('change', syncMode)
+      window.cancelAnimationFrame(frameId)
+      window.removeEventListener('scroll', syncContentPosition)
+      window.removeEventListener('resize', syncContentPosition)
+      resizeObserver?.disconnect()
     }
-  }, [])
+  }, [contentRef, totalPages])
 
   if (totalPages <= 1) return null
 
-  const showFloating = isMobile && !isAtRestingPosition
+  const isSticky = hasReachedContent && !isPaginationVisible
 
   return (
-    <LayoutGroup id={layoutId}>
-      <div
-        ref={restingPositionRef}
-        className="mt-12 flex min-h-10 items-center justify-center"
-        data-pagination-resting-position="true"
-      >
-        {!showFloating ? (
-          <PaginationControls {...props} floating={false} layoutId={layoutId} />
-        ) : null}
-      </div>
-
-      <AnimatePresence initial={false}>
-        {showFloating ? (
-          <PaginationControls
-            {...props}
-            key="floating-pagination"
-            floating
-            layoutId={layoutId}
-          />
-        ) : null}
-      </AnimatePresence>
-    </LayoutGroup>
+    <div className="mt-12 flex min-h-9 justify-center sm:min-h-10">
+      <PaginationControls
+        {...props}
+        sticky={isSticky}
+        pageNumbers={pageNumbers}
+        contentCenterX={contentCenterX}
+      />
+      <div ref={paginationAnchorRef} className="h-px" aria-hidden="true" />
+    </div>
   )
 }

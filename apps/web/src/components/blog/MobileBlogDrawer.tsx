@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useLayoutEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { NavLink, useLocation } from 'react-router-dom'
@@ -8,6 +8,8 @@ import { BiSidebar } from 'react-icons/bi'
 import { RiLinksLine, RiSubwayFill } from 'react-icons/ri'
 import { cn } from '@/lib/classNames'
 import { getImageUrl } from '@/lib/image'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { FloatingControlsContext } from '@/app/providers/FloatingControlsContext'
 
 interface MobileBlogDrawerProps {
   simpleMode: boolean
@@ -23,14 +25,17 @@ export function MobileBlogDrawer({
 }: MobileBlogDrawerProps) {
   const { t, i18n } = useTranslation()
   const location = useLocation()
+  const { setHasMobileBlogDrawerTrigger } = useContext(FloatingControlsContext)
   const [open, setOpen] = useState(false)
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null)
   const [footerOffset, setFooterOffset] = useState(0)
+  const isDrawerTriggerVisible = useMediaQuery('(max-width: 1023px)')
   const isZh = i18n.language?.startsWith('zh')
   const shouldShowTrigger =
     location.pathname === '/blog' ||
     location.pathname === '/archive' ||
     location.pathname === '/links'
+  const isTriggerAvailable = shouldShowTrigger && isDrawerTriggerVisible
 
   useEffect(() => {
     if (window.__PRERENDER__) return
@@ -52,6 +57,13 @@ export function MobileBlogDrawer({
     if (!shouldShowTrigger) setOpen(false)
   }, [shouldShowTrigger])
 
+  useLayoutEffect(() => {
+    setHasMobileBlogDrawerTrigger(isTriggerAvailable)
+    return () => {
+      setHasMobileBlogDrawerTrigger(false)
+    }
+  }, [isTriggerAvailable, setHasMobileBlogDrawerTrigger])
+
   useEffect(() => {
     if (!open) return
 
@@ -64,7 +76,7 @@ export function MobileBlogDrawer({
   }, [open])
 
   useEffect(() => {
-    if (!shouldShowTrigger || open) return
+    if (!isTriggerAvailable || open) return
 
     let frameId = 0
     const updateFooterOffset = () => {
@@ -91,7 +103,7 @@ export function MobileBlogDrawer({
       window.removeEventListener('scroll', updateFooterOffset)
       window.removeEventListener('resize', updateFooterOffset)
     }
-  }, [open, shouldShowTrigger])
+  }, [isTriggerAvailable, open])
 
   useEffect(() => {
     if (!open) return
@@ -116,7 +128,7 @@ export function MobileBlogDrawer({
       {portalRoot
         ? createPortal(
             <>
-              {shouldShowTrigger && !open ? (
+              {isTriggerAvailable && !open ? (
                 <button
                   type="button"
                   className={styles.trigger}

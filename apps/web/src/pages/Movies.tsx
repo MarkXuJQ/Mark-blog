@@ -1101,6 +1101,7 @@ export function Movies() {
                   currentPage={currentPage}
                   totalPages={totalPages}
                   onPageChange={setCurrentPage}
+                  contentRef={listRef}
                 />
               </>
             )}
