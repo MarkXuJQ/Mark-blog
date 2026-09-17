@@ -9,6 +9,7 @@ import {
 } from 'react'
 import { Link, useLocation, useOutletContext } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { RiRssFill } from 'react-icons/ri'
 import { BlogFilter } from '@/components/blog/BlogFilter'
 import { BlogPostCard } from '@/components/blog/BlogPostCard'
 import { SearchStatus } from '@/components/search/SearchStatus'
@@ -258,9 +259,7 @@ export function Blog() {
           <>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <h1 className="text-3xl leading-tight font-bold text-[var(--text-primary)]">
-                  {pageTitle}
-                </h1>
+                <BlogHeaderTitle title={pageTitle} />
                 <div className="mt-2">
                   <SearchStatus
                     query={searchQuery}
@@ -314,9 +313,7 @@ export function Blog() {
           <>
             <div className="flex min-w-0 flex-wrap items-start justify-between gap-3 sm:block">
               <div className="min-w-0 flex-1">
-                <h1 className="text-3xl leading-tight font-bold text-slate-900 dark:text-slate-100">
-                  {pageTitle}
-                </h1>
+                <BlogHeaderTitle title={pageTitle} />
                 <div className="mt-2">
                   <SearchStatus
                     query={searchQuery}
@@ -390,6 +387,28 @@ export function Blog() {
         )}
       </div>
     </>
+  )
+}
+
+function BlogHeaderTitle({ title }: { title: string }) {
+  const { t, i18n } = useTranslation()
+  const feedPath = i18n.language?.startsWith('zh') ? '/feeds/zh/' : '/feeds/en/'
+  const rssLabel = t('blog.rss.subscribe')
+
+  return (
+    <h1 className="flex items-center gap-2 text-3xl leading-tight font-bold text-slate-900 dark:text-slate-100">
+      <span>{title}</span>
+      <a
+        href={feedPath}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#f26522] text-white shadow-sm transition-colors transition-transform hover:scale-105 hover:bg-[#dd571c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f26522] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--page-background)]"
+        aria-label={rssLabel}
+        title={rssLabel}
+      >
+        <RiRssFill className="h-5 w-5" aria-hidden="true" />
+      </a>
+    </h1>
   )
 }
 

@@ -69,6 +69,9 @@
     "nextPost": "Next Post",
     "readingTime": "{{minutes}} min",
     "wordCount": "{{count}} words",
+    "rss": {
+      "subscribe": "Subscribe via RSS"
+    },
     "sidebar": {
       "profile": {
         "signature": "Gym? Just checked in! Resume? God mode editing!"
