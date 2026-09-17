@@ -69,6 +69,9 @@
     "nextPost": "下一篇",
     "readingTime": "{{minutes}} 分钟",
     "wordCount": "{{count}}字",
+    "rss": {
+      "subscribe": "RSS 订阅"
+    },
     "sidebar": {
       "profile": {
         "signature": "健身完顺路取快递，乔装成大神改简历。"
