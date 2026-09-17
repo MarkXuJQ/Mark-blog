@@ -24,6 +24,7 @@ import {
 import { Pagination } from '@/components/ui/Pagination'
 import { StaggeredList } from '@/components/ui/StaggeredList'
 import { useBlogPosts, type SortBy } from '@/hooks/useBlogPosts'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
 import type { BlogListOutletContext } from '@/layouts/BlogListLayout'
 import type { BlogPostSummary } from '@/lib/content/posts'
@@ -38,6 +39,8 @@ type BlogViewState = {
   selectedCategory: string | null
   sortBy: SortBy
 }
+
+type BlogLayout = 'mobile' | 'desktop'
 
 function getBlogViewStateKey(language: string) {
   return `${BLOG_VIEW_STATE_KEY_PREFIX}${language.startsWith('zh') ? 'zh' : 'en'}`
@@ -90,6 +93,8 @@ export function Blog() {
   const { t, i18n } = useTranslation()
   const location = useLocation()
   const { simpleMode = false } = useOutletContext<BlogListOutletContext>()
+  const isDesktopLayout = useMediaQuery('(min-width: 640px)')
+  const layout: BlogLayout = isDesktopLayout ? 'desktop' : 'mobile'
   const routeSearchQuery = useMemo(
     () => new URLSearchParams(location.search).get('q') || '',
     [location.search]
@@ -249,17 +254,20 @@ export function Blog() {
         jsonLd={[collectionPageSchema, breadcrumbSchema]}
       />
       <div
-        className={
+        className={cn(
+          'mb-8 flex',
           simpleMode
-            ? 'mb-8 flex flex-col gap-5'
-            : 'mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'
-        }
+            ? 'flex-col gap-5'
+            : layout === 'desktop'
+              ? 'flex-row items-center justify-between gap-4'
+              : 'flex-col gap-4'
+        )}
       >
         {simpleMode ? (
           <>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <BlogHeaderTitle title={pageTitle} />
+                <BlogHeaderTitle layout={layout} title={pageTitle} />
                 <div className="mt-2">
                   <SearchStatus
                     query={searchQuery}
@@ -269,7 +277,62 @@ export function Blog() {
                 </div>
               </div>
               <div className="ml-auto flex shrink-0 items-center pt-0.5">
-                <div className="sm:hidden">
+                {layout === 'mobile' ? (
+                  <BlogFilter
+                    allCategories={allCategories}
+                    selectedCategory={selectedCategory}
+                    onSelectCategory={setSelectedCategory}
+                    sortBy={sortBy}
+                    onToggleSort={toggleSort}
+                    categoryCounts={categoryCounts}
+                    totalPostsCount={totalPostsCount}
+                    hideSort
+                  />
+                ) : (
+                  <SimpleBlogHeaderLinks />
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <SearchTriggerInput
+                placeholder={t('blog.sidebar.search.placeholder')}
+                query={searchQuery}
+                iconClassName="left-0 text-[var(--text-secondary)]"
+                className="rounded-none border-0 border-b border-[var(--border-color)] bg-transparent px-0 py-2 pl-7 text-[var(--text-primary)] shadow-none placeholder:text-[var(--text-secondary)] focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)] focus:ring-0 dark:border-[var(--border-color)] dark:bg-transparent dark:text-[var(--text-primary)] dark:placeholder:text-[var(--text-secondary)] dark:focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)]"
+              />
+              {layout === 'desktop' ? (
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+                  <BlogFilter
+                    allCategories={allCategories}
+                    selectedCategory={selectedCategory}
+                    onSelectCategory={setSelectedCategory}
+                    sortBy={sortBy}
+                    onToggleSort={toggleSort}
+                    categoryCounts={categoryCounts}
+                    totalPostsCount={totalPostsCount}
+                    simple
+                    hideSort
+                  />
+                </div>
+              ) : null}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex min-w-0 flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <BlogHeaderTitle layout={layout} title={pageTitle} />
+                <div className="mt-2">
+                  <SearchStatus
+                    query={searchQuery}
+                    count={posts.length}
+                    onClear={clearSearch}
+                  />
+                </div>
+              </div>
+              {layout === 'mobile' ? (
+                <div className="ml-auto flex shrink-0 items-center pt-0.5">
                   <BlogFilter
                     allCategories={allCategories}
                     selectedCategory={selectedCategory}
@@ -281,20 +344,11 @@ export function Blog() {
                     hideSort
                   />
                 </div>
-                <div className="hidden sm:block">
-                  <SimpleBlogHeaderLinks />
-                </div>
-              </div>
+              ) : null}
             </div>
 
-            <div className="flex flex-col gap-4">
-              <SearchTriggerInput
-                placeholder={t('blog.sidebar.search.placeholder')}
-                query={searchQuery}
-                iconClassName="left-0 text-[var(--text-secondary)]"
-                className="rounded-none border-0 border-b border-[var(--border-color)] bg-transparent px-0 py-2 pl-7 text-[var(--text-primary)] shadow-none placeholder:text-[var(--text-secondary)] focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)] focus:ring-0 dark:border-[var(--border-color)] dark:bg-transparent dark:text-[var(--text-primary)] dark:placeholder:text-[var(--text-secondary)] dark:focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)]"
-              />
-              <div className="hidden flex-wrap items-center gap-x-5 gap-y-2 text-sm sm:flex">
+            {layout === 'desktop' ? (
+              <div className="flex justify-end">
                 <BlogFilter
                   allCategories={allCategories}
                   selectedCategory={selectedCategory}
@@ -303,50 +357,9 @@ export function Blog() {
                   onToggleSort={toggleSort}
                   categoryCounts={categoryCounts}
                   totalPostsCount={totalPostsCount}
-                  simple
-                  hideSort
                 />
               </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="flex min-w-0 flex-wrap items-start justify-between gap-3 sm:block">
-              <div className="min-w-0 flex-1">
-                <BlogHeaderTitle title={pageTitle} />
-                <div className="mt-2">
-                  <SearchStatus
-                    query={searchQuery}
-                    count={posts.length}
-                    onClear={clearSearch}
-                  />
-                </div>
-              </div>
-              <div className="ml-auto flex shrink-0 items-center pt-0.5 sm:hidden">
-                <BlogFilter
-                  allCategories={allCategories}
-                  selectedCategory={selectedCategory}
-                  onSelectCategory={setSelectedCategory}
-                  sortBy={sortBy}
-                  onToggleSort={toggleSort}
-                  categoryCounts={categoryCounts}
-                  totalPostsCount={totalPostsCount}
-                  hideSort
-                />
-              </div>
-            </div>
-
-            <div className="hidden sm:flex sm:justify-end">
-              <BlogFilter
-                allCategories={allCategories}
-                selectedCategory={selectedCategory}
-                onSelectCategory={setSelectedCategory}
-                sortBy={sortBy}
-                onToggleSort={toggleSort}
-                categoryCounts={categoryCounts}
-                totalPostsCount={totalPostsCount}
-              />
-            </div>
+            ) : null}
           </>
         )}
       </div>
@@ -390,7 +403,13 @@ export function Blog() {
   )
 }
 
-function BlogHeaderTitle({ title }: { title: string }) {
+function BlogHeaderTitle({
+  layout,
+  title,
+}: {
+  layout: BlogLayout
+  title: string
+}) {
   const { t, i18n } = useTranslation()
   const feedPath = i18n.language?.startsWith('zh') ? '/feeds/zh/' : '/feeds/en/'
   const rssLabel = t('blog.rss.subscribe')
@@ -398,16 +417,18 @@ function BlogHeaderTitle({ title }: { title: string }) {
   return (
     <h1 className="flex items-center gap-2 text-3xl leading-tight font-bold text-slate-900 dark:text-slate-100">
       <span>{title}</span>
-      <a
-        href={feedPath}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#f26522] text-white shadow-sm transition-colors transition-transform hover:scale-105 hover:bg-[#dd571c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f26522] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--page-background)]"
-        aria-label={rssLabel}
-        title={rssLabel}
-      >
-        <RiRssFill className="h-5 w-5" aria-hidden="true" />
-      </a>
+      {layout === 'desktop' ? (
+        <a
+          href={feedPath}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#f26522] text-white shadow-sm transition-colors transition-transform hover:scale-105 hover:bg-[#dd571c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f26522] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--page-background)]"
+          aria-label={rssLabel}
+          title={rssLabel}
+        >
+          <RiRssFill className="h-5 w-5" aria-hidden="true" />
+        </a>
+      ) : null}
     </h1>
   )
 }
