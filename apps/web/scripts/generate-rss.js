@@ -73,6 +73,14 @@ const buildReviewSummary = (content) => {
     : `${normalized.slice(0, MOVIE_REVIEW_SUMMARY_MAX_LENGTH).trimEnd()}…`
 }
 
+const escapeHtmlAttribute = (value) =>
+  String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+
 const regularPosts = files.map((filePath) => {
   const content = fs.readFileSync(filePath, 'utf-8')
   const { data, content: markdownContent } = matter(content)
@@ -93,16 +101,22 @@ const regularPosts = files.map((filePath) => {
   }
 
   const postUrl = `${DOMAIN}/blog/${encodeURIComponent(slug)}`
+  const escapedCoverImage = coverImage
+    ? escapeHtmlAttribute(coverImage)
+    : undefined
 
   const viewFullLabel = language === 'zh' ? '点击查看全文' : 'Read full article'
   const contentHtml = [
-    coverImage ? `<img src="${coverImage}" alt="${data.title || slug}" />` : '',
+    escapedCoverImage
+      ? `<img src="${escapedCoverImage}" alt="${escapeHtmlAttribute(data.title || slug)}" />`
+      : '',
     data.summary ? `<p>${data.summary}</p>` : '',
     `<a class="view-full" href="${postUrl}" target="_blank">${viewFullLabel}</a>`,
   ].join(' ')
 
   return {
     slug,
+    url: postUrl,
     language,
     date: data.date ? new Date(data.date) : new Date(),
     updated: data.updated ? new Date(data.updated) : null,
@@ -110,10 +124,10 @@ const regularPosts = files.map((filePath) => {
     description: data.summary || '',
     content: contentHtml,
     category: data.category,
-    image: coverImage
+    image: escapedCoverImage
       ? {
-          url: coverImage,
-          type: coverImage.endsWith('.png') ? 'image/png' : 'image/jpeg',
+          url: escapedCoverImage,
+          type: escapedCoverImage.endsWith('.png') ? 'image/png' : 'image/jpeg',
         }
       : undefined,
   }
@@ -150,19 +164,25 @@ const reviewPosts = reviewFiles
       }
     }
 
-    const postUrl = `${DOMAIN}/blog/${encodeURIComponent(slug)}`
+    const postUrl = `${DOMAIN}/movies/reviews/${encodeURIComponent(slug)}`
+    const escapedCoverImage = coverImage
+      ? escapeHtmlAttribute(coverImage)
+      : undefined
     return {
       slug,
+      url: postUrl,
       language: 'zh',
       date: data.date ? new Date(data.date) : new Date(),
       updated: data.updated ? new Date(data.updated) : null,
       title: data.title || slug,
       description: summary,
       content: `<p>${summary}</p><a class="view-full" href="${postUrl}" target="_blank">点击查看全文</a>`,
-      image: coverImage
+      image: escapedCoverImage
         ? {
-            url: coverImage,
-            type: coverImage.endsWith('.png') ? 'image/png' : 'image/jpeg',
+            url: escapedCoverImage,
+            type: escapedCoverImage.endsWith('.png')
+              ? 'image/png'
+              : 'image/jpeg',
           }
         : undefined,
     }
@@ -225,7 +245,7 @@ function renderFeedViewPage(feedPosts, options) {
       const title = escapeHtml(post.title)
       const summary = escapeHtml(post.description || emptySummary)
       const date = post.date.toISOString().slice(0, 10)
-      const href = `${DOMAIN}/blog/${encodeURIComponent(post.slug)}`
+      const href = post.url
       const cover = post.image?.url
       return `
         <article class="card">
@@ -556,7 +576,7 @@ const createFeed = (feedPosts, options, atomUrl) => {
   })
 
   feedPosts.forEach((post) => {
-    const url = `${DOMAIN}/blog/${encodeURIComponent(post.slug)}`
+    const url = post.url
     feed.addItem({
       title: post.title,
       id: url,

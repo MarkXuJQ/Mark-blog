@@ -116,6 +116,8 @@ function buildPostSummaries() {
             summary:
               normalizeOptionalString(data.summary) || buildSummary(content),
             wordCount: countWords(content),
+            image: normalizeOptionalString(data.image),
+            movieSubjectId: String(data.movieSubjectId),
             tags: normalizeOptionalStringArray(data.tags),
             category: 'Experience',
           }

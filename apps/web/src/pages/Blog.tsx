@@ -26,8 +26,9 @@ import { StaggeredList } from '@/components/ui/StaggeredList'
 import { useBlogPosts, type SortBy } from '@/hooks/useBlogPosts'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
+import { getOptimizedImageUrl } from '@/lib/image'
 import type { BlogListOutletContext } from '@/layouts/BlogListLayout'
-import type { BlogPostSummary } from '@/lib/content/posts'
+import { getPostDetailPath, type BlogPostSummary } from '@/lib/content/posts'
 
 const ITEMS_PER_PAGE = 10
 const BLOG_VIEW_STATE_KEY_PREFIX = 'blog-view-state:'
@@ -469,22 +470,38 @@ function SimpleBlogPostItem({
   style?: CSSProperties
   onOpenPost?: () => void
 }) {
+  const detailPath = getPostDetailPath(post)
+
   return (
     <article className={cn('py-6 first:pt-0', className)} style={style}>
       <Link
-        to={`/blog/${post.slug}`}
+        to={detailPath}
         state={{ fromBlogList: true }}
         onClick={onOpenPost}
-        className="group block"
+        className="group flex min-w-0 gap-4"
       >
-        <h2 className="text-2xl leading-snug font-bold text-[var(--text-primary)] transition-colors group-hover:text-[color-mix(in_srgb,var(--brand-400)_72%,var(--text-primary)_28%)]">
-          {post.title}
-        </h2>
-        {post.summary ? (
-          <p className="mt-3 text-[0.98rem] leading-7 text-[var(--text-secondary)]">
-            {post.summary}
-          </p>
+        {post.image ? (
+          <div className="mt-1 aspect-[4/3] w-28 shrink-0 overflow-hidden bg-slate-100 sm:w-36 dark:bg-slate-800">
+            <img
+              src={getOptimizedImageUrl(post.image, 'card')}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              referrerPolicy="no-referrer"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
         ) : null}
+        <div className="min-w-0">
+          <h2 className="text-2xl leading-snug font-bold text-[var(--text-primary)] transition-colors group-hover:text-[color-mix(in_srgb,var(--brand-400)_72%,var(--text-primary)_28%)]">
+            {post.title}
+          </h2>
+          {post.summary ? (
+            <p className="mt-3 text-[0.98rem] leading-7 text-[var(--text-secondary)]">
+              {post.summary}
+            </p>
+          ) : null}
+        </div>
       </Link>
     </article>
   )

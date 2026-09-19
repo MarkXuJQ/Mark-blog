@@ -14,6 +14,7 @@ export interface BlogPostSummary {
   wordCount?: number
   image?: string
   imageOverlay?: boolean
+  movieSubjectId?: string
   tags?: string[]
   category?: string
 }
@@ -120,6 +121,14 @@ export function getAllPosts(language?: string): BlogPost[] {
 
   cachedPosts[normalizedLanguage] = posts
   return posts
+}
+
+export function getPostDetailPath(post: BlogPostSummary): string {
+  if (post.movieSubjectId) {
+    return `/movies/reviews/${encodeURIComponent(post.slug)}`
+  }
+
+  return `/blog/${post.slug}`
 }
 
 function getAllPostMatchesAcrossLanguages(): Array<{

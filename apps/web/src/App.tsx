@@ -84,7 +84,7 @@ export async function preloadCurrentRoute(pathname: string) {
     if (normalizedPathname === '/life') return [LightboxProvider, Life]
     if (normalizedPathname === '/movies') return [Movies]
     if (normalizedPathname.startsWith('/movies/reviews/')) {
-      return [MovieReviewPost]
+      return [LightboxProvider, MovieReviewPost]
     }
     if (normalizedPathname === '/games') return [Games]
     if (normalizedPathname === '/projects') return [Projects]
@@ -249,7 +249,9 @@ function App() {
               path="movies/reviews/:slug"
               element={
                 <LazyRoute>
-                  <MovieReviewPost />
+                  <LightboxProvider>
+                    <MovieReviewPost />
+                  </LightboxProvider>
                 </LazyRoute>
               }
             />

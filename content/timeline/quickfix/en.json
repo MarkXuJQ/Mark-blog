@@ -1,5 +1,14 @@
 [
-    {
+  {
+    "id": "qf-20260919",
+    "date": "2026-09-19",
+    "content": [
+      "adjust the movie review display logic to unify the experience when entering from the article list and movie page",
+      "optimize the concise mode to display cover images",
+      "add a background image to the movie review page for a more immersive atmosphere"
+    ]
+  },  
+  {
     "id": "qf-20260916",
     "date": "2026-09-16",
     "content": [

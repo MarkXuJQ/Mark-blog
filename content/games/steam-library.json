@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T12:22:36.694Z",
+  "generatedAt": "2026-09-19T04:10:39.621Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -33,14 +33,14 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 162786,
-        "totalNegative": 167486,
-        "totalReviews": 330272,
+        "totalPositive": 163177,
+        "totalNegative": 167528,
+        "totalReviews": 330705,
         "positivePercent": 49
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1787549555",
       "shortDescription": "The unbridled force of nature runs wild and relentless, with environments transforming drastically from one moment to the next. This is a story of monsters and humans and their struggles to live in harmony in a world of duality.",
-      "releaseDate": "27 Feb, 2025",
+      "releaseDate": "Feb 27, 2025",
       "developers": [
         "CAPCOM Co., Ltd."
       ],
@@ -65,14 +65,14 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 459110,
-        "totalNegative": 57917,
-        "totalReviews": 517027,
+        "totalPositive": 459372,
+        "totalNegative": 57938,
+        "totalReviews": 517310,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
       "shortDescription": "Welcome to a new world! In Monster Hunter: World, the latest installment in the series, you can enjoy the ultimate hunting experience, using everything at your disposal to hunt monsters in a new world teeming with surprises and excitement.",
-      "releaseDate": "9 Aug, 2018",
+      "releaseDate": "8 Aug, 2018",
       "developers": [
         "CAPCOM Co., Ltd."
       ],
@@ -95,14 +95,14 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 830023,
-        "totalNegative": 27552,
-        "totalReviews": 857575,
+        "totalPositive": 830521,
+        "totalNegative": 27580,
+        "totalReviews": 858101,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
       "shortDescription": "Baldur’s Gate 3 is a story-rich, party-based RPG set in the universe of Dungeons &amp; Dragons, where your choices shape a tale of fellowship and betrayal, survival and sacrifice, and the lure of absolute power.",
-      "releaseDate": "3 Aug, 2023",
+      "releaseDate": "Aug 3, 2023",
       "developers": [
         "Larian Studios"
       ],
@@ -127,14 +127,14 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 859110,
-        "totalNegative": 28823,
-        "totalReviews": 887933,
+        "totalPositive": 859463,
+        "totalNegative": 28809,
+        "totalReviews": 888272,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/97cca1147b256f450331044255b1dbd2d57d609e/header_alt_assets_4.jpg?t=1788333513",
       "shortDescription": "You are Geralt of Rivia, mercenary monster slayer. Before you stands a war-torn, monster-infested continent you can explore at will. Your current contract? Tracking down Ciri — the Child of Prophecy, a living weapon that can alter the shape of the world.",
-      "releaseDate": "May 18, 2015",
+      "releaseDate": "18 May, 2015",
       "developers": [
         "CD PROJEKT RED"
       ],
@@ -157,9 +157,9 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 326577,
-        "totalNegative": 52511,
-        "totalReviews": 379088,
+        "totalPositive": 326707,
+        "totalNegative": 52513,
+        "totalReviews": 379220,
         "positivePercent": 86
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1784651829",
@@ -189,14 +189,14 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 167203,
-        "totalNegative": 21261,
-        "totalReviews": 188464,
+        "totalPositive": 167292,
+        "totalNegative": 21271,
+        "totalReviews": 188563,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1786633104",
       "shortDescription": "In this action-adventure game, set sail for Ancient Greece to alter its fate. Fight in visceral battles on land and sea, shape your destiny from outcast to legend, and uncover secrets of your past.",
-      "releaseDate": "Oct 5, 2018",
+      "releaseDate": "5 Oct, 2018",
       "developers": [
         "Ubisoft Quebec",
         "Ubisoft Montreal",

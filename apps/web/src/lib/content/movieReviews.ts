@@ -7,6 +7,9 @@ export interface MovieReview {
   title: string
   date: string
   summary: string
+  image?: string
+  imageOverlay?: boolean
+  background?: string
   movieSubjectId: string
   movieTitle?: string
   rating?: number
@@ -73,6 +76,9 @@ function toReview(
     title,
     date,
     summary: summary || buildReviewSummary(html),
+    image: typeof attributes.image === 'string' ? attributes.image : undefined,
+    imageOverlay: attributes.imageOverlay === true,
+    background: String(attributes.background || '').trim() || undefined,
     movieSubjectId,
     movieTitle: String(attributes.movieTitle || '').trim() || undefined,
     rating:
@@ -119,6 +125,9 @@ function toMovieReviewBlogPost(review: MovieReview): BlogPost {
     sourceSlug: review.slug,
     date: review.date,
     summary: review.summary,
+    image: review.image,
+    imageOverlay: review.imageOverlay,
+    movieSubjectId: review.movieSubjectId,
     wordCount: countWords(review.content),
     tags: review.tags,
     category: MOVIE_REVIEW_BLOG_CATEGORY,
