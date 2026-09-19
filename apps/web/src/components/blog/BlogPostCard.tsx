@@ -4,7 +4,7 @@ import { LuHammer, LuPencilLine, LuWholeWord } from 'react-icons/lu'
 import { Card } from '@/components/ui/Card'
 import { cn } from '@/lib/classNames'
 import { getOptimizedImageUrl } from '@/lib/image'
-import type { BlogPostSummary } from '@/lib/content/posts'
+import { getPostDetailPath, type BlogPostSummary } from '@/lib/content/posts'
 import { CategoryLabel } from './CategoryLabel'
 import type { CSSProperties } from 'react'
 
@@ -25,6 +25,7 @@ export function BlogPostCard({
 }: BlogPostCardProps) {
   const { t } = useTranslation()
   const words = post.wordCount ?? 0
+  const detailPath = getPostDetailPath(post)
   const coverImage = post.image ? getOptimizedImageUrl(post.image, 'card') : ''
   const shouldShowUpdatedDate =
     sortBy === 'updated' && Boolean(post.updated && post.updated !== post.date)
@@ -47,7 +48,7 @@ export function BlogPostCard({
     return (
       <div className={className} style={style}>
         <Link
-          to={`/blog/${post.slug}`}
+          to={detailPath}
           state={{ fromBlogList: true }}
           onClick={onOpenPost}
           className="block"
@@ -93,7 +94,7 @@ export function BlogPostCard({
   return (
     <div className={className} style={style}>
       <Link
-        to={`/blog/${post.slug}`}
+        to={detailPath}
         state={{ fromBlogList: true }}
         onClick={onOpenPost}
         className="block"

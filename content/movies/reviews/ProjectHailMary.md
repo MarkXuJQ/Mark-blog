@@ -28,5 +28,5 @@ image: "https://nenya.doubanio.com/view/photo/xl/public/p2930918971.jpg?sa_cv=df
 
 总之这部电影真的让人感到轻松和美好，没有勾心斗角，没有主旋律，没有狗血剧情。简单明快，或许是我对生活也追求的方向。
 
-![](https://nenya.doubanio.com/view/photo/xl/public/p2930947476.jpg?sa_cv=2e7becdb2e25df7c67d24f41b813b510&sa_ct=6aadfb2b)
+![轻松愉快的画面](https://nenya.doubanio.com/view/photo/xl/public/p2930947476.jpg?sa_cv=2e7becdb2e25df7c67d24f41b813b510&sa_ct=6aadfb2b)
 

@@ -6,6 +6,7 @@ import {
   useNavigate,
   useLocation,
   useOutletContext,
+  Navigate,
 } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LuClock, LuHammer, LuPencilLine, LuWholeWord } from 'react-icons/lu'
@@ -37,6 +38,7 @@ import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
 import {
   getAdjacentPosts,
   getPostBySlug,
+  getPostDetailPath,
   getPostLanguageBySlug,
   getSharedPostCommentPath,
 } from '@/lib/content/posts'
@@ -150,6 +152,12 @@ export function BlogPost() {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     })
   }, [hasHighlightQuery, slug])
+
+  if (post?.movieSubjectId) {
+    return (
+      <Navigate to={getPostDetailPath(post)} replace state={location.state} />
+    )
+  }
 
   if (!post) {
     return (
