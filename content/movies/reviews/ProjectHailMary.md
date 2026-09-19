@@ -7,6 +7,7 @@ movieTitle: "Project Hail Mary"
 rating: 5
 tags: ["Movies", "Review"]
 image: "https://nenya.doubanio.com/view/photo/xl/public/p2930918971.jpg?sa_cv=dfea831beb7f3b150278579124c07a8a&sa_ct=6aadf6c6"
+background: "https://nenya.doubanio.com/view/photo/xl/public/p2930918968.jpg?sa_cv=b6eae425cc0208fb8a9cd0dd78306297&sa_ct=6aae0989"
 ---
 看完爽到的电影，在我心里的科幻可以排前三的水平，让我想起一开始喜欢电影的感觉，一种处在梦中和幻想的感觉，感谢这些造梦人，也很喜欢高司令的演出😋
 
@@ -26,7 +27,8 @@ image: "https://nenya.doubanio.com/view/photo/xl/public/p2930918971.jpg?sa_cv=df
 
 仔细想想，或许正是这部电影的节奏安排的好，让情绪有着连贯性，同时出色的BGM让电影始终保持着一种轻松的基调。让大家观影的时候不必时刻紧绷着。
 
-总之这部电影真的让人感到轻松和美好，没有勾心斗角，没有主旋律，没有狗血剧情。简单明快，或许是我对生活也追求的方向。
+总之这部电影真的让人感到轻松和美好，没有勾心斗角，没有主旋律，没有狗血剧情。
+
+**简单明快，或许是我对生活也追求的方向。**
 
 ![轻松愉快的画面](https://nenya.doubanio.com/view/photo/xl/public/p2930947476.jpg?sa_cv=2e7becdb2e25df7c67d24f41b813b510&sa_ct=6aadfb2b)
-

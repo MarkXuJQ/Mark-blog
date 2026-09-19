@@ -65,7 +65,8 @@ export function RootLayout() {
   const hasPageBackgroundUnderNav =
     pathname === '/life' ||
     pathname.startsWith('/life/') ||
-    pathname === '/movies'
+    pathname === '/movies' ||
+    pathname.startsWith('/movies/reviews/')
   const hideBackToTop = pathname === '/' || hasMobileBlogDrawerTrigger
   const supportsLinkPreviews = pathname.startsWith('/blog/')
 

@@ -9,6 +9,7 @@ export interface MovieReview {
   summary: string
   image?: string
   imageOverlay?: boolean
+  background?: string
   movieSubjectId: string
   movieTitle?: string
   rating?: number
@@ -77,6 +78,7 @@ function toReview(
     summary: summary || buildReviewSummary(html),
     image: typeof attributes.image === 'string' ? attributes.image : undefined,
     imageOverlay: attributes.imageOverlay === true,
+    background: String(attributes.background || '').trim() || undefined,
     movieSubjectId,
     movieTitle: String(attributes.movieTitle || '').trim() || undefined,
     rating:

@@ -20,12 +20,17 @@ movieTitle: "The Coroner's Squad"
 rating: 5
 image: "https://img.markxu.icu/movie-cover.jpg"
 imageOverlay: true
+background: "https://img.markxu.icu/movie-background.jpg"
 tags: ["Movies", "Review"]
 ---
 ```
 
 `imageOverlay` is optional. Set it to `true` for bright cover images so the
 review title remains legible.
+
+`background` is also optional. It accepts a complete image URL and renders it
+behind the review page and floating navigation. Omit it for the normal plain
+page background.
 
 Then map this review in `content/movies/movie-overrides.json`:
 

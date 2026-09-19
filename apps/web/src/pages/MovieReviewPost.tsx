@@ -1,4 +1,4 @@
-import { useMemo, useRef, type MouseEvent } from 'react'
+import { useMemo, type MouseEvent } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Star } from 'lucide-react'
@@ -7,9 +7,9 @@ import { Card } from '@/components/ui/Card'
 import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
 import { getMovieReviewBySlug } from '@/lib/content/movieReviews'
 import { cn } from '@/lib/classNames'
+import { useArticleImageLightbox } from '@/hooks/useArticleImageLightbox'
 import { useArticleProgressiveImages } from '@/hooks/useArticleProgressiveImages'
 import { getImageUrl } from '@/lib/image'
-import lifeIsStrangeBackground from '@/assets/background/lifeisStrange.webp'
 
 export function MovieReviewPost() {
   const { slug } = useParams()
@@ -24,7 +24,7 @@ export function MovieReviewPost() {
 
     return decorateArticleContent(review.content, i18n.language)
   }, [i18n.language, review])
-  const contentRef = useRef<HTMLDivElement>(null)
+  const contentRef = useArticleImageLightbox([contentHtml])
   useArticleProgressiveImages(contentRef, [contentHtml])
 
   if (!review) {
@@ -46,6 +46,9 @@ export function MovieReviewPost() {
   }
   const pageTitle = `${review.title} | ${t('movies.reviews.pageTitle')}`
   const coverImage = review.image ? getImageUrl(review.image) : ''
+  const backgroundImage = review.background
+    ? getImageUrl(review.background)
+    : ''
   const cameFromBlogList = Boolean(
     (location.state as { fromBlogList?: boolean } | null)?.fromBlogList
   )
@@ -71,19 +74,22 @@ export function MovieReviewPost() {
 
   return (
     <div className={styles.page}>
-      <div aria-hidden="true" className={styles.background}>
-        <img
-          src={lifeIsStrangeBackground}
-          alt=""
-          className={styles.backgroundImage}
-          loading="eager"
-          fetchPriority="high"
-          decoding="async"
-          draggable={false}
-        />
-        <div className={styles.backgroundTint} />
-        <div className={styles.backgroundFade} />
-      </div>
+      {backgroundImage ? (
+        <div aria-hidden="true" className={styles.background}>
+          <img
+            src={backgroundImage}
+            alt=""
+            className={styles.backgroundImage}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            referrerPolicy="no-referrer"
+            draggable={false}
+          />
+          <div className={styles.backgroundTint} />
+          <div className={styles.backgroundFade} />
+        </div>
+      ) : null}
 
       <div className={styles.content}>
         <Seo
@@ -206,14 +212,14 @@ function ReviewMeta({
 }
 
 const styles = {
-  page: 'relative isolate min-h-full w-full overflow-hidden py-8',
-  background: 'pointer-events-none absolute inset-0 z-0 overflow-hidden',
-  backgroundImage:
-    'absolute inset-0 h-full w-full object-cover object-[center_42%] opacity-38 saturate-[0.8] dark:opacity-28',
+  page: 'relative isolate min-h-full w-full overflow-hidden pt-28 pb-8',
+  background:
+    'pointer-events-none absolute inset-x-0 top-0 z-0 overflow-hidden',
+  backgroundImage: 'block h-auto w-full saturate-[0.82]',
   backgroundTint:
-    'absolute inset-0 bg-[var(--page-background)] opacity-28 dark:opacity-40',
+    'absolute inset-0 bg-[var(--page-background)] opacity-18 dark:opacity-28',
   backgroundFade:
-    'absolute inset-0 bg-[linear-gradient(to_bottom,color-mix(in_srgb,var(--page-background)_20%,transparent)_0%,transparent_30%,var(--page-background)_100%)]',
+    'absolute inset-0 bg-[linear-gradient(to_bottom,color-mix(in_srgb,var(--page-background)_32%,transparent)_0%,transparent_38%,var(--page-background)_100%)]',
   content: 'relative z-10 mx-auto w-full max-w-4xl px-4',
   card: 'block w-full border border-slate-200/70 bg-white/84 shadow-[0_18px_40px_-28px_rgba(15,23,42,0.42)] dark:border-[#2b2f36] dark:bg-[#17191c]/88 dark:shadow-[0_18px_40px_-28px_rgba(0,0,0,0.72)]',
   notFoundContainer: 'flex flex-col items-center justify-center py-12',
