@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-19T02:57:23.066Z",
+  "generatedAt": "2026-09-19T03:34:32.135Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -33,9 +33,9 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 163167,
+        "totalPositive": 163177,
         "totalNegative": 167528,
-        "totalReviews": 330695,
+        "totalReviews": 330705,
         "positivePercent": 49
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1787549555",
@@ -72,7 +72,7 @@
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
       "shortDescription": "Welcome to a new world! In Monster Hunter: World, the latest installment in the series, you can enjoy the ultimate hunting experience, using everything at your disposal to hunt monsters in a new world teeming with surprises and excitement.",
-      "releaseDate": "Aug 8, 2018",
+      "releaseDate": "8 Aug, 2018",
       "developers": [
         "CAPCOM Co., Ltd."
       ],
@@ -95,9 +95,9 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 830518,
-        "totalNegative": 27578,
-        "totalReviews": 858096,
+        "totalPositive": 830521,
+        "totalNegative": 27580,
+        "totalReviews": 858101,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
@@ -127,14 +127,14 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 859459,
+        "totalPositive": 859461,
         "totalNegative": 28809,
-        "totalReviews": 888268,
+        "totalReviews": 888270,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/97cca1147b256f450331044255b1dbd2d57d609e/header_alt_assets_4.jpg?t=1788333513",
       "shortDescription": "You are Geralt of Rivia, mercenary monster slayer. Before you stands a war-torn, monster-infested continent you can explore at will. Your current contract? Tracking down Ciri — the Child of Prophecy, a living weapon that can alter the shape of the world.",
-      "releaseDate": "May 18, 2015",
+      "releaseDate": "18 May, 2015",
       "developers": [
         "CD PROJEKT RED"
       ],
@@ -157,8 +157,8 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 326705,
-        "totalNegative": 52512,
+        "totalPositive": 326704,
+        "totalNegative": 52513,
         "totalReviews": 379217,
         "positivePercent": 86
       },
