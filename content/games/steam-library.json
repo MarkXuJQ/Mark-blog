@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-19T03:34:32.135Z",
+  "generatedAt": "2026-09-19T04:10:39.621Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -40,7 +40,7 @@
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1787549555",
       "shortDescription": "The unbridled force of nature runs wild and relentless, with environments transforming drastically from one moment to the next. This is a story of monsters and humans and their struggles to live in harmony in a world of duality.",
-      "releaseDate": "27 Feb, 2025",
+      "releaseDate": "Feb 27, 2025",
       "developers": [
         "CAPCOM Co., Ltd."
       ],
@@ -65,9 +65,9 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 459363,
+        "totalPositive": 459372,
         "totalNegative": 57938,
-        "totalReviews": 517301,
+        "totalReviews": 517310,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
@@ -102,7 +102,7 @@
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
       "shortDescription": "Baldur’s Gate 3 is a story-rich, party-based RPG set in the universe of Dungeons &amp; Dragons, where your choices shape a tale of fellowship and betrayal, survival and sacrifice, and the lure of absolute power.",
-      "releaseDate": "3 Aug, 2023",
+      "releaseDate": "Aug 3, 2023",
       "developers": [
         "Larian Studios"
       ],
@@ -127,9 +127,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 859461,
+        "totalPositive": 859463,
         "totalNegative": 28809,
-        "totalReviews": 888270,
+        "totalReviews": 888272,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/97cca1147b256f450331044255b1dbd2d57d609e/header_alt_assets_4.jpg?t=1788333513",
@@ -157,14 +157,14 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 326704,
+        "totalPositive": 326707,
         "totalNegative": 52513,
-        "totalReviews": 379217,
+        "totalReviews": 379220,
         "positivePercent": 86
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1784651829",
       "shortDescription": "Expand your empire, advance your culture and go head-to-head against history’s greatest leaders. Will your civilization stand the test of time?",
-      "releaseDate": "20 Oct, 2016",
+      "releaseDate": "Oct 20, 2016",
       "developers": [
         "Firaxis Games",
         "Aspyr (Mac)",
