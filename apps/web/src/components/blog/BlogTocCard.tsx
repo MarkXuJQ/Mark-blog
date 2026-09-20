@@ -47,9 +47,9 @@ const styles = {
   tocBody: 'relative',
   tocRail: 'relative pl-4',
   tocRailLine:
-    'absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-slate-200/80 dark:bg-[var(--border-color)]',
+    'absolute -left-1 top-0 bottom-0 w-[3px] rounded-full bg-slate-200/80 dark:bg-[var(--border-color)]',
   tocRailIndicator: cn(
-    'absolute left-0 h-4 w-[3px] rounded-full bg-blue-600',
+    'absolute -left-1 h-4 w-[3px] rounded-full bg-blue-600',
     'transition-[top,height,opacity] duration-200 ease-out -translate-y-1/2',
     'dark:bg-blue-400'
   ),
@@ -63,21 +63,16 @@ const styles = {
     'dark:hover:bg-[color-mix(in_srgb,var(--surface-card)_78%,var(--text-primary)_10%)] dark:hover:text-blue-400'
   ),
   tocItemActive: cn(
-    'whitespace-normal break-words bg-blue-50/80 text-blue-600 font-semibold',
+    'whitespace-normal break-words bg-blue-50/80 text-blue-600',
     'dark:bg-[color-mix(in_srgb,var(--surface-card)_72%,var(--brand-500)_28%)] dark:text-blue-300'
   ),
   tocLevel1: 'px-2 font-semibold',
   tocLevel2: 'px-2 font-medium',
-  tocLevel3: 'px-2',
+  tocLevel3: 'px-2 text-xs',
   tocGroup: 'relative mt-1 list-none rounded-lg py-0.5',
   tocGroupActive:
     'bg-slate-50/70 dark:bg-[color-mix(in_srgb,var(--surface-card)_84%,var(--page-background)_16%)]',
-  tocChildList: cn(
-    'relative mt-1 space-y-0.5 list-none pl-4',
-    'before:absolute before:left-2 before:top-1 before:bottom-1 before:w-px before:rounded-full',
-    'before:bg-slate-200 dark:before:bg-[var(--border-color)]'
-  ),
-  tocChildListActive: 'before:bg-blue-300 dark:before:bg-blue-500/70',
+  tocChildList: 'mt-1 space-y-0.5 list-none pl-2',
 }
 
 function handleLinkClick(
@@ -186,10 +181,12 @@ function TocList({
   function linkClassName(node: Node) {
     return cn(
       styles.tocItemBase,
-      node.id === activeId ? styles.tocItemActive : styles.tocItem,
       node.level <= 1 && styles.tocLevel1,
       node.level === 2 && styles.tocLevel2,
-      node.level >= 3 && styles.tocLevel3
+      node.level >= 3 && styles.tocLevel3,
+      node.id === activeId ? styles.tocItemActive : styles.tocItem,
+      node.id === activeId && 'font-bold text-[15px] opacity-100',
+      node.level >= 3 && node.id !== activeId && 'opacity-60'
     )
   }
 
@@ -228,8 +225,7 @@ function TocList({
               className={cn(
                 isGroupedSection
                   ? styles.tocChildList
-                  : 'mt-1 list-none space-y-1 pl-0',
-                isGroupedSection && isActiveGroup && styles.tocChildListActive
+                  : 'mt-1 list-none space-y-1 pl-0'
               )}
             >
               {render(n.children)}
@@ -264,8 +260,9 @@ function TocList({
               data-toc-id="page-top"
               className={cn(
                 styles.tocItemBase,
+                styles.tocLevel1,
                 activeId === 'page-top' ? styles.tocItemActive : styles.tocItem,
-                styles.tocLevel1
+                activeId === 'page-top' && 'text-[15px] font-bold opacity-100'
               )}
             >
               {title}

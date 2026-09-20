@@ -177,8 +177,8 @@ const styles = {
   layoutGrid: 'flex flex-1 items-stretch justify-center gap-8',
   simpleLayoutGrid: 'gap-10 xl:gap-12',
   leftSidebar: 'hidden w-[260px] shrink-0 lg:hidden xl:block',
-  rightSidebar: 'hidden w-[260px] shrink-0 lg:block',
-  simpleRightSidebar: 'w-[240px] xl:w-[260px]',
+  rightSidebar: 'hidden w-[260px] shrink-0 lg:block xl:-mr-7 xl:w-[288px]',
+  simpleRightSidebar: 'w-[240px] xl:-mr-7 xl:w-[288px]',
   stickyWrapper:
     'sticky top-[86px] h-[calc(100vh-8rem)] space-y-6 overflow-y-auto pb-10 scrollbar-hide',
   simpleStickyWrapper:

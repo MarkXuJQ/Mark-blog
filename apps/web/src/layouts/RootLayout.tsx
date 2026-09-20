@@ -1,4 +1,11 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { FloatingControlsContext } from '@/app/providers/FloatingControlsContext'
 import { Footer } from '@/components/layout/Footer'
@@ -48,7 +55,9 @@ function prefersReducedMotion() {
 
 export function RootLayout() {
   const { mode, setMode } = useTheme()
-  const { pathname } = useLocation()
+  const location = useLocation()
+  const { pathname, hash } = location
+  const previousPathnameRef = useRef(pathname)
   const isNavBarVisible = useScrollVisibility()
   const [isOverlayOpen, setIsOverlayOpen] = useState(false)
   const [hasMobileBlogDrawerTrigger, setHasMobileBlogDrawerTrigger] =
@@ -69,6 +78,21 @@ export function RootLayout() {
     pathname.startsWith('/movies/reviews/')
   const hideBackToTop = pathname === '/' || hasMobileBlogDrawerTrigger
   const supportsLinkPreviews = pathname.startsWith('/blog/')
+
+  const preserveScrollOnRouteChange = Boolean(
+    (location.state as { preserveScroll?: boolean } | null)?.preserveScroll
+  )
+
+  useLayoutEffect(() => {
+    const previousPathname = previousPathnameRef.current
+    previousPathnameRef.current = pathname
+
+    if (previousPathname === pathname || hash || preserveScrollOnRouteChange) {
+      return
+    }
+
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [hash, pathname, preserveScrollOnRouteChange])
 
   const clearThemeCurtainTimers = () => {
     themeCurtainTimers.current.forEach((timerId) => {

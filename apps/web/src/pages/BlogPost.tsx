@@ -258,7 +258,12 @@ export function BlogPost() {
     }
 
     event.preventDefault()
-    navigate(-1)
+    // TOC navigation adds in-page history entries, so going back can land on
+    // the last heading instead of returning to the blog list.
+    navigate('/blog', {
+      replace: true,
+      state: { preserveScroll: true },
+    })
   }
 
   if (simpleMode) {

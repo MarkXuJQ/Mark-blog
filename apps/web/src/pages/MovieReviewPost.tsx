@@ -69,7 +69,10 @@ export function MovieReviewPost() {
     }
 
     event.preventDefault()
-    navigate(-1)
+    navigate('/blog', {
+      replace: true,
+      state: { preserveScroll: true },
+    })
   }
 
   return (
