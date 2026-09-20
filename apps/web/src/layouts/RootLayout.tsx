@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import { LayoutGroup } from 'framer-motion'
 import { Outlet, useLocation } from 'react-router-dom'
 import { FloatingControlsContext } from '@/app/providers/FloatingControlsContext'
 import { Footer } from '@/components/layout/Footer'
@@ -18,6 +19,7 @@ import {
 } from '@/components/theme/ThemeCurtain'
 import { ThemeToggle } from '@/components/theme/ThemeToggle'
 import { useScrollVisibility } from '@/hooks/useScrollVisibility'
+import { BLOG_POST_SHARED_LAYOUT_GROUP_ID } from '@/lib/transitions/blogPostSharedTransition'
 import {
   resolveThemeModeTone,
   type ThemeMode,
@@ -53,11 +55,38 @@ function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+function restoreScrollPosition(targetScrollY: number) {
+  let frameId = 0
+  let attempts = 0
+
+  const restore = () => {
+    attempts += 1
+    const maxScrollY = Math.max(
+      0,
+      document.documentElement.scrollHeight - window.innerHeight
+    )
+    const nextScrollY = Math.min(targetScrollY, maxScrollY)
+    window.scrollTo(0, nextScrollY)
+
+    if (nextScrollY < targetScrollY && attempts < 12) {
+      frameId = window.requestAnimationFrame(restore)
+    }
+  }
+
+  // Measure the shared-layout target at its final document position. Retry
+  // only when the list is not tall enough yet, such as during lazy mounting.
+  restore()
+  return () => {
+    window.cancelAnimationFrame(frameId)
+  }
+}
+
 export function RootLayout() {
   const { mode, setMode } = useTheme()
   const location = useLocation()
-  const { pathname, hash } = location
-  const previousPathnameRef = useRef(pathname)
+  const { pathname, search, hash } = location
+  const routeKey = `${pathname}${search}`
+  const previousRouteKeyRef = useRef(routeKey)
   const isNavBarVisible = useScrollVisibility()
   const [isOverlayOpen, setIsOverlayOpen] = useState(false)
   const [hasMobileBlogDrawerTrigger, setHasMobileBlogDrawerTrigger] =
@@ -79,20 +108,31 @@ export function RootLayout() {
   const hideBackToTop = pathname === '/' || hasMobileBlogDrawerTrigger
   const supportsLinkPreviews = pathname.startsWith('/blog/')
 
-  const preserveScrollOnRouteChange = Boolean(
-    (location.state as { preserveScroll?: boolean } | null)?.preserveScroll
-  )
+  const routeState = location.state as {
+    preserveScroll?: boolean
+    viewState?: { scrollY?: number }
+  } | null
+  const preserveScrollOnRouteChange = Boolean(routeState?.preserveScroll)
+  const restoreScrollY =
+    preserveScrollOnRouteChange &&
+    typeof routeState?.viewState?.scrollY === 'number'
+      ? Math.max(0, routeState.viewState.scrollY)
+      : null
 
   useLayoutEffect(() => {
-    const previousPathname = previousPathnameRef.current
-    previousPathnameRef.current = pathname
+    const previousRouteKey = previousRouteKeyRef.current
+    previousRouteKeyRef.current = routeKey
 
-    if (previousPathname === pathname || hash || preserveScrollOnRouteChange) {
+    if (restoreScrollY !== null) {
+      return restoreScrollPosition(restoreScrollY)
+    }
+
+    if (previousRouteKey === routeKey || hash) {
       return
     }
 
-    window.scrollTo({ top: 0, behavior: 'instant' })
-  }, [hash, pathname, preserveScrollOnRouteChange])
+    window.scrollTo(0, 0)
+  }, [hash, restoreScrollY, routeKey])
 
   const clearThemeCurtainTimers = () => {
     themeCurtainTimers.current.forEach((timerId) => {
@@ -197,7 +237,9 @@ export function RootLayout() {
           <FloatingControlsContext.Provider
             value={{ setHasMobileBlogDrawerTrigger }}
           >
-            <Outlet />
+            <LayoutGroup id={BLOG_POST_SHARED_LAYOUT_GROUP_ID}>
+              <Outlet />
+            </LayoutGroup>
           </FloatingControlsContext.Provider>
         </div>
 

@@ -51,6 +51,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://markxu.icu/blog/FingerBlock-A-game-Demo-by-AI-cn</loc>
+    <lastmod>2026-09-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://markxu.icu/blog/rss-feed-beautification-cn</loc>
     <lastmod>2026-09-13</lastmod>
     <changefreq>weekly</changefreq>
@@ -172,7 +178,7 @@
   </url>
   <url>
     <loc>https://markxu.icu/blog/my-graduation-project-cn</loc>
-    <lastmod>2026-05-20</lastmod>
+    <lastmod>2026-09-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -274,7 +280,7 @@
   </url>
   <url>
     <loc>https://markxu.icu/movies/reviews/Nixinrensheng</loc>
-    <lastmod>2026-03-18</lastmod>
+    <lastmod>2026-09-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

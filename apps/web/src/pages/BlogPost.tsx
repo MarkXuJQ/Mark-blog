@@ -1,4 +1,5 @@
 import { memo, useEffect, useMemo, useState, type MouseEvent } from 'react'
+import { useReducedMotion } from 'framer-motion'
 import {
   useParams,
   Link,
@@ -49,6 +50,8 @@ import {
 import { cn } from '@/lib/classNames'
 import { getImageUrl, getOptimizedImageUrl } from '@/lib/image'
 import type { BlogPostOutletContext } from '@/layouts/BlogPostLayout'
+import { BlogPostSharedFrame } from '@/components/blog/BlogPostSharedFrame'
+import { getBlogPostSharedTransitionIds } from '@/lib/transitions/blogPostSharedTransition'
 import '@/assets/styles/article-blocks.css'
 
 export function BlogPost() {
@@ -57,8 +60,25 @@ export function BlogPost() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
+  const prefersReducedMotion = useReducedMotion()
   const [searchParams] = useSearchParams()
   const post = slug ? getPostBySlug(slug, i18n.language) : undefined
+  const cameFromBlogList = Boolean(
+    (location.state as { fromBlogList?: boolean } | null)?.fromBlogList
+  )
+  const transitionPostSlug = (
+    location.state as { transitionPostSlug?: string } | null
+  )?.transitionPostSlug
+  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
+  const viewState = (location.state as { viewState?: unknown } | null)
+    ?.viewState
+  const { coverLayoutId, titleLayoutId, metaLayoutId } =
+    getBlogPostSharedTransitionIds(
+      post?.slug ?? slug,
+      cameFromBlogList &&
+        transitionPostSlug === (post?.slug ?? slug) &&
+        prefersReducedMotion !== true
+    )
   const articleLanguage = slug
     ? (getPostLanguageBySlug(slug, i18n.language) ?? i18n.language)
     : i18n.language
@@ -149,7 +169,7 @@ export function BlogPost() {
     if (hasHighlightQuery) return
     // Ensure navigation lands at the top of the next/prev post.
     requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      window.scrollTo(0, 0)
     })
   }, [hasHighlightQuery, slug])
 
@@ -242,9 +262,6 @@ export function BlogPost() {
   )
   const updatedTimeMetaClass = cn(metaItemClass, 'hidden sm:inline-flex')
   const readingTimeMetaClass = cn(metaItemClass, 'hidden sm:inline-flex')
-  const cameFromBlogList = Boolean(
-    (location.state as { fromBlogList?: boolean } | null)?.fromBlogList
-  )
   const handleBackToBlog = (event: MouseEvent<HTMLAnchorElement>) => {
     if (
       !cameFromBlogList ||
@@ -260,9 +277,13 @@ export function BlogPost() {
     event.preventDefault()
     // TOC navigation adds in-page history entries, so going back can land on
     // the last heading instead of returning to the blog list.
-    navigate('/blog', {
+    navigate(returnTo ?? '/blog', {
       replace: true,
-      state: { preserveScroll: true },
+      state: {
+        preserveScroll: true,
+        transitionPostSlug: transitionPostSlug ?? post.slug,
+        viewState,
+      },
     })
   }
 
@@ -290,9 +311,17 @@ export function BlogPost() {
         </Link>
 
         <header className={styles.simpleReadingHeader}>
-          <h1 className={styles.simpleReadingTitle} data-article-heading="true">
-            {post.title}
-          </h1>
+          <BlogPostSharedFrame
+            layoutId={titleLayoutId}
+            className="overflow-hidden rounded-none"
+          >
+            <h1
+              className={styles.simpleReadingTitle}
+              data-article-heading="true"
+            >
+              {post.title}
+            </h1>
+          </BlogPostSharedFrame>
 
           <div className={styles.simpleReadingMeta}>
             {post.category ? <CategoryLabel category={post.category} /> : null}
@@ -361,7 +390,10 @@ export function BlogPost() {
         {hasCoverImage ? (
           <>
             <section className="relative isolate min-h-[22rem] sm:min-h-[26rem]">
-              <div className="absolute inset-0">
+              <BlogPostSharedFrame
+                layoutId={coverLayoutId}
+                className="absolute inset-0 overflow-hidden rounded-none"
+              >
                 <ProgressiveCoverImage
                   placeholderSrc={coverThumbnail}
                   highSrc={coverImage}
@@ -370,7 +402,7 @@ export function BlogPost() {
                   referrerPolicy="no-referrer"
                   className="h-full w-full object-cover object-center"
                 />
-              </div>
+              </BlogPostSharedFrame>
 
               {post.imageOverlay ? (
                 <div
@@ -404,46 +436,61 @@ export function BlogPost() {
 
               <div className="relative flex min-h-[22rem] flex-col justify-end px-5 py-5 pt-32 sm:min-h-[26rem] sm:px-8 sm:py-8 sm:pt-28">
                 <div className="max-w-3xl translate-y-2 sm:translate-y-3">
-                  <h1
-                    className="max-w-3xl text-3xl font-medium tracking-tight text-white drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)] sm:text-4xl md:text-5xl"
-                    data-article-heading="true"
+                  <BlogPostSharedFrame
+                    layoutId={titleLayoutId}
+                    className="max-w-3xl overflow-hidden rounded-none"
                   >
-                    {post.title}
-                  </h1>
+                    <h1
+                      className="max-w-3xl text-3xl font-medium tracking-tight text-white drop-shadow-[0_2px_18px_rgba(15,23,42,0.45)] sm:text-4xl md:text-5xl"
+                      data-article-heading="true"
+                    >
+                      {post.title}
+                    </h1>
+                  </BlogPostSharedFrame>
 
-                  <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/90 drop-shadow-[0_2px_12px_rgba(15,23,42,0.58)]">
-                    {post.category ? (
-                      <CategoryLabel
-                        category={post.category}
-                        className="drop-shadow-[0_2px_10px_rgba(15,23,42,0.68)]"
-                      />
-                    ) : null}
-                    <time dateTime={post.date} className={metaItemClass}>
-                      <LuPencilLine className="h-4 w-4" aria-hidden="true" />
-                      <span>{post.date}</span>
-                    </time>
+                  <div className="mt-4">
+                    <BlogPostSharedFrame
+                      layoutId={metaLayoutId}
+                      className="overflow-hidden rounded-xl"
+                    >
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/90 drop-shadow-[0_2px_12px_rgba(15,23,42,0.58)]">
+                        {post.category ? (
+                          <CategoryLabel
+                            category={post.category}
+                            className="drop-shadow-[0_2px_10px_rgba(15,23,42,0.68)]"
+                          />
+                        ) : null}
+                        <time dateTime={post.date} className={metaItemClass}>
+                          <LuPencilLine
+                            className="h-4 w-4"
+                            aria-hidden="true"
+                          />
+                          <span>{post.date}</span>
+                        </time>
 
-                    {hasDistinctUpdatedDate ? (
-                      <time
-                        dateTime={post.updated}
-                        className={updatedTimeMetaClass}
-                      >
-                        <LuHammer className="h-4 w-4" aria-hidden="true" />
-                        <span>{post.updated}</span>
-                      </time>
-                    ) : null}
+                        {hasDistinctUpdatedDate ? (
+                          <time
+                            dateTime={post.updated}
+                            className={updatedTimeMetaClass}
+                          >
+                            <LuHammer className="h-4 w-4" aria-hidden="true" />
+                            <span>{post.updated}</span>
+                          </time>
+                        ) : null}
 
-                    <span className={metaItemClass}>
-                      <LuWholeWord className="h-4 w-4" aria-hidden="true" />
-                      <span>{t('blog.wordCount', { count: words })}</span>
-                    </span>
+                        <span className={metaItemClass}>
+                          <LuWholeWord className="h-4 w-4" aria-hidden="true" />
+                          <span>{t('blog.wordCount', { count: words })}</span>
+                        </span>
 
-                    <span className={readingTimeMetaClass}>
-                      <LuClock className="h-4 w-4" aria-hidden="true" />
-                      <span>
-                        {t('blog.readingTime', { minutes: readingMinutes })}
-                      </span>
-                    </span>
+                        <span className={readingTimeMetaClass}>
+                          <LuClock className="h-4 w-4" aria-hidden="true" />
+                          <span>
+                            {t('blog.readingTime', { minutes: readingMinutes })}
+                          </span>
+                        </span>
+                      </div>
+                    </BlogPostSharedFrame>
                   </div>
                 </div>
               </div>
@@ -492,44 +539,54 @@ export function BlogPost() {
                   ) : null}
                 </div>
 
-                <h1
-                  className={styles.plainPostTitle}
-                  data-article-heading="true"
+                <BlogPostSharedFrame
+                  layoutId={titleLayoutId}
+                  className="overflow-hidden rounded-none"
                 >
-                  {post.title}
-                </h1>
+                  <h1
+                    className={styles.plainPostTitle}
+                    data-article-heading="true"
+                  >
+                    {post.title}
+                  </h1>
+                </BlogPostSharedFrame>
 
-                <div className={styles.plainPostMeta}>
-                  {post.category ? (
-                    <CategoryLabel category={post.category} />
-                  ) : null}
-                  <time dateTime={post.date} className={metaItemClass}>
-                    <LuPencilLine className="h-4 w-4" aria-hidden="true" />
-                    <span>{post.date}</span>
-                  </time>
-
-                  {hasDistinctUpdatedDate ? (
-                    <time
-                      dateTime={post.updated}
-                      className={updatedTimeMetaClass}
-                    >
-                      <LuHammer className="h-4 w-4" aria-hidden="true" />
-                      <span>{post.updated}</span>
+                <BlogPostSharedFrame
+                  layoutId={metaLayoutId}
+                  className="overflow-hidden rounded-xl"
+                >
+                  <div className={styles.plainPostMeta}>
+                    {post.category ? (
+                      <CategoryLabel category={post.category} />
+                    ) : null}
+                    <time dateTime={post.date} className={metaItemClass}>
+                      <LuPencilLine className="h-4 w-4" aria-hidden="true" />
+                      <span>{post.date}</span>
                     </time>
-                  ) : null}
 
-                  <span className={metaItemClass}>
-                    <LuWholeWord className="h-4 w-4" aria-hidden="true" />
-                    <span>{t('blog.wordCount', { count: words })}</span>
-                  </span>
+                    {hasDistinctUpdatedDate ? (
+                      <time
+                        dateTime={post.updated}
+                        className={updatedTimeMetaClass}
+                      >
+                        <LuHammer className="h-4 w-4" aria-hidden="true" />
+                        <span>{post.updated}</span>
+                      </time>
+                    ) : null}
 
-                  <span className={readingTimeMetaClass}>
-                    <LuClock className="h-4 w-4" aria-hidden="true" />
-                    <span>
-                      {t('blog.readingTime', { minutes: readingMinutes })}
+                    <span className={metaItemClass}>
+                      <LuWholeWord className="h-4 w-4" aria-hidden="true" />
+                      <span>{t('blog.wordCount', { count: words })}</span>
                     </span>
-                  </span>
-                </div>
+
+                    <span className={readingTimeMetaClass}>
+                      <LuClock className="h-4 w-4" aria-hidden="true" />
+                      <span>
+                        {t('blog.readingTime', { minutes: readingMinutes })}
+                      </span>
+                    </span>
+                  </div>
+                </BlogPostSharedFrame>
               </header>
 
               <MarkdownContent

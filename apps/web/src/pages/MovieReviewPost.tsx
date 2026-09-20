@@ -1,6 +1,7 @@
 import { useMemo, type MouseEvent } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useReducedMotion } from 'framer-motion'
 import { Calendar, Star } from 'lucide-react'
 import { Seo } from '@/app/seo/Seo'
 import { Card } from '@/components/ui/Card'
@@ -10,12 +11,15 @@ import { cn } from '@/lib/classNames'
 import { useArticleImageLightbox } from '@/hooks/useArticleImageLightbox'
 import { useArticleProgressiveImages } from '@/hooks/useArticleProgressiveImages'
 import { getImageUrl } from '@/lib/image'
+import { BlogPostSharedFrame } from '@/components/blog/BlogPostSharedFrame'
+import { getBlogPostSharedTransitionIds } from '@/lib/transitions/blogPostSharedTransition'
 
 export function MovieReviewPost() {
   const { slug } = useParams()
   const { t, i18n } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
+  const prefersReducedMotion = useReducedMotion()
   const review = slug ? getMovieReviewBySlug(slug) : undefined
   const contentHtml = useMemo(() => {
     if (!review) {
@@ -52,6 +56,19 @@ export function MovieReviewPost() {
   const cameFromBlogList = Boolean(
     (location.state as { fromBlogList?: boolean } | null)?.fromBlogList
   )
+  const transitionPostSlug = (
+    location.state as { transitionPostSlug?: string } | null
+  )?.transitionPostSlug
+  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
+  const viewState = (location.state as { viewState?: unknown } | null)
+    ?.viewState
+  const { coverLayoutId, titleLayoutId, metaLayoutId } =
+    getBlogPostSharedTransitionIds(
+      review.slug,
+      cameFromBlogList &&
+        transitionPostSlug === review.slug &&
+        prefersReducedMotion !== true
+    )
   const backPath = cameFromBlogList ? '/blog' : '/movies'
   const backLabel = t(
     cameFromBlogList ? 'blog.back' : 'movies.reviews.backToMovies'
@@ -69,9 +86,13 @@ export function MovieReviewPost() {
     }
 
     event.preventDefault()
-    navigate('/blog', {
+    navigate(returnTo ?? '/blog', {
       replace: true,
-      state: { preserveScroll: true },
+      state: {
+        preserveScroll: true,
+        transitionPostSlug: transitionPostSlug ?? review.slug,
+        viewState,
+      },
     })
   }
 
@@ -111,15 +132,20 @@ export function MovieReviewPost() {
           {coverImage ? (
             <>
               <section className={styles.cover}>
-                <img
-                  src={coverImage}
-                  alt={review.movieTitle || review.title}
-                  className={styles.coverImage}
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  referrerPolicy="no-referrer"
-                />
+                <BlogPostSharedFrame
+                  layoutId={coverLayoutId}
+                  className="absolute inset-0 overflow-hidden rounded-none"
+                >
+                  <img
+                    src={coverImage}
+                    alt={review.movieTitle || review.title}
+                    className={styles.coverImage}
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                    referrerPolicy="no-referrer"
+                  />
+                </BlogPostSharedFrame>
                 {review.imageOverlay ? (
                   <div className={styles.imageOverlay} aria-hidden="true" />
                 ) : null}
@@ -134,8 +160,18 @@ export function MovieReviewPost() {
                 </Link>
 
                 <header className={styles.coverHeader}>
-                  <h1 className={styles.coverTitle}>{review.title}</h1>
-                  <ReviewMeta review={review} inverse />
+                  <BlogPostSharedFrame
+                    layoutId={titleLayoutId}
+                    className="overflow-hidden rounded-none"
+                  >
+                    <h1 className={styles.coverTitle}>{review.title}</h1>
+                  </BlogPostSharedFrame>
+                  <BlogPostSharedFrame
+                    layoutId={metaLayoutId}
+                    className="mt-4 overflow-hidden rounded-xl"
+                  >
+                    <ReviewMeta review={review} inverse />
+                  </BlogPostSharedFrame>
                 </header>
               </section>
 
@@ -157,8 +193,18 @@ export function MovieReviewPost() {
                 ← {backLabel}
               </Link>
 
-              <h1 className={styles.title}>{review.title}</h1>
-              <ReviewMeta review={review} />
+              <BlogPostSharedFrame
+                layoutId={titleLayoutId}
+                className="overflow-hidden rounded-none"
+              >
+                <h1 className={styles.title}>{review.title}</h1>
+              </BlogPostSharedFrame>
+              <BlogPostSharedFrame
+                layoutId={metaLayoutId}
+                className="overflow-hidden rounded-xl"
+              >
+                <ReviewMeta review={review} />
+              </BlogPostSharedFrame>
 
               <div
                 ref={contentRef}

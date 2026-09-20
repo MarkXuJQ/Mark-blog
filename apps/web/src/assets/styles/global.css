@@ -1458,6 +1458,10 @@ i {
   animation-delay: calc(var(--blog-list-item-index, 0) * 42ms);
 }
 
+.blog-list-item-enter.blog-post-shared-transition-source {
+  animation: none;
+}
+
 .friend-link-tooltip {
   animation: friend-link-tooltip-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
   transform-origin: var(--radix-tooltip-content-transform-origin);
