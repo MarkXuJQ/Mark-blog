@@ -7,9 +7,10 @@ import {
 } from '@/lib/blog/categories'
 import { getAllPostSummaries } from '@/lib/content/postSummaries'
 import type { BlogPostSummary } from '@/lib/content/posts'
+import type { BlogSortBy } from '@/lib/blog/blogNavigation'
 import { useSearch } from './useSearch'
 
-export type SortBy = 'date' | 'updated'
+export type SortBy = BlogSortBy
 
 type BlogPostsInitialState = {
   selectedCategory?: string | null

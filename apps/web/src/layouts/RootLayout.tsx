@@ -19,7 +19,7 @@ import {
 } from '@/components/theme/ThemeCurtain'
 import { ThemeToggle } from '@/components/theme/ThemeToggle'
 import { useScrollVisibility } from '@/hooks/useScrollVisibility'
-import { BLOG_POST_SHARED_LAYOUT_GROUP_ID } from '@/lib/transitions/blogPostSharedTransition'
+import { POST_SHARED_LAYOUT_GROUP_ID } from '@/lib/transitions/postSharedTransition'
 import {
   resolveThemeModeTone,
   type ThemeMode,
@@ -237,7 +237,7 @@ export function RootLayout() {
           <FloatingControlsContext.Provider
             value={{ setHasMobileBlogDrawerTrigger }}
           >
-            <LayoutGroup id={BLOG_POST_SHARED_LAYOUT_GROUP_ID}>
+            <LayoutGroup id={POST_SHARED_LAYOUT_GROUP_ID}>
               <Outlet />
             </LayoutGroup>
           </FloatingControlsContext.Provider>

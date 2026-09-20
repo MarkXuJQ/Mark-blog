@@ -50,8 +50,9 @@ import {
 import { cn } from '@/lib/classNames'
 import { getImageUrl, getOptimizedImageUrl } from '@/lib/image'
 import type { BlogPostOutletContext } from '@/layouts/BlogPostLayout'
-import { BlogPostSharedFrame } from '@/components/blog/BlogPostSharedFrame'
-import { getBlogPostSharedTransitionIds } from '@/lib/transitions/blogPostSharedTransition'
+import { SharedTransitionFrame } from '@/components/transitions/SharedTransitionFrame'
+import { getPostSharedTransitionIds } from '@/lib/transitions/postSharedTransition'
+import { getBlogNavigationState } from '@/lib/blog/blogNavigation'
 import '@/assets/styles/article-blocks.css'
 
 export function BlogPost() {
@@ -63,17 +64,13 @@ export function BlogPost() {
   const prefersReducedMotion = useReducedMotion()
   const [searchParams] = useSearchParams()
   const post = slug ? getPostBySlug(slug, i18n.language) : undefined
-  const cameFromBlogList = Boolean(
-    (location.state as { fromBlogList?: boolean } | null)?.fromBlogList
-  )
-  const transitionPostSlug = (
-    location.state as { transitionPostSlug?: string } | null
-  )?.transitionPostSlug
-  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
-  const viewState = (location.state as { viewState?: unknown } | null)
-    ?.viewState
+  const navigationState = getBlogNavigationState(location.state)
+  const cameFromBlogList = Boolean(navigationState.fromBlogList)
+  const transitionPostSlug = navigationState.transitionPostSlug
+  const returnTo = navigationState.returnTo
+  const viewState = navigationState.viewState
   const { coverLayoutId, titleLayoutId, metaLayoutId } =
-    getBlogPostSharedTransitionIds(
+    getPostSharedTransitionIds(
       post?.slug ?? slug,
       cameFromBlogList &&
         transitionPostSlug === (post?.slug ?? slug) &&
@@ -311,7 +308,7 @@ export function BlogPost() {
         </Link>
 
         <header className={styles.simpleReadingHeader}>
-          <BlogPostSharedFrame
+          <SharedTransitionFrame
             layoutId={titleLayoutId}
             className="overflow-hidden rounded-none"
           >
@@ -321,7 +318,7 @@ export function BlogPost() {
             >
               {post.title}
             </h1>
-          </BlogPostSharedFrame>
+          </SharedTransitionFrame>
 
           <div className={styles.simpleReadingMeta}>
             {post.category ? <CategoryLabel category={post.category} /> : null}
@@ -390,7 +387,7 @@ export function BlogPost() {
         {hasCoverImage ? (
           <>
             <section className="relative isolate min-h-[22rem] sm:min-h-[26rem]">
-              <BlogPostSharedFrame
+              <SharedTransitionFrame
                 layoutId={coverLayoutId}
                 className="absolute inset-0 overflow-hidden rounded-none"
               >
@@ -402,7 +399,7 @@ export function BlogPost() {
                   referrerPolicy="no-referrer"
                   className="h-full w-full object-cover object-center"
                 />
-              </BlogPostSharedFrame>
+              </SharedTransitionFrame>
 
               {post.imageOverlay ? (
                 <div
@@ -436,7 +433,7 @@ export function BlogPost() {
 
               <div className="relative flex min-h-[22rem] flex-col justify-end px-5 py-5 pt-32 sm:min-h-[26rem] sm:px-8 sm:py-8 sm:pt-28">
                 <div className="max-w-3xl translate-y-2 sm:translate-y-3">
-                  <BlogPostSharedFrame
+                  <SharedTransitionFrame
                     layoutId={titleLayoutId}
                     className="max-w-3xl overflow-hidden rounded-none"
                   >
@@ -446,10 +443,10 @@ export function BlogPost() {
                     >
                       {post.title}
                     </h1>
-                  </BlogPostSharedFrame>
+                  </SharedTransitionFrame>
 
                   <div className="mt-4">
-                    <BlogPostSharedFrame
+                    <SharedTransitionFrame
                       layoutId={metaLayoutId}
                       className="overflow-hidden rounded-xl"
                     >
@@ -490,7 +487,7 @@ export function BlogPost() {
                           </span>
                         </span>
                       </div>
-                    </BlogPostSharedFrame>
+                    </SharedTransitionFrame>
                   </div>
                 </div>
               </div>
@@ -539,7 +536,7 @@ export function BlogPost() {
                   ) : null}
                 </div>
 
-                <BlogPostSharedFrame
+                <SharedTransitionFrame
                   layoutId={titleLayoutId}
                   className="overflow-hidden rounded-none"
                 >
@@ -549,9 +546,9 @@ export function BlogPost() {
                   >
                     {post.title}
                   </h1>
-                </BlogPostSharedFrame>
+                </SharedTransitionFrame>
 
-                <BlogPostSharedFrame
+                <SharedTransitionFrame
                   layoutId={metaLayoutId}
                   className="overflow-hidden rounded-xl"
                 >
@@ -586,7 +583,7 @@ export function BlogPost() {
                       </span>
                     </span>
                   </div>
-                </BlogPostSharedFrame>
+                </SharedTransitionFrame>
               </header>
 
               <MarkdownContent

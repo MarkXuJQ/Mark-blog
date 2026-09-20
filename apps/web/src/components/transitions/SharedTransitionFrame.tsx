@@ -1,18 +1,18 @@
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/classNames'
-import { blogPostSharedTransition } from '@/lib/transitions/blogPostSharedTransition'
+import { postSharedTransition } from '@/lib/transitions/postSharedTransition'
 
-interface BlogPostSharedFrameProps {
+interface SharedTransitionFrameProps {
   layoutId?: string
   className?: string
   children: React.ReactNode
 }
 
-export function BlogPostSharedFrame({
+export function SharedTransitionFrame({
   layoutId,
   className,
   children,
-}: BlogPostSharedFrameProps) {
+}: SharedTransitionFrameProps) {
   const frameClassName = cn(
     layoutId && 'transform-gpu will-change-[transform,border-radius]',
     className
@@ -25,8 +25,8 @@ export function BlogPostSharedFrame({
   return (
     <motion.div
       layoutId={layoutId}
-      transition={blogPostSharedTransition}
-      data-blog-post-shared-frame={layoutId}
+      transition={postSharedTransition}
+      data-shared-transition-frame={layoutId}
       className={frameClassName}
     >
       {children}

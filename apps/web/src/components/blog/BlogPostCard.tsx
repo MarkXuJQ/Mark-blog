@@ -5,10 +5,10 @@ import { Card } from '@/components/ui/Card'
 import { cn } from '@/lib/classNames'
 import { getOptimizedImageUrl } from '@/lib/image'
 import { getPostDetailPath, type BlogPostSummary } from '@/lib/content/posts'
-import { BlogPostSharedFrame } from './BlogPostSharedFrame'
+import { SharedTransitionFrame } from '@/components/transitions/SharedTransitionFrame'
 import { CategoryLabel } from './CategoryLabel'
 import type { CSSProperties, MouseEvent } from 'react'
-import { getBlogPostSharedTransitionIds } from '@/lib/transitions/blogPostSharedTransition'
+import { getPostSharedTransitionIds } from '@/lib/transitions/postSharedTransition'
 
 interface BlogPostCardProps {
   post: BlogPostSummary
@@ -34,7 +34,7 @@ export function BlogPostCard({
   const detailPath = getPostDetailPath(post)
   const coverImage = post.image ? getOptimizedImageUrl(post.image, 'card') : ''
   const { coverLayoutId, titleLayoutId, metaLayoutId } =
-    getBlogPostSharedTransitionIds(post.slug, sharedTransitionEnabled)
+    getPostSharedTransitionIds(post.slug, sharedTransitionEnabled)
   const shouldShowUpdatedDate =
     sortBy === 'updated' && Boolean(post.updated && post.updated !== post.date)
   const displayDate = shouldShowUpdatedDate ? post.updated : post.date
@@ -59,12 +59,12 @@ export function BlogPostCard({
           <Card className="group block border border-slate-200/70 p-4 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-transform hover:-translate-y-1 hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] sm:p-5 dark:border-0 dark:shadow-none">
             <article>
               {/* Title */}
-              <BlogPostSharedFrame
+              <SharedTransitionFrame
                 layoutId={titleLayoutId}
                 className="overflow-hidden rounded-xl"
               >
                 <h2 className={titleClass}>{post.title}</h2>
-              </BlogPostSharedFrame>
+              </SharedTransitionFrame>
 
               {/* Summary */}
               <p className={cn('mb-3 line-clamp-3', summaryClass)}>
@@ -72,7 +72,7 @@ export function BlogPostCard({
               </p>
 
               {/* Meta info row: category + date + word count */}
-              <BlogPostSharedFrame
+              <SharedTransitionFrame
                 layoutId={metaLayoutId}
                 className="overflow-hidden rounded-xl"
               >
@@ -95,7 +95,7 @@ export function BlogPostCard({
                     </span>
                   </div>
                 </div>
-              </BlogPostSharedFrame>
+              </SharedTransitionFrame>
             </article>
           </Card>
         </Link>
@@ -112,7 +112,7 @@ export function BlogPostCard({
           <article className="flex min-h-[220px] flex-col sm:hidden">
             {/* Image (top, golden ratio portion) */}
             <div className="relative isolate h-[120px] overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,1)_60%,rgba(0,0,0,0.4)_82%,rgba(0,0,0,0)_100%)] [-webkit-mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,1)_60%,rgba(0,0,0,0.4)_82%,rgba(0,0,0,0)_100%)]">
-              <BlogPostSharedFrame
+              <SharedTransitionFrame
                 layoutId={!isDesktopLayout ? coverLayoutId : undefined}
                 className="h-full w-full overflow-hidden"
               >
@@ -124,21 +124,21 @@ export function BlogPostCard({
                   referrerPolicy="no-referrer"
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-              </BlogPostSharedFrame>
+              </SharedTransitionFrame>
             </div>
 
             {/* Text (bottom, overlaps image for aesthetics) */}
             <div className="-mt-10 flex min-w-0 flex-1 flex-col overflow-hidden bg-white p-3 pt-6 sm:mt-0 dark:bg-[#17191c]">
-              <BlogPostSharedFrame
+              <SharedTransitionFrame
                 layoutId={!isDesktopLayout ? titleLayoutId : undefined}
                 className="overflow-hidden rounded-xl"
               >
                 <h2 className={titleClass}>{post.title}</h2>
-              </BlogPostSharedFrame>
+              </SharedTransitionFrame>
 
               <p className={cn('mb-2 pb-4', summaryClass)}>{post.summary}</p>
 
-              <BlogPostSharedFrame
+              <SharedTransitionFrame
                 layoutId={!isDesktopLayout ? metaLayoutId : undefined}
                 className="overflow-hidden rounded-xl"
               >
@@ -159,7 +159,7 @@ export function BlogPostCard({
                     <span>{t('blog.wordCount', { count: words })}</span>
                   </span>
                 </div>
-              </BlogPostSharedFrame>
+              </SharedTransitionFrame>
             </div>
           </article>
 
@@ -167,16 +167,16 @@ export function BlogPostCard({
           <article className="hidden min-h-[170px] sm:grid sm:grid-cols-[minmax(0,1.618fr)_minmax(0,1fr)] sm:grid-rows-1">
             {/* Text (left) */}
             <div className="relative z-10 order-1 flex min-w-0 flex-col overflow-hidden p-4">
-              <BlogPostSharedFrame
+              <SharedTransitionFrame
                 layoutId={isDesktopLayout ? titleLayoutId : undefined}
                 className="overflow-hidden rounded-xl"
               >
                 <h2 className={titleClass}>{post.title}</h2>
-              </BlogPostSharedFrame>
+              </SharedTransitionFrame>
 
               <p className={cn('mb-2 pb-6', summaryClass)}>{post.summary}</p>
 
-              <BlogPostSharedFrame
+              <SharedTransitionFrame
                 layoutId={isDesktopLayout ? metaLayoutId : undefined}
                 className="overflow-hidden rounded-xl"
               >
@@ -197,12 +197,12 @@ export function BlogPostCard({
                     <span>{t('blog.wordCount', { count: words })}</span>
                   </span>
                 </div>
-              </BlogPostSharedFrame>
+              </SharedTransitionFrame>
             </div>
 
             {/* Image (right, golden ratio portion) */}
             <div className="relative isolate order-2 overflow-visible">
-              <BlogPostSharedFrame
+              <SharedTransitionFrame
                 layoutId={isDesktopLayout ? coverLayoutId : undefined}
                 className="absolute inset-0 -left-10 w-[calc(100%+2.5rem)] overflow-hidden [mask-image:linear-gradient(to_left,black_0%,black_78%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_left,black_0%,black_78%,transparent_100%)]"
               >
@@ -214,7 +214,7 @@ export function BlogPostCard({
                   referrerPolicy="no-referrer"
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-              </BlogPostSharedFrame>
+              </SharedTransitionFrame>
             </div>
           </article>
         </Card>

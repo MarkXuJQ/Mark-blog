@@ -11,8 +11,9 @@ import { cn } from '@/lib/classNames'
 import { useArticleImageLightbox } from '@/hooks/useArticleImageLightbox'
 import { useArticleProgressiveImages } from '@/hooks/useArticleProgressiveImages'
 import { getImageUrl } from '@/lib/image'
-import { BlogPostSharedFrame } from '@/components/blog/BlogPostSharedFrame'
-import { getBlogPostSharedTransitionIds } from '@/lib/transitions/blogPostSharedTransition'
+import { SharedTransitionFrame } from '@/components/transitions/SharedTransitionFrame'
+import { getPostSharedTransitionIds } from '@/lib/transitions/postSharedTransition'
+import { getBlogNavigationState } from '@/lib/blog/blogNavigation'
 
 export function MovieReviewPost() {
   const { slug } = useParams()
@@ -53,17 +54,13 @@ export function MovieReviewPost() {
   const backgroundImage = review.background
     ? getImageUrl(review.background)
     : ''
-  const cameFromBlogList = Boolean(
-    (location.state as { fromBlogList?: boolean } | null)?.fromBlogList
-  )
-  const transitionPostSlug = (
-    location.state as { transitionPostSlug?: string } | null
-  )?.transitionPostSlug
-  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
-  const viewState = (location.state as { viewState?: unknown } | null)
-    ?.viewState
+  const navigationState = getBlogNavigationState(location.state)
+  const cameFromBlogList = Boolean(navigationState.fromBlogList)
+  const transitionPostSlug = navigationState.transitionPostSlug
+  const returnTo = navigationState.returnTo
+  const viewState = navigationState.viewState
   const { coverLayoutId, titleLayoutId, metaLayoutId } =
-    getBlogPostSharedTransitionIds(
+    getPostSharedTransitionIds(
       review.slug,
       cameFromBlogList &&
         transitionPostSlug === review.slug &&
@@ -132,7 +129,7 @@ export function MovieReviewPost() {
           {coverImage ? (
             <>
               <section className={styles.cover}>
-                <BlogPostSharedFrame
+                <SharedTransitionFrame
                   layoutId={coverLayoutId}
                   className="absolute inset-0 overflow-hidden rounded-none"
                 >
@@ -145,7 +142,7 @@ export function MovieReviewPost() {
                     decoding="async"
                     referrerPolicy="no-referrer"
                   />
-                </BlogPostSharedFrame>
+                </SharedTransitionFrame>
                 {review.imageOverlay ? (
                   <div className={styles.imageOverlay} aria-hidden="true" />
                 ) : null}
@@ -160,18 +157,18 @@ export function MovieReviewPost() {
                 </Link>
 
                 <header className={styles.coverHeader}>
-                  <BlogPostSharedFrame
+                  <SharedTransitionFrame
                     layoutId={titleLayoutId}
                     className="overflow-hidden rounded-none"
                   >
                     <h1 className={styles.coverTitle}>{review.title}</h1>
-                  </BlogPostSharedFrame>
-                  <BlogPostSharedFrame
+                  </SharedTransitionFrame>
+                  <SharedTransitionFrame
                     layoutId={metaLayoutId}
                     className="mt-4 overflow-hidden rounded-xl"
                   >
                     <ReviewMeta review={review} inverse />
-                  </BlogPostSharedFrame>
+                  </SharedTransitionFrame>
                 </header>
               </section>
 
@@ -193,18 +190,18 @@ export function MovieReviewPost() {
                 ← {backLabel}
               </Link>
 
-              <BlogPostSharedFrame
+              <SharedTransitionFrame
                 layoutId={titleLayoutId}
                 className="overflow-hidden rounded-none"
               >
                 <h1 className={styles.title}>{review.title}</h1>
-              </BlogPostSharedFrame>
-              <BlogPostSharedFrame
+              </SharedTransitionFrame>
+              <SharedTransitionFrame
                 layoutId={metaLayoutId}
                 className="overflow-hidden rounded-xl"
               >
                 <ReviewMeta review={review} />
-              </BlogPostSharedFrame>
+              </SharedTransitionFrame>
 
               <div
                 ref={contentRef}

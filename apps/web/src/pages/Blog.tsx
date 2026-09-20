@@ -30,98 +30,27 @@ import {
 } from '@/lib/seo'
 import { Pagination } from '@/components/ui/Pagination'
 import { StaggeredList } from '@/components/ui/StaggeredList'
-import { useBlogPosts, type SortBy } from '@/hooks/useBlogPosts'
+import { useBlogPosts } from '@/hooks/useBlogPosts'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
 import { getOptimizedImageUrl } from '@/lib/image'
-import { BlogPostSharedFrame } from '@/components/blog/BlogPostSharedFrame'
+import { SharedTransitionFrame } from '@/components/transitions/SharedTransitionFrame'
 import {
-  BLOG_POST_SHARED_TRANSITION_SETTLE_MS,
-  getBlogPostSharedTransitionIds,
-} from '@/lib/transitions/blogPostSharedTransition'
+  POST_SHARED_TRANSITION_SETTLE_MS,
+  getPostSharedTransitionIds,
+} from '@/lib/transitions/postSharedTransition'
+import {
+  type BlogViewState,
+  getBlogNavigationState,
+  isBlogViewState,
+  readBlogViewState,
+  writeBlogViewState,
+} from '@/lib/blog/blogNavigation'
 import type { BlogListOutletContext } from '@/layouts/BlogListLayout'
 import { getPostDetailPath, type BlogPostSummary } from '@/lib/content/posts'
 
 const ITEMS_PER_PAGE = 10
-const BLOG_VIEW_STATE_KEY_PREFIX = 'blog-view-state:'
-
-type BlogViewState = {
-  currentPage: number
-  scrollY: number
-  searchQuery: string
-  selectedCategory: string | null
-  sortBy: SortBy
-}
-
-type BlogNavigationState = {
-  preserveScroll?: boolean
-  returnTo?: string
-  viewState?: BlogViewState
-  transitionPostSlug?: string
-}
-
 type BlogLayout = 'mobile' | 'desktop'
-
-function getBlogViewStateKey(language: string) {
-  return `${BLOG_VIEW_STATE_KEY_PREFIX}${language.startsWith('zh') ? 'zh' : 'en'}`
-}
-
-function readBlogViewState(language: string, searchQuery: string) {
-  if (typeof window === 'undefined') return null
-
-  try {
-    const raw = window.sessionStorage.getItem(getBlogViewStateKey(language))
-    if (!raw) return null
-
-    const value = JSON.parse(raw) as Partial<BlogViewState>
-    if (
-      value.searchQuery !== searchQuery ||
-      typeof value.currentPage !== 'number' ||
-      typeof value.scrollY !== 'number' ||
-      (value.sortBy !== 'date' && value.sortBy !== 'updated')
-    ) {
-      return null
-    }
-
-    return {
-      currentPage: Math.max(1, Math.floor(value.currentPage)),
-      scrollY: Math.max(0, value.scrollY),
-      searchQuery,
-      selectedCategory:
-        typeof value.selectedCategory === 'string'
-          ? value.selectedCategory
-          : null,
-      sortBy: value.sortBy,
-    } satisfies BlogViewState
-  } catch {
-    return null
-  }
-}
-
-function isBlogViewState(value: unknown): value is BlogViewState {
-  if (!value || typeof value !== 'object') return false
-
-  const state = value as Partial<BlogViewState>
-  return (
-    typeof state.currentPage === 'number' &&
-    typeof state.scrollY === 'number' &&
-    typeof state.searchQuery === 'string' &&
-    (state.selectedCategory === null ||
-      typeof state.selectedCategory === 'string') &&
-    (state.sortBy === 'date' || state.sortBy === 'updated')
-  )
-}
-
-function writeBlogViewState(language: string, state: BlogViewState) {
-  try {
-    window.sessionStorage.setItem(
-      getBlogViewStateKey(language),
-      JSON.stringify(state)
-    )
-  } catch {
-    // Browsing still works when session storage is unavailable.
-  }
-}
 
 export function Blog() {
   const { t, i18n } = useTranslation()
@@ -130,7 +59,7 @@ export function Blog() {
   const { simpleMode = false } = useOutletContext<BlogListOutletContext>()
   const isDesktopLayout = useMediaQuery('(min-width: 640px)')
   const prefersReducedMotion = useReducedMotion()
-  const navigationState = location.state as BlogNavigationState | null
+  const navigationState = getBlogNavigationState(location.state)
   const shouldRestoreViewState = Boolean(navigationState?.preserveScroll)
   const returnTransitionPostSlug = shouldRestoreViewState
     ? navigationState?.transitionPostSlug
@@ -295,7 +224,7 @@ export function Blog() {
 
     const timerId = window.setTimeout(() => {
       setTransitionPostSlug(undefined)
-    }, BLOG_POST_SHARED_TRANSITION_SETTLE_MS)
+    }, POST_SHARED_TRANSITION_SETTLE_MS)
 
     return () => window.clearTimeout(timerId)
   }, [navigationState?.transitionPostSlug])
@@ -573,7 +502,7 @@ function SimpleBlogPostItem({
   sharedTransitionEnabled: boolean
 }) {
   const detailPath = getPostDetailPath(post)
-  const { coverLayoutId, titleLayoutId } = getBlogPostSharedTransitionIds(
+  const { coverLayoutId, titleLayoutId } = getPostSharedTransitionIds(
     post.slug,
     sharedTransitionEnabled
   )
@@ -586,7 +515,7 @@ function SimpleBlogPostItem({
         className="group flex min-w-0 gap-4"
       >
         {post.image ? (
-          <BlogPostSharedFrame
+          <SharedTransitionFrame
             layoutId={coverLayoutId}
             className="mt-1 aspect-[4/3] w-28 shrink-0 overflow-hidden bg-slate-100 sm:w-36 dark:bg-slate-800"
           >
@@ -598,17 +527,17 @@ function SimpleBlogPostItem({
               referrerPolicy="no-referrer"
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
-          </BlogPostSharedFrame>
+          </SharedTransitionFrame>
         ) : null}
         <div className="min-w-0">
-          <BlogPostSharedFrame
+          <SharedTransitionFrame
             layoutId={titleLayoutId}
             className="overflow-hidden rounded-xl"
           >
             <h2 className="text-2xl leading-snug font-bold text-[var(--text-primary)] transition-colors group-hover:text-[color-mix(in_srgb,var(--brand-400)_72%,var(--text-primary)_28%)]">
               {post.title}
             </h2>
-          </BlogPostSharedFrame>
+          </SharedTransitionFrame>
           {post.summary ? (
             <p className="mt-3 text-[0.98rem] leading-7 text-[var(--text-secondary)]">
               {post.summary}
