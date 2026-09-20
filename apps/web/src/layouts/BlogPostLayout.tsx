@@ -182,7 +182,7 @@ const styles = {
   stickyWrapper:
     'sticky top-[86px] h-[calc(100vh-8rem)] space-y-6 overflow-y-auto pb-10 scrollbar-hide',
   simpleStickyWrapper:
-    'h-[calc(100vh-7rem)] space-y-0 overflow-y-auto rounded-none bg-transparent pb-8',
+    'h-[calc(100vh-7rem)] space-y-0 overflow-y-auto rounded-none bg-transparent pb-8 scrollbar-hide',
   mainContent:
     'flex w-full min-w-0 max-w-[660px] flex-1 flex-col md:max-w-[700px] lg:max-w-[760px] xl:max-w-[820px]',
   simpleMainContent:
