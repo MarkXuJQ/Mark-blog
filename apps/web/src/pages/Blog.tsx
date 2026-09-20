@@ -34,11 +34,8 @@ import { useBlogPosts } from '@/hooks/useBlogPosts'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
 import { getOptimizedImageUrl } from '@/lib/image'
-import { SharedTransitionFrame } from '@/components/transitions/SharedTransitionFrame'
-import {
-  POST_SHARED_TRANSITION_SETTLE_MS,
-  getPostSharedTransitionIds,
-} from '@/lib/transitions/postSharedTransition'
+import { PostSharedElement } from '@/components/transitions/PostSharedElement'
+import { POST_SHARED_TRANSITION_SETTLE_MS } from '@/lib/transitions/postSharedTransition'
 import {
   type BlogViewState,
   getBlogNavigationState,
@@ -502,10 +499,6 @@ function SimpleBlogPostItem({
   sharedTransitionEnabled: boolean
 }) {
   const detailPath = getPostDetailPath(post)
-  const { coverLayoutId, titleLayoutId } = getPostSharedTransitionIds(
-    post.slug,
-    sharedTransitionEnabled
-  )
 
   return (
     <article className={cn('py-6 first:pt-0', className)} style={style}>
@@ -515,8 +508,10 @@ function SimpleBlogPostItem({
         className="group flex min-w-0 gap-4"
       >
         {post.image ? (
-          <SharedTransitionFrame
-            layoutId={coverLayoutId}
+          <PostSharedElement
+            slug={post.slug}
+            element="cover"
+            enabled={sharedTransitionEnabled}
             className="mt-1 aspect-[4/3] w-28 shrink-0 overflow-hidden bg-slate-100 sm:w-36 dark:bg-slate-800"
           >
             <img
@@ -527,17 +522,19 @@ function SimpleBlogPostItem({
               referrerPolicy="no-referrer"
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
-          </SharedTransitionFrame>
+          </PostSharedElement>
         ) : null}
         <div className="min-w-0">
-          <SharedTransitionFrame
-            layoutId={titleLayoutId}
+          <PostSharedElement
+            slug={post.slug}
+            element="title"
+            enabled={sharedTransitionEnabled}
             className="overflow-hidden rounded-xl"
           >
             <h2 className="text-2xl leading-snug font-bold text-[var(--text-primary)] transition-colors group-hover:text-[color-mix(in_srgb,var(--brand-400)_72%,var(--text-primary)_28%)]">
               {post.title}
             </h2>
-          </SharedTransitionFrame>
+          </PostSharedElement>
           {post.summary ? (
             <p className="mt-3 text-[0.98rem] leading-7 text-[var(--text-secondary)]">
               {post.summary}

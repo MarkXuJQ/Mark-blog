@@ -18,17 +18,3 @@ export function getPostSharedLayoutId(
 ) {
   return `blog-post-${element}-${slug}`
 }
-
-export function getPostSharedTransitionIds(
-  slug: string | undefined,
-  enabled: boolean
-) {
-  return {
-    coverLayoutId:
-      enabled && slug ? getPostSharedLayoutId(slug, 'cover') : undefined,
-    titleLayoutId:
-      enabled && slug ? getPostSharedLayoutId(slug, 'title') : undefined,
-    metaLayoutId:
-      enabled && slug ? getPostSharedLayoutId(slug, 'meta') : undefined,
-  }
-}
