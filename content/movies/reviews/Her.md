@@ -6,6 +6,7 @@ movieTitle: "Her"
 rating: 5
 tags: ["Movies", "Review"]
 image: "https://nenya.doubanio.com/view/photo/xl/public/p2514489867.jpg?sa_cv=1563084c7bf19f320601e017cde31bf8&sa_ct=6aadf99a"
+background: "https://nenya.doubanio.com/view/photo/xl/public/p2497533800.jpg?sa_cv=6f6c8f45df7032d6cc17bac149f82b71&sa_ct=6aae65d6"
 ---
 来源：https://movie.douban.com/review/17307180/
 

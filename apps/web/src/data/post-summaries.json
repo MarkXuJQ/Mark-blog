@@ -1,5 +1,22 @@
 [
   {
+    "id": "FingerBlock-A-game-Demo-by-AI-cn",
+    "slug": "FingerBlock-A-game-Demo-by-AI-cn",
+    "language": "zh",
+    "title": "FingerBlock：由 AI 协助完成的游戏 Demo",
+    "date": "2026-09-19",
+    "updated": "2026-09-19",
+    "summary": "从一个重新更新的手势识别库出发，我们用 AI、MediaPipe、音频分析和开源音效，在一天半里做出了一个可以用双手游玩的音乐游戏 Demo。",
+    "wordCount": 4495,
+    "image": "/images/fingerblock-preview.png",
+    "tags": [
+      "Projects",
+      "Game Demo",
+      "AI"
+    ],
+    "category": "project"
+  },
+  {
     "id": "rss-feed-beautification-cn",
     "slug": "rss-feed-beautification-cn",
     "language": "zh",
@@ -513,8 +530,9 @@
     "language": "zh",
     "title": "逆行人生",
     "date": "2026-03-18",
-    "summary": "片子前一段值4颗星，结尾扣一个，立意再加一个，社会是需要这种作品来反映社会现实和问题的，但是结尾却为了避免舆论，强行写了个这种结局，不是说不能有好结局，这是这样结尾有些草草了事，虎头蛇尾。",
-    "wordCount": 84,
+    "summary": "片子总体不错，我认为是有值4颗星的水平的，但我还是想要给结尾扣一颗星，但同时由于电影立意，再加一个，达到了一种平衡吧。",
+    "wordCount": 399,
+    "image": "https://nenya.doubanio.com/view/photo/xl/public/p2910476709.jpg?sa_cv=a21d2479b5c533dce74b2eb67a37c3eb&sa_ct=6aae6944",
     "movieSubjectId": "36774001",
     "tags": [
       "Movies",
