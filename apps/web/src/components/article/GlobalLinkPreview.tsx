@@ -25,6 +25,7 @@ type ActiveLinkState = {
   urlLabel?: string
   isStatic?: boolean
   imageSrc?: string
+  openInNewTab: boolean
 }
 
 function shouldEnableGlobalPreview() {
@@ -72,6 +73,16 @@ function resolvePreviewUrl(rawHref: string, siteUrl: string) {
   }
 }
 
+function shouldOpenInNewTab(rawHref: string) {
+  try {
+    return (
+      new URL(rawHref, window.location.href).origin !== window.location.origin
+    )
+  } catch {
+    return true
+  }
+}
+
 function getEligibleAnchor(target: EventTarget | null) {
   const element =
     target instanceof Element
@@ -110,6 +121,17 @@ function getEligibleAnchor(target: EventTarget | null) {
   return anchor
 }
 
+function isPreviewContentTarget(target: EventTarget | null) {
+  const element =
+    target instanceof Element
+      ? target
+      : target instanceof Node
+        ? target.parentElement
+        : null
+
+  return Boolean(element?.closest('[data-link-preview-content="true"]'))
+}
+
 function getPlacement(rect: DOMRect) {
   const viewportWidth = window.innerWidth
   const viewportHeight = window.innerHeight
@@ -135,7 +157,7 @@ export function GlobalLinkPreview() {
   const [isMounted, setIsMounted] = useState(false)
   const [enabled, setEnabled] = useState(false)
   const [activeLink, setActiveLink] = useState<ActiveLinkState | null>(null)
-  const [isPreviewHovered, setIsPreviewHovered] = useState(false)
+  const isPreviewHoveredRef = useRef(false)
   const activeAnchorRef = useRef<HTMLAnchorElement | null>(null)
   const closeTimerRef = useRef<number | null>(null)
   const mouseX = useMotionValue(0)
@@ -169,7 +191,7 @@ export function GlobalLinkPreview() {
   useEffect(() => {
     activeAnchorRef.current = null
     setActiveLink(null)
-    setIsPreviewHovered(false)
+    isPreviewHoveredRef.current = false
     mouseX.set(0)
   }, [mouseX, pathname])
 
@@ -189,7 +211,7 @@ export function GlobalLinkPreview() {
     const closePreview = () => {
       clearCloseTimer()
       activeAnchorRef.current = null
-      setIsPreviewHovered(false)
+      isPreviewHoveredRef.current = false
       setActiveLink(null)
       mouseX.set(0)
     }
@@ -197,7 +219,7 @@ export function GlobalLinkPreview() {
     const scheduleClose = () => {
       clearCloseTimer()
       closeTimerRef.current = window.setTimeout(() => {
-        if (!isPreviewHovered) {
+        if (!isPreviewHoveredRef.current) {
           closePreview()
         }
       }, CLOSE_DELAY_MS)
@@ -237,9 +259,9 @@ export function GlobalLinkPreview() {
 
       activeAnchorRef.current = anchor
       setActiveLink({
-        key: `${previewUrl || staticImageSrc || previewTitle}-${Math.round(rect.left)}-${Math.round(rect.top)}`,
+        key: `${rawHref}|${previewUrl || staticImageSrc || previewTitle || ''}`,
         rect,
-        href: previewUrl || rawHref,
+        href: rawHref,
         previewUrl: previewUrl || rawHref,
         mode: hasMetadata ? 'metadata' : 'screenshot',
         title: previewTitle || undefined,
@@ -248,6 +270,7 @@ export function GlobalLinkPreview() {
         urlLabel: previewUrlLabel,
         isStatic: Boolean(staticImageSrc),
         imageSrc: staticImageSrc,
+        openInNewTab: shouldOpenInNewTab(rawHref),
       })
       clearCloseTimer()
     }
@@ -262,9 +285,17 @@ export function GlobalLinkPreview() {
     }
 
     const handleMouseMove = (event: MouseEvent) => {
+      if (isPreviewContentTarget(event.target)) {
+        clearCloseTimer()
+        if (!isPreviewHoveredRef.current) {
+          isPreviewHoveredRef.current = true
+        }
+        return
+      }
+
       const anchor = getEligibleAnchor(event.target)
       if (!anchor) {
-        if (!isPreviewHovered) {
+        if (!isPreviewHoveredRef.current) {
           scheduleClose()
         }
         return
@@ -280,7 +311,11 @@ export function GlobalLinkPreview() {
       openPreview(anchor, event.clientX)
     }
 
-    const handleMouseDown = () => {
+    const handleMouseDown = (event: MouseEvent) => {
+      if (isPreviewContentTarget(event.target)) {
+        return
+      }
+
       closePreview()
     }
 
@@ -294,7 +329,7 @@ export function GlobalLinkPreview() {
     }
 
     const handleFocusOut = () => {
-      if (!isPreviewHovered) {
+      if (!isPreviewHoveredRef.current) {
         scheduleClose()
       }
     }
@@ -316,7 +351,6 @@ export function GlobalLinkPreview() {
         current
           ? {
               ...current,
-              key: `${current.previewUrl || current.title || current.href}-${Math.round(rect.left)}-${Math.round(rect.top)}`,
               rect,
             }
           : current
@@ -349,7 +383,7 @@ export function GlobalLinkPreview() {
       window.removeEventListener('resize', refreshPreviewPosition)
       window.removeEventListener('keydown', handleEscape)
     }
-  }, [enabled, isPreviewHovered, mouseX, siteUrl])
+  }, [enabled, mouseX, siteUrl])
 
   if (!isMounted || !enabled) {
     return null
@@ -367,16 +401,16 @@ export function GlobalLinkPreview() {
             style={getPlacement(activeLink.rect)}
           >
             <div
-              className="pointer-events-auto"
+              className="pointer-events-auto cursor-pointer"
               onPointerEnter={() => {
                 if (closeTimerRef.current !== null) {
                   window.clearTimeout(closeTimerRef.current)
                   closeTimerRef.current = null
                 }
-                setIsPreviewHovered(true)
+                isPreviewHoveredRef.current = true
               }}
               onPointerLeave={() => {
-                setIsPreviewHovered(false)
+                isPreviewHoveredRef.current = false
                 closeTimerRef.current = window.setTimeout(() => {
                   activeAnchorRef.current = null
                   mouseX.set(0)
@@ -393,6 +427,8 @@ export function GlobalLinkPreview() {
                   imageSrc={activeLink.imageSrc}
                   urlLabel={activeLink.urlLabel}
                   href={activeLink.href}
+                  clickable
+                  openInNewTab={activeLink.openInNewTab}
                   followX={followX}
                 />
               ) : (
@@ -402,7 +438,8 @@ export function GlobalLinkPreview() {
                   previewUrl={activeLink.previewUrl}
                   peekWidth={PREVIEW_WIDTH}
                   peekHeight={PREVIEW_HEIGHT}
-                  clickable={false}
+                  clickable
+                  openInNewTab={activeLink.openInNewTab}
                   enableLensEffect
                   isStatic={Boolean(activeLink.isStatic)}
                   imageSrc={activeLink.imageSrc}

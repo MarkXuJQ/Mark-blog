@@ -96,6 +96,7 @@ type LinkPreviewCardProps = {
   lensSize?: number
   followX?: MotionValue<number> | number
   clickable?: boolean
+  openInNewTab?: boolean
   containerClassName?: string
   containerStyle?: MotionStyle
   className?: string
@@ -110,6 +111,7 @@ export type LinkPreviewMetadataCardProps = {
   href?: string
   followX?: MotionValue<number> | number
   clickable?: boolean
+  openInNewTab?: boolean
   containerClassName?: string
   containerStyle?: MotionStyle
   className?: string
@@ -182,6 +184,7 @@ export function LinkPreviewCard({
   lensSize = 100,
   followX = 0,
   clickable = true,
+  openInNewTab = true,
   containerClassName,
   containerStyle,
   className,
@@ -297,8 +300,8 @@ export function LinkPreviewCard({
       {clickable ? (
         <a
           href={url}
-          target="_blank"
-          rel="noopener noreferrer"
+          target={openInNewTab ? '_blank' : undefined}
+          rel={openInNewTab ? 'noopener noreferrer' : undefined}
           className={frameClassName}
           onMouseEnter={handleLensMouseEnter}
           onMouseLeave={handleLensMouseLeave}
@@ -331,6 +334,7 @@ export function LinkPreviewMetadataCard({
   href,
   followX = 0,
   clickable = false,
+  openInNewTab = true,
   containerClassName,
   containerStyle,
   className,
@@ -400,8 +404,8 @@ export function LinkPreviewMetadataCard({
       {clickable && href ? (
         <a
           href={href}
-          target="_blank"
-          rel="noopener noreferrer"
+          target={openInNewTab ? '_blank' : undefined}
+          rel={openInNewTab ? 'noopener noreferrer' : undefined}
           className={cardClassName}
         >
           {content}
