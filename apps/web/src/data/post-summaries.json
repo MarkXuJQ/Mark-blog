@@ -1,5 +1,22 @@
 [
   {
+    "id": "FingerBlock-A-game-Demo-by-AI-cn",
+    "slug": "FingerBlock-A-game-Demo-by-AI-cn",
+    "language": "zh",
+    "title": "FingerBlock：由 AI 协助完成的游戏 Demo",
+    "date": "2026-09-19",
+    "updated": "2026-09-19",
+    "summary": "从一个重新更新的手势识别库出发，我们用 AI、MediaPipe、音频分析和开源音效，在一天半里做出了一个可以用双手游玩的音乐游戏 Demo。",
+    "wordCount": 3925,
+    "image": "/images/fingerblock-preview.png",
+    "tags": [
+      "Projects",
+      "Game Demo",
+      "AI"
+    ],
+    "category": "project"
+  },
+  {
     "id": "rss-feed-beautification-cn",
     "slug": "rss-feed-beautification-cn",
     "language": "zh",
@@ -56,7 +73,7 @@
     "date": "2026-08-13",
     "summary": "只是看到有人说不错就来看了，完全没有任何期待，主演是谁也不知道，以为欢迎来到龙餐厅是成龙演的喜剧呢。但是电影开头看到沈腾老师也很惊喜。",
     "wordCount": 1010,
-    "image": "https://nenya.doubanio.com/view/photo/xl/public/p2934698147.jpg?sa_cv=ef87f5a58afd444400ea8185f813f49a&sa_ct=6aadf5d8",
+    "image": "https://image.tmdb.org/t/p/original/zr7om0GOLOcLo7SXMmNEG5rz6de.jpg",
     "movieSubjectId": "35811064",
     "tags": [
       "Movies",
@@ -346,9 +363,9 @@
     "language": "zh",
     "title": "从大创到毕设，我的“科研思想”进化之路",
     "date": "2026-05-15",
-    "updated": "2026-05-20",
+    "updated": "2026-09-20",
     "summary": "从一次大创项目、一套医疗管理系统，到骨盆骨折 CT 分割算法的复现与改进。这篇文章记录我的毕业设计，也记录一次从失败里慢慢摸到问题核心的经历。",
-    "wordCount": 3741,
+    "wordCount": 3893,
     "tags": [
       "Projects",
       "Image Segmentation",
@@ -499,7 +516,7 @@
     "date": "2026-03-21",
     "summary": "看完爽到的电影，在我心里的科幻可以排前三的水平，让我想起一开始喜欢电影的感觉，一种处在梦中和幻想的感觉，感谢这些造梦人，也很喜欢高司令的演出😋",
     "wordCount": 401,
-    "image": "https://nenya.doubanio.com/view/photo/xl/public/p2930918971.jpg?sa_cv=dfea831beb7f3b150278579124c07a8a&sa_ct=6aadf6c6",
+    "image": "https://image.tmdb.org/t/p/original/o8d54pvtPMYQdR5uPSYaMzKZJdB.jpg",
     "movieSubjectId": "35010610",
     "tags": [
       "Movies",
@@ -513,8 +530,9 @@
     "language": "zh",
     "title": "逆行人生",
     "date": "2026-03-18",
-    "summary": "片子前一段值4颗星，结尾扣一个，立意再加一个，社会是需要这种作品来反映社会现实和问题的，但是结尾却为了避免舆论，强行写了个这种结局，不是说不能有好结局，这是这样结尾有些草草了事，虎头蛇尾。",
-    "wordCount": 84,
+    "summary": "片子总体不错，我认为是有值4颗星的水平的，但我还是想要给结尾扣一颗星，但同时由于电影立意，再加一个，达到了一种平衡吧。",
+    "wordCount": 399,
+    "image": "https://image.tmdb.org/t/p/original/zYpdT02cJJrNaOD0I9lq30e9GY5.jpg",
     "movieSubjectId": "36774001",
     "tags": [
       "Movies",
@@ -530,7 +548,7 @@
     "date": "2025-12-05",
     "summary": "看的有点沉不住气，剧情总体不多，发展的有点点慢，但同时也给观众很多的时间去沉浸在电影要表达的情感里。",
     "wordCount": 672,
-    "image": "https://nenya.doubanio.com/view/photo/xl/public/p2514489867.jpg?sa_cv=1563084c7bf19f320601e017cde31bf8&sa_ct=6aadf99a",
+    "image": "https://image.tmdb.org/t/p/original/9M1HfKvb6vWp3iJkVxr6ooPfViR.jpg",
     "movieSubjectId": "6722879",
     "tags": [
       "Movies",
@@ -657,7 +675,7 @@
     "date": "2022-09-24",
     "summary": "今天把暑假里看到一半的《太阳照常升起》看完了，有些恍惚，好久没有这种心里空落落，又有点受惊的感觉了，电影没有看懂，但一句弹幕又似乎让我明白了，“没有看明白，但感受到了”, 或许我确确实实的感受到了。",
     "wordCount": 322,
-    "image": "https://nenya.doubanio.com/view/photo/xl/public/p2265884375.jpg?sa_cv=2242031f75842452d9582c24de1420b0&sa_ct=6aae0a5e",
+    "image": "https://image.tmdb.org/t/p/original/yGNBtSLAD49Rtzev5jpzAgQZTso.jpg",
     "movieSubjectId": "1766086",
     "tags": [
       "Movies",

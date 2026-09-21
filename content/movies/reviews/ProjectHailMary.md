@@ -6,8 +6,8 @@ movieSubjectId: "35010610"
 movieTitle: "Project Hail Mary"
 rating: 5
 tags: ["Movies", "Review"]
-image: "https://nenya.doubanio.com/view/photo/xl/public/p2930918971.jpg?sa_cv=dfea831beb7f3b150278579124c07a8a&sa_ct=6aadf6c6"
-background: "https://nenya.doubanio.com/view/photo/xl/public/p2930918968.jpg?sa_cv=b6eae425cc0208fb8a9cd0dd78306297&sa_ct=6aae0989"
+image: "https://image.tmdb.org/t/p/original/o8d54pvtPMYQdR5uPSYaMzKZJdB.jpg"
+background: "https://image.tmdb.org/t/p/original/ignr9C0hv1iMLDUWrX90lM6Bkmk.jpg"
 ---
 看完爽到的电影，在我心里的科幻可以排前三的水平，让我想起一开始喜欢电影的感觉，一种处在梦中和幻想的感觉，感谢这些造梦人，也很喜欢高司令的演出😋
 
@@ -21,7 +21,7 @@ background: "https://nenya.doubanio.com/view/photo/xl/public/p2930918968.jpg?sa_
 
 我很喜欢看我曾经看过的电影，常常把一部喜欢的电影翻来覆去的看上好多遍，一是已经了解了剧情，对大脑的消耗要少不少，往往会更放松。二是每一次看我喜欢的电影，不仅可以再一次被电影的画面和剧情震撼，还可以想到第一次见到这个场面的感受。
 
-![电影造梦](https://nenya.doubanio.com/view/photo/xl/public/p2932223469.jpg?sa_cv=55138f872e382b07971dcf7b28369e72&sa_ct=6aadf865)
+![电影造梦](https://image.tmdb.org/t/p/original/8EmbaG1ydsmMakFWwD0MeEudAgz.jpg)
 
 本来想的是快速重温一遍，而且也知道这部电影后面的剧情了，有点一直期待电影爆点的感觉。但看的时候仍然十分沉浸，一点也不觉得电影前期枯燥乏味。
 
@@ -31,4 +31,4 @@ background: "https://nenya.doubanio.com/view/photo/xl/public/p2930918968.jpg?sa_
 
 **简单明快，或许是我对生活也追求的方向。**
 
-![轻松愉快的画面](https://nenya.doubanio.com/view/photo/xl/public/p2930947476.jpg?sa_cv=2e7becdb2e25df7c67d24f41b813b510&sa_ct=6aadfb2b)
+![轻松愉快的画面](https://image.tmdb.org/t/p/original/utqkJ3YPvRgMryVSRCTaaT9Knh8.jpg)

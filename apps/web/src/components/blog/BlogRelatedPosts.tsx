@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { getOptimizedImageUrl } from '@/lib/image'
 import { cn } from '@/lib/classNames'
 import type { BlogPost, BlogPostSummary } from '@/lib/content/posts'
+import { useSidebarItemLimit } from '@/hooks/useSidebarItemLimit'
 
 interface BlogRelatedPostsProps {
   currentPost: BlogPost | null
@@ -17,6 +18,11 @@ export function BlogRelatedPosts({
   maxItems = 5,
 }: BlogRelatedPostsProps) {
   const { t } = useTranslation()
+  const visibleItemLimit = useSidebarItemLimit({
+    maxItems,
+    shortViewportItems: 2,
+    mediumViewportItems: 3,
+  })
   const recommendations = useMemo(() => {
     if (!currentPost?.category) return []
     const currentTags = new Set(
@@ -39,9 +45,9 @@ export function BlogRelatedPosts({
         if (b.overlap !== a.overlap) return b.overlap - a.overlap
         return new Date(b.post.date).getTime() - new Date(a.post.date).getTime()
       })
-      .slice(0, maxItems)
+      .slice(0, visibleItemLimit)
       .map((item) => item.post)
-  }, [currentPost, posts, maxItems])
+  }, [currentPost, posts, visibleItemLimit])
 
   if (recommendations.length === 0) return null
 

@@ -5,7 +5,8 @@ movieSubjectId: "6722879"
 movieTitle: "Her"
 rating: 5
 tags: ["Movies", "Review"]
-image: "https://nenya.doubanio.com/view/photo/xl/public/p2514489867.jpg?sa_cv=1563084c7bf19f320601e017cde31bf8&sa_ct=6aadf99a"
+image: "https://image.tmdb.org/t/p/original/9M1HfKvb6vWp3iJkVxr6ooPfViR.jpg"
+background: "https://image.tmdb.org/t/p/original/46BvG3Acv8mvcH7kDCaPsv59tuQ.jpg"
 ---
 来源：https://movie.douban.com/review/17307180/
 
@@ -15,12 +16,12 @@ image: "https://nenya.doubanio.com/view/photo/xl/public/p2514489867.jpg?sa_cv=15
 
 同样是虚假的情感，一个来自ai训练，一个来自真人的代写。作为情感的表达一方，一个是暂时不清楚是否是真实的情感（ai），一个是真人所共感产生的情绪和感受（信）。
 
-![剧照](https://nenya.doubanio.com/view/photo/xl/public/p2166267422.jpg?sa_cv=4541981f923cd9a6d2ff4288d4a51ffd&sa_ct=6aadf9da)
+![剧照](https://image.tmdb.org/t/p/original/omotn6dolqAvtwlfbrWQ1wQwhuG.jpg)
 
 收到信的人和ai的使用者做为情感接受的一方，一个体会到的是自以为是真实对方写的信（在电影中也表达了其情感十分动人，甚至出版成实体书籍），电影中的人们对此感到感动和欣赏。一个收到的是明知道对方是虚假的不存在的但却无比依赖的情感，电影中的人们对此感受也不一样，有的鄙视（男主前妻），有的并不过于关心（办公室的同事），有的体验（7000多人绝大多数都没有发展成爱情），有的则像男主一样沉溺（还有600多人已经发展成为爱情）。
 
 而剧情虽然进展很慢，也并没有特别令人惊喜的跌宕起伏，却很好的将这个话题的各个方面都讨论到，且有详略得当，融入的很好。讨论并不严肃，而是主要让观众沉浸在男主（精彩的表演）的情感中，随着主角的情感一边体会，一边思考🤔。
 
-![剧照](https://nenya.doubanio.com/view/photo/xl/public/p2161285189.jpg?sa_cv=24e629329aa58e4dc69703e6bdec0b65&sa_ct=6aadfcd1)
+![剧照](https://image.tmdb.org/t/p/original/3kshoGvi6hegSc9tXUNv7wT27d7.jpg)
 
 影片最后还是希望大家可以建立起与真人的关系，但同时也给人们留下了对ai产生情感的可能的畅想。细细品味过来，是留给人们一种救赎、美丽与遗憾、绝望并存的令人回味的暂时感受。还蛮令人着迷的

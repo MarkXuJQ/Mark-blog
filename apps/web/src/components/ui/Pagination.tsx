@@ -44,16 +44,16 @@ function PaginationControls({
 }: PaginationControlsProps) {
   const reduceMotion = useReducedMotion()
   const itemSize = sticky
-    ? 'h-8 min-w-8 text-sm'
-    : 'h-8 min-w-8 text-sm sm:h-9 sm:min-w-9'
+    ? 'h-full min-w-8 text-sm'
+    : 'h-full min-w-8 text-sm sm:min-w-9'
 
   return (
     <motion.nav
       layout
       className={cn(
         sticky
-          ? 'fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-[75] flex w-fit max-w-[calc(100vw-2rem)] overflow-x-auto rounded-lg border border-slate-200/80 bg-white/92 shadow-[0_10px_30px_-12px_rgba(15,23,42,0.35)] backdrop-blur-md dark:border-[var(--border-color)] dark:bg-[color-mix(in_srgb,var(--surface-card)_92%,transparent)]'
-          : 'scrollbar-hide flex w-fit max-w-full overflow-x-auto rounded-lg border border-slate-200/80 bg-white shadow-[0_10px_28px_-22px_rgba(15,23,42,0.38)] dark:border-[var(--border-color)] dark:bg-[var(--surface-card)] dark:shadow-none',
+          ? 'fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-[75] flex h-8 w-fit max-w-[calc(100vw-2rem)] overflow-x-auto rounded-lg border border-slate-200/80 bg-white/92 shadow-[0_10px_30px_-12px_rgba(15,23,42,0.35)] backdrop-blur-md dark:border-[var(--border-color)] dark:bg-[color-mix(in_srgb,var(--surface-card)_92%,transparent)]'
+          : 'scrollbar-hide flex h-8 w-fit max-w-full overflow-x-auto rounded-lg border border-slate-200/80 bg-white shadow-[0_10px_28px_-22px_rgba(15,23,42,0.38)] sm:h-9 dark:border-[var(--border-color)] dark:bg-[var(--surface-card)] dark:shadow-none',
         className
       )}
       style={
@@ -140,7 +140,8 @@ function PaginationControls({
 export function Pagination(props: PaginationProps) {
   const { contentRef, currentPage, totalPages } = props
   const paginationAnchorRef = useRef<HTMLDivElement>(null)
-  const [isPaginationVisible, setIsPaginationVisible] = useState(true)
+  const [isPaginationBelowViewport, setIsPaginationBelowViewport] =
+    useState(true)
   const [hasReachedContent, setHasReachedContent] = useState(!contentRef)
   const [contentCenterX, setContentCenterX] = useState<number | null>(null)
   const pageNumbers = getPageNumbers(currentPage, totalPages)
@@ -150,7 +151,16 @@ export function Pagination(props: PaginationProps) {
     if (!anchor) return
 
     const observer = new IntersectionObserver(
-      ([entry]) => setIsPaginationVisible(entry.isIntersecting),
+      ([entry]) => {
+        const viewportBottom = entry.rootBounds?.bottom ?? window.innerHeight
+
+        // A pagination anchor above the viewport is not a reason to show the
+        // compact control again after the user has passed the list end.
+        setIsPaginationBelowViewport(
+          !entry.isIntersecting &&
+            entry.boundingClientRect.top >= viewportBottom
+        )
+      },
       { threshold: 0.2 }
     )
     observer.observe(anchor)
@@ -196,7 +206,7 @@ export function Pagination(props: PaginationProps) {
 
   if (totalPages <= 1) return null
 
-  const isSticky = hasReachedContent && !isPaginationVisible
+  const isSticky = hasReachedContent && isPaginationBelowViewport
 
   return (
     <div className="mt-12 flex min-h-9 justify-center sm:min-h-10">

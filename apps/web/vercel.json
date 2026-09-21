@@ -119,6 +119,11 @@
       "permanent": true
     },
     {
+      "source": "/blog/22.FingerBlock\\:由AI完成的游戏Demo",
+      "destination": "/blog/FingerBlock-A-game-Demo-by-AI-cn",
+      "permanent": true
+    },
+    {
       "source": "/blog/3.My-first-blog",
       "destination": "/blog/first-blog-post-en",
       "permanent": true

@@ -10,6 +10,7 @@ import {
   loadRecentComments,
 } from '@/lib/comments/recentCommentsCache'
 import type { TwikooRecentComment } from '@/lib/comments/twikooLoader'
+import { useSidebarItemLimit } from '@/hooks/useSidebarItemLimit'
 
 const RECENT_COMMENTS_LIMIT = 5
 const DEFAULT_TWIKOO_ENV_ID = 'https://comments.markxu.icu/api/twikoo'
@@ -86,6 +87,7 @@ function isValidCreated(value: number) {
 
 export function RecentCommentsWidget() {
   const { i18n, t } = useTranslation()
+  const visibleItemLimit = useSidebarItemLimit()
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const twikooEnvId =
     import.meta.env.VITE_TWIKOO_ENV_ID || DEFAULT_TWIKOO_ENV_ID
@@ -190,7 +192,7 @@ export function RecentCommentsWidget() {
 
       {status === 'loading' ? (
         <div className="space-y-4" aria-busy="true" aria-live="polite">
-          {Array.from({ length: 3 }, (_, index) => (
+          {Array.from({ length: Math.min(3, visibleItemLimit) }, (_, index) => (
             <div key={index} className="space-y-2">
               <div className="h-4 w-4/5 animate-pulse rounded bg-slate-200/80 dark:bg-slate-800" />
               <div className="h-3 w-3/5 animate-pulse rounded bg-slate-100 dark:bg-slate-800/70" />
@@ -199,7 +201,7 @@ export function RecentCommentsWidget() {
         </div>
       ) : items.length > 0 ? (
         <div className="divide-y divide-slate-100 dark:divide-slate-800">
-          {items.map((item) => {
+          {items.slice(0, visibleItemLimit).map((item) => {
             const date = new Date(item.created)
 
             return (

@@ -1,5 +1,5 @@
 import { useMemo, type MouseEvent } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Calendar, Star } from 'lucide-react'
 import { Seo } from '@/app/seo/Seo'
@@ -10,13 +10,16 @@ import { cn } from '@/lib/classNames'
 import { useArticleImageLightbox } from '@/hooks/useArticleImageLightbox'
 import { useArticleProgressiveImages } from '@/hooks/useArticleProgressiveImages'
 import { getImageUrl } from '@/lib/image'
+import { PostSharedElement } from '@/components/transitions/PostSharedElement'
+import { usePostDetailTransition } from '@/hooks/usePostDetailTransition'
 
 export function MovieReviewPost() {
   const { slug } = useParams()
   const { t, i18n } = useTranslation()
-  const location = useLocation()
   const navigate = useNavigate()
   const review = slug ? getMovieReviewBySlug(slug) : undefined
+  const { navigationState, isSharedTransitionEnabled } =
+    usePostDetailTransition(review?.slug ?? slug)
   const contentHtml = useMemo(() => {
     if (!review) {
       return ''
@@ -49,9 +52,10 @@ export function MovieReviewPost() {
   const backgroundImage = review.background
     ? getImageUrl(review.background)
     : ''
-  const cameFromBlogList = Boolean(
-    (location.state as { fromBlogList?: boolean } | null)?.fromBlogList
-  )
+  const cameFromBlogList = Boolean(navigationState.fromBlogList)
+  const transitionPostSlug = navigationState.transitionPostSlug
+  const returnTo = navigationState.returnTo
+  const viewState = navigationState.viewState
   const backPath = cameFromBlogList ? '/blog' : '/movies'
   const backLabel = t(
     cameFromBlogList ? 'blog.back' : 'movies.reviews.backToMovies'
@@ -69,7 +73,14 @@ export function MovieReviewPost() {
     }
 
     event.preventDefault()
-    navigate(-1)
+    navigate(returnTo ?? '/blog', {
+      replace: true,
+      state: {
+        preserveScroll: true,
+        transitionPostSlug: transitionPostSlug ?? review.slug,
+        viewState,
+      },
+    })
   }
 
   return (
@@ -108,15 +119,22 @@ export function MovieReviewPost() {
           {coverImage ? (
             <>
               <section className={styles.cover}>
-                <img
-                  src={coverImage}
-                  alt={review.movieTitle || review.title}
-                  className={styles.coverImage}
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  referrerPolicy="no-referrer"
-                />
+                <PostSharedElement
+                  slug={review.slug}
+                  element="cover"
+                  enabled={isSharedTransitionEnabled}
+                  className="absolute inset-0 overflow-hidden rounded-none"
+                >
+                  <img
+                    src={coverImage}
+                    alt={review.movieTitle || review.title}
+                    className={styles.coverImage}
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                    referrerPolicy="no-referrer"
+                  />
+                </PostSharedElement>
                 {review.imageOverlay ? (
                   <div className={styles.imageOverlay} aria-hidden="true" />
                 ) : null}
@@ -131,8 +149,22 @@ export function MovieReviewPost() {
                 </Link>
 
                 <header className={styles.coverHeader}>
-                  <h1 className={styles.coverTitle}>{review.title}</h1>
-                  <ReviewMeta review={review} inverse />
+                  <PostSharedElement
+                    slug={review.slug}
+                    element="title"
+                    enabled={isSharedTransitionEnabled}
+                    className="overflow-hidden rounded-none"
+                  >
+                    <h1 className={styles.coverTitle}>{review.title}</h1>
+                  </PostSharedElement>
+                  <PostSharedElement
+                    slug={review.slug}
+                    element="meta"
+                    enabled={isSharedTransitionEnabled}
+                    className="mt-4 overflow-hidden rounded-xl"
+                  >
+                    <ReviewMeta review={review} inverse />
+                  </PostSharedElement>
                 </header>
               </section>
 
@@ -154,8 +186,22 @@ export function MovieReviewPost() {
                 ← {backLabel}
               </Link>
 
-              <h1 className={styles.title}>{review.title}</h1>
-              <ReviewMeta review={review} />
+              <PostSharedElement
+                slug={review.slug}
+                element="title"
+                enabled={isSharedTransitionEnabled}
+                className="overflow-hidden rounded-none"
+              >
+                <h1 className={styles.title}>{review.title}</h1>
+              </PostSharedElement>
+              <PostSharedElement
+                slug={review.slug}
+                element="meta"
+                enabled={isSharedTransitionEnabled}
+                className="overflow-hidden rounded-xl"
+              >
+                <ReviewMeta review={review} />
+              </PostSharedElement>
 
               <div
                 ref={contentRef}
