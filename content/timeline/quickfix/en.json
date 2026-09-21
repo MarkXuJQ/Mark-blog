@@ -1,5 +1,16 @@
 [
   {
+    "id": "qf-20260921",
+    "date": "2026-09-21",
+    "content": [
+      "Refactored the Movies page by extracting movie cards, filters, pagination, data loading, and TMDB enrichment into reusable components, hooks, and utilities",
+      "Unified shared transitions for blog posts and movie reviews, improving title, cover, and metadata motion when entering from and returning to the article list",
+      "Fixed scroll restoration, article-list return positioning, and responsive sidebar item limits for a more coherent browsing experience across blog and movie reviews",
+      "Fixed the shared pagination boundary at the end of result lists and made the active-page highlight cover the button's full height",
+      "Improved local article link previews with clickable cards, separate internal and external link behavior, and stable hover hit areas without cursor or popup flicker"
+    ]
+  },
+  {
     "id": "qf-20260919",
     "date": "2026-09-19",
     "content": [
