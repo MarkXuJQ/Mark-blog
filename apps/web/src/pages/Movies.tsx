@@ -1,482 +1,26 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Clapperboard, Search, Star } from 'lucide-react'
-import { LuList } from 'react-icons/lu'
-import { RiGalleryView2, RiDoubanLine } from 'react-icons/ri'
 import { MovieGuestbook } from '@/components/movies/MovieGuestbook'
+import { MovieResults } from '@/components/movies/MovieResults'
 import { MovieStatsPanel } from '@/components/movies/MovieStatsPanel'
-import { Seo } from '@/app/seo/Seo'
-import { Pagination } from '@/components/ui/Pagination'
-import { RevealText } from '@/components/ui/reveal-text'
-import { SelectMenu } from '@/components/ui/SelectMenu'
-import { SegmentedToggle } from '@/components/ui/SegmentedToggle'
+import { MoviesToolbar } from '@/components/movies/MoviesToolbar'
 import { WatchActivityCalendar } from '@/components/movies/WatchActivityCalendar'
+import { Seo } from '@/app/seo/Seo'
+import { RevealText } from '@/components/ui/reveal-text'
+import { useMovieCatalog } from '@/hooks/movies/useMovieCatalog'
+import { useTmdbEnrichment } from '@/hooks/movies/useTmdbEnrichment'
 import {
-  getMovieReviewBySlug,
-  getMovieReviewBySubjectId,
-} from '@/lib/content/movieReviews'
-import { cn } from '@/lib/classNames'
-import movieCsvRaw from '@content/movies/movie.csv?raw'
-import movieOverridesRaw from '@content/movies/movie-overrides.json'
-
-type ViewMode = 'csv' | 'tmdb'
-type CardLayout = 'list' | 'grid'
-type MovieFilter = 'all' | 'reviews'
-type TmdbStatus = 'idle' | 'loading' | 'ready' | 'error'
-
-interface MovieOverride {
-  platform?: string
-  note?: string
-  tmdbId?: number | string
-  tmdbQuery?: string
-  reviewSlug?: string
-}
-
-interface CsvMovieItem {
-  id: string
-  subjectId: string
-  title: string
-  originalTitle: string
-  link: string
-  watchDate: string
-  rating: number | null
-  platform: string
-  note: string
-  tmdbId: number | null
-  tmdbQuery: string
-  reviewSlug: string
-  reviewSummary: string
-}
-
-interface TmdbSearchMovie {
-  id: number
-  title?: string
-  original_title?: string
-  poster_path?: string | null
-  backdrop_path?: string | null
-  release_date?: string
-}
-
-interface TmdbEnrichedMovie {
-  tmdbId: number
-  tmdbTitle: string
-  tmdbOriginalTitle: string
-  posterUrl: string
-  backdropUrl: string
-  releaseDate: string
-}
-
-const ROWS_PER_PAGE = 5
-const LIST_ITEMS_PER_PAGE = 16
-const BASE_COLUMNS = 4
-const MIN_CARD_WIDTH_MD = 190
-const MIN_CARD_WIDTH_LG = 210
-const GAP_MD = 12
-const GAP_LG = 16
-const DEFAULT_PLATFORM = 'Douban'
-const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w342'
-const TMDB_BACKDROP_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w780'
-const DOUBAN_PROFILE_URL =
-  'https://www.douban.com/people/191287070/?_i=3746089pLWPXRI,3746152pLWPXRI'
-const TMDB_PROFILE_URL = 'https://www.themoviedb.org/u/MarkXu269'
-const CINEMA_REVEAL_TEXT = 'CINEMA'
-const CINEMA_BACKGROUND_INTERVAL_MS = 6000
-const CINEMA_STILL_IMAGES = [
-  '/images/movies/cinema/interstellar.jpg',
-  '/images/movies/cinema/walter-mitty.jpg',
-  '/images/movies/cinema/city-the-animation.jpg',
-  '/images/movies/cinema/wandering-earth-2.jpg',
-  '/images/movies/cinema/midnight-in-paris.jpg',
-  '/images/movies/cinema/avengers-endgame.jpg',
-]
-
-function normalizeCsvHeader(header: string) {
-  return header.replace(/^\uFEFF/, '').trim()
-}
-
-function parseCsvRows(raw: string): string[][] {
-  const rows: string[][] = []
-  let row: string[] = []
-  let field = ''
-  let inQuotes = false
-
-  for (let index = 0; index < raw.length; index += 1) {
-    const char = raw[index]
-    const next = raw[index + 1]
-
-    if (char === '"') {
-      if (inQuotes && next === '"') {
-        field += '"'
-        index += 1
-      } else {
-        inQuotes = !inQuotes
-      }
-      continue
-    }
-
-    if (char === ',' && !inQuotes) {
-      row.push(field)
-      field = ''
-      continue
-    }
-
-    if ((char === '\n' || char === '\r') && !inQuotes) {
-      if (char === '\r' && next === '\n') {
-        index += 1
-      }
-
-      row.push(field)
-      field = ''
-
-      if (row.some((value) => value.trim() !== '')) {
-        rows.push(row)
-      }
-      row = []
-      continue
-    }
-
-    field += char
-  }
-
-  row.push(field)
-  if (row.some((value) => value.trim() !== '')) {
-    rows.push(row)
-  }
-
-  return rows
-}
-
-function splitMovieTitle(rawTitle: string) {
-  const normalized = rawTitle.replace(/\s+/g, ' ').trim()
-  if (!normalized) return { title: '', originalTitle: '' }
-
-  const parts = normalized
-    .split(' / ')
-    .map((part) => part.trim())
-    .filter(Boolean)
-
-  if (parts.length <= 1) {
-    return { title: normalized, originalTitle: '' }
-  }
-
-  return {
-    title: parts[0],
-    originalTitle: parts.slice(1).join(' / '),
-  }
-}
-
-function parseSubjectId(link: string) {
-  const match = link.match(/\/subject\/(\d+)\//)
-  return match ? match[1] : ''
-}
-
-function toValidRating(input: string) {
-  const parsed = Number.parseInt(input, 10)
-  if (!Number.isFinite(parsed)) return null
-  if (parsed < 1 || parsed > 5) return null
-  return parsed
-}
-
-function parseTmdbId(input: number | string | undefined) {
-  if (typeof input === 'number' && Number.isFinite(input) && input > 0) {
-    return Math.round(input)
-  }
-
-  if (typeof input === 'string') {
-    const parsed = Number.parseInt(input, 10)
-    if (Number.isFinite(parsed) && parsed > 0) {
-      return parsed
-    }
-  }
-
-  return null
-}
-
-function toTimestamp(input: string) {
-  if (!input) return 0
-  const parsed = new Date(input)
-  return Number.isNaN(parsed.getTime()) ? 0 : parsed.getTime()
-}
-
-function formatDate(input: string, locale: string) {
-  if (!input) return ''
-  const parsed = new Date(input)
-  if (Number.isNaN(parsed.getTime())) return ''
-  return new Intl.DateTimeFormat(locale, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(parsed)
-}
-
-function toDateKeyFromString(input: string) {
-  if (!input) return ''
-  const parsed = new Date(input)
-  if (Number.isNaN(parsed.getTime())) return ''
-  const year = parsed.getFullYear()
-  const month = String(parsed.getMonth() + 1).padStart(2, '0')
-  const day = String(parsed.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
-function normalizePosterUrl(path: string | undefined | null) {
-  if (!path) return ''
-  if (/^https?:\/\//i.test(path)) return path
-  return `${TMDB_IMAGE_BASE_URL}${path}`
-}
-
-function normalizeBackdropUrl(path: string | undefined | null) {
-  if (!path) return ''
-  if (/^https?:\/\//i.test(path)) return path
-  return `${TMDB_BACKDROP_IMAGE_BASE_URL}${path}`
-}
-
-function calculateColumns(containerWidth: number, viewportWidth: number) {
-  if (viewportWidth < 540) return 2
-  else if (viewportWidth < 780) return 3
-  if (viewportWidth < 868) return BASE_COLUMNS
-  const minCardWidth =
-    viewportWidth >= 1024 ? MIN_CARD_WIDTH_LG : MIN_CARD_WIDTH_MD
-  const gap = viewportWidth >= 1024 ? GAP_LG : GAP_MD
-  const columns = Math.floor((containerWidth + gap) / (minCardWidth + gap))
-  return Math.max(BASE_COLUMNS, columns || BASE_COLUMNS)
-}
-
-function shuffleItems<T>(items: T[]) {
-  const shuffled = [...items]
-
-  for (let index = shuffled.length - 1; index > 0; index -= 1) {
-    const randomIndex = Math.floor(Math.random() * (index + 1))
-    const current = shuffled[index]
-    shuffled[index] = shuffled[randomIndex]
-    shuffled[randomIndex] = current
-  }
-
-  return shuffled
-}
-
-class TmdbRequestError extends Error {
-  status: number
-  code: string
-
-  constructor(options: { status: number; code: string; message: string }) {
-    super(options.message)
-    this.name = 'TmdbRequestError'
-    this.status = options.status
-    this.code = options.code
-  }
-}
-
-async function fetchTmdbApi<T>(params: Record<string, string>) {
-  const search = new URLSearchParams(params)
-  const response = await fetch(`/api/tmdb?${search.toString()}`)
-  const payload = await response.json().catch(() => null)
-
-  if (!response.ok) {
-    const message =
-      typeof payload?.error === 'string'
-        ? payload.error
-        : `TMDB HTTP ${response.status}`
-    const code =
-      typeof payload?.code === 'string' ? payload.code : 'TMDB_REQUEST_FAILED'
-    throw new TmdbRequestError({
-      status: response.status,
-      code,
-      message,
-    })
-  }
-
-  return payload as T
-}
-
-async function fetchTmdbMovieById(options: {
-  movieId: number
-  language: string
-}) {
-  const { movieId, language } = options
-  return fetchTmdbApi<TmdbSearchMovie>({
-    action: 'movieById',
-    movieId: String(movieId),
-    language,
-  })
-}
-
-async function searchTmdbMovie(options: { query: string; language: string }) {
-  const { query, language } = options
-  const payload = await fetchTmdbApi<{ results?: TmdbSearchMovie[] }>({
-    action: 'searchMovie',
-    query,
-    language,
-  })
-  const results = Array.isArray(payload.results) ? payload.results : []
-  return results[0] ?? null
-}
-
-function buildCsvMovies(
-  rawCsv: string,
-  overrides: Record<string, MovieOverride>
-): CsvMovieItem[] {
-  const rows = parseCsvRows(rawCsv.replace(/^\uFEFF/, ''))
-  if (rows.length === 0) return []
-
-  const headers = rows[0].map(normalizeCsvHeader)
-  const titleIndex = headers.indexOf('片名')
-  const ratingIndex = headers.indexOf('个人评分')
-  const dateIndex = headers.indexOf('打分日期')
-  const linkIndex = headers.indexOf('影片链接')
-
-  const safeTitleIndex = titleIndex >= 0 ? titleIndex : 0
-  const safeRatingIndex = ratingIndex >= 0 ? ratingIndex : 1
-  const safeDateIndex = dateIndex >= 0 ? dateIndex : 2
-  const safeLinkIndex = linkIndex >= 0 ? linkIndex : 3
-
-  const movies: CsvMovieItem[] = []
-
-  for (let index = 1; index < rows.length; index += 1) {
-    const row = rows[index]
-    const rawTitle = (row[safeTitleIndex] ?? '').trim()
-    if (!rawTitle) continue
-    if (rawTitle.startsWith('删除')) continue
-
-    const rawRating = (row[safeRatingIndex] ?? '').trim()
-    const rawDate = (row[safeDateIndex] ?? '').trim()
-    const rawLink = (row[safeLinkIndex] ?? '').trim().replace(/,$/, '')
-
-    const subjectId = parseSubjectId(rawLink)
-    const override =
-      overrides[subjectId] ||
-      overrides[rawLink] ||
-      overrides[rawTitle] ||
-      overrides[`row-${index}`] ||
-      {}
-
-    const { title, originalTitle } = splitMovieTitle(rawTitle)
-    const rating = toValidRating(rawRating)
-    const platform = (override.platform || DEFAULT_PLATFORM).trim()
-    const note = (override.note || '').trim()
-    const linkedReview = subjectId
-      ? getMovieReviewBySubjectId(subjectId)
-      : undefined
-    const reviewSlug = (override.reviewSlug || linkedReview?.slug || '').trim()
-    const reviewBySlug = reviewSlug
-      ? getMovieReviewBySlug(reviewSlug)
-      : undefined
-    const reviewSummary = (
-      reviewBySlug?.summary ||
-      linkedReview?.summary ||
-      ''
-    ).trim()
-    const rowId = subjectId ? `${subjectId}-${index}` : `row-${index}`
-
-    movies.push({
-      id: rowId,
-      subjectId,
-      title,
-      originalTitle,
-      link: rawLink,
-      watchDate: rawDate,
-      rating,
-      platform,
-      note,
-      tmdbId: parseTmdbId(override.tmdbId),
-      tmdbQuery: (override.tmdbQuery || '').trim(),
-      reviewSlug,
-      reviewSummary,
-    })
-  }
-
-  movies.sort((a, b) => {
-    const timeA = toTimestamp(a.watchDate)
-    const timeB = toTimestamp(b.watchDate)
-    if (timeA === timeB) return a.id.localeCompare(b.id)
-    return timeB - timeA
-  })
-
-  return movies
-}
-
-async function fetchTmdbEnrichment(options: {
-  movie: CsvMovieItem
-  language: string
-}) {
-  const { movie, language } = options
-
-  let result: TmdbSearchMovie | null = null
-
-  if (movie.tmdbId) {
-    try {
-      result = await fetchTmdbMovieById({
-        movieId: movie.tmdbId,
-        language,
-      })
-    } catch {
-      result = null
-    }
-  }
-
-  if (!result) {
-    const queryCandidates = [movie.tmdbQuery, movie.originalTitle, movie.title]
-      .map((query) => query.trim())
-      .filter(Boolean)
-
-    const dedupedQueries: string[] = []
-    for (const query of queryCandidates) {
-      const lowered = query.toLowerCase()
-      if (
-        !dedupedQueries.some((existing) => existing.toLowerCase() === lowered)
-      ) {
-        dedupedQueries.push(query)
-      }
-    }
-
-    for (const query of dedupedQueries) {
-      result = await searchTmdbMovie({
-        query,
-        language,
-      })
-
-      if (result) break
-    }
-  }
-
-  if (!result || !result.id) {
-    return null
-  }
-
-  return {
-    tmdbId: result.id,
-    tmdbTitle: result.title?.trim() || '',
-    tmdbOriginalTitle: result.original_title?.trim() || '',
-    posterUrl: normalizePosterUrl(result.poster_path),
-    backdropUrl: normalizeBackdropUrl(result.backdrop_path),
-    releaseDate: result.release_date?.trim() || '',
-  } satisfies TmdbEnrichedMovie
-}
+  CINEMA_BACKGROUND_INTERVAL_MS,
+  CINEMA_REVEAL_TEXT,
+  CINEMA_STILL_IMAGES,
+  DOUBAN_PROFILE_URL,
+  TMDB_PROFILE_URL,
+} from '@/lib/movies/movieConstants'
+import { shuffleItems } from '@/lib/movies/movieUtils'
 
 export function Movies() {
   const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
-  const [keyword, setKeyword] = useState('')
-  const viewMode: ViewMode = 'tmdb'
-  const [cardLayout, setCardLayout] = useState<CardLayout>('grid')
-  const [movieFilter, setMovieFilter] = useState<MovieFilter>('all')
-  const [selectedRating, setSelectedRating] = useState<number | null>(null)
-  const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [tmdbMap, setTmdbMap] = useState<
-    Record<string, TmdbEnrichedMovie | null>
-  >({})
-  const [, setTmdbStatus] = useState<TmdbStatus>('idle')
-  const [, setTmdbErrorMessage] = useState('')
-  const [columns, setColumns] = useState(BASE_COLUMNS)
-  const [gridNode, setGridNode] = useState<HTMLDivElement | null>(null)
-  const listRef = useRef<HTMLDivElement | null>(null)
-  const previousListStateRef = useRef<{
-    cardLayout: CardLayout
-    currentPage: number
-  } | null>(null)
   const [cinemaLetterImages, setCinemaLetterImages] = useState(() =>
     CINEMA_STILL_IMAGES.slice(0, CINEMA_REVEAL_TEXT.length)
   )
@@ -484,10 +28,9 @@ export function Movies() {
   const [activeCinemaLetterIndex, setActiveCinemaLetterIndex] = useState<
     number | null
   >(null)
-
+  const catalog = useMovieCatalog()
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
-  const tmdbLanguage = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
-
+  const tmdbMap = useTmdbEnrichment(catalog.pageMovies, locale)
   const title = t('nav.movies')
   const description = t('movies.description')
   const cinemaBackgroundImage =
@@ -496,128 +39,19 @@ export function Movies() {
         cinemaBackgroundIndex % Math.max(cinemaLetterImages.length, 1)
     ] ?? CINEMA_STILL_IMAGES[0]
 
-  const movieOverrides = movieOverridesRaw as Record<string, MovieOverride>
-
-  const movieItems = useMemo(
-    () => buildCsvMovies(movieCsvRaw, movieOverrides),
-    [movieOverrides]
-  )
-
-  const filteredMovies = useMemo(() => {
-    const normalizedKeyword = keyword.trim().toLowerCase()
-
-    return movieItems.filter((movie) => {
-      if (movieFilter === 'reviews' && !movie.reviewSlug) return false
-      if (selectedRating !== null && movie.rating !== selectedRating)
-        return false
-      if (
-        selectedDateKey &&
-        toDateKeyFromString(movie.watchDate) !== selectedDateKey
-      ) {
-        return false
-      }
-
-      if (!normalizedKeyword) return true
-
-      const haystack = [
-        movie.title,
-        movie.originalTitle,
-        movie.platform,
-        movie.note,
-        movie.reviewSummary,
-        movie.link,
-      ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase()
-
-      return haystack.includes(normalizedKeyword)
-    })
-  }, [movieItems, keyword, movieFilter, selectedRating, selectedDateKey])
-
-  const itemsPerPage =
-    cardLayout === 'list' ? LIST_ITEMS_PER_PAGE : columns * ROWS_PER_PAGE
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredMovies.length / itemsPerPage)
-  )
-
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [keyword, movieFilter, selectedRating, selectedDateKey])
-
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages)
-    }
-  }, [currentPage, totalPages])
-
   useEffect(() => {
     if (window.__PRERENDER__) return
-
-    const previousState = previousListStateRef.current
-    previousListStateRef.current = { cardLayout, currentPage }
-    if (cardLayout !== 'list') return
-
-    if (
-      !previousState ||
-      (previousState.cardLayout === cardLayout &&
-        previousState.currentPage === currentPage)
-    ) {
-      return
-    }
-
-    listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [cardLayout, currentPage])
-
-  const pageMovies = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage
-    return filteredMovies.slice(start, start + itemsPerPage)
-  }, [filteredMovies, currentPage, itemsPerPage])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    if (window.__PRERENDER__) return
-    if (!gridNode) return
-
-    const updateColumns = () => {
-      const width = gridNode.getBoundingClientRect().width
-      const nextColumns = calculateColumns(width, window.innerWidth)
-      setColumns((prev) => (prev === nextColumns ? prev : nextColumns))
-    }
-
-    updateColumns()
-
-    const resizeObserver =
-      typeof ResizeObserver === 'undefined'
-        ? null
-        : new ResizeObserver(updateColumns)
-
-    if (resizeObserver) {
-      resizeObserver.observe(gridNode)
-    }
-
-    window.addEventListener('resize', updateColumns)
-
-    return () => {
-      if (resizeObserver) {
-        resizeObserver.disconnect()
-      }
-      window.removeEventListener('resize', updateColumns)
-    }
-  }, [gridNode])
-
-  useEffect(() => {
-    if (window.__PRERENDER__) return
-
     setCinemaLetterImages(
       shuffleItems(CINEMA_STILL_IMAGES).slice(0, CINEMA_REVEAL_TEXT.length)
     )
   }, [])
 
   useEffect(() => {
-    if (window.__PRERENDER__) return
-    if (activeCinemaLetterIndex !== null || cinemaLetterImages.length <= 1) {
+    if (
+      window.__PRERENDER__ ||
+      activeCinemaLetterIndex !== null ||
+      cinemaLetterImages.length <= 1
+    ) {
       return
     }
 
@@ -634,492 +68,152 @@ export function Movies() {
     cinemaLetterImages.length,
   ])
 
-  useEffect(() => {
-    if (window.__PRERENDER__) return
-
-    if (viewMode !== 'tmdb') {
-      setTmdbStatus('idle')
-      setTmdbErrorMessage('')
-      return
-    }
-
-    const targets = pageMovies
-      .filter((movie) => !(movie.id in tmdbMap))
-      .slice(0, 12)
-
-    if (targets.length === 0) {
-      setTmdbStatus((prev) => (prev === 'idle' ? 'ready' : prev))
-      return
-    }
-
-    let cancelled = false
-    setTmdbStatus('loading')
-    setTmdbErrorMessage('')
-
-    const run = async () => {
-      const settled = await Promise.allSettled(
-        targets.map(async (movie) => {
-          const enriched = await fetchTmdbEnrichment({
-            movie,
-            language: tmdbLanguage,
-          })
-          return { movieId: movie.id, enriched }
-        })
-      )
-
-      if (cancelled) return
-
-      const nextEntries: Record<string, TmdbEnrichedMovie | null> = {}
-      let hasSuccess = false
-      let firstError: unknown = null
-
-      for (const result of settled) {
-        if (result.status === 'fulfilled') {
-          hasSuccess = true
-          nextEntries[result.value.movieId] = result.value.enriched
-        } else if (!firstError) {
-          firstError = result.reason
-        }
-      }
-
-      if (Object.keys(nextEntries).length > 0) {
-        setTmdbMap((prev) => ({ ...prev, ...nextEntries }))
-      }
-
-      if (hasSuccess) {
-        setTmdbStatus('ready')
-      } else if (firstError) {
-        setTmdbStatus('error')
-        if (
-          firstError instanceof TmdbRequestError &&
-          firstError.code === 'TMDB_MISSING_CONFIG'
-        ) {
-          setTmdbErrorMessage(t('movies.tmdb.errors.missingConfig'))
-        } else if (
-          firstError instanceof TmdbRequestError &&
-          (firstError.status === 401 || firstError.status === 403)
-        ) {
-          setTmdbErrorMessage(t('movies.tmdb.errors.authFailed'))
-        } else {
-          setTmdbErrorMessage(t('movies.tmdb.errors.network'))
-        }
-      }
-    }
-
-    run().catch((error) => {
-      if (cancelled) return
-      setTmdbStatus('error')
-      if (
-        error instanceof TmdbRequestError &&
-        error.code === 'TMDB_MISSING_CONFIG'
-      ) {
-        setTmdbErrorMessage(t('movies.tmdb.errors.missingConfig'))
-      } else if (
-        error instanceof TmdbRequestError &&
-        (error.status === 401 || error.status === 403)
-      ) {
-        setTmdbErrorMessage(t('movies.tmdb.errors.authFailed'))
-      } else {
-        setTmdbErrorMessage(t('movies.tmdb.errors.network'))
-      }
-    })
-
-    return () => {
-      cancelled = true
-    }
-  }, [pageMovies, tmdbLanguage, tmdbMap, t, viewMode])
-
   return (
     <>
       <Seo title={title} description={description} />
-
-      <div className="relative isolate w-full pt-28">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
-        >
-          <div className="absolute inset-0 opacity-42 saturate-[0.82] sm:opacity-46 lg:opacity-50 dark:opacity-36">
-            <AnimatePresence initial={false}>
-              <motion.img
-                key={cinemaBackgroundImage}
-                src={cinemaBackgroundImage}
-                alt=""
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.25, ease: 'easeInOut' }}
-                className="absolute inset-0 h-full w-full object-cover object-center"
-                loading="eager"
-                decoding="async"
-                draggable={false}
-              />
-            </AnimatePresence>
-          </div>
-          <div className="absolute inset-0 bg-[var(--page-background)] opacity-18 dark:opacity-28" />
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,color-mix(in_srgb,var(--page-background)_32%,transparent)_0%,transparent_38%,var(--page-background)_100%)]" />
-        </div>
-
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-8 xl:max-w-[70vw]">
-          <section className="pb-12 sm:pb-16">
-            <div className="max-w-3xl">
-              <div
-                aria-hidden="true"
-                className="-mb-6 sm:-mb-8 md:-mb-10 lg:-mb-12"
-              >
-                <RevealText
-                  text={CINEMA_REVEAL_TEXT}
-                  align="left"
-                  textColor="text-slate-200 dark:text-white/10"
-                  overlayColor="text-amber-400/70 dark:text-amber-200/40"
-                  imageStartPosition="40% center"
-                  imageHoverPosition="52% center"
-                  fontSize="text-[clamp(4.25rem,17vw,9.5rem)]"
-                  letterDelay={0.065}
-                  overlayDelay={0.045}
-                  overlayDuration={0.45}
-                  springDuration={720}
-                  letterImages={cinemaLetterImages}
-                  className="max-w-[44rem]"
-                  onActiveLetterChange={(index) => {
-                    setActiveCinemaLetterIndex(index)
-                    if (index !== null) setCinemaBackgroundIndex(index)
-                  }}
-                />
-              </div>
-              <div className="relative z-10 mb-4 text-[0.72rem] font-medium tracking-[0.28em] text-slate-500 uppercase dark:text-slate-400">
-                {locale === 'zh-CN' ? '观影档案' : 'Movie Archive'}
-              </div>
-              <h1 className="relative z-10 -mt-1 text-4xl font-semibold tracking-[-0.04em] text-slate-950 sm:-mt-2 sm:text-5xl dark:text-slate-50">
-                {title}
-              </h1>
-              <p className="mt-4 max-w-2xl text-[0.98rem] leading-7 text-slate-600 dark:text-slate-400">
-                {description}
-              </p>
-            </div>
-          </section>
-        </div>
-      </div>
+      <MoviesHero
+        title={title}
+        description={description}
+        locale={locale}
+        backgroundImage={cinemaBackgroundImage}
+        letterImages={cinemaLetterImages}
+        onActiveLetterChange={(index) => {
+          setActiveCinemaLetterIndex(index)
+          if (index !== null) setCinemaBackgroundIndex(index)
+        }}
+      />
 
       <div className="mx-auto w-full max-w-6xl px-4 pb-8 xl:max-w-[70vw]">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,3.8fr)_minmax(280px,1.2fr)] lg:items-start xl:grid-cols-[minmax(0,4fr)_minmax(296px,1.15fr)]">
           <div className="min-w-0">
             <WatchActivityCalendar
-              watchDates={movieItems.map((movie) => movie.watchDate)}
+              watchDates={catalog.movieItems.map((movie) => movie.watchDate)}
               locale={locale}
-              selectedDateKey={selectedDateKey}
-              onSelectDateKey={setSelectedDateKey}
+              selectedDateKey={catalog.selectedDateKey}
+              onSelectDateKey={catalog.setSelectedDateKey}
             />
-
-            <section className="mb-6 pb-2">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div className="flex min-w-0 flex-1 items-center gap-3">
-                  <label className="relative max-w-xl min-w-0 flex-1 border-b border-slate-200/80 pb-2 dark:border-[#2b2f36]">
-                    <Search
-                      size={16}
-                      className="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2 text-slate-400"
-                    />
-                    <input
-                      type="search"
-                      value={keyword}
-                      onChange={(event) => setKeyword(event.target.value)}
-                      placeholder={t('movies.searchPlaceholder')}
-                      className="w-full bg-transparent py-2 pr-0 pl-7 text-sm text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-200 dark:placeholder:text-slate-500"
-                    />
-                  </label>
-
-                  <div className="ml-auto flex shrink-0 items-center gap-2.5">
-                    <SelectMenu
-                      value={movieFilter}
-                      options={[
-                        {
-                          value: 'all',
-                          label: t('movies.filters.allMovies'),
-                        },
-                        {
-                          value: 'reviews',
-                          label: t('movies.filters.withReviews'),
-                        },
-                      ]}
-                      onValueChange={setMovieFilter}
-                      label={t('movies.filters.label')}
-                      ariaLabel={t('movies.filters.label')}
-                      className="shrink-0"
-                      containerClassName="h-10 gap-1 rounded-[1.1rem] px-2.5 pr-2 sm:h-11 sm:gap-2 sm:px-3.5 sm:pr-3"
-                      labelClassName="hidden sm:inline"
-                      buttonClassName="max-w-[5.25rem] gap-1 text-sm sm:max-w-[6.8rem]"
-                      menuClassName="w-52 max-w-[calc(100vw-2rem)]"
-                    />
-
-                    <SegmentedToggle
-                      value={cardLayout}
-                      onValueChange={(layout) => {
-                        setCardLayout(layout)
-                        setCurrentPage(1)
-                      }}
-                      ariaLabel={t('movies.layout.label')}
-                      size="sm"
-                      className="shrink-0"
-                      buttonClassName="h-8 w-8 px-0"
-                      items={[
-                        {
-                          value: 'grid',
-                          ariaLabel: t('movies.layout.grid'),
-                          tooltip: t('movies.layout.grid'),
-                          content: (
-                            <RiGalleryView2
-                              className="h-4 w-4"
-                              aria-hidden="true"
-                            />
-                          ),
-                        },
-                        {
-                          value: 'list',
-                          ariaLabel: t('movies.layout.list'),
-                          tooltip: t('movies.layout.list'),
-                          content: (
-                            <LuList className="h-4 w-4" aria-hidden="true" />
-                          ),
-                        },
-                      ]}
-                    />
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {movieItems.length === 0 ? (
-              <section className="rounded-2xl border border-slate-200/70 bg-white/70 p-8 text-center shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] dark:border-0 dark:bg-slate-900/70 dark:shadow-none">
-                <Clapperboard
-                  size={34}
-                  className="mx-auto mb-3 text-slate-400 dark:text-slate-500"
-                />
-                <h2 className="mb-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
-                  {t('movies.empty.title')}
-                </h2>
-                <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                  {t('movies.empty.description')}
-                </p>
-              </section>
-            ) : filteredMovies.length === 0 ? (
-              <section className="rounded-2xl border border-slate-200/70 bg-white/70 p-8 text-center text-sm text-slate-600 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] dark:border-0 dark:bg-slate-900/70 dark:text-slate-400 dark:shadow-none">
-                {t('movies.noResults')}
-              </section>
-            ) : (
-              <>
-                <div
-                  ref={(node) => {
-                    setGridNode(node)
-                    listRef.current = node
-                  }}
-                  className={cn(
-                    'scroll-mt-28',
-                    cardLayout === 'grid' ? 'grid gap-3 lg:gap-4' : 'space-y-3'
-                  )}
-                  style={
-                    cardLayout === 'grid'
-                      ? {
-                          gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-                        }
-                      : undefined
-                  }
-                >
-                  {pageMovies.map((movie) => {
-                    const watchedAt = formatDate(movie.watchDate, locale)
-                    const tmdb = tmdbMap[movie.id] ?? null
-                    const movieImageUrl =
-                      cardLayout === 'list'
-                        ? tmdb?.backdropUrl
-                        : tmdb?.posterUrl
-                    const showMovieImage =
-                      viewMode === 'tmdb' && Boolean(movieImageUrl)
-                    const reviewPath = movie.reviewSlug
-                      ? `/movies/reviews/${encodeURIComponent(movie.reviewSlug)}`
-                      : ''
-
-                    const canOpenReview = Boolean(reviewPath)
-                    const hasReview = Boolean(movie.reviewSlug)
-                    const cardExcerpt = (
-                      movie.reviewSummary ||
-                      movie.note ||
-                      ''
-                    ).trim()
-                    const metadata = [
-                      `${t('movies.watchDate')}: ${watchedAt || '--'}`,
-                    ]
-
-                    return (
-                      <button
-                        key={movie.id}
-                        type="button"
-                        disabled={!canOpenReview}
-                        onClick={
-                          canOpenReview ? () => navigate(reviewPath) : undefined
-                        }
-                        onKeyDown={
-                          canOpenReview
-                            ? (event) => {
-                                if (
-                                  event.key === 'Enter' ||
-                                  event.key === ' '
-                                ) {
-                                  event.preventDefault()
-                                  navigate(reviewPath)
-                                }
-                              }
-                            : undefined
-                        }
-                        className={cn(
-                          'group relative flex h-full w-full overflow-hidden rounded-[1.4rem] border border-slate-200/70 p-3 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur transition-[transform,box-shadow,background-color] duration-300 hover:-translate-y-1 hover:shadow-[0_28px_68px_-40px_rgba(15,23,42,0.4)] dark:border-0 dark:shadow-none',
-                          hasReview
-                            ? 'bg-white/88 dark:bg-[#17191c]/96'
-                            : 'bg-white/78 dark:bg-[#17191c]/92',
-                          canOpenReview
-                            ? 'cursor-pointer focus:ring-2 focus:ring-emerald-300 focus:outline-none dark:focus:ring-emerald-700'
-                            : 'cursor-default',
-                          cardLayout === 'grid' ? 'flex-col' : 'flex-row gap-3'
-                        )}
-                      >
-                        {viewMode === 'tmdb' ? (
-                          <div
-                            className={cn(
-                              'relative shrink-0 overflow-hidden bg-slate-100 dark:bg-[#1f2328]',
-                              cardLayout === 'grid'
-                                ? 'mb-4 aspect-[2/3] w-full rounded-[1.05rem]'
-                                : 'min-h-[5.5rem] w-[38%] max-w-[10rem] self-stretch rounded-[0.9rem] sm:w-[30%] sm:max-w-[12rem]'
-                            )}
-                          >
-                            {showMovieImage ? (
-                              <img
-                                src={movieImageUrl}
-                                alt={movie.title}
-                                loading="lazy"
-                                decoding="async"
-                                referrerPolicy="no-referrer"
-                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                              />
-                            ) : (
-                              <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-[radial-gradient(circle_at_top,rgba(148,163,184,0.15)_0%,rgba(148,163,184,0.04)_36%,transparent_70%)] text-slate-500 dark:text-slate-400">
-                                <Clapperboard size={20} />
-                                <span className="px-2 text-center text-xs">
-                                  {t('movies.tmdb.noPoster')}
-                                </span>
-                              </div>
-                            )}
-
-                            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-
-                            {hasReview ? (
-                              <div className="absolute top-3 left-3 text-[0.62rem] font-medium tracking-[0.22em] text-white/92 uppercase">
-                                {t('movies.reviews.hasReviewBadge')}
-                              </div>
-                            ) : null}
-                          </div>
-                        ) : null}
-
-                        <div
-                          className={cn(
-                            'flex min-w-0 flex-1 flex-col',
-                            cardLayout === 'list' && 'pt-0.5'
-                          )}
-                        >
-                          <div className="mb-3 flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                              <h2 className="line-clamp-2 text-left text-[1.05rem] leading-snug font-semibold text-slate-900 dark:text-slate-100">
-                                {movie.title}
-                              </h2>
-                              {movie.originalTitle ? (
-                                <p className="mt-1 line-clamp-1 text-left text-sm text-slate-500 dark:text-slate-400">
-                                  {movie.originalTitle}
-                                </p>
-                              ) : null}
-                            </div>
-
-                            <div className="flex items-center justify-end">
-                              {movie.link ? (
-                                <a
-                                  href={movie.link}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={(event) => event.stopPropagation()}
-                                  aria-label={t('movies.actions.openDouban')}
-                                  title={t('movies.actions.openDouban')}
-                                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/88 text-slate-600 shadow-none transition hover:text-emerald-600 hover:shadow-sm dark:bg-[#17191c] dark:text-slate-300 dark:hover:text-emerald-300"
-                                >
-                                  <RiDoubanLine size={16} />
-                                </a>
-                              ) : null}
-                            </div>
-                          </div>
-
-                          <div className="mb-3 flex items-center gap-1.5">
-                            {Array.from({ length: 5 }).map((_, index) => {
-                              const active =
-                                movie.rating !== null && index < movie.rating
-                              return (
-                                <Star
-                                  key={index}
-                                  size={14}
-                                  className={cn(
-                                    active
-                                      ? 'fill-amber-400 text-amber-400'
-                                      : 'text-slate-300 dark:text-[#3a3f48]'
-                                  )}
-                                />
-                              )
-                            })}
-                          </div>
-
-                          <div className="mt-auto space-y-3">
-                            {cardExcerpt ? (
-                              <p
-                                className={cn(
-                                  'text-sm leading-6 text-slate-600 dark:text-slate-300',
-                                  hasReview
-                                    ? 'line-clamp-1'
-                                    : cardLayout === 'list'
-                                      ? 'line-clamp-3'
-                                      : 'line-clamp-2'
-                                )}
-                              >
-                                {cardExcerpt}
-                              </p>
-                            ) : null}
-
-                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] leading-5 text-slate-500 dark:text-slate-400">
-                              {metadata.map((item) => (
-                                <span key={item}>{item}</span>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </button>
-                    )
-                  })}
-                </div>
-
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                  contentRef={listRef}
-                />
-              </>
-            )}
+            <MoviesToolbar
+              keyword={catalog.keyword}
+              onKeywordChange={catalog.setKeyword}
+              movieFilter={catalog.movieFilter}
+              onMovieFilterChange={catalog.setMovieFilter}
+              cardLayout={catalog.cardLayout}
+              onCardLayoutChange={(layout) => {
+                catalog.setCardLayout(layout)
+                catalog.setCurrentPage(1)
+              }}
+            />
+            <MovieResults
+              movieCount={catalog.movieItems.length}
+              filteredCount={catalog.filteredMovies.length}
+              pageMovies={catalog.pageMovies}
+              tmdbMap={tmdbMap}
+              cardLayout={catalog.cardLayout}
+              columns={catalog.columns}
+              locale={locale}
+              currentPage={catalog.currentPage}
+              totalPages={catalog.totalPages}
+              onPageChange={catalog.setCurrentPage}
+              setGridNode={catalog.setGridNode}
+              listRef={catalog.listRef}
+            />
           </div>
 
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <MovieStatsPanel
-              watchCount={movieItems.length}
-              ratings={movieItems.map((movie) => movie.rating)}
+              watchCount={catalog.movieItems.length}
+              ratings={catalog.movieItems.map((movie) => movie.rating)}
               doubanProfileUrl={DOUBAN_PROFILE_URL}
               tmdbProfileUrl={TMDB_PROFILE_URL}
-              selectedRating={selectedRating}
-              onSelectRating={setSelectedRating}
+              selectedRating={catalog.selectedRating}
+              onSelectRating={catalog.setSelectedRating}
             />
             <MovieGuestbook locale={locale} />
           </aside>
         </div>
       </div>
     </>
+  )
+}
+
+function MoviesHero({
+  title,
+  description,
+  locale,
+  backgroundImage,
+  letterImages,
+  onActiveLetterChange,
+}: {
+  title: string
+  description: string
+  locale: string
+  backgroundImage: string
+  letterImages: string[]
+  onActiveLetterChange: (index: number | null) => void
+}) {
+  return (
+    <div className="relative isolate w-full pt-28">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+      >
+        <div className="absolute inset-0 opacity-42 saturate-[0.82] sm:opacity-46 lg:opacity-50 dark:opacity-36">
+          <AnimatePresence initial={false}>
+            <motion.img
+              key={backgroundImage}
+              src={backgroundImage}
+              alt=""
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.25, ease: 'easeInOut' }}
+              className="absolute inset-0 h-full w-full object-cover object-center"
+              loading="eager"
+              decoding="async"
+              draggable={false}
+            />
+          </AnimatePresence>
+        </div>
+        <div className="absolute inset-0 bg-[var(--page-background)] opacity-18 dark:opacity-28" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,color-mix(in_srgb,var(--page-background)_32%,transparent)_0%,transparent_38%,var(--page-background)_100%)]" />
+      </div>
+
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-8 xl:max-w-[70vw]">
+        <section className="pb-12 sm:pb-16">
+          <div className="max-w-3xl">
+            <div
+              aria-hidden="true"
+              className="-mb-6 sm:-mb-8 md:-mb-10 lg:-mb-12"
+            >
+              <RevealText
+                text={CINEMA_REVEAL_TEXT}
+                align="left"
+                textColor="text-slate-200 dark:text-white/10"
+                overlayColor="text-amber-400/70 dark:text-amber-200/40"
+                imageStartPosition="40% center"
+                imageHoverPosition="52% center"
+                fontSize="text-[clamp(4.25rem,17vw,9.5rem)]"
+                letterDelay={0.065}
+                overlayDelay={0.045}
+                overlayDuration={0.45}
+                springDuration={720}
+                letterImages={letterImages}
+                className="max-w-[44rem]"
+                onActiveLetterChange={onActiveLetterChange}
+              />
+            </div>
+            <div className="relative z-10 mb-4 text-[0.72rem] font-medium tracking-[0.28em] text-slate-500 uppercase dark:text-slate-400">
+              {locale === 'zh-CN' ? '观影档案' : 'Movie Archive'}
+            </div>
+            <h1 className="relative z-10 -mt-1 text-4xl font-semibold tracking-[-0.04em] text-slate-950 sm:-mt-2 sm:text-5xl dark:text-slate-50">
+              {title}
+            </h1>
+            <p className="mt-4 max-w-2xl text-[0.98rem] leading-7 text-slate-600 dark:text-slate-400">
+              {description}
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
   )
 }
