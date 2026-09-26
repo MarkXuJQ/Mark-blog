@@ -5,12 +5,14 @@ import { referencePanelEmbed } from './referencePanel'
 import { photoRouteEmbed } from './photoRoute'
 import type { ArticleEmbedContext, ArticleEmbedDefinition } from './types'
 import { websiteCardEmbed } from './websiteCard'
+import { videoPlayerEmbed } from './videoPlayer'
 
 export const ARTICLE_EMBEDS: readonly ArticleEmbedDefinition[] = [
   asideNoteEmbed,
   floatImageEmbed,
   hdrImageEmbed,
   websiteCardEmbed,
+  videoPlayerEmbed,
   referencePanelEmbed,
   photoRouteEmbed,
 ]
