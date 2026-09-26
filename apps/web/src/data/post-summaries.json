@@ -1,13 +1,27 @@
 [
   {
+    "id": "why-does-some-website-has-www-cn",
+    "slug": "why-does-some-website-has-www-cn",
+    "language": "zh",
+    "title": "为什么有的网站有 www，有的没有？",
+    "date": "2026-09-26",
+    "summary": "突然意识到，网站貌似都没有了www这个标识了，一直单纯的以为是浏览器隐藏掉了，后来发现事情貌似不止如此。",
+    "wordCount": 1858,
+    "tags": [
+      "Network",
+      "Websites"
+    ],
+    "category": "tech"
+  },
+  {
     "id": "FingerBlock-A-game-Demo-by-AI-cn",
     "slug": "FingerBlock-A-game-Demo-by-AI-cn",
     "language": "zh",
     "title": "FingerBlock：由 AI 协助完成的游戏 Demo",
     "date": "2026-09-19",
-    "updated": "2026-09-19",
-    "summary": "从一个重新更新的手势识别库出发，我们用 AI、MediaPipe、音频分析和开源音效，在一天半里做出了一个可以用双手游玩的音乐游戏 Demo。",
-    "wordCount": 3925,
+    "updated": "2026-09-26",
+    "summary": "偶然看到的一个手势识别库的更新消息，让我用 AI、MediaPipe、音频分析和开源音效，在一天半里做出了一个可以用双手游玩的音乐游戏 Demo。",
+    "wordCount": 4075,
     "image": "/images/fingerblock-preview.png",
     "tags": [
       "Projects",

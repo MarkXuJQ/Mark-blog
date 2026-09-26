@@ -124,6 +124,11 @@
       "permanent": true
     },
     {
+      "source": "/blog/23.为什么有的网站有 www，有的没有？",
+      "destination": "/blog/why-does-some-website-has-www-cn",
+      "permanent": true
+    },
+    {
       "source": "/blog/3.My-first-blog",
       "destination": "/blog/first-blog-post-en",
       "permanent": true
@@ -184,6 +189,11 @@
       "permanent": true
     },
     {
+      "source": "/blog/FingerBlock-A-game-Demo-by-AI",
+      "destination": "/blog/FingerBlock-A-game-Demo-by-AI-cn",
+      "permanent": true
+    },
+    {
       "source": "/blog/My-first-blog",
       "destination": "/blog/first-blog-post-en",
       "permanent": true
@@ -226,6 +236,11 @@
     {
       "source": "/blog/what-do-computer-science-majors-learn",
       "destination": "/blog/what-do-computer-science-majors-learn-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/why-does-some-website-has-www",
+      "destination": "/blog/why-does-some-website-has-www-cn",
       "permanent": true
     },
     {
