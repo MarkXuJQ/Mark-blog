@@ -124,8 +124,13 @@
       "permanent": true
     },
     {
-      "source": "/blog/23.为什么有的网站有 www，有的没有？",
-      "destination": "/blog/why-does-some-website-has-www-cn",
+      "source": "/blog/23-1.为什么有的网站有 www，有的没有？",
+      "destination": "/blog/why-does-some-website-has-www-1-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/23-2.为什么有的网站有www,有的没有？",
+      "destination": "/blog/why-does-some-website-has-www-2-cn",
       "permanent": true
     },
     {
@@ -239,8 +244,13 @@
       "permanent": true
     },
     {
-      "source": "/blog/why-does-some-website-has-www",
-      "destination": "/blog/why-does-some-website-has-www-cn",
+      "source": "/blog/why-does-some-website-has-www-1",
+      "destination": "/blog/why-does-some-website-has-www-1-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/why-does-some-website-has-www-2",
+      "destination": "/blog/why-does-some-website-has-www-2-cn",
       "permanent": true
     },
     {

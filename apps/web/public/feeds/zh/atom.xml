@@ -3,7 +3,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://markxu.icu</id>
     <title>Mark的自留地</title>
-    <updated>2026-09-26T00:00:00.000Z</updated>
+    <updated>2026-10-01T00:00:00.000Z</updated>
     <generator>Mark Xu Blog Generator</generator>
     <author>
         <name>Mark Xu</name>
@@ -17,12 +17,27 @@
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
     <entry>
-        <title type="html"><![CDATA[为什么有的网站有 www，有的没有？]]></title>
-        <id>https://markxu.icu/blog/why-does-some-website-has-www-cn</id>
-        <link href="https://markxu.icu/blog/why-does-some-website-has-www-cn"/>
+        <title type="html"><![CDATA[为什么有的网站有 www，有的没有？-现代配置篇]]></title>
+        <id>https://markxu.icu/blog/why-does-some-website-has-www-2-cn</id>
+        <link href="https://markxu.icu/blog/why-does-some-website-has-www-2-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img20261001152633367.png" type="image/png"/>
+        <updated>2026-10-01T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[接着上一篇的内容继续，重点放在现在为什么不用www了，以及我们目前主要的操作是什么。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img20261001152633367.png" alt="为什么有的网站有 www，有的没有？-现代配置篇" /> <p>接着上一篇的内容继续，重点放在现在为什么不用www了，以及我们目前主要的操作是什么。</p> <a class="view-full" href="https://markxu.icu/blog/why-does-some-website-has-www-2-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[为什么有的网站有 www，有的没有？-起源篇]]></title>
+        <id>https://markxu.icu/blog/why-does-some-website-has-www-1-cn</id>
+        <link href="https://markxu.icu/blog/why-does-some-website-has-www-1-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/img20260926225709745.png" type="image/png"/>
         <updated>2026-09-26T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[突然意识到，网站貌似都没有了www这个标识了，一直单纯的以为是浏览器隐藏掉了，后来发现事情貌似不止如此。]]></summary>
-        <content type="html"><![CDATA[ <p>突然意识到，网站貌似都没有了www这个标识了，一直单纯的以为是浏览器隐藏掉了，后来发现事情貌似不止如此。</p> <a class="view-full" href="https://markxu.icu/blog/why-does-some-website-has-www-cn" target="_blank">点击查看全文</a>]]></content>
+        <summary type="html"><![CDATA[我一直以为地址栏里的 www 只是被浏览器藏起来了，后来才发现，它背后其实连着早期互联网的服务分工、DNS 的限制，以及今天网站部署方式的变化。所以写一篇文章记录下我的发现。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/img20260926225709745.png" alt="为什么有的网站有 www，有的没有？-起源篇" /> <p>我一直以为地址栏里的 www 只是被浏览器藏起来了，后来才发现，它背后其实连着早期互联网的服务分工、DNS 的限制，以及今天网站部署方式的变化。所以写一篇文章记录下我的发现。</p> <a class="view-full" href="https://markxu.icu/blog/why-does-some-website-has-www-1-cn" target="_blank">点击查看全文</a>]]></content>
         <author>
             <name>Mark Xu</name>
             <email>xujianqiao86@gmail.com</email>

@@ -79,7 +79,7 @@ export function Timeline() {
     <div
       className={styles.container}
       onPointerDown={(event) => {
-        if (event.pointerType === 'mouse' && event.button !== 0) return
+        if (event.pointerType !== 'touch') return
         if (isInteractiveTarget(event.target)) {
           pointerState.current.isDown = false
           pointerState.current.hasSwiped = false
@@ -321,7 +321,7 @@ export function Timeline() {
 
 const styles = {
   container:
-    'mx-auto flex w-full max-w-[1400px] justify-center px-5 py-8 sm:px-6 focus:outline-none touch-pan-y select-none',
+    'mx-auto flex w-full max-w-[1400px] justify-center px-5 py-8 sm:px-6 focus:outline-none touch-pan-y select-none md:select-text',
   wrapper: 'w-full max-w-3xl space-y-6',
   header: 'flex items-center justify-between',
   title: 'text-3xl font-bold text-slate-900 dark:text-slate-100',
