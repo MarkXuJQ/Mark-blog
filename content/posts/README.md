@@ -27,7 +27,7 @@ imageOverlay: true
 - `slug` 建议显式填写，并在发布后保持稳定。
 - `aliases` 用于兼容旧地址或中英文文章共用地址。
 - Production 只为 `slug` 对应的 canonical URL 生成完整静态 HTML。无歧义的旧文件名和 `aliases` 会由 Vercel 永久重定向到 canonical URL；同时属于中英文文章的共享 alias 保留按访问者语言解析的 SPA 路由。
-- 新增文章，或修改文件名、`slug`、`aliases` 后，运行 `pnpm --dir apps/web generate:redirects` 并提交更新后的 `apps/web/vercel.json`。正式构建会校验重定向表，过期时直接提示，不会部署不完整的旧链接规则。
+- 新增文章，或修改文件名、`slug`、`aliases` 后，在 `apps/web` 目录运行 `pnpm run generate:redirects`，并提交更新后的 `apps/web/vercel.json`。正式构建会校验重定向表，过期时直接提示，不会部署不完整的旧链接规则。
 - `updated` 仅在文章有实质更新时填写。
 - `category` 当前常用值为 `Experience`、`tech`、`essay`、`share` 和 `project`。
 - `image` 是列表卡片和分享信息使用的封面图。
@@ -182,6 +182,25 @@ imageOverlay: true
 - `description`：可选，建议控制在一到两句话。
 
 不要在属性中插入 Markdown。所有内容都会作为普通文本安全渲染。
+
+## 视频播放器
+
+`VideoEmbed` 支持 Bilibili 视频和 YouTube 视频、Shorts 与短链接。播放器按需加载，并提供打开原视频的链接。
+
+```html
+<VideoEmbed
+  url="https://www.bilibili.com/video/BV1ciTq6fEQ6/?p=1"
+  title="视频标题"
+/>
+```
+
+YouTube 也可以使用标准播放页或 `youtu.be` 短链接：
+
+```html
+<VideoEmbed url="https://www.youtube.com/watch?v=7UJ4CFRGd-U" />
+```
+
+`url` 只接受 HTTPS 的 Bilibili 视频页或 YouTube 视频地址。其他网站或无效视频地址不会生成播放器。
 
 ## 参考资料面板
 

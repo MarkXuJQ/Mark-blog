@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-19T04:10:39.621Z",
+  "generatedAt": "2026-10-02T04:35:12.172Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -33,14 +33,14 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 163177,
-        "totalNegative": 167528,
-        "totalReviews": 330705,
-        "positivePercent": 49
+        "totalPositive": 164542,
+        "totalNegative": 167587,
+        "totalReviews": 332129,
+        "positivePercent": 50
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1787549555",
       "shortDescription": "The unbridled force of nature runs wild and relentless, with environments transforming drastically from one moment to the next. This is a story of monsters and humans and their struggles to live in harmony in a world of duality.",
-      "releaseDate": "Feb 27, 2025",
+      "releaseDate": "27 Feb, 2025",
       "developers": [
         "CAPCOM Co., Ltd."
       ],
@@ -65,9 +65,9 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 459372,
-        "totalNegative": 57938,
-        "totalReviews": 517310,
+        "totalPositive": 460207,
+        "totalNegative": 58026,
+        "totalReviews": 518233,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
@@ -95,9 +95,9 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 830521,
-        "totalNegative": 27580,
-        "totalReviews": 858101,
+        "totalPositive": 832471,
+        "totalNegative": 27649,
+        "totalReviews": 860120,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
@@ -115,7 +115,7 @@
     },
     {
       "appid": 292030,
-      "name": "The Witcher 3: Wild Hunt - Complete Edition",
+      "name": "The Witcher 3: Wild Hunt — Remastered",
       "playtimeMinutes": 9512,
       "recentPlaytimeMinutes": 0,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/292030/7b52d11edee478d652ef4e7103e00644bed2c74c.jpg",
@@ -127,13 +127,13 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 859463,
-        "totalNegative": 28809,
-        "totalReviews": 888272,
-        "positivePercent": 97
+        "totalPositive": 865951,
+        "totalNegative": 31741,
+        "totalReviews": 897692,
+        "positivePercent": 96
       },
-      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/97cca1147b256f450331044255b1dbd2d57d609e/header_alt_assets_4.jpg?t=1788333513",
-      "shortDescription": "You are Geralt of Rivia, mercenary monster slayer. Before you stands a war-torn, monster-infested continent you can explore at will. Your current contract? Tracking down Ciri — the Child of Prophecy, a living weapon that can alter the shape of the world.",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/e8afc4252e3fee8ed2525ab2fd7675cca39aa38d/header_alt_assets_1.jpg?t=1790845156",
+      "shortDescription": "The Witcher 3: Wild Hunt — Remastered modernizes the acclaimed role-playing game with a range of upgrades and enhancements. Become monster slayer for hire Geralt of Rivia and journey across a dark fantasy open world in an epic quest to find your adopted daughter Ciri.",
       "releaseDate": "18 May, 2015",
       "developers": [
         "CD PROJEKT RED"
@@ -157,14 +157,14 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 326707,
-        "totalNegative": 52513,
-        "totalReviews": 379220,
+        "totalPositive": 327167,
+        "totalNegative": 52548,
+        "totalReviews": 379715,
         "positivePercent": 86
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1784651829",
       "shortDescription": "Expand your empire, advance your culture and go head-to-head against history’s greatest leaders. Will your civilization stand the test of time?",
-      "releaseDate": "Oct 20, 2016",
+      "releaseDate": "20 Oct, 2016",
       "developers": [
         "Firaxis Games",
         "Aspyr (Mac)",
@@ -189,14 +189,14 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 167292,
-        "totalNegative": 21271,
-        "totalReviews": 188563,
+        "totalPositive": 167788,
+        "totalNegative": 21379,
+        "totalReviews": 189167,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1786633104",
       "shortDescription": "In this action-adventure game, set sail for Ancient Greece to alter its fate. Fight in visceral battles on land and sea, shape your destiny from outcast to legend, and uncover secrets of your past.",
-      "releaseDate": "5 Oct, 2018",
+      "releaseDate": "Oct 5, 2018",
       "developers": [
         "Ubisoft Quebec",
         "Ubisoft Montreal",
@@ -258,7 +258,7 @@
     },
     {
       "appid": 292030,
-      "name": "The Witcher 3: Wild Hunt - Complete Edition",
+      "name": "The Witcher 3: Wild Hunt — Remastered",
       "playtimeMinutes": 9512,
       "recentPlaytimeMinutes": 0,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/292030/7b52d11edee478d652ef4e7103e00644bed2c74c.jpg",
@@ -366,7 +366,7 @@
       "name": "Clair Obscur: Expedition 33",
       "playtimeMinutes": 3228,
       "recentPlaytimeMinutes": 0,
-      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1903340/d48fb3ed033a08bad9bf0a2e1ceb145e58ffe0aa.jpg",
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/1903340/d569d17097e2a2991cc5097939948ea075bdd653.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/1903340",
       "communityUrl": "https://steamcommunity.com/app/1903340",
@@ -633,7 +633,7 @@
       "name": "HELLDIVERS™ 2",
       "playtimeMinutes": 1910,
       "recentPlaytimeMinutes": 0,
-      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/553850/c3dff088e090f81d6e3d88eabbb67732647c69cf.jpg",
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/553850/5236dcc5d02b1f7aa199eef56253d20be87baef3.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/553850",
       "communityUrl": "https://steamcommunity.com/app/553850",

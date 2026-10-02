@@ -156,7 +156,7 @@ function main() {
   if (CHECK_ONLY) {
     if (!redirectsAreCurrent) {
       console.error(
-        `Vercel post redirects are stale. Run 'pnpm --dir apps/web generate:redirects' and commit ${VERCEL_CONFIG_PATH}.`
+        `Vercel post redirects are stale. Run 'pnpm run generate:redirects' from apps/web and commit ${VERCEL_CONFIG_PATH}.`
       )
       process.exitCode = 1
       return

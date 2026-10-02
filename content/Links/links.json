@@ -53,6 +53,12 @@
       "url": "https://lucumr.pocoo.org/",
       "avatar": "lucumr",
       "description": "Armin Ronacher 的长期个人博客，记录 Python、Flask、Rust、开源工程和软件设计思考。"
+    },
+    {
+      "name": "Dan Luu",
+      "url": "https://danluu.com/",
+      "avatar": "https://danluu.com/favicon.png",
+      "description": "Dan Luu 的个人博客，长期记录软件工程、性能、计算机系统、技术文化与社会观察。"
     }
   ],
   "neighbors": [
