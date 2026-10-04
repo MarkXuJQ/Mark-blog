@@ -88,6 +88,18 @@
         "articleCount": "文章数目",
         "lastUpdate": "最后更新",
         "wordCount": "全站字数",
+        "relative": {
+          "today": "今天",
+          "ago": "前",
+          "day": "天",
+          "days": "天",
+          "week": "周",
+          "weeks": "周",
+          "month": "个月",
+          "months": "个月",
+          "year": "年",
+          "years": "年"
+        },
         "days": "天",
         "units": {
           "year": "年",

@@ -244,7 +244,9 @@ function addCalendarYears(date: Date, years: number) {
   next.setDate(1)
   next.setFullYear(next.getFullYear() + years)
   next.setMonth(month)
-  next.setDate(Math.min(day, new Date(next.getFullYear(), month + 1, 0).getDate()))
+  next.setDate(
+    Math.min(day, new Date(next.getFullYear(), month + 1, 0).getDate())
+  )
 
   return next
 }
@@ -255,7 +257,12 @@ function addCalendarMonths(date: Date, months: number) {
 
   next.setDate(1)
   next.setMonth(next.getMonth() + months)
-  next.setDate(Math.min(day, new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate()))
+  next.setDate(
+    Math.min(
+      day,
+      new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate()
+    )
+  )
 
   return next
 }
@@ -280,9 +287,74 @@ function getCalendarDuration(startDate: Date, endDate: Date) {
     months += 1
   }
 
-  const days = Math.max(0, Math.floor((end.getTime() - cursor.getTime()) / DAY_IN_MS))
+  const days = Math.max(
+    0,
+    Math.floor((end.getTime() - cursor.getTime()) / DAY_IN_MS)
+  )
 
   return { years, months, days }
+}
+
+function formatRelativeUpdate(
+  dateString: string,
+  isZh: boolean,
+  t: (key: string) => string
+) {
+  const updatedAt = new Date(dateString)
+  const now = new Date()
+  updatedAt.setHours(0, 0, 0, 0)
+  now.setHours(0, 0, 0, 0)
+
+  if (Number.isNaN(updatedAt.getTime()) || updatedAt > now) {
+    return dateString
+  }
+
+  const totalDays = Math.floor(
+    (now.getTime() - updatedAt.getTime()) / DAY_IN_MS
+  )
+  if (totalDays === 0) return t('blog.sidebar.stats.relative.today')
+
+  const formatPart = (
+    value: number,
+    unit: 'day' | 'week' | 'month' | 'year'
+  ) => {
+    const key = `blog.sidebar.stats.relative.${unit}${value === 1 ? '' : 's'}`
+    return isZh ? `${value}${t(key)}` : `${value} ${t(key)}`
+  }
+  const finish = (value: string) =>
+    isZh ? `${value}${t('blog.sidebar.stats.relative.ago')}` : `${value} ago`
+
+  if (totalDays <= 14) return finish(formatPart(totalDays, 'day'))
+
+  const duration = getCalendarDuration(updatedAt, now)
+  if (duration.years > 0) {
+    return finish(
+      [
+        formatPart(duration.years, 'year'),
+        duration.months > 0 ? formatPart(duration.months, 'month') : null,
+      ]
+        .filter(Boolean)
+        .join(isZh ? '' : ' ')
+    )
+  }
+  if (duration.months > 0) {
+    return finish(
+      [
+        formatPart(duration.months, 'month'),
+        duration.days > 0 ? formatPart(duration.days, 'day') : null,
+      ]
+        .filter(Boolean)
+        .join(isZh ? '' : ' ')
+    )
+  }
+
+  const weeks = Math.floor(totalDays / 7)
+  const days = totalDays % 7
+  return finish(
+    [formatPart(weeks, 'week'), days > 0 ? formatPart(days, 'day') : null]
+      .filter(Boolean)
+      .join(isZh ? '' : ' ')
+  )
 }
 
 export function StatsWidget({ posts }: StatsWidgetProps) {
@@ -314,8 +386,7 @@ export function StatsWidget({ posts }: StatsWidgetProps) {
       value: number,
       unit: 'year' | 'month' | 'day'
     ) => {
-      const unitKey =
-        isZh || value !== 1 ? `${unit}s` : unit
+      const unitKey = isZh || value !== 1 ? `${unit}s` : unit
       const unitLabel = t(`blog.sidebar.stats.units.${unitKey}`)
       return isZh ? `${value}${unitLabel}` : `${value} ${unitLabel}`
     }
@@ -326,15 +397,9 @@ export function StatsWidget({ posts }: StatsWidgetProps) {
 
     const duration = getCalendarDuration(startDate, new Date())
     const values = [
-      duration.years > 0
-        ? formatDurationPart(duration.years, 'year')
-        : null,
-      duration.months > 0
-        ? formatDurationPart(duration.months, 'month')
-        : null,
-      duration.days > 0
-        ? formatDurationPart(duration.days, 'day')
-        : null,
+      duration.years > 0 ? formatDurationPart(duration.years, 'year') : null,
+      duration.months > 0 ? formatDurationPart(duration.months, 'month') : null,
+      duration.days > 0 ? formatDurationPart(duration.days, 'day') : null,
     ].filter((value): value is string => value !== null)
 
     return values.join(isZh ? '' : ' ') || formatDurationPart(0, 'day')
@@ -345,18 +410,19 @@ export function StatsWidget({ posts }: StatsWidgetProps) {
     maximumFractionDigits: 1,
   }).format(totalWords / (isZh ? 10000 : 1000))}${isZh ? '万' : 'k'}`
 
-  const lastUpdatedString =
-    posts.length > 0
-      ? new Date(
-          posts
-            .map((p) => {
-              const dateString = p.updated || p.date
-              return { dateString, time: new Date(dateString).getTime() }
-            })
-            .reduce((latest, cur) => (cur.time > latest.time ? cur : latest))
-            .dateString
-        ).toLocaleDateString(locale)
-      : siteStartDateString
+  const lastUpdatedString = (() => {
+    if (posts.length === 0)
+      return formatRelativeUpdate(siteStartDateString, isZh, t)
+    const latest = posts
+      .map((post) => {
+        const dateString = post.updated || post.date
+        return { dateString, time: new Date(dateString).getTime() }
+      })
+      .reduce((current, candidate) =>
+        candidate.time > current.time ? candidate : current
+      )
+    return formatRelativeUpdate(latest.dateString, isZh, t)
+  })()
 
   return (
     <Card as="aside" className={styles.widgetCard}>
