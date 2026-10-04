@@ -414,9 +414,31 @@ function renderFeedViewPage(feedPosts, options) {
         font-size: 0.95rem;
         border: 1px solid var(--border);
       }
-      .format-toggle { display: flex; gap: 0.5rem; }
-      .format-link { font-size: 0.8rem; font-weight: 600; }
-      .format-link.active { color: var(--text-main); }
+      .format-toggle {
+        display: inline-flex;
+        gap: 0.2rem;
+        padding: 0.2rem;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: var(--card-bg);
+      }
+      .format-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.4rem 0.75rem;
+        border-radius: 999px;
+        color: var(--text-sub);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      }
+      .format-link.active {
+        background: var(--accent);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+      }
       .copy-area {
         display: flex;
         gap: 0.5rem;
@@ -511,11 +533,11 @@ function renderFeedViewPage(feedPosts, options) {
           <div class="subscribe-box">
             <span>${copyLabel}</span>
             <div class="format-toggle" role="tablist" aria-label="Feed format">
-              <a class="format-link active" href="${feedUrl}">Atom</a>
-              <a class="format-link" href="${jsonFeedUrl}">JSON Feed / AI API</a>
+              <a class="format-link active" href="${feedUrl}" data-feed-url="${feedUrl}" role="tab" aria-selected="true">Atom</a>
+              <a class="format-link" href="${jsonFeedUrl}" data-feed-url="${jsonFeedUrl}" role="tab" aria-selected="false">JSON Feed / AI API</a>
             </div>
             <div class="copy-area">
-              ${feedUrl}
+              <span id="selected-feed-url">${feedUrl}</span>
             </div>
           </div>
         </header>
@@ -524,6 +546,21 @@ function renderFeedViewPage(feedPosts, options) {
         </main>
       </div>
     </div>
+    <script>
+      const formatLinks = document.querySelectorAll('.format-link')
+      const selectedFeedUrl = document.querySelector('#selected-feed-url')
+      formatLinks.forEach((link) => {
+        link.addEventListener('click', (event) => {
+          event.preventDefault()
+          formatLinks.forEach((item) => {
+            const active = item === link
+            item.classList.toggle('active', active)
+            item.setAttribute('aria-selected', String(active))
+          })
+          selectedFeedUrl.textContent = link.dataset.feedUrl
+        })
+      })
+    </script>
   </body>
 </html>`
 }
