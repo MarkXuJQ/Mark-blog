@@ -141,6 +141,9 @@
         font-size: 0.95rem;
         border: 1px solid var(--border);
       }
+      .format-toggle { display: flex; gap: 0.5rem; }
+      .format-link { font-size: 0.8rem; font-weight: 600; }
+      .format-link.active { color: var(--text-main); }
       .copy-area {
         display: flex;
         gap: 0.5rem;
@@ -234,6 +237,10 @@
           <div class="desc">这里是 Mark Xu 的个人网站，记录技术与生活。</div>
           <div class="subscribe-box">
             <span>👇 复制下面的链接到您的 RSS 阅读器中订阅：</span>
+            <div class="format-toggle" role="tablist" aria-label="Feed format">
+              <a class="format-link active" href="https://markxu.icu/feeds/zh/atom.xml">Atom</a>
+              <a class="format-link" href="https://markxu.icu/feeds/zh/feed.json">JSON Feed / AI API</a>
+            </div>
             <div class="copy-area">
               https://markxu.icu/feeds/zh/atom.xml
             </div>

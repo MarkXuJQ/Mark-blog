@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import matter from 'gray-matter'
+import MarkdownIt from 'markdown-it'
 import { fileURLToPath } from 'node:url'
 import { Feed } from 'feed'
 import { normalizeCountableText } from '../src/lib/content/readingTime.js'
@@ -32,6 +33,7 @@ const DIST_FEEDS_DIR = path.join(DIST_DIR, 'feeds')
 const DIST_FEEDS_ZH_DIR = path.join(DIST_FEEDS_DIR, 'zh')
 const DIST_FEEDS_EN_DIR = path.join(DIST_FEEDS_DIR, 'en')
 const MOVIE_REVIEW_SUMMARY_MAX_LENGTH = 140
+const markdown = new MarkdownIt({ html: true, breaks: true, linkify: true })
 
 console.log(`Scanning posts in: ${POSTS_DIR}`)
 
@@ -123,6 +125,8 @@ const regularPosts = files.map((filePath) => {
     title: data.title || slug,
     description: data.summary || '',
     content: contentHtml,
+    contentText: normalizeCountableText(markdownContent),
+    contentHtml: markdown.render(markdownContent),
     category: data.category,
     image: escapedCoverImage
       ? {
@@ -177,6 +181,8 @@ const reviewPosts = reviewFiles
       title: data.title || slug,
       description: summary,
       content: `<p>${summary}</p><a class="view-full" href="${postUrl}" target="_blank">点击查看全文</a>`,
+      contentText: normalizeCountableText(markdownContent),
+      contentHtml: markdown.render(markdownContent),
       image: escapedCoverImage
         ? {
             url: escapedCoverImage,
@@ -226,6 +232,7 @@ function renderFeedViewPage(feedPosts, options) {
     displayTitle,
     description,
     feedUrl,
+    jsonFeedUrl,
     toggle,
     backLabel,
     copyLabel,
@@ -407,6 +414,9 @@ function renderFeedViewPage(feedPosts, options) {
         font-size: 0.95rem;
         border: 1px solid var(--border);
       }
+      .format-toggle { display: flex; gap: 0.5rem; }
+      .format-link { font-size: 0.8rem; font-weight: 600; }
+      .format-link.active { color: var(--text-main); }
       .copy-area {
         display: flex;
         gap: 0.5rem;
@@ -500,6 +510,10 @@ function renderFeedViewPage(feedPosts, options) {
           <div class="desc">${description}</div>
           <div class="subscribe-box">
             <span>${copyLabel}</span>
+            <div class="format-toggle" role="tablist" aria-label="Feed format">
+              <a class="format-link active" href="${feedUrl}">Atom</a>
+              <a class="format-link" href="${jsonFeedUrl}">JSON Feed / AI API</a>
+            </div>
             <div class="copy-area">
               ${feedUrl}
             </div>
@@ -521,6 +535,7 @@ const FEED_VIEW_OPTIONS = {
     displayTitle: 'Mark的自留地',
     description: '这里是 Mark Xu 的个人网站，记录技术与生活。',
     feedUrl: `${DOMAIN}/feeds/zh/atom.xml`,
+    jsonFeedUrl: `${DOMAIN}/feeds/zh/feed.json`,
     toggle: {
       zh: { href: `${DOMAIN}/feeds/zh/`, label: '中文', active: true },
       en: { href: `${DOMAIN}/feeds/en/`, label: 'EN', active: false },
@@ -536,6 +551,7 @@ const FEED_VIEW_OPTIONS = {
     displayTitle: "Mark's Space",
     description: "Welcome to Mark Xu's personal site, sharing tech and life.",
     feedUrl: `${DOMAIN}/feeds/en/atom.xml`,
+    jsonFeedUrl: `${DOMAIN}/feeds/en/feed.json`,
     toggle: {
       zh: { href: `${DOMAIN}/feeds/zh/`, label: '中文', active: false },
       en: { href: `${DOMAIN}/feeds/en/`, label: 'EN', active: true },
@@ -598,8 +614,31 @@ const createFeed = (feedPosts, options, atomUrl) => {
   return feed
 }
 
+const createJsonFeed = (feedPosts, options, jsonFeedUrl) => ({
+  version: 'https://jsonfeed.org/version/1.1',
+  title: options.displayTitle,
+  home_page_url: DOMAIN,
+  feed_url: jsonFeedUrl,
+  description: options.description,
+  language: options.lang,
+  authors: [{ name: 'Mark Xu', url: DOMAIN }],
+  items: feedPosts.map((post) => ({
+    id: post.url,
+    url: post.url,
+    title: post.title,
+    content_text: post.contentText || post.description || '',
+    content_html: post.contentHtml || post.content || '',
+    summary: post.description || '',
+    date_published: post.date.toISOString(),
+    ...(post.updated ? { date_modified: post.updated.toISOString() } : {}),
+    ...(post.image?.url ? { image: post.image.url } : {}),
+    tags: ['blog', post.language],
+  })),
+})
+
 const writeFeedFiles = ({
   atomPath,
+  jsonPath,
   viewPath,
   feedPosts,
   viewOptions,
@@ -613,6 +652,11 @@ const writeFeedFiles = ({
   )
   fs.writeFileSync(atomPath, atomContent)
   console.log(`Atom generated at ${atomPath}`)
+  fs.writeFileSync(
+    jsonPath,
+    `${JSON.stringify(createJsonFeed(feedPosts, viewOptions, viewOptions.jsonFeedUrl), null, 2)}\n`
+  )
+  console.log(`JSON Feed generated at ${jsonPath}`)
 
   const feedViewContent = renderFeedViewPage(feedPosts, viewOptions)
   fs.writeFileSync(viewPath, feedViewContent)
@@ -627,6 +671,7 @@ ensureDir(FEEDS_EN_DIR)
 
 writeFeedFiles({
   atomPath: path.join(FEEDS_ZH_DIR, 'atom.xml'),
+  jsonPath: path.join(FEEDS_ZH_DIR, 'feed.json'),
   viewPath: path.join(FEEDS_ZH_DIR, 'index.html'),
   feedPosts: zhPosts,
   viewOptions: FEED_VIEW_OPTIONS.zh,
@@ -635,6 +680,7 @@ writeFeedFiles({
 
 writeFeedFiles({
   atomPath: path.join(FEEDS_EN_DIR, 'atom.xml'),
+  jsonPath: path.join(FEEDS_EN_DIR, 'feed.json'),
   viewPath: path.join(FEEDS_EN_DIR, 'index.html'),
   feedPosts: enPosts,
   viewOptions: FEED_VIEW_OPTIONS.en,
@@ -648,6 +694,7 @@ if (fs.existsSync(DIST_DIR)) {
 
   writeFeedFiles({
     atomPath: path.join(DIST_FEEDS_ZH_DIR, 'atom.xml'),
+    jsonPath: path.join(DIST_FEEDS_ZH_DIR, 'feed.json'),
     viewPath: path.join(DIST_FEEDS_ZH_DIR, 'index.html'),
     feedPosts: zhPosts,
     viewOptions: FEED_VIEW_OPTIONS.zh,
@@ -656,6 +703,7 @@ if (fs.existsSync(DIST_DIR)) {
 
   writeFeedFiles({
     atomPath: path.join(DIST_FEEDS_EN_DIR, 'atom.xml'),
+    jsonPath: path.join(DIST_FEEDS_EN_DIR, 'feed.json'),
     viewPath: path.join(DIST_FEEDS_EN_DIR, 'index.html'),
     feedPosts: enPosts,
     viewOptions: FEED_VIEW_OPTIONS.en,
