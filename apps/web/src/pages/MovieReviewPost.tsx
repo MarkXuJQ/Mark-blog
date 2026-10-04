@@ -236,6 +236,14 @@ function ReviewMeta({
         <Calendar className="h-4 w-4" />
         <time dateTime={review.date}>{review.date}</time>
       </div>
+      {review.updated && review.updated !== review.date ? (
+        <div className={styles.iconText}>
+          <Calendar className="h-4 w-4" />
+          <span>
+            {t('blog.updatedOn')} {review.updated}
+          </span>
+        </div>
+      ) : null}
       {review.movieTitle ? (
         <span
           className={cn(

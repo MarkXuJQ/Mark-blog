@@ -113,6 +113,7 @@ function buildPostSummaries() {
             language: 'zh',
             title: String(data.title),
             date: String(data.date),
+            updated: normalizeOptionalString(data.updated),
             summary:
               normalizeOptionalString(data.summary) || buildSummary(content),
             wordCount: countWords(content),

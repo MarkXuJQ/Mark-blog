@@ -6,6 +6,7 @@ export interface MovieReview {
   slug: string
   title: string
   date: string
+  updated?: string
   summary: string
   image?: string
   imageOverlay?: boolean
@@ -64,6 +65,7 @@ function toReview(
   const { attributes, html } = module
   const title = String(attributes.title || '').trim()
   const date = String(attributes.date || '').trim()
+  const updated = String(attributes.updated || '').trim() || undefined
   const summary = String(attributes.summary || '').trim()
   const movieSubjectId = String(attributes.movieSubjectId || '').trim()
 
@@ -75,6 +77,7 @@ function toReview(
     slug,
     title,
     date,
+    updated,
     summary: summary || buildReviewSummary(html),
     image: typeof attributes.image === 'string' ? attributes.image : undefined,
     imageOverlay: attributes.imageOverlay === true,
@@ -99,7 +102,11 @@ export function getAllMovieReviews(): MovieReview[] {
   cachedReviews = Object.entries(markdownFiles)
     .map(([path, module]) => toReview(path, module))
     .filter((review): review is MovieReview => Boolean(review))
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.updated || b.date).getTime() -
+        new Date(a.updated || a.date).getTime()
+    )
 
   return cachedReviews
 }
@@ -124,6 +131,7 @@ function toMovieReviewBlogPost(review: MovieReview): BlogPost {
     slug: review.slug,
     sourceSlug: review.slug,
     date: review.date,
+    updated: review.updated,
     summary: review.summary,
     image: review.image,
     imageOverlay: review.imageOverlay,

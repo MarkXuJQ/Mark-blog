@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-02T04:35:12.172Z",
+  "generatedAt": "2026-10-04T03:03:12.286Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -12,8 +12,8 @@
     "gameCount": 225,
     "playedCount": 149,
     "unplayedCount": 76,
-    "totalMinutes": 171131,
-    "totalRecentMinutes": 0,
+    "totalMinutes": 171204,
+    "totalRecentMinutes": 71,
     "totalUnlockedAchievements": 1917,
     "totalAvailableAchievements": 7341,
     "featuredAppId": 2246340
@@ -22,8 +22,8 @@
     {
       "appid": 2246340,
       "name": "Monster Hunter Wilds",
-      "playtimeMinutes": 16276,
-      "recentPlaytimeMinutes": 0,
+      "playtimeMinutes": 16315,
+      "recentPlaytimeMinutes": 38,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2246340/23474d61e4506351f9b26f230fd417d017cf2806.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/2246340",
@@ -33,9 +33,9 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 164542,
-        "totalNegative": 167587,
-        "totalReviews": 332129,
+        "totalPositive": 164743,
+        "totalNegative": 167595,
+        "totalReviews": 332338,
         "positivePercent": 50
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1787549555",
@@ -65,9 +65,9 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 460207,
-        "totalNegative": 58026,
-        "totalReviews": 518233,
+        "totalPositive": 460365,
+        "totalNegative": 58042,
+        "totalReviews": 518407,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
@@ -95,14 +95,14 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 832471,
-        "totalNegative": 27649,
-        "totalReviews": 860120,
+        "totalPositive": 832780,
+        "totalNegative": 27670,
+        "totalReviews": 860450,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
       "shortDescription": "Baldur’s Gate 3 is a story-rich, party-based RPG set in the universe of Dungeons &amp; Dragons, where your choices shape a tale of fellowship and betrayal, survival and sacrifice, and the lure of absolute power.",
-      "releaseDate": "Aug 3, 2023",
+      "releaseDate": "3 Aug, 2023",
       "developers": [
         "Larian Studios"
       ],
@@ -116,8 +116,8 @@
     {
       "appid": 292030,
       "name": "The Witcher 3: Wild Hunt — Remastered",
-      "playtimeMinutes": 9512,
-      "recentPlaytimeMinutes": 0,
+      "playtimeMinutes": 9546,
+      "recentPlaytimeMinutes": 33,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/292030/7b52d11edee478d652ef4e7103e00644bed2c74c.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/292030",
@@ -127,9 +127,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 865951,
-        "totalNegative": 31741,
-        "totalReviews": 897692,
+        "totalPositive": 867274,
+        "totalNegative": 32093,
+        "totalReviews": 899367,
         "positivePercent": 96
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/e8afc4252e3fee8ed2525ab2fd7675cca39aa38d/header_alt_assets_1.jpg?t=1790845156",
@@ -157,9 +157,9 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 327167,
-        "totalNegative": 52548,
-        "totalReviews": 379715,
+        "totalPositive": 327247,
+        "totalNegative": 52550,
+        "totalReviews": 379797,
         "positivePercent": 86
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1784651829",
@@ -189,14 +189,14 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 167788,
-        "totalNegative": 21379,
-        "totalReviews": 189167,
+        "totalPositive": 167887,
+        "totalNegative": 21393,
+        "totalReviews": 189280,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1786633104",
       "shortDescription": "In this action-adventure game, set sail for Ancient Greece to alter its fate. Fight in visceral battles on land and sea, shape your destiny from outcast to legend, and uncover secrets of your past.",
-      "releaseDate": "Oct 5, 2018",
+      "releaseDate": "5 Oct, 2018",
       "developers": [
         "Ubisoft Quebec",
         "Ubisoft Montreal",
@@ -214,8 +214,8 @@
     {
       "appid": 2246340,
       "name": "Monster Hunter Wilds",
-      "playtimeMinutes": 16276,
-      "recentPlaytimeMinutes": 0,
+      "playtimeMinutes": 16315,
+      "recentPlaytimeMinutes": 38,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2246340/23474d61e4506351f9b26f230fd417d017cf2806.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/2246340",
@@ -259,8 +259,8 @@
     {
       "appid": 292030,
       "name": "The Witcher 3: Wild Hunt — Remastered",
-      "playtimeMinutes": 9512,
-      "recentPlaytimeMinutes": 0,
+      "playtimeMinutes": 9546,
+      "recentPlaytimeMinutes": 33,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/292030/7b52d11edee478d652ef4e7103e00644bed2c74c.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/292030",
