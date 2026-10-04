@@ -26,7 +26,9 @@ export function getAllPostSummaries(language?: string): BlogPostSummary[] {
       void language
       return summary
     })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  summaries.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  )
 
   cachedPostSummaries[normalizedLanguage] = summaries
   return summaries

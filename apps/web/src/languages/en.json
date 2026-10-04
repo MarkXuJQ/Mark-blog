@@ -88,6 +88,18 @@
         "articleCount": "Articles",
         "lastUpdate": "Last Update",
         "wordCount": "Total Words",
+        "relative": {
+          "today": "Today",
+          "ago": "ago",
+          "day": "day",
+          "days": "days",
+          "week": "week",
+          "weeks": "weeks",
+          "month": "month",
+          "months": "months",
+          "year": "year",
+          "years": "years"
+        },
         "days": "Days",
         "units": {
           "year": "year",

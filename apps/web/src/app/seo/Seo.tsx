@@ -137,12 +137,20 @@ export function Seo({
       <link rel="alternate" hrefLang="en-US" href={enHref} />
       <link rel="alternate" hrefLang="x-default" href={canonicalUrl} />
       {feedUrl ? (
-        <link
-          rel="alternate"
-          type="application/atom+xml"
-          title="Atom Feed"
-          href={feedUrl}
-        />
+        <>
+          <link
+            rel="alternate"
+            type="application/atom+xml"
+            title="Atom Feed"
+            href={feedUrl}
+          />
+          <link
+            rel="alternate"
+            type="application/feed+json"
+            title="JSON Feed"
+            href={feedUrl.replace(/atom\.xml$/, 'feed.json')}
+          />
+        </>
       ) : null}
 
       {/* Structured Data */}

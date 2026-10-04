@@ -101,8 +101,10 @@ export function MovieCard({ movie, tmdb, cardLayout, locale }: MovieCardProps) {
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] leading-5 text-slate-500 dark:text-slate-400">
             <span>
-              {t('movies.watchDate')}:{' '}
-              {formatMovieDate(movie.watchDate, locale) || '--'}
+              <span className="block">{t('movies.watchDate')}:</span>
+              <span className="whitespace-nowrap">
+                {formatMovieDate(movie.watchDate, locale) || '--'}
+              </span>
             </span>
           </div>
         </div>
