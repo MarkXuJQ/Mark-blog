@@ -233,6 +233,8 @@ function renderFeedViewPage(feedPosts, options) {
     description,
     feedUrl,
     jsonFeedUrl,
+    feedPath,
+    jsonFeedPath,
     toggle,
     backLabel,
     copyLabel,
@@ -410,12 +412,14 @@ function renderFeedViewPage(feedPosts, options) {
         border-radius: 8px;
         display: inline-flex;
         flex-direction: column;
+        align-items: center;
         gap: 0.5rem;
         font-size: 0.95rem;
         border: 1px solid var(--border);
       }
       .format-toggle {
         display: inline-flex;
+        width: fit-content;
         gap: 0.2rem;
         padding: 0.2rem;
         border: 1px solid var(--border);
@@ -533,8 +537,8 @@ function renderFeedViewPage(feedPosts, options) {
           <div class="subscribe-box">
             <span>${copyLabel}</span>
             <div class="format-toggle" role="tablist" aria-label="Feed format">
-              <a class="format-link active" href="${feedUrl}" data-feed-url="${feedUrl}" role="tab" aria-selected="true">Atom</a>
-              <a class="format-link" href="${jsonFeedUrl}" data-feed-url="${jsonFeedUrl}" role="tab" aria-selected="false">JSON Feed / AI API</a>
+              <a class="format-link active" href="${feedPath}" data-feed-url="${feedUrl}" role="tab" aria-selected="true">Atom</a>
+              <a class="format-link" href="${jsonFeedPath}" data-feed-url="${jsonFeedUrl}" role="tab" aria-selected="false">JSON Feed</a>
             </div>
             <div class="copy-area">
               <span id="selected-feed-url">${feedUrl}</span>
@@ -573,9 +577,11 @@ const FEED_VIEW_OPTIONS = {
     description: '这里是 Mark Xu 的个人网站，记录技术与生活。',
     feedUrl: `${DOMAIN}/feeds/zh/atom.xml`,
     jsonFeedUrl: `${DOMAIN}/feeds/zh/feed.json`,
+    feedPath: '/feeds/zh/atom.xml',
+    jsonFeedPath: '/feeds/zh/feed.json',
     toggle: {
-      zh: { href: `${DOMAIN}/feeds/zh/`, label: '中文', active: true },
-      en: { href: `${DOMAIN}/feeds/en/`, label: 'EN', active: false },
+      zh: { href: '/feeds/zh/', label: '中文', active: true },
+      en: { href: '/feeds/en/', label: 'EN', active: false },
     },
     backLabel: '← 返回主页',
     copyLabel: '👇 复制下面的链接到您的 RSS 阅读器中订阅：',
@@ -589,9 +595,11 @@ const FEED_VIEW_OPTIONS = {
     description: "Welcome to Mark Xu's personal site, sharing tech and life.",
     feedUrl: `${DOMAIN}/feeds/en/atom.xml`,
     jsonFeedUrl: `${DOMAIN}/feeds/en/feed.json`,
+    feedPath: '/feeds/en/atom.xml',
+    jsonFeedPath: '/feeds/en/feed.json',
     toggle: {
-      zh: { href: `${DOMAIN}/feeds/zh/`, label: '中文', active: false },
-      en: { href: `${DOMAIN}/feeds/en/`, label: 'EN', active: true },
+      zh: { href: '/feeds/zh/', label: '中文', active: false },
+      en: { href: '/feeds/en/', label: 'EN', active: true },
     },
     backLabel: '← Back to Home',
     copyLabel: '👇 Copy the link below into your RSS reader:',
