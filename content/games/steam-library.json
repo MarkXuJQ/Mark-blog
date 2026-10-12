@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-07T02:57:02.764Z",
+  "generatedAt": "2026-10-12T14:56:05.855Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -9,9 +9,9 @@
     "reviewsUrl": "https://steamcommunity.com/id/markxu269/recommended/"
   },
   "summary": {
-    "gameCount": 225,
+    "gameCount": 227,
     "playedCount": 149,
-    "unplayedCount": 76,
+    "unplayedCount": 78,
     "totalMinutes": 171204,
     "totalRecentMinutes": 71,
     "totalUnlockedAchievements": 1917,
@@ -33,9 +33,9 @@
         "totalCount": 50
       },
       "reviewSummary": {
-        "totalPositive": 165024,
-        "totalNegative": 167662,
-        "totalReviews": 332686,
+        "totalPositive": 165492,
+        "totalNegative": 167727,
+        "totalReviews": 333219,
         "positivePercent": 50
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1787549555",
@@ -65,14 +65,14 @@
         "totalCount": 100
       },
       "reviewSummary": {
-        "totalPositive": 460622,
-        "totalNegative": 58053,
-        "totalReviews": 518675,
+        "totalPositive": 460993,
+        "totalNegative": 58090,
+        "totalReviews": 519083,
         "positivePercent": 89
       },
-      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1773328926",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1791439347",
       "shortDescription": "Welcome to a new world! In Monster Hunter: World, the latest installment in the series, you can enjoy the ultimate hunting experience, using everything at your disposal to hunt monsters in a new world teeming with surprises and excitement.",
-      "releaseDate": "Aug 8, 2018",
+      "releaseDate": "8 Aug, 2018",
       "developers": [
         "CAPCOM Co., Ltd."
       ],
@@ -95,9 +95,9 @@
         "totalCount": 54
       },
       "reviewSummary": {
-        "totalPositive": 833248,
-        "totalNegative": 27692,
-        "totalReviews": 860940,
+        "totalPositive": 834055,
+        "totalNegative": 27714,
+        "totalReviews": 861769,
         "positivePercent": 97
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
@@ -127,9 +127,9 @@
         "totalCount": 78
       },
       "reviewSummary": {
-        "totalPositive": 868833,
-        "totalNegative": 32394,
-        "totalReviews": 901227,
+        "totalPositive": 870995,
+        "totalNegative": 32608,
+        "totalReviews": 903603,
         "positivePercent": 96
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/e8afc4252e3fee8ed2525ab2fd7675cca39aa38d/header_alt_assets_1.jpg?t=1790845156",
@@ -157,9 +157,9 @@
         "totalCount": 320
       },
       "reviewSummary": {
-        "totalPositive": 327413,
-        "totalNegative": 52554,
-        "totalReviews": 379967,
+        "totalPositive": 327647,
+        "totalNegative": 52569,
+        "totalReviews": 380216,
         "positivePercent": 86
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1784651829",
@@ -189,9 +189,9 @@
         "totalCount": 93
       },
       "reviewSummary": {
-        "totalPositive": 168026,
-        "totalNegative": 21406,
-        "totalReviews": 189432,
+        "totalPositive": 168212,
+        "totalNegative": 21429,
+        "totalReviews": 189641,
         "positivePercent": 89
       },
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1786633104",
@@ -2631,6 +2631,17 @@
       "nameZh": "无尽帝国"
     },
     {
+      "appid": 2990600,
+      "name": "Fireside Feelings",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2990600/4ffe7aca1c7f9cef20fca05795025c64eb14aa61.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/2990600",
+      "communityUrl": "https://steamcommunity.com/app/2990600",
+      "achievementStats": null
+    },
+    {
       "appid": 1496790,
       "name": "Gotham Knights",
       "playtimeMinutes": 0,
@@ -2924,6 +2935,17 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/613900",
       "communityUrl": "https://steamcommunity.com/app/613900",
+      "achievementStats": null
+    },
+    {
+      "appid": 405640,
+      "name": "Pony Island",
+      "playtimeMinutes": 0,
+      "recentPlaytimeMinutes": 0,
+      "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/405640/cbfb87666914abca2e7c06231eeb59ab2a1883e8.jpg",
+      "logoUrl": "",
+      "storeUrl": "https://store.steampowered.com/app/405640",
+      "communityUrl": "https://steamcommunity.com/app/405640",
       "achievementStats": null
     },
     {
