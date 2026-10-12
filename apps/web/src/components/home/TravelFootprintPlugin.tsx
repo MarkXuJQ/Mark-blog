@@ -284,8 +284,8 @@ export function TravelFootprintPlugin({
               )}
             >
               {isZh
-                ? '这里记录着我去过的国家、我的人生时间，和一个可以交互的地图，可以查看我所去过的地方。🌏✨'
-                : 'Countries I have visited, the time I have lived, and an interactive map for the places I have been. 🌏✨'}
+                ? '这里是我曾经去过的地方，可见还有好多地方等着去探索呢！'
+                : 'Here are the places I have been to, and there are still many more to explore!'}
             </p>
 
             <TravelWorldOverviewPanel

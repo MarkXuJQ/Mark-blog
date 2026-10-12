@@ -109,8 +109,10 @@ export const videoPlayerEmbed: ArticleEmbedDefinition = {
       const params = new URLSearchParams({
         bvid: video.id,
         page: String(video.page),
+        autoplay: '0',
       })
-      frame.src = `https://player.bilibili.com/player.html?${params.toString()}&danmaku=0`
+      params.set('danmaku', '0')
+      frame.src = `https://player.bilibili.com/player.html?${params.toString()}`
     } else {
       const params = new URLSearchParams({
         autoplay: '0',
