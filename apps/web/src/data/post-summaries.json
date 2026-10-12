@@ -22,7 +22,7 @@
     "title": "为什么有的网站有 www，有的没有？-起源篇",
     "date": "2026-09-26",
     "summary": "我一直以为地址栏里的 www 只是被浏览器藏起来了，后来才发现，它背后其实连着早期互联网的服务分工、DNS 的限制，以及今天网站部署方式的变化。所以写一篇文章记录下我的发现。",
-    "wordCount": 2255,
+    "wordCount": 2265,
     "image": "https://img.markxu.icu/img20260926225709745.png",
     "tags": [
       "Network",
@@ -38,7 +38,7 @@
     "title": "FingerBlock：由 AI 协助完成的游戏 Demo",
     "date": "2026-09-19",
     "updated": "2026-09-26",
-    "summary": "偶然看到的一个手势识别库的更新消息，让我用 AI、MediaPipe、音频分析和开源音效，在一天半里做出了一个可以用双手游玩的音乐游戏 Demo。",
+    "summary": "偶然看到的一个手势识别库的更新消息，让我来了灵感，用MediaPipe、音频分析和开源音效，一天半做了一个可以用双手游玩的音乐游戏 Demo。",
     "wordCount": 4075,
     "image": "/images/fingerblock-preview.png",
     "tags": [
@@ -52,11 +52,11 @@
     "id": "rss-feed-beautification-cn",
     "slug": "rss-feed-beautification-cn",
     "language": "zh",
-    "title": "RSS订阅界面美化方案",
+    "title": "RSS订阅界面美化历程",
     "date": "2026-09-13",
-    "summary": "记录一下网站 RSS 订阅从能用、到美化能看，到某一天突然失效，最后通过朋友们的帮助下，重新做了一版美化方案的过程。",
-    "wordCount": 2214,
-    "image": "https://img.markxu.icu/imgSnipaste_2026-09-13_16-26-53.png",
+    "summary": "记录了我的个人网站的 RSS 订阅的发展过程：能用->美化->突然失效->解决问题。",
+    "wordCount": 2213,
+    "image": "https://img.markxu.icu/img16cadbcd5c793.png",
     "tags": [
       "Blog",
       "RSS feeds",
@@ -201,7 +201,7 @@
     "title": "localhost 背后：一趟没有出门的网络旅行",
     "date": "2026-06-25",
     "summary": "开发时我们天天访问的 localhost，它到底有没有走网络协议栈？又走了几层网络结构？",
-    "wordCount": 2882,
+    "wordCount": 2884,
     "tags": [
       "Network",
       "TCP/IP",
@@ -301,7 +301,7 @@
     "date": "2026-05-27",
     "updated": "2026-08-05",
     "summary": "写给想要了解计算机科学与技术专业到底学些什么的朋友，它不只是写代码，也不只是修电脑，而是一套围绕计算、系统、软件和工程实践展开的训练。",
-    "wordCount": 5517,
+    "wordCount": 5556,
     "image": "https://img.markxu.icu/img20260527160205221.png",
     "tags": [
       "College",
@@ -365,7 +365,7 @@
     "title": "从 Meme 的视角看 AI：死亡搁浅2 游玩启发",
     "date": "2026-05-16",
     "summary": "通关死亡搁浅2之后，我开始理解 MEME：作为人类文化基因继续生长的方式。AI 可以复用这些文化基因，但新的文化基因，或许仍然要从人的经验里长出来。",
-    "wordCount": 4176,
+    "wordCount": 4175,
     "image": "https://img.markxu.icu/img69e8647962c8ab32d1d0e0fbf1e40b61.png",
     "tags": [
       "AI",
@@ -398,7 +398,7 @@
     "date": "2026-05-15",
     "updated": "2026-09-20",
     "summary": "从一次大创项目、一套医疗管理系统，到骨盆骨折 CT 分割算法的复现与改进。这篇文章记录我的毕业设计，也记录一次从失败里慢慢摸到问题核心的经历。",
-    "wordCount": 3893,
+    "wordCount": 3912,
     "tags": [
       "Projects",
       "Image Segmentation",
