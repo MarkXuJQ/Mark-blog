@@ -163,9 +163,9 @@ const styles = {
   value:
     'flex items-baseline whitespace-nowrap text-slate-900 dark:text-slate-100',
   integer:
-    'font-mono text-[1.25rem] font-semibold leading-none tracking-[0] tabular-nums sm:text-[1.75rem]',
+    "[font-family:'Tourney',sans-serif] text-[1.25rem] font-semibold leading-none tracking-[0] tabular-nums sm:text-[1.75rem]",
   fraction:
-    'font-mono text-[0.625rem] font-medium leading-none tracking-[0] text-slate-500 tabular-nums dark:text-slate-400 sm:text-[0.875rem]',
+    "[font-family:'Tourney',sans-serif] text-[0.625rem] font-medium leading-none tracking-[0] text-slate-500 tabular-nums dark:text-slate-400 sm:text-[0.875rem]",
   roller: 'relative inline-grid overflow-hidden py-0.5',
   rollerValue:
     'col-start-1 row-start-1 flex items-baseline whitespace-nowrap',

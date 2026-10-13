@@ -126,6 +126,7 @@ function HomeRadarAvatar({ avatarSrc }: { avatarSrc: string }) {
 function RadarMetaItem({
   value,
   label,
+  numeric = false,
   button = false,
   expanded,
   pressed,
@@ -134,6 +135,7 @@ function RadarMetaItem({
 }: {
   value: string
   label: string
+  numeric?: boolean
   button?: boolean
   expanded?: boolean
   pressed?: boolean
@@ -142,7 +144,9 @@ function RadarMetaItem({
 }) {
   const content = (
     <>
-      <span className={styles.metaValue}>{value}</span>
+      <span className={cn(styles.metaValue, numeric && styles.metaValueNumeric)}>
+        {value}
+      </span>
       <span className={styles.metaLabel}>{label}</span>
     </>
   )
@@ -637,6 +641,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
               <RadarMetaItem
                 value={signalCount}
                 label={isZh ? '信号源' : 'Signals'}
+                numeric
                 button
                 expanded={isSignalListOpen}
                 controlsId={signalListId}
@@ -1261,6 +1266,7 @@ const styles = {
     'pointer-events-auto cursor-pointer transition-colors duration-200 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/45 dark:hover:text-white dark:focus-visible:ring-cyan-300/45',
   metaValue:
     'text-[1.08rem] font-semibold leading-none tracking-[0.02em] text-slate-900 dark:text-white/88',
+  metaValueNumeric: "[font-family:'Tourney',sans-serif] tabular-nums",
   metaLabel:
     'text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-slate-500/78 dark:text-white/40',
   signalSourceList:
@@ -1269,7 +1275,7 @@ const styles = {
   signalSourceListTitle:
     'text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-slate-500/82 dark:text-white/44',
   signalSourceListCount:
-    'text-sm font-semibold tracking-[0.02em] text-slate-900 dark:text-white/88',
+    "text-sm font-semibold tracking-[0.02em] text-slate-900 dark:text-white/88 [font-family:'Tourney',sans-serif] tabular-nums",
   signalSourceTabs:
     'mb-2 grid grid-cols-2 gap-1 rounded-[18px] bg-slate-100/70 p-1 dark:bg-white/[0.045]',
   signalSourceTab:
@@ -1277,7 +1283,7 @@ const styles = {
   signalSourceTabActive:
     'bg-white text-slate-950 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.22)] dark:bg-white/12 dark:text-white',
   signalSourceTabCount:
-    'shrink-0 font-[var(--font-pixel)] text-[0.62rem] opacity-60',
+    "shrink-0 [font-family:'Tourney',sans-serif] text-[0.72rem] tabular-nums opacity-60",
   signalSourceListBody:
     'grid max-h-[min(18rem,45svh)] gap-1.5 overflow-y-auto overscroll-contain pr-1',
   signalSourceItem:

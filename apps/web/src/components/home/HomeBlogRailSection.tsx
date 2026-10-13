@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { motion, type MotionValue, useReducedMotion } from 'framer-motion'
+import useEmblaCarousel from 'embla-carousel-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { getAllPostSummaries } from '@/lib/content/postSummaries'
 import { getAllPosts } from '@/lib/content/posts'
-import { cn } from '@/lib/classNames'
 import { getOptimizedImageUrl } from '@/lib/image'
 import { CategoryLabel } from '@/components/blog/CategoryLabel'
 import type { BlogPostSummary } from '@/lib/content/posts'
@@ -35,6 +35,7 @@ interface HomeBlogRailSectionProps {
 
 const BLOG_POST_LIMIT = 7
 const RAIL_INTERVAL = 4500
+type EmblaApi = NonNullable<ReturnType<typeof useEmblaCarousel>[1]>
 const railImageCache = new Map<string, string>()
 const railImagePreloadCache = new Map<string, Promise<void>>()
 
@@ -66,28 +67,23 @@ export function HomeBlogRailSection({
 }: HomeBlogRailSectionProps) {
   const { i18n } = useTranslation()
   const shouldReduceMotion = Boolean(useReducedMotion())
-  const [railTick, setRailTick] = useState(0)
+  const railApisRef = useRef<{ blog: EmblaApi | null; life: EmblaApi | null }>({
+    blog: null,
+    life: null,
+  })
+
   useEffect(() => {
     if (shouldReduceMotion) return
     let timer = 0
-    const schedule = () => {
-      window.clearTimeout(timer)
-      if (document.visibilityState !== 'visible') return
-      timer = window.setTimeout(() => {
-        setRailTick((value) => value + 1)
-        schedule()
-      }, RAIL_INTERVAL)
+    const advanceRails = () => {
+      if (document.visibilityState === 'visible') {
+        railApisRef.current.blog?.scrollNext()
+        railApisRef.current.life?.scrollNext()
+      }
+      timer = window.setTimeout(advanceRails, RAIL_INTERVAL)
     }
-    const onVisibility = () => {
-      window.clearTimeout(timer)
-      if (document.visibilityState === 'visible') schedule()
-    }
-    schedule()
-    document.addEventListener('visibilitychange', onVisibility)
-    return () => {
-      window.clearTimeout(timer)
-      document.removeEventListener('visibilitychange', onVisibility)
-    }
+    timer = window.setTimeout(advanceRails, RAIL_INTERVAL)
+    return () => window.clearTimeout(timer)
   }, [shouldReduceMotion])
 
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
@@ -189,16 +185,16 @@ export function HomeBlogRailSection({
         >
           <div className="relative flex h-full flex-col justify-center gap-16 py-12 sm:py-14">
             <div className="flex flex-col gap-6 px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div className="flex flex-row items-center justify-between gap-2">
                 <div data-home-reveal="blog-header" className="space-y-3">
                   <div className="h-px w-14 bg-black/12 dark:bg-white/16" />
-                  <div className="flex items-center gap-4">
-                    <h2 className="heading-display text-[1.95rem] leading-none font-medium tracking-[0.08em] text-black/88 sm:text-[2.2rem] lg:text-[2.6rem] dark:text-white/90">
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <h2 className="heading-display whitespace-nowrap text-[clamp(1.2rem,5.6vw,2.6rem)] leading-none font-medium tracking-[0.04em] text-black/88 sm:tracking-[0.08em] dark:text-white/90">
                       {locale === 'zh-CN' ? '本站内容' : 'Site Content'}
                     </h2>
                     <div
                       aria-hidden="true"
-                      className="pointer-events-none h-10 w-10 shrink-0 overflow-hidden rounded-full shadow-[0_10px_28px_-18px_rgba(15,23,42,0.5)] sm:h-11 sm:w-11"
+                      className="pointer-events-none h-8 w-8 shrink-0 overflow-hidden rounded-full shadow-[0_10px_28px_-18px_rgba(15,23,42,0.5)] sm:h-11 sm:w-11"
                     >
                       <img
                         src={avatarSrc}
@@ -211,39 +207,45 @@ export function HomeBlogRailSection({
                     </div>
                   </div>
                 </div>
-                <p className="text-[0.68rem] leading-relaxed tracking-wide text-black/50 sm:text-xs lg:text-right dark:text-white/50">
+                <p className="shrink-0 whitespace-nowrap text-right text-[0.54rem] leading-relaxed tracking-normal text-black/50 sm:text-xs sm:tracking-wide dark:text-white/50">
                   {locale === 'zh-CN' ? (
                     <>
-                      <strong className="text-base font-semibold text-black/80 tabular-nums dark:text-white/80">
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {allPosts.length}
                       </strong>{' '}
                       篇博客{' '}
-                      <strong className="text-base font-semibold text-black/80 tabular-nums dark:text-white/80">
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {formatWordCount(totalWordCount, locale)}
                       </strong>{' '}
                       字
                       <br />
-                      <strong className="text-base font-semibold text-black/80 tabular-nums dark:text-white/80">
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {lifeStats.postCount}
                       </strong>{' '}
                       篇随笔{' '}
-                      <strong className="text-base font-semibold text-black/80 tabular-nums dark:text-white/80">
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {lifeStats.photoCount}
                       </strong>{' '}
                       张照片
                     </>
                   ) : (
                     <>
-                      <strong className="text-base font-semibold text-black/80 tabular-nums dark:text-white/80">
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {allPosts.length}
                       </strong>{' '}
                       blog posts ·{' '}
-                      <strong className="text-base font-semibold text-black/80 tabular-nums dark:text-white/80">
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {formatWordCount(totalWordCount, locale)}
                       </strong>{' '}
                       words
                       <br />
-                      {lifeStats.postCount} life notes · {lifeStats.photoCount}{' '}
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                        {lifeStats.postCount}
+                      </strong>{' '}
+                      life notes ·{' '}
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                        {lifeStats.photoCount}
+                      </strong>{' '}
                       photos
                     </>
                   )}
@@ -282,13 +284,15 @@ export function HomeBlogRailSection({
                     posts={posts}
                     reverse={false}
                     shouldReduceMotion={shouldReduceMotion}
-                    railTick={railTick}
+                    railApisRef={railApisRef}
+                    railKey="blog"
                   />
                   <BlogRailRow
                     posts={lifePosts}
                     reverse
                     shouldReduceMotion={shouldReduceMotion}
-                    railTick={railTick}
+                    railApisRef={railApisRef}
+                    railKey="life"
                   />
                 </div>
               </div>
@@ -304,103 +308,62 @@ function BlogRailRow({
   posts,
   reverse,
   shouldReduceMotion,
-  railTick,
+  railApisRef,
+  railKey,
 }: {
   posts: Array<BlogPostSummary | LifeRailPost>
   reverse: boolean
   shouldReduceMotion: boolean
-  railTick: number
+  railApisRef: React.MutableRefObject<{
+    blog: EmblaApi | null
+    life: EmblaApi | null
+  }>
+  railKey: 'blog' | 'life'
 }) {
-  const [cursor, setCursor] = useState(0)
-  const [moving, setMoving] = useState(false)
-  const [cardStep, setCardStep] = useState(0)
-  const [slotCount, setSlotCount] = useState(3)
-  const viewportRef = useRef<HTMLDivElement | null>(null)
-  const trackRef = useRef<HTMLDivElement | null>(null)
-  const timerRef = useRef<number | null>(null)
-
-  useEffect(() => {
-    if (timerRef.current !== null) window.clearTimeout(timerRef.current)
-    setMoving(false)
-    setCursor(0)
-  }, [posts])
-
-  useEffect(() => {
-    const measure = () => {
-      const track = trackRef.current
-      const card = track?.querySelector<HTMLElement>('a')
-      const viewport = viewportRef.current
-      if (!track || !card || !viewport) return
-      const width = card.getBoundingClientRect().width
-      const styles = getComputedStyle(track)
-      const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0
-      const nextStep = width + gap
-      setCardStep(nextStep)
-      // Keep enough nearby slots to cover the viewport plus one buffer card
-      // on either side. The number of visible cards is an outcome of the
-      // measured layout, never a fixed design constraint.
-      setSlotCount(
-        Math.max(3, Math.ceil(viewport.clientWidth / nextStep) + 2)
-      )
+  const [viewportRef, emblaApi] = useEmblaCarousel(
+    {
+      align: (viewSize) => {
+        // Keep the two rows visibly staggered: the LTR blog row starts near
+        // the left edge, while the RTL life row starts near the right edge.
+        // The inset stays deliberately small on phone-sized viewports.
+        return Math.min(Math.max(viewSize * 0.035, 10), 48)
+      },
+      loop: true,
+      containScroll: false,
+      skipSnaps: true,
+      direction: reverse ? 'rtl' : 'ltr',
     }
-    measure()
-    const observer = new ResizeObserver(measure)
-    if (viewportRef.current) observer.observe(viewportRef.current)
-    if (trackRef.current?.firstElementChild)
-      observer.observe(trackRef.current.firstElementChild)
-    return () => observer.disconnect()
-  }, [posts.length, reverse])
+  )
 
   useEffect(() => {
-    if (railTick === 0 || shouldReduceMotion || posts.length < 2 || !cardStep)
-      return
-    if (timerRef.current !== null) window.clearTimeout(timerRef.current)
-    setMoving(true)
-    timerRef.current = window.setTimeout(() => {
-      setCursor((current) =>
-        (current + (reverse ? -1 : 1) + posts.length) % posts.length
-      )
-      setMoving(false)
-    }, 520)
+    railApisRef.current[railKey] = emblaApi ?? null
     return () => {
-      if (timerRef.current !== null) window.clearTimeout(timerRef.current)
+      railApisRef.current[railKey] = null
     }
-  }, [railTick, shouldReduceMotion, posts.length, cardStep, reverse])
+  }, [emblaApi, railApisRef, railKey])
 
-  const visibleItems = posts
-  if (visibleItems.length === 0) return null
-  const railItems = Array.from({ length: slotCount }, (_, index) => {
-    const offset = (reverse ? index - 1 : index) + cursor
-    const itemIndex =
-      ((offset % visibleItems.length) + visibleItems.length) % visibleItems.length
-    return visibleItems[itemIndex]
-  })
+  useEffect(() => {
+    if (!emblaApi) return
+    emblaApi.reInit({ loop: !shouldReduceMotion && posts.length > 1 })
+  }, [emblaApi, posts.length, shouldReduceMotion])
+
+  if (posts.length === 0) return null
 
   return (
-    <div ref={viewportRef} className="overflow-hidden">
-      <div
-        ref={trackRef}
-        className={cn(
-          'flex w-max items-stretch gap-3 sm:gap-4 lg:gap-5',
-          moving
-            ? 'transition-transform duration-500 ease-in-out'
-            : 'transition-none'
-        )}
-        style={{
-          // Keep one circular buffer card outside the left edge. Both
-          // directions use the same base position; only the animated step
-          // changes sign, so the endpoint and the next cursor are identical.
-          transform: `translate3d(${-cardStep +
-            (moving ? (reverse ? cardStep : -cardStep) : 0)}px, 0, 0)`,
-        }}
-      >
-        {railItems.map((post, index) => (
-          <BlogRailItem
-            // The slot remains stable while its circular-list item changes.
-            key={`rail-slot-${index}`}
-            post={post}
-            ariaHidden={reverse ? index !== 1 : index !== 0}
-          />
+    <div
+      ref={viewportRef}
+      dir={reverse ? 'rtl' : 'ltr'}
+      className="overflow-hidden"
+    >
+      <div className="flex touch-pan-y">
+        {posts.map((post) => (
+          <div
+            key={'slug' in post ? post.slug : post.id}
+            dir="ltr"
+            className={`min-w-0 shrink-0 basis-[min(78vw,calc(100vw_-_2rem))] sm:basis-[22rem] lg:basis-[26rem] ${reverse ? 'ml-3 sm:ml-4 lg:ml-5' : 'mr-3 sm:mr-4 lg:mr-5'}`}
+          >
+            <BlogRailItem post={post} />
+          </div>
         ))}
       </div>
     </div>
@@ -409,17 +372,13 @@ function BlogRailRow({
 
 function BlogRailItem({
   post,
-  ariaHidden,
 }: {
   post: BlogPostSummary | LifeRailPost
-  ariaHidden?: boolean
 }) {
   return (
     <Link
       to={'slug' in post ? `/blog/${post.slug}` : '/life'}
-      tabIndex={ariaHidden ? -1 : undefined}
-      aria-hidden={ariaHidden}
-      className="group relative flex h-44 w-[78vw] shrink-0 items-end overflow-hidden rounded-2xl border border-slate-200/70 bg-slate-950 px-5 py-5 text-white shadow-[0_20px_55px_-36px_rgba(15,23,42,0.8)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_26px_65px_-36px_rgba(15,23,42,0.9)] sm:h-48 sm:w-[22rem] sm:px-6 lg:w-[26rem] dark:border-white/10"
+      className="group relative flex h-44 w-full items-end overflow-hidden rounded-2xl border border-slate-200/70 bg-slate-950 px-5 py-5 text-white shadow-[0_20px_55px_-36px_rgba(15,23,42,0.8)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_26px_65px_-36px_rgba(15,23,42,0.9)] sm:h-48 sm:px-6 dark:border-white/10"
     >
       <div aria-hidden="true" className="absolute inset-0 bg-slate-800" />
       {post.image ? (
