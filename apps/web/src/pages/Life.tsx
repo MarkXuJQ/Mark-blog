@@ -27,6 +27,7 @@ import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { getOriginalImageUrl, getOptimizedImageUrl } from '@/lib/image'
 import { cn } from '@/lib/classNames'
 import lifeIsStrangeBackground from '@/assets/background/lifeisStrange.webp'
+import { getLifeProvince } from '@/lib/life/provinces'
 
 type ImageInput = string | { src: string; alt?: string; hdr?: boolean }
 
@@ -832,7 +833,17 @@ export function Life() {
                           {featuredPost.date}
                         </time>
                         <span className="flex items-center gap-1">
-                          <MapPin size={14} aria-hidden="true" />
+                          <span aria-hidden="true">·</span>
+                          {getLifeProvince(featuredPost.city)?.icon ? (
+                            <img
+                              src={getLifeProvince(featuredPost.city)?.icon}
+                              alt=""
+                              aria-hidden="true"
+                              className="h-4 w-4 object-contain text-slate-500"
+                            />
+                          ) : (
+                            <MapPin size={14} aria-hidden="true" />
+                          )}
                           {featuredPost.city ?? t('life.unknownLocation')}
                         </span>
                         <span className="flex items-center gap-1">
@@ -1013,7 +1024,21 @@ export function Life() {
                     {post.title}
                   </div>
                   <div className="mt-1.5 flex items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
-                    <time dateTime={post.date}>{post.date}</time>
+                    <span className="flex min-w-0 items-center gap-1.5">
+                      <time dateTime={post.date}>{post.date}</time>
+                      <span aria-hidden="true">·</span>
+                      {getLifeProvince(post.city)?.icon ? (
+                        <img
+                          src={getLifeProvince(post.city)?.icon}
+                          alt=""
+                          aria-hidden="true"
+                          className="h-4 w-4 shrink-0 object-contain text-slate-500"
+                        />
+                      ) : null}
+                      <span className="truncate">
+                        {post.city ?? t('life.unknownLocation')}
+                      </span>
+                    </span>
                     <span
                       className="flex shrink-0 items-center gap-1"
                       aria-label={t('life.photoCount', {
