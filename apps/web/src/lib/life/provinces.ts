@@ -1,8 +1,8 @@
-import fujianIcon from '@/assets/life/provinces/fujian.svg'
-import heilongjiangIcon from '@/assets/life/provinces/heilongjiang.svg'
-import hubeiIcon from '@/assets/life/provinces/hubei.svg'
-import liaoningIcon from '@/assets/life/provinces/liaoning.svg'
-import shandongIcon from '@/assets/life/provinces/shandong.svg'
+import fujianIcon from '@/assets/life/provinces/high-precision/fujian.svg'
+import heilongjiangIcon from '@/assets/life/provinces/high-precision/heilongjiang.svg'
+import hubeiIcon from '@/assets/life/provinces/high-precision/hubei.svg'
+import liaoningIcon from '@/assets/life/provinces/high-precision/liaoning.svg'
+import shandongIcon from '@/assets/life/provinces/high-precision/shandong.svg'
 
 type Province = {
   name: string
