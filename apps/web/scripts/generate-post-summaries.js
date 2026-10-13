@@ -85,6 +85,7 @@ function buildPostSummaries() {
       summary: String(data.summary || ''),
       wordCount: countWords(content),
       image: normalizeOptionalString(data.image),
+      ...(data.selected === true ? { selected: true } : {}),
       tags: normalizeOptionalStringArray(data.tags),
       category: normalizeOptionalString(data.category),
     }

@@ -1570,3 +1570,35 @@ img {
 [data-hdr-image='true'] .yarl__slide_image {
   dynamic-range-limit: no-limit;
 }
+@keyframes home-blog-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes home-blog-marquee-reverse {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.home-blog-marquee,
+.home-blog-marquee-reverse {
+  animation-duration: 64s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+.home-blog-marquee {
+  animation-name: home-blog-marquee;
+}
+.home-blog-marquee-reverse {
+  animation-name: home-blog-marquee-reverse;
+}

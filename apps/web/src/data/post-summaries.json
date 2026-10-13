@@ -235,6 +235,7 @@
     "summary": "离开学校的时候，我想记录大学四年的回忆，也想记录自己如何在一次次选择中，慢慢形成了拒绝把绩点、排名和简历当作唯一目标的价值观。",
     "wordCount": 6471,
     "image": "https://img.markxu.icu/imgb8e606e4235578a4b05bc4b87ae8945f_720.jpg",
+    "selected": true,
     "tags": [
       "College",
       "Graduation",
@@ -253,6 +254,7 @@
     "summary": "[AI-translated] As I left university, I wanted to record both my memories of those four years and how my choices gradually taught me not to treat grades, rankings, and a résumé as life's only objectives.",
     "wordCount": 4205,
     "image": "https://img.markxu.icu/imgb8e606e4235578a4b05bc4b87ae8945f_720.jpg",
+    "selected": true,
     "tags": [
       "College",
       "Graduation",
@@ -319,6 +321,7 @@
     "updated": "2026-05-22",
     "summary": "虽然写博客的概念已经优点过时了，但是我仍然推荐，可以在理清自己思路的同时，记录下自己成长的过程，些许还会认识到志同道合的朋友。",
     "wordCount": 2468,
+    "selected": true,
     "tags": [
       "Blogs",
       "College",
@@ -335,6 +338,7 @@
     "updated": "2026-05-22",
     "summary": "Although the idea of writing blogs already feels a little outdated, I still recommend it. It helps you clarify your thoughts, record the process of growing up, and maybe even meet like-minded people along the way.",
     "wordCount": 1777,
+    "selected": true,
     "tags": [
       "Blogs",
       "College",
@@ -680,6 +684,7 @@
     "summary": "这是我在潮汕的游记，记录了大二第一次独自出去玩的经历。",
     "wordCount": 1979,
     "image": "https://img.markxu.icu/imgIMG_20230922_汕头.png",
+    "selected": true,
     "tags": [
       "Life",
       "Travel"
