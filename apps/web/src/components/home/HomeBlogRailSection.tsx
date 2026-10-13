@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type TransitionEvent,
+} from 'react'
 import { motion, type MotionValue, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
@@ -38,6 +44,29 @@ export function HomeBlogRailSection({
 }: HomeBlogRailSectionProps) {
   const { i18n } = useTranslation()
   const shouldReduceMotion = Boolean(useReducedMotion())
+  const [railTick, setRailTick] = useState(0)
+  useEffect(() => {
+    if (shouldReduceMotion) return
+    let timer = 0
+    const schedule = () => {
+      window.clearTimeout(timer)
+      if (document.visibilityState !== 'visible') return
+      timer = window.setTimeout(() => {
+        setRailTick((value) => value + 1)
+        schedule()
+      }, 4500)
+    }
+    const onVisibility = () => {
+      window.clearTimeout(timer)
+      if (document.visibilityState === 'visible') schedule()
+    }
+    schedule()
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      window.clearTimeout(timer)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
+  }, [shouldReduceMotion])
 
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const allPosts = useMemo(
@@ -148,11 +177,14 @@ export function HomeBlogRailSection({
                     posts={posts}
                     reverse={false}
                     shouldReduceMotion={shouldReduceMotion}
+                    railTick={railTick}
                   />
                   <BlogRailRow
                     posts={lifePosts}
                     reverse
                     shouldReduceMotion={shouldReduceMotion}
+                    railTick={railTick}
+                    disableReveal
                   />
                 </div>
               </div>
@@ -173,16 +205,20 @@ function BlogRailRow({
   posts,
   reverse,
   shouldReduceMotion,
+  railTick,
+  disableReveal = false,
 }: {
   posts: Array<BlogPostSummary | LifeRailPost>
   reverse: boolean
   shouldReduceMotion: boolean
+  railTick: number
+  disableReveal?: boolean
 }) {
   const trackRef = useRef<HTMLDivElement | null>(null)
-  const [step, setStep] = useState(posts.length)
+  const cycle = posts.length > 0 ? railTick % posts.length : 0
+  const step = posts.length * 4 + (reverse ? -cycle : cycle)
   const [cardStep, setCardStep] = useState(0)
   const [centerOffset, setCenterOffset] = useState(0)
-  const [isRebasing, setIsRebasing] = useState(false)
   useEffect(() => {
     const measure = () => {
       const track = trackRef.current
@@ -203,35 +239,14 @@ function BlogRailRow({
       observer.observe(trackRef.current.firstElementChild)
     return () => observer.disconnect()
   }, [posts.length, reverse])
-  useEffect(() => {
-    if (shouldReduceMotion || posts.length < 2) return
-    const timer = window.setInterval(
-      () => setStep((value) => value + (reverse ? -1 : 1)),
-      4200
-    )
-    return () => window.clearInterval(timer)
-  }, [posts.length, reverse, shouldReduceMotion])
   return (
     <div className="overflow-hidden">
       <div
         ref={trackRef}
         className={cn(
           'flex w-max items-stretch gap-3 sm:gap-4 lg:gap-5',
-          !isRebasing && 'transition-transform duration-500 ease-in-out'
+          'transition-transform duration-500 ease-in-out'
         )}
-        onTransitionEnd={() => {
-          if (step >= posts.length * 2 || step <= 0) {
-            setIsRebasing(true)
-            setStep((value) =>
-              value >= posts.length * 2
-                ? value - posts.length
-                : value + posts.length
-            )
-            requestAnimationFrame(() =>
-              requestAnimationFrame(() => setIsRebasing(false))
-            )
-          }
-        }}
         style={{
           transform:
             shouldReduceMotion || !cardStep
@@ -240,14 +255,24 @@ function BlogRailRow({
         }}
       >
         <BlogRailSegment posts={posts} />
-        <BlogRailSegment posts={posts} ariaHidden />
-        <BlogRailSegment posts={posts} ariaHidden />
+        {Array.from({ length: 9 }, (_, index) => (
+          <BlogRailSegment
+            key={index}
+            posts={posts}
+            ariaHidden={index > 0}
+            disableReveal={disableReveal}
+          />
+        ))}
       </div>
     </div>
   )
 }
 
-function BlogRailSegment({ posts, ariaHidden }: BlogRailSegmentProps) {
+function BlogRailSegment({
+  posts,
+  ariaHidden,
+  disableReveal,
+}: BlogRailSegmentProps) {
   return (
     <div className="flex shrink-0 gap-3 sm:gap-4 lg:gap-5">
       {posts.map((post, index) => (
@@ -256,6 +281,7 @@ function BlogRailSegment({ posts, ariaHidden }: BlogRailSegmentProps) {
           post={post}
           index={index}
           ariaHidden={ariaHidden}
+          disableReveal={disableReveal}
         />
       ))}
     </div>
@@ -266,18 +292,20 @@ function BlogRailItem({
   post,
   index,
   ariaHidden,
+  disableReveal,
 }: {
   post: BlogPostSummary | LifeRailPost
   index: number
   ariaHidden?: boolean
+  disableReveal?: boolean
 }) {
   return (
     <Link
       to={'slug' in post ? `/blog/${post.slug}` : '/life'}
       tabIndex={ariaHidden ? -1 : undefined}
       aria-hidden={ariaHidden}
-      data-home-reveal={ariaHidden ? undefined : 'blog-card'}
-      data-home-reveal-index={ariaHidden ? undefined : index}
+      data-home-reveal={ariaHidden || disableReveal ? undefined : 'blog-card'}
+      data-home-reveal-index={ariaHidden || disableReveal ? undefined : index}
       className="group relative flex h-44 w-[78vw] shrink-0 items-end overflow-hidden rounded-2xl border border-slate-200/70 bg-slate-950 px-5 py-5 text-white shadow-[0_20px_55px_-36px_rgba(15,23,42,0.8)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_26px_65px_-36px_rgba(15,23,42,0.9)] sm:h-48 sm:w-[22rem] sm:px-6 lg:w-[26rem] dark:border-white/10"
     >
       {post.image ? (
