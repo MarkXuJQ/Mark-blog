@@ -13,6 +13,7 @@ export interface BlogPostSummary {
   summary: string
   wordCount?: number
   image?: string
+  selected?: boolean
   imageOverlay?: boolean
   movieSubjectId?: string
   tags?: string[]
@@ -85,6 +86,7 @@ function parsePost(path: string, module: MarkdownPost): BlogPost | null {
     updated: attributes.updated,
     summary: attributes.summary,
     image: typeof attributes.image === 'string' ? attributes.image : undefined,
+    selected: attributes.selected === true,
     imageOverlay: attributes.imageOverlay === true,
     content: html,
     tags: attributes.tags,

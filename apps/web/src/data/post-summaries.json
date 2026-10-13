@@ -24,6 +24,7 @@
     "summary": "我一直以为地址栏里的 www 只是被浏览器藏起来了，后来才发现，它背后其实连着早期互联网的服务分工、DNS 的限制，以及今天网站部署方式的变化。所以写一篇文章记录下我的发现。",
     "wordCount": 2265,
     "image": "https://img.markxu.icu/img20260926225709745.png",
+    "selected": true,
     "tags": [
       "Network",
       "Websites",
@@ -57,6 +58,7 @@
     "summary": "记录了我的个人网站的 RSS 订阅的发展过程：能用->美化->突然失效->解决问题。",
     "wordCount": 2213,
     "image": "https://img.markxu.icu/img16cadbcd5c793.png",
+    "selected": true,
     "tags": [
       "Blog",
       "RSS feeds",
@@ -169,6 +171,7 @@
     "date": "2026-07-06",
     "summary": "TCP 慢启动常被简化为“每个 RTT 拥塞窗口翻倍”，但教材模型、RFC 标准和 Linux 内核实现其实站在不同层面描述同一件事。我尝试把这三层放在一起对照，厘清 cwnd 到底按 ACK、字节还是完整段增长。",
     "wordCount": 3301,
+    "selected": true,
     "tags": [
       "Network",
       "TCP/IP",
@@ -186,6 +189,7 @@
     "date": "2026-07-06",
     "summary": "[AI-translated] TCP slow start is often simplified as “the congestion window doubles every RTT,” but textbooks, RFCs, and the Linux kernel describe the same mechanism from different layers. I compare the three views to clarify whether cwnd grows by ACKs, bytes, or complete segments.",
     "wordCount": 2199,
+    "selected": true,
     "tags": [
       "Network",
       "TCP/IP",
@@ -235,6 +239,7 @@
     "summary": "离开学校的时候，我想记录大学四年的回忆，也想记录自己如何在一次次选择中，慢慢形成了拒绝把绩点、排名和简历当作唯一目标的价值观。",
     "wordCount": 6471,
     "image": "https://img.markxu.icu/imgb8e606e4235578a4b05bc4b87ae8945f_720.jpg",
+    "selected": true,
     "tags": [
       "College",
       "Graduation",
@@ -253,6 +258,7 @@
     "summary": "[AI-translated] As I left university, I wanted to record both my memories of those four years and how my choices gradually taught me not to treat grades, rankings, and a résumé as life's only objectives.",
     "wordCount": 4205,
     "image": "https://img.markxu.icu/imgb8e606e4235578a4b05bc4b87ae8945f_720.jpg",
+    "selected": true,
     "tags": [
       "College",
       "Graduation",
@@ -319,6 +325,7 @@
     "updated": "2026-05-22",
     "summary": "虽然写博客的概念已经优点过时了，但是我仍然推荐，可以在理清自己思路的同时，记录下自己成长的过程，些许还会认识到志同道合的朋友。",
     "wordCount": 2468,
+    "selected": true,
     "tags": [
       "Blogs",
       "College",
@@ -335,6 +342,7 @@
     "updated": "2026-05-22",
     "summary": "Although the idea of writing blogs already feels a little outdated, I still recommend it. It helps you clarify your thoughts, record the process of growing up, and maybe even meet like-minded people along the way.",
     "wordCount": 1777,
+    "selected": true,
     "tags": [
       "Blogs",
       "College",
@@ -399,6 +407,7 @@
     "updated": "2026-09-20",
     "summary": "从一次大创项目、一套医疗管理系统，到骨盆骨折 CT 分割算法的复现与改进。这篇文章记录我的毕业设计，也记录一次从失败里慢慢摸到问题核心的经历。",
     "wordCount": 3912,
+    "selected": true,
     "tags": [
       "Projects",
       "Image Segmentation",
@@ -483,6 +492,7 @@
     "summary": "最近在 GitHub 上看到了一个项目：voice-input-src。一个为mac写的语音输入软件。震惊的是打开仓库你会发现只有一段写给AI的Prompt。",
     "wordCount": 1930,
     "image": "https://img.markxu.icu/imgvoiceinput.jpeg",
+    "selected": true,
     "tags": [
       "Github",
       "Swift",
@@ -502,6 +512,7 @@
     "summary": "I recently found a GitHub project called voice-input-src, a voice input app for Mac. The surprising part is that the repository contains only one detailed prompt for AI.",
     "wordCount": 1161,
     "image": "https://img.markxu.icu/imgvoiceinput.jpeg",
+    "selected": true,
     "tags": [
       "Github",
       "Swift",
@@ -520,6 +531,7 @@
     "updated": "2026-03-26",
     "summary": "个人网站字面意义上的第一篇博客，分享下个人感受和经历。",
     "wordCount": 1368,
+    "selected": true,
     "tags": [
       "Life",
       "Website"
@@ -535,6 +547,7 @@
     "updated": "2026-03-26",
     "summary": "This is the literal first blog post on my personal site, sharing my thoughts and experiences.",
     "wordCount": 974,
+    "selected": true,
     "tags": [
       "Life",
       "Website"

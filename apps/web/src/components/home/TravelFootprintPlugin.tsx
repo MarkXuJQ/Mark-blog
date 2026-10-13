@@ -178,7 +178,7 @@ export function TravelFootprintPlugin({
 }: {
   revealProgress?: MotionValue<number>
 }) {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const isZh = i18n.language?.startsWith('zh')
   const prefersReducedMotion = useReducedMotion()
   const isCoarsePointer = useIsCoarsePointer()
@@ -234,6 +234,18 @@ export function TravelFootprintPlugin({
     WORLD_PANEL_REVEAL_END,
     Boolean(prefersReducedMotion)
   )
+  const introTitleReveal = usePanelReveal(
+    pluginReveal,
+    0,
+    0.14,
+    Boolean(prefersReducedMotion)
+  )
+  const introDescriptionReveal = usePanelReveal(
+    pluginReveal,
+    0.1,
+    0.24,
+    Boolean(prefersReducedMotion)
+  )
   const embedReveal = usePanelReveal(
     pluginReveal,
     EMBED_PANEL_REVEAL_START,
@@ -269,7 +281,7 @@ export function TravelFootprintPlugin({
 
       <div className={styles.grid}>
         <div className={styles.leftRail}>
-          <TravelIntroHeader isZh={isZh} />
+          <TravelIntroHeader t={t} style={introTitleReveal} />
 
           <div
             className={cn(
@@ -277,16 +289,18 @@ export function TravelFootprintPlugin({
               isZh && styles.leftWidgetStackZh
             )}
           >
-            <p
+            <motion.p
               className={cn(
                 styles.leftWidgetDescription,
                 isZh && styles.leftWidgetDescriptionZh
               )}
+              style={{
+                y: introDescriptionReveal.y,
+                opacity: introDescriptionReveal.opacity,
+              }}
             >
-              {isZh
-                ? '这里是我曾经去过的地方，可见还有好多地方等着去探索呢！'
-                : 'Here are the places I have been to, and there are still many more to explore!'}
-            </p>
+              {t('travel.description')}
+            </motion.p>
 
             <TravelWorldOverviewPanel
               style={{
@@ -307,7 +321,7 @@ export function TravelFootprintPlugin({
         </div>
 
         <TravelFootprintMapPanel
-          isZh={isZh}
+          t={t}
           style={{
             y: embedReveal.y,
             opacity: embedReveal.opacity,
@@ -319,27 +333,36 @@ export function TravelFootprintPlugin({
   )
 }
 
-function TravelIntroHeader({ isZh }: { isZh: boolean }) {
+function TravelIntroHeader({
+  t,
+  style,
+}: {
+  t: (key: string) => string
+  style: ReturnType<typeof usePanelReveal>
+}) {
   return (
-    <div className={styles.railIntroStage}>
+    <motion.div
+      className={styles.railIntroStage}
+      style={{ y: style.y, opacity: style.opacity }}
+    >
       <div className={styles.introRow}>
         <div className={styles.introCopy}>
           <h2 className={cn('heading-display', styles.introTitle)}>
-            {isZh ? '去过的地方' : "Places I've Been"}
+            {t('travel.title')}
           </h2>
         </div>
         <div className={styles.introMeta}>
           <SummaryPill
             value={travelSummary.countryCount}
-            label={isZh ? '个国家' : 'Countries'}
+            label={t('travel.countries')}
           />
           <SummaryPill
             value={travelSummary.provinceCount}
-            label={isZh ? '个省份' : 'Provinces'}
+            label={t('travel.provinces')}
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
@@ -401,10 +424,10 @@ function TravelWorldMapPanel({
 }
 
 function TravelFootprintMapPanel({
-  isZh,
+  t,
   style,
 }: {
-  isZh: boolean
+  t: (key: string) => string
   style?: MotionStyle
 }) {
   const [isMapInteractive, setIsMapInteractive] = useState(false)
@@ -428,7 +451,7 @@ function TravelFootprintMapPanel({
             className={styles.mapActionButton}
           >
             <ExternalLink className={styles.mapActionIcon} />
-            <span>{isZh ? '打开完整地图' : 'Open full map'}</span>
+            <span>{t('travel.openMap')}</span>
           </a>
           <button
             type="button"
@@ -440,12 +463,12 @@ function TravelFootprintMapPanel({
             onClick={() => setIsMapInteractive((current) => !current)}
           >
             <MousePointer2 className={styles.mapActionIcon} />
-            <span>{isZh ? '进行交互' : 'Interact'}</span>
+            <span>{t('travel.interact')}</span>
           </button>
         </div>
         <>
           <iframe
-            title={isZh ? '旅行地图交互窗口' : 'Interactive travel map'}
+            title={t('travel.mapTitle')}
             src={EMBED_MAP_URL}
             loading="eager"
             referrerPolicy="strict-origin-when-cross-origin"
@@ -496,7 +519,7 @@ const styles = {
   summaryPill:
     'inline-flex items-baseline gap-2.5 border-l border-white/10 pl-4 text-white first:border-l-0 first:pl-0',
   summaryPillValue:
-    'text-[1.15rem] font-semibold leading-none tabular-nums text-white/86',
+    "text-[1.15rem] font-semibold leading-none tabular-nums text-white/86 [font-family:'Tourney',sans-serif]",
   summaryPillLabel:
     'text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-white/40',
   ambientOrbit:

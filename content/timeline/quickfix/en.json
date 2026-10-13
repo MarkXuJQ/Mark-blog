@@ -1,5 +1,14 @@
 [
   {
+    "id": "qf-20261013",
+    "date": "2026-10-13",
+    "content": [
+      "Reworked the second homepage screen content rail with cover cards, manually selected recommendations, and Life Notes content",
+      "Unified the blog and Life Notes rows under one shared clock, with responsive narrow-screen card sizing and staggered left-right stopping positions",
+      "Unified statistic typography across the homepage, Travel, Radar, and Timeline views with Tourney numerals"
+    ]
+  },
+  {
     "id": "qf-20260921",
     "date": "2026-09-21",
     "content": [

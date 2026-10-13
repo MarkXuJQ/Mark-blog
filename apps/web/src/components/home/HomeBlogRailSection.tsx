@@ -1,20 +1,29 @@
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-  type MouseEvent as ReactMouseEvent,
-  type PointerEvent as ReactPointerEvent,
-} from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { motion, type MotionValue, useReducedMotion } from 'framer-motion'
+import useEmblaCarousel from 'embla-carousel-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { getAllPostSummaries } from '@/lib/content/postSummaries'
+import { getAllPosts } from '@/lib/content/posts'
+import { getOptimizedImageUrl } from '@/lib/image'
 import { CategoryLabel } from '@/components/blog/CategoryLabel'
-import { Label } from '@/components/ui/label'
-import { cn } from '@/lib/classNames'
 import type { BlogPostSummary } from '@/lib/content/posts'
+
+type LifeRailPost = { id: string; title: string; image?: string; city?: string }
+type LifeRecord = {
+    id: string
+    title: string
+    date: string
+    images?: Array<string | { src: string }>
+    meta?: string
+    city?: string
+}
+const lifeFiles = import.meta.glob<{ default?: LifeRecord[] } | LifeRecord[]
+>('@content/life/*.json', { eager: true })
+
+function getLifeRecords(module: { default?: LifeRecord[] } | LifeRecord[]) {
+  return Array.isArray(module) ? module : (module.default ?? [])
+}
 
 interface HomeBlogRailSectionProps {
   avatarSrc: string
@@ -25,38 +34,30 @@ interface HomeBlogRailSectionProps {
 }
 
 const BLOG_POST_LIMIT = 7
-const BLOG_RAIL_DEFAULT_SPEED_PERCENT = 50
-const BLOG_RAIL_MIN_SPEED_PERCENT = 20
-const BLOG_RAIL_MAX_SPEED_PERCENT = 100
-const BLOG_RAIL_BASE_DURATION_SECONDS = 64
-const BLOG_RAIL_DRAG_CLICK_THRESHOLD = 6
-const HOME_PAGER_SUPPRESS_EVENT = 'home:pager-suppress'
+const RAIL_INTERVAL = 4500
+type EmblaApi = NonNullable<ReturnType<typeof useEmblaCarousel>[1]>
+const railImageCache = new Map<string, string>()
+const railImagePreloadCache = new Map<string, Promise<void>>()
 
-interface BlogRailDragState {
-  pointerId: number
-  startX: number
-  startY: number
-  startOffset: number
-  hasDragged: boolean
+function preloadRailImage(src: string) {
+  const existing = railImagePreloadCache.get(src)
+  if (existing) return existing
+  const promise = new Promise<void>((resolve) => {
+    const image = new Image()
+    image.decoding = 'async'
+    image.onload = () => resolve()
+    image.onerror = () => resolve()
+    image.src = src
+  })
+  railImagePreloadCache.set(src, promise)
+  return promise
 }
 
-function normalizeRailOffset(offset: number, loopWidth: number) {
-  if (loopWidth <= 0) return 0
-
-  const positiveOffset = ((offset % loopWidth) + loopWidth) % loopWidth
-  return positiveOffset === 0 ? 0 : positiveOffset - loopWidth
+function getFirstContentImage(content?: string): string | undefined {
+  if (!content) return undefined
+  const match = content.match(/<img[^>]+src=["']([^"']+)["']/i)
+  return match?.[1]
 }
-
-function suppressHomePager(durationMs = 900) {
-  if (typeof window === 'undefined') return
-
-  window.dispatchEvent(
-    new CustomEvent(HOME_PAGER_SUPPRESS_EVENT, {
-      detail: { durationMs },
-    })
-  )
-}
-
 export function HomeBlogRailSection({
   avatarSrc,
   sectionScale,
@@ -64,213 +65,102 @@ export function HomeBlogRailSection({
   sectionOpacity,
   sectionPointerEvents,
 }: HomeBlogRailSectionProps) {
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const shouldReduceMotion = Boolean(useReducedMotion())
-  const railTrackRef = useRef<HTMLDivElement | null>(null)
-  const railOffsetRef = useRef(0)
-  const railLoopWidthRef = useRef(0)
-  const railLastFrameTimeRef = useRef<number | null>(null)
-  const railDragStateRef = useRef<BlogRailDragState | null>(null)
-  const suppressClickRef = useRef(false)
-  const [isDraggingRail, setIsDraggingRail] = useState(false)
-  const [scrollSpeed, setScrollSpeed] = useState([
-    BLOG_RAIL_DEFAULT_SPEED_PERCENT,
-  ])
-
-  const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
-  const isZh = locale === 'zh-CN'
-  const speedPercent = scrollSpeed[0] ?? BLOG_RAIL_DEFAULT_SPEED_PERCENT
-  const allPosts = useMemo(
-    () => getAllPostSummaries(i18n.language),
-    [i18n.language]
-  )
-  const posts = useMemo(() => allPosts.slice(0, BLOG_POST_LIMIT), [allPosts])
-  const dateFormatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat(locale, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      }),
-    [locale]
-  )
-  const headerStats = useMemo(() => {
-    const latestPost = allPosts[0]
-    const latestDate = latestPost
-      ? dateFormatter.format(new Date(latestPost.updated ?? latestPost.date))
-      : null
-
-    return [
-      {
-        label: t('blog.sidebar.stats.articleCount'),
-        value: String(allPosts.length).padStart(2, '0'),
-      },
-      latestDate
-        ? {
-            label: t('blog.sidebar.stats.lastUpdate'),
-            value: latestDate,
-          }
-        : null,
-    ].filter((item): item is { label: string; value: string } => item != null)
-  }, [allPosts, dateFormatter, t])
+  const railApisRef = useRef<{ blog: EmblaApi | null; life: EmblaApi | null }>({
+    blog: null,
+    life: null,
+  })
 
   useEffect(() => {
-    const railTrackNode = railTrackRef.current
-    if (!railTrackNode) return
-
-    let frameId = 0
-    let resizeFrameId = 0
-
-    const applyRailOffset = () => {
-      railTrackNode.style.transform = `translate3d(${railOffsetRef.current}px, 0, 0)`
-    }
-
-    const syncLoopWidth = () => {
-      window.cancelAnimationFrame(resizeFrameId)
-      resizeFrameId = window.requestAnimationFrame(() => {
-        const loopWidth = railTrackNode.scrollWidth / 2
-        railLoopWidthRef.current = loopWidth
-        railOffsetRef.current = normalizeRailOffset(
-          railOffsetRef.current,
-          loopWidth
-        )
-        applyRailOffset()
-      })
-    }
-
-    const tick = (timestamp: number) => {
-      const previousTimestamp = railLastFrameTimeRef.current
-      railLastFrameTimeRef.current = timestamp
-
-      if (
-        previousTimestamp != null &&
-        !shouldReduceMotion &&
-        !railDragStateRef.current
-      ) {
-        const loopWidth = railLoopWidthRef.current
-        const speedMultiplier = speedPercent / BLOG_RAIL_DEFAULT_SPEED_PERCENT
-        const distancePerMs =
-          loopWidth / (BLOG_RAIL_BASE_DURATION_SECONDS * 1000)
-        const deltaMs = timestamp - previousTimestamp
-
-        railOffsetRef.current = normalizeRailOffset(
-          railOffsetRef.current - distancePerMs * speedMultiplier * deltaMs,
-          loopWidth
-        )
-        applyRailOffset()
+    if (shouldReduceMotion) return
+    let timer = 0
+    const advanceRails = () => {
+      if (document.visibilityState === 'visible') {
+        railApisRef.current.blog?.scrollNext()
+        railApisRef.current.life?.scrollNext()
       }
-
-      frameId = window.requestAnimationFrame(tick)
+      timer = window.setTimeout(advanceRails, RAIL_INTERVAL)
     }
+    timer = window.setTimeout(advanceRails, RAIL_INTERVAL)
+    return () => window.clearTimeout(timer)
+  }, [shouldReduceMotion])
 
-    let startTimer = 0
-
-    const startLoop = () => {
-      syncLoopWidth()
-      frameId = window.requestAnimationFrame(tick)
-    }
-
-    startTimer = window.setTimeout(startLoop, 180)
-
-    const resizeObserver =
-      typeof ResizeObserver === 'undefined'
-        ? null
-        : new ResizeObserver(syncLoopWidth)
-
-    resizeObserver?.observe(railTrackNode)
-    window.addEventListener('load', syncLoopWidth)
-
-    return () => {
-      window.clearTimeout(startTimer)
-      window.cancelAnimationFrame(frameId)
-      window.cancelAnimationFrame(resizeFrameId)
-      resizeObserver?.disconnect()
-      window.removeEventListener('load', syncLoopWidth)
-    }
-  }, [shouldReduceMotion, speedPercent])
-
-  const handleRailPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === 'mouse' && event.button !== 0) return
-
-    railDragStateRef.current = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      startOffset: railOffsetRef.current,
-      hasDragged: false,
-    }
-    railLastFrameTimeRef.current = null
-    suppressHomePager()
-  }
-
-  const handleRailPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const dragState = railDragStateRef.current
-    if (!dragState || dragState.pointerId !== event.pointerId) return
-
-    const deltaX = event.clientX - dragState.startX
-    const deltaY = event.clientY - dragState.startY
-    const loopWidth = railLoopWidthRef.current
-
-    if (
-      !dragState.hasDragged &&
-      (Math.hypot(deltaX, deltaY) < BLOG_RAIL_DRAG_CLICK_THRESHOLD ||
-        Math.abs(deltaX) <= Math.abs(deltaY))
-    ) {
-      return
-    }
-
-    if (!dragState.hasDragged) {
-      dragState.hasDragged = true
-      suppressClickRef.current = true
-      setIsDraggingRail(true)
-      if (!event.currentTarget.hasPointerCapture(event.pointerId)) {
-        event.currentTarget.setPointerCapture(event.pointerId)
-      }
-      suppressHomePager()
-    }
-
-    railOffsetRef.current = normalizeRailOffset(
-      dragState.startOffset + deltaX,
-      loopWidth
+  const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
+  const allPosts = useMemo(() => {
+    const summaries = getAllPostSummaries(i18n.language)
+    const fullPosts = getAllPosts(i18n.language)
+    const contentImages = new Map(
+      fullPosts.map((post) => [post.slug, getFirstContentImage(post.content)])
     )
-
-    if (railTrackRef.current) {
-      railTrackRef.current.style.transform = `translate3d(${railOffsetRef.current}px, 0, 0)`
+    return summaries.map((post) => {
+      const image =
+        railImageCache.get(post.slug) ||
+        post.image ||
+        contentImages.get(post.slug)
+      if (image) railImageCache.set(post.slug, image)
+      return image ? { ...post, image } : post
+    })
+  }, [i18n.language])
+  const lifePosts = useMemo<LifeRailPost[]>(
+    () =>
+      Object.values(lifeFiles)
+        .flatMap(getLifeRecords)
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .slice(0, 7)
+        .map((post) => ({
+          id: post.id,
+          title: post.title,
+          image:
+            typeof post.images?.[0] === 'string'
+              ? post.images[0]
+              : post.images?.[0]?.src,
+          city: post.city ?? post.meta?.split('·')[1]?.trim(),
+        })),
+    []
+  )
+  const lifeStats = useMemo(() => {
+    const records = Object.values(lifeFiles).flatMap(getLifeRecords)
+    return {
+      postCount: records.length,
+      photoCount: records.reduce(
+        (count, post) => count + (post.images?.length ?? 0),
+        0
+      ),
     }
-
-    event.preventDefault()
-    suppressHomePager()
-  }
-
-  const finishRailDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const dragState = railDragStateRef.current
-    if (!dragState || dragState.pointerId !== event.pointerId) return
-
-    if (dragState.hasDragged) {
-      suppressClickRef.current = true
-      suppressHomePager()
-      window.setTimeout(() => {
-        suppressClickRef.current = false
-      }, 160)
+  }, [])
+  const totalWordCount = allPosts.reduce(
+    (count, post) => count + (post.wordCount ?? 0),
+    0
+  )
+  const formatWordCount = (count: number, language: string) => {
+    if (language === 'zh-CN') {
+      if (count >= 10000)
+        return `${(count / 10000).toFixed(1).replace(/\.0$/, '')}w`
+      return count.toLocaleString('zh-CN')
     }
-
-    railDragStateRef.current = null
-    railLastFrameTimeRef.current = null
-    setIsDraggingRail(false)
-
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId)
-    }
+    if (count >= 1000000)
+      return `${(count / 1000000).toFixed(1).replace(/\.0$/, '')}m`
+    if (count >= 1000)
+      return `${(count / 1000).toFixed(1).replace(/\.0$/, '')}k`
+    return count.toLocaleString('en-US')
   }
-
-  const handleRailClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
-    if (!suppressClickRef.current) return
-
-    event.preventDefault()
-    event.stopPropagation()
-    suppressClickRef.current = false
-  }
-
+  const posts = useMemo(() => {
+    const selectedPosts = allPosts.filter((post) => post.selected)
+    return (selectedPosts.length > 0 ? selectedPosts : allPosts).slice(
+      0,
+      BLOG_POST_LIMIT
+    )
+  }, [allPosts])
+  useEffect(() => {
+    const urls = [...posts, ...lifePosts]
+      .map((post) => post.image)
+      .filter((image): image is string => Boolean(image))
+      .map((image) => getOptimizedImageUrl(image, 'card'))
+    urls.forEach((url) => {
+      void preloadRailImage(url)
+    })
+  }, [posts, lifePosts])
   if (posts.length === 0) return null
 
   return (
@@ -295,16 +185,16 @@ export function HomeBlogRailSection({
         >
           <div className="relative flex h-full flex-col justify-center gap-16 py-12 sm:py-14">
             <div className="flex flex-col gap-6 px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div className="flex flex-row items-center justify-between gap-2">
                 <div data-home-reveal="blog-header" className="space-y-3">
                   <div className="h-px w-14 bg-black/12 dark:bg-white/16" />
-                  <div className="flex items-center gap-4">
-                    <h2 className="heading-display text-[1.95rem] leading-none font-medium tracking-[0.08em] text-black/88 sm:text-[2.2rem] lg:text-[2.6rem] dark:text-white/90">
-                      {locale === 'zh-CN' ? '本站博客' : 'Site Blog'}
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <h2 className="heading-display whitespace-nowrap text-[clamp(1.2rem,5.6vw,2.6rem)] leading-none font-medium tracking-[0.04em] text-black/88 sm:tracking-[0.08em] dark:text-white/90">
+                      {locale === 'zh-CN' ? '本站内容' : 'Site Content'}
                     </h2>
                     <div
                       aria-hidden="true"
-                      className="pointer-events-none h-10 w-10 shrink-0 overflow-hidden rounded-full shadow-[0_10px_28px_-18px_rgba(15,23,42,0.5)] sm:h-11 sm:w-11"
+                      className="pointer-events-none h-8 w-8 shrink-0 overflow-hidden rounded-full shadow-[0_10px_28px_-18px_rgba(15,23,42,0.5)] sm:h-11 sm:w-11"
                     >
                       <img
                         src={avatarSrc}
@@ -317,24 +207,49 @@ export function HomeBlogRailSection({
                     </div>
                   </div>
                 </div>
-
-                <div className="flex flex-wrap items-center gap-2.5 lg:justify-end">
-                  {headerStats.map((stat) => (
-                    <div
-                      key={stat.label}
-                      data-home-reveal="blog-stat"
-                      data-home-reveal-index={headerStats.indexOf(stat)}
-                      className="inline-flex min-h-11 items-baseline gap-2.5 text-left"
-                    >
-                      <span className="text-[0.68rem] font-semibold tracking-[0.22em] text-black/34 uppercase dark:text-white/34">
-                        {stat.label}
-                      </span>
-                      <span className="text-sm font-medium text-black/74 dark:text-white/74">
-                        {stat.value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <p className="shrink-0 whitespace-nowrap text-right text-[0.54rem] leading-relaxed tracking-normal text-black/50 sm:text-xs sm:tracking-wide dark:text-white/50">
+                  {locale === 'zh-CN' ? (
+                    <>
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                        {allPosts.length}
+                      </strong>{' '}
+                      篇博客{' '}
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                        {formatWordCount(totalWordCount, locale)}
+                      </strong>{' '}
+                      字
+                      <br />
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                        {lifeStats.postCount}
+                      </strong>{' '}
+                      篇随笔{' '}
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                        {lifeStats.photoCount}
+                      </strong>{' '}
+                      张照片
+                    </>
+                  ) : (
+                    <>
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                        {allPosts.length}
+                      </strong>{' '}
+                      blog posts ·{' '}
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                        {formatWordCount(totalWordCount, locale)}
+                      </strong>{' '}
+                      words
+                      <br />
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                        {lifeStats.postCount}
+                      </strong>{' '}
+                      life notes ·{' '}
+                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                        {lifeStats.photoCount}
+                      </strong>{' '}
+                      photos
+                    </>
+                  )}
+                </p>
               </div>
 
               <div
@@ -345,16 +260,7 @@ export function HomeBlogRailSection({
             <div className="relative w-full">
               <div
                 data-home-no-pager="true"
-                className={cn(
-                  'relative cursor-grab touch-pan-y overflow-hidden select-none',
-                  isDraggingRail && 'cursor-grabbing'
-                )}
-                onClickCapture={handleRailClickCapture}
-                onDragStart={(event) => event.preventDefault()}
-                onPointerCancel={finishRailDrag}
-                onPointerDown={handleRailPointerDown}
-                onPointerMove={handleRailPointerMove}
-                onPointerUp={finishRailDrag}
+                className="relative overflow-hidden"
               >
                 <div
                   aria-hidden="true"
@@ -373,27 +279,23 @@ export function HomeBlogRailSection({
                   }}
                 />
 
-                <div
-                  ref={railTrackRef}
-                  className="flex w-max items-stretch will-change-transform"
-                >
-                  <BlogRailSegment
+                <div className="flex flex-col gap-5 sm:gap-6 lg:gap-7">
+                  <BlogRailRow
                     posts={posts}
-                    dateFormatter={dateFormatter}
+                    reverse={false}
+                    shouldReduceMotion={shouldReduceMotion}
+                    railApisRef={railApisRef}
+                    railKey="blog"
                   />
-                  <BlogRailSegment
-                    posts={posts}
-                    dateFormatter={dateFormatter}
-                    ariaHidden
+                  <BlogRailRow
+                    posts={lifePosts}
+                    reverse
+                    shouldReduceMotion={shouldReduceMotion}
+                    railApisRef={railApisRef}
+                    railKey="life"
                   />
                 </div>
               </div>
-
-              <BlogRailSpeedControl
-                isZh={isZh}
-                speedPercent={speedPercent}
-                onValueChange={setScrollSpeed}
-              />
             </div>
           </div>
         </div>
@@ -402,177 +304,124 @@ export function HomeBlogRailSection({
   )
 }
 
-function BlogRailSpeedControl({
-  isZh,
-  speedPercent,
-  onValueChange,
+function BlogRailRow({
+  posts,
+  reverse,
+  shouldReduceMotion,
+  railApisRef,
+  railKey,
 }: {
-  isZh: boolean
-  speedPercent: number
-  onValueChange: (value: number[]) => void
+  posts: Array<BlogPostSummary | LifeRailPost>
+  reverse: boolean
+  shouldReduceMotion: boolean
+  railApisRef: React.MutableRefObject<{
+    blog: EmblaApi | null
+    life: EmblaApi | null
+  }>
+  railKey: 'blog' | 'life'
 }) {
-  const label = isZh ? '滚动速度' : 'Scroll Speed'
-  const percentLabel = `${speedPercent}%`
+  const [viewportRef, emblaApi] = useEmblaCarousel(
+    {
+      align: (viewSize) => {
+        // Keep the two rows visibly staggered: the LTR blog row starts near
+        // the left edge, while the RTL life row starts near the right edge.
+        // The inset stays deliberately small on phone-sized viewports.
+        return Math.min(Math.max(viewSize * 0.035, 10), 48)
+      },
+      loop: true,
+      containScroll: false,
+      skipSnaps: true,
+      direction: reverse ? 'rtl' : 'ltr',
+    }
+  )
+
+  useEffect(() => {
+    railApisRef.current[railKey] = emblaApi ?? null
+    return () => {
+      railApisRef.current[railKey] = null
+    }
+  }, [emblaApi, railApisRef, railKey])
+
+  useEffect(() => {
+    if (!emblaApi) return
+    emblaApi.reInit({ loop: !shouldReduceMotion && posts.length > 1 })
+  }, [emblaApi, posts.length, shouldReduceMotion])
+
+  if (posts.length === 0) return null
 
   return (
     <div
-      data-home-no-pager="true"
-      data-home-reveal="blog-control"
-      data-home-reveal-delay={0.2}
-      className="pointer-events-auto absolute right-8 -bottom-10 z-30 w-[min(13rem,calc(100vw-4rem))] sm:right-10 sm:w-56"
+      ref={viewportRef}
+      dir={reverse ? 'rtl' : 'ltr'}
+      className="overflow-hidden"
     >
-      <div className="mb-2 flex items-center justify-between gap-3">
-        <Label
-          htmlFor="home-blog-scroll-speed"
-          className="text-[0.58rem] tracking-[0.2em] text-black/54 uppercase dark:text-white/58"
-        >
-          {label}
-        </Label>
-        <output className="text-xs font-medium text-black/76 tabular-nums dark:text-white/78">
-          {percentLabel}
-        </output>
+      <div className="flex touch-pan-y">
+        {posts.map((post) => (
+          <div
+            key={'slug' in post ? post.slug : post.id}
+            dir="ltr"
+            className={`min-w-0 shrink-0 basis-[min(78vw,calc(100vw_-_2rem))] sm:basis-[22rem] lg:basis-[26rem] ${reverse ? 'ml-3 sm:ml-4 lg:ml-5' : 'mr-3 sm:mr-4 lg:mr-5'}`}
+          >
+            <BlogRailItem post={post} />
+          </div>
+        ))}
       </div>
-      <input
-        id="home-blog-scroll-speed"
-        type="range"
-        value={speedPercent}
-        min={BLOG_RAIL_MIN_SPEED_PERCENT}
-        max={BLOG_RAIL_MAX_SPEED_PERCENT}
-        step={5}
-        aria-label={label}
-        className="home-blog-speed-slider"
-        style={
-          {
-            '--home-blog-speed-progress': `${
-              ((speedPercent - BLOG_RAIL_MIN_SPEED_PERCENT) /
-                (BLOG_RAIL_MAX_SPEED_PERCENT - BLOG_RAIL_MIN_SPEED_PERCENT)) *
-              100
-            }%`,
-          } as CSSProperties
-        }
-        onChange={(event) => onValueChange([Number(event.currentTarget.value)])}
-      />
-    </div>
-  )
-}
-
-interface BlogRailSegmentProps {
-  posts: BlogPostSummary[]
-  dateFormatter: Intl.DateTimeFormat
-  ariaHidden?: boolean
-}
-
-function BlogRailSegment({
-  posts,
-  dateFormatter,
-  ariaHidden,
-}: BlogRailSegmentProps) {
-  return (
-    <div className="flex shrink-0 pl-4 sm:pl-6 lg:pl-8">
-      {posts.map((post, index) => (
-        <BlogRailItem
-          key={`${ariaHidden ? 'ghost' : 'live'}-${post.slug}`}
-          post={post}
-          index={index}
-          dateFormatter={dateFormatter}
-          ariaHidden={ariaHidden}
-        />
-      ))}
-      <div
-        aria-hidden="true"
-        className="my-5 w-px shrink-0 sm:my-6"
-        style={{ backgroundColor: 'var(--border-color)' }}
-      />
     </div>
   )
 }
 
 function BlogRailItem({
   post,
-  index,
-  dateFormatter,
-  ariaHidden,
 }: {
-  post: BlogPostSummary
-  index: number
-  dateFormatter: Intl.DateTimeFormat
-  ariaHidden?: boolean
+  post: BlogPostSummary | LifeRailPost
 }) {
-  const { t } = useTranslation()
-  const formattedDate = dateFormatter.format(new Date(post.date))
-  const itemNumber = String(index + 1).padStart(2, '0')
-  const isFeatured = index === 0
-
   return (
     <Link
-      to={`/blog/${post.slug}`}
-      tabIndex={ariaHidden ? -1 : undefined}
-      aria-hidden={ariaHidden}
-      data-home-reveal={ariaHidden ? undefined : 'blog-card'}
-      data-home-reveal-index={ariaHidden ? undefined : index}
-      className={cn(
-        'group relative flex min-h-[19rem] shrink-0 flex-col justify-between overflow-hidden border border-slate-200/70 px-5 py-5 transition-[background-color,box-shadow,transform] duration-300 sm:min-h-[21rem] sm:px-7 sm:py-6 lg:min-h-[22rem] lg:px-8 dark:border-0',
-        isFeatured
-          ? 'w-[20.5rem] bg-black/[0.03] shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] hover:shadow-[0_28px_54px_-42px_rgba(15,23,42,0.42)] sm:w-[28rem] lg:w-[32rem] dark:bg-white/[0.04] dark:shadow-none dark:hover:shadow-[0_28px_56px_-44px_rgba(2,6,23,0.86)]'
-          : 'w-[18.5rem] shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] sm:w-[24rem] lg:w-[28rem] dark:shadow-none'
-      )}
+      to={'slug' in post ? `/blog/${post.slug}` : '/life'}
+      className="group relative flex h-44 w-full items-end overflow-hidden rounded-2xl border border-slate-200/70 bg-slate-950 px-5 py-5 text-white shadow-[0_20px_55px_-36px_rgba(15,23,42,0.8)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_26px_65px_-36px_rgba(15,23,42,0.9)] sm:h-48 sm:px-6 dark:border-white/10"
     >
+      <div aria-hidden="true" className="absolute inset-0 bg-slate-800" />
+      {post.image ? (
+        <img
+          src={getOptimizedImageUrl(post.image, 'card')}
+          data-original-src={post.image}
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          referrerPolicy="no-referrer"
+          onError={(event) => {
+            const image = event.currentTarget
+            const original = image.dataset.originalSrc
+            if (original && image.src !== original) {
+              image.src = original
+            } else {
+              image.style.opacity = '0'
+            }
+          }}
+          className="absolute inset-0 h-full w-full object-cover opacity-75 transition-transform duration-500 group-hover:scale-105"
+        />
+      ) : null}
       <div
         aria-hidden="true"
-        className={cn(
-          'absolute top-0 right-5 left-5 h-px opacity-0 transition-opacity duration-300 sm:right-7 sm:left-7 lg:right-8 lg:left-8',
-          isFeatured && 'opacity-100'
-        )}
-        style={{ backgroundColor: 'var(--text-primary)' }}
+        className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/10"
       />
-
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-3">
-          <div className="text-[0.7rem] tracking-[0.24em] text-[var(--text-secondary)] uppercase sm:text-[0.74rem]">
-            {formattedDate}
-          </div>
-          {post.category ? (
-            <CategoryLabel
-              category={post.category}
-              className="text-[0.66rem] tracking-[0.16em] uppercase"
-              iconClassName="h-3.5 w-3.5"
-            />
-          ) : null}
-        </div>
-
-        <div className="pt-0.5 text-[0.7rem] font-medium tracking-[0.22em] text-[var(--text-secondary)] uppercase">
-          {itemNumber}
-        </div>
-      </div>
-
-      <div className={cn('space-y-4', isFeatured && 'space-y-5')}>
-        <h2
-          className={cn(
-            'text-balance text-black/88 dark:text-white/90',
-            isFeatured
-              ? 'text-[1.85rem] leading-[0.98] sm:text-[2.35rem] lg:text-[2.8rem]'
-              : 'text-[1.6rem] leading-[1.04] sm:text-[2rem] lg:text-[2.35rem]'
-          )}
-        >
+      <div className="relative z-10 min-w-0">
+        <h2 className="truncate text-[1.05rem] leading-tight text-white sm:text-[1.2rem]">
           {post.title}
         </h2>
-        <p
-          className={cn(
-            'text-black/46 dark:text-white/48',
-            isFeatured
-              ? 'line-clamp-5 max-w-[30ch] text-[0.96rem] leading-7'
-              : 'line-clamp-4 max-w-[26ch] text-sm leading-6 sm:text-[0.95rem]'
-          )}
-        >
-          {post.summary}
-        </p>
-      </div>
-
-      <div className="flex items-center justify-between gap-4 text-[var(--text-secondary)]">
-        <span className="text-[0.68rem] tracking-[0.18em] uppercase">
-          {t('blog.readMore')}
-        </span>
-        <span aria-hidden="true">→</span>
+        {'category' in post && post.category ? (
+          <CategoryLabel
+            category={post.category}
+            className="mt-2 text-[0.62rem] tracking-[0.16em] text-white/70 uppercase"
+            iconClassName="h-3 w-3"
+          />
+        ) : 'city' in post && post.city ? (
+          <span className="mt-2 block text-[0.62rem] tracking-[0.16em] text-white/70 uppercase">
+            {post.city}
+          </span>
+        ) : null}
       </div>
     </Link>
   )
