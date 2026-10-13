@@ -1570,28 +1570,81 @@ img {
 [data-hdr-image='true'] .yarl__slide_image {
   dynamic-range-limit: no-limit;
 }
-@keyframes home-blog-marquee {
-  from {
+/* marquee animations removed: rails advance one card at a time in React */
+/* @keyframes home-blog-marquee {
+  0%,
+  10% {
     transform: translate3d(0, 0, 0);
   }
-  to {
-    transform: translate3d(-50%, 0, 0);
+  13%,
+  24% {
+    transform: translate3d(-14.2857%, 0, 0);
+  }
+  27%,
+  38% {
+    transform: translate3d(-28.5714%, 0, 0);
+  }
+  41%,
+  52% {
+    transform: translate3d(-42.8571%, 0, 0);
+  }
+  55%,
+  66% {
+    transform: translate3d(-57.1428%, 0, 0);
+  }
+  69%,
+  80% {
+    transform: translate3d(-71.4285%, 0, 0);
+  }
+  83%,
+  94% {
+    transform: translate3d(-85.7142%, 0, 0);
+  }
+  97%,
+  100% {
+    transform: translate3d(-100%, 0, 0);
   }
 }
 
 @keyframes home-blog-marquee-reverse {
-  from {
-    transform: translate3d(-50%, 0, 0);
+  0%,
+  10% {
+    transform: translate3d(-100%, 0, 0);
   }
-  to {
+  13%,
+  24% {
+    transform: translate3d(-85.7142%, 0, 0);
+  }
+  27%,
+  38% {
+    transform: translate3d(-71.4285%, 0, 0);
+  }
+  41%,
+  52% {
+    transform: translate3d(-57.1428%, 0, 0);
+  }
+  55%,
+  66% {
+    transform: translate3d(-42.8571%, 0, 0);
+  }
+  69%,
+  80% {
+    transform: translate3d(-28.5714%, 0, 0);
+  }
+  83%,
+  94% {
+    transform: translate3d(-14.2857%, 0, 0);
+  }
+  97%,
+  100% {
     transform: translate3d(0, 0, 0);
   }
 }
 
 .home-blog-marquee,
 .home-blog-marquee-reverse {
-  animation-duration: 64s;
-  animation-timing-function: linear;
+  animation-duration: 28s;
+  animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
   will-change: transform;
 }
@@ -1601,4 +1654,4 @@ img {
 }
 .home-blog-marquee-reverse {
   animation-name: home-blog-marquee-reverse;
-}
+} */
