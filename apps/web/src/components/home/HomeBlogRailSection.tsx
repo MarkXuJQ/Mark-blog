@@ -1,30 +1,29 @@
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type TransitionEvent,
-} from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, type MotionValue, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { getAllPostSummaries } from '@/lib/content/postSummaries'
+import { getAllPosts } from '@/lib/content/posts'
 import { cn } from '@/lib/classNames'
 import { getOptimizedImageUrl } from '@/lib/image'
 import { CategoryLabel } from '@/components/blog/CategoryLabel'
 import type { BlogPostSummary } from '@/lib/content/posts'
 
 type LifeRailPost = { id: string; title: string; image?: string; city?: string }
-const lifeFiles = import.meta.glob<{
-  default: Array<{
+type LifeRecord = {
     id: string
     title: string
     date: string
     images?: Array<string | { src: string }>
     meta?: string
     city?: string
-  }>
-}>('@content/life/*.json', { eager: true })
+}
+const lifeFiles = import.meta.glob<{ default?: LifeRecord[] } | LifeRecord[]
+>('@content/life/*.json', { eager: true })
+
+function getLifeRecords(module: { default?: LifeRecord[] } | LifeRecord[]) {
+  return Array.isArray(module) ? module : (module.default ?? [])
+}
 
 interface HomeBlogRailSectionProps {
   avatarSrc: string
@@ -35,6 +34,29 @@ interface HomeBlogRailSectionProps {
 }
 
 const BLOG_POST_LIMIT = 7
+const RAIL_INTERVAL = 4500
+const railImageCache = new Map<string, string>()
+const railImagePreloadCache = new Map<string, Promise<void>>()
+
+function preloadRailImage(src: string) {
+  const existing = railImagePreloadCache.get(src)
+  if (existing) return existing
+  const promise = new Promise<void>((resolve) => {
+    const image = new Image()
+    image.decoding = 'async'
+    image.onload = () => resolve()
+    image.onerror = () => resolve()
+    image.src = src
+  })
+  railImagePreloadCache.set(src, promise)
+  return promise
+}
+
+function getFirstContentImage(content?: string): string | undefined {
+  if (!content) return undefined
+  const match = content.match(/<img[^>]+src=["']([^"']+)["']/i)
+  return match?.[1]
+}
 export function HomeBlogRailSection({
   avatarSrc,
   sectionScale,
@@ -54,7 +76,7 @@ export function HomeBlogRailSection({
       timer = window.setTimeout(() => {
         setRailTick((value) => value + 1)
         schedule()
-      }, 4500)
+      }, RAIL_INTERVAL)
     }
     const onVisibility = () => {
       window.clearTimeout(timer)
@@ -69,14 +91,25 @@ export function HomeBlogRailSection({
   }, [shouldReduceMotion])
 
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
-  const allPosts = useMemo(
-    () => getAllPostSummaries(i18n.language),
-    [i18n.language]
-  )
+  const allPosts = useMemo(() => {
+    const summaries = getAllPostSummaries(i18n.language)
+    const fullPosts = getAllPosts(i18n.language)
+    const contentImages = new Map(
+      fullPosts.map((post) => [post.slug, getFirstContentImage(post.content)])
+    )
+    return summaries.map((post) => {
+      const image =
+        railImageCache.get(post.slug) ||
+        post.image ||
+        contentImages.get(post.slug)
+      if (image) railImageCache.set(post.slug, image)
+      return image ? { ...post, image } : post
+    })
+  }, [i18n.language])
   const lifePosts = useMemo<LifeRailPost[]>(
     () =>
       Object.values(lifeFiles)
-        .flatMap((module) => module.default ?? [])
+        .flatMap(getLifeRecords)
         .sort((a, b) => b.date.localeCompare(a.date))
         .slice(0, 7)
         .map((post) => ({
@@ -90,6 +123,32 @@ export function HomeBlogRailSection({
         })),
     []
   )
+  const lifeStats = useMemo(() => {
+    const records = Object.values(lifeFiles).flatMap(getLifeRecords)
+    return {
+      postCount: records.length,
+      photoCount: records.reduce(
+        (count, post) => count + (post.images?.length ?? 0),
+        0
+      ),
+    }
+  }, [])
+  const totalWordCount = allPosts.reduce(
+    (count, post) => count + (post.wordCount ?? 0),
+    0
+  )
+  const formatWordCount = (count: number, language: string) => {
+    if (language === 'zh-CN') {
+      if (count >= 10000)
+        return `${(count / 10000).toFixed(1).replace(/\.0$/, '')}w`
+      return count.toLocaleString('zh-CN')
+    }
+    if (count >= 1000000)
+      return `${(count / 1000000).toFixed(1).replace(/\.0$/, '')}m`
+    if (count >= 1000)
+      return `${(count / 1000).toFixed(1).replace(/\.0$/, '')}k`
+    return count.toLocaleString('en-US')
+  }
   const posts = useMemo(() => {
     const selectedPosts = allPosts.filter((post) => post.selected)
     return (selectedPosts.length > 0 ? selectedPosts : allPosts).slice(
@@ -97,6 +156,15 @@ export function HomeBlogRailSection({
       BLOG_POST_LIMIT
     )
   }, [allPosts])
+  useEffect(() => {
+    const urls = [...posts, ...lifePosts]
+      .map((post) => post.image)
+      .filter((image): image is string => Boolean(image))
+      .map((image) => getOptimizedImageUrl(image, 'card'))
+    urls.forEach((url) => {
+      void preloadRailImage(url)
+    })
+  }, [posts, lifePosts])
   if (posts.length === 0) return null
 
   return (
@@ -143,6 +211,43 @@ export function HomeBlogRailSection({
                     </div>
                   </div>
                 </div>
+                <p className="text-[0.68rem] leading-relaxed tracking-wide text-black/50 sm:text-xs lg:text-right dark:text-white/50">
+                  {locale === 'zh-CN' ? (
+                    <>
+                      <strong className="text-base font-semibold text-black/80 tabular-nums dark:text-white/80">
+                        {allPosts.length}
+                      </strong>{' '}
+                      篇博客{' '}
+                      <strong className="text-base font-semibold text-black/80 tabular-nums dark:text-white/80">
+                        {formatWordCount(totalWordCount, locale)}
+                      </strong>{' '}
+                      字
+                      <br />
+                      <strong className="text-base font-semibold text-black/80 tabular-nums dark:text-white/80">
+                        {lifeStats.postCount}
+                      </strong>{' '}
+                      篇随笔{' '}
+                      <strong className="text-base font-semibold text-black/80 tabular-nums dark:text-white/80">
+                        {lifeStats.photoCount}
+                      </strong>{' '}
+                      张照片
+                    </>
+                  ) : (
+                    <>
+                      <strong className="text-base font-semibold text-black/80 tabular-nums dark:text-white/80">
+                        {allPosts.length}
+                      </strong>{' '}
+                      blog posts ·{' '}
+                      <strong className="text-base font-semibold text-black/80 tabular-nums dark:text-white/80">
+                        {formatWordCount(totalWordCount, locale)}
+                      </strong>{' '}
+                      words
+                      <br />
+                      {lifeStats.postCount} life notes · {lifeStats.photoCount}{' '}
+                      photos
+                    </>
+                  )}
+                </p>
               </div>
 
               <div
@@ -184,7 +289,6 @@ export function HomeBlogRailSection({
                     reverse
                     shouldReduceMotion={shouldReduceMotion}
                     railTick={railTick}
-                    disableReveal
                   />
                 </div>
               </div>
@@ -196,71 +300,106 @@ export function HomeBlogRailSection({
   )
 }
 
-interface BlogRailSegmentProps {
-  posts: Array<BlogPostSummary | LifeRailPost>
-  ariaHidden?: boolean
-}
-
 function BlogRailRow({
   posts,
   reverse,
   shouldReduceMotion,
   railTick,
-  disableReveal = false,
 }: {
   posts: Array<BlogPostSummary | LifeRailPost>
   reverse: boolean
   shouldReduceMotion: boolean
   railTick: number
-  disableReveal?: boolean
 }) {
-  const trackRef = useRef<HTMLDivElement | null>(null)
-  const cycle = posts.length > 0 ? railTick % posts.length : 0
-  const step = posts.length * 4 + (reverse ? -cycle : cycle)
+  const [cursor, setCursor] = useState(0)
+  const [moving, setMoving] = useState(false)
   const [cardStep, setCardStep] = useState(0)
-  const [centerOffset, setCenterOffset] = useState(0)
+  const [slotCount, setSlotCount] = useState(3)
+  const viewportRef = useRef<HTMLDivElement | null>(null)
+  const trackRef = useRef<HTMLDivElement | null>(null)
+  const timerRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (timerRef.current !== null) window.clearTimeout(timerRef.current)
+    setMoving(false)
+    setCursor(0)
+  }, [posts])
+
   useEffect(() => {
     const measure = () => {
       const track = trackRef.current
       const card = track?.querySelector<HTMLElement>('a')
-      const viewport = track?.parentElement
+      const viewport = viewportRef.current
       if (!track || !card || !viewport) return
-      const gap = Number.parseFloat(getComputedStyle(track).gap) || 0
       const width = card.getBoundingClientRect().width
-      setCardStep(width + gap)
-      const targetCenter = viewport.clientWidth * (reverse ? 0.54 : 0.46)
-      setCenterOffset(targetCenter - width / 2)
+      const styles = getComputedStyle(track)
+      const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0
+      const nextStep = width + gap
+      setCardStep(nextStep)
+      // Keep enough nearby slots to cover the viewport plus one buffer card
+      // on either side. The number of visible cards is an outcome of the
+      // measured layout, never a fixed design constraint.
+      setSlotCount(
+        Math.max(3, Math.ceil(viewport.clientWidth / nextStep) + 2)
+      )
     }
     measure()
     const observer = new ResizeObserver(measure)
-    if (trackRef.current?.parentElement)
-      observer.observe(trackRef.current.parentElement)
+    if (viewportRef.current) observer.observe(viewportRef.current)
     if (trackRef.current?.firstElementChild)
       observer.observe(trackRef.current.firstElementChild)
     return () => observer.disconnect()
   }, [posts.length, reverse])
+
+  useEffect(() => {
+    if (railTick === 0 || shouldReduceMotion || posts.length < 2 || !cardStep)
+      return
+    if (timerRef.current !== null) window.clearTimeout(timerRef.current)
+    setMoving(true)
+    timerRef.current = window.setTimeout(() => {
+      setCursor((current) =>
+        (current + (reverse ? -1 : 1) + posts.length) % posts.length
+      )
+      setMoving(false)
+    }, 520)
+    return () => {
+      if (timerRef.current !== null) window.clearTimeout(timerRef.current)
+    }
+  }, [railTick, shouldReduceMotion, posts.length, cardStep, reverse])
+
+  const visibleItems = posts
+  if (visibleItems.length === 0) return null
+  const railItems = Array.from({ length: slotCount }, (_, index) => {
+    const offset = (reverse ? index - 1 : index) + cursor
+    const itemIndex =
+      ((offset % visibleItems.length) + visibleItems.length) % visibleItems.length
+    return visibleItems[itemIndex]
+  })
+
   return (
-    <div className="overflow-hidden">
+    <div ref={viewportRef} className="overflow-hidden">
       <div
         ref={trackRef}
         className={cn(
           'flex w-max items-stretch gap-3 sm:gap-4 lg:gap-5',
-          'transition-transform duration-500 ease-in-out'
+          moving
+            ? 'transition-transform duration-500 ease-in-out'
+            : 'transition-none'
         )}
         style={{
-          transform:
-            shouldReduceMotion || !cardStep
-              ? undefined
-              : `translate3d(${centerOffset - step * cardStep}px, 0, 0)`,
+          // Keep one circular buffer card outside the left edge. Both
+          // directions use the same base position; only the animated step
+          // changes sign, so the endpoint and the next cursor are identical.
+          transform: `translate3d(${-cardStep +
+            (moving ? (reverse ? cardStep : -cardStep) : 0)}px, 0, 0)`,
         }}
       >
-        <BlogRailSegment posts={posts} />
-        {Array.from({ length: 9 }, (_, index) => (
-          <BlogRailSegment
-            key={index}
-            posts={posts}
-            ariaHidden={index > 0}
-            disableReveal={disableReveal}
+        {railItems.map((post, index) => (
+          <BlogRailItem
+            // The slot remains stable while its circular-list item changes.
+            key={`rail-slot-${index}`}
+            post={post}
+            ariaHidden={reverse ? index !== 1 : index !== 0}
           />
         ))}
       </div>
@@ -268,53 +407,40 @@ function BlogRailRow({
   )
 }
 
-function BlogRailSegment({
-  posts,
-  ariaHidden,
-  disableReveal,
-}: BlogRailSegmentProps) {
-  return (
-    <div className="flex shrink-0 gap-3 sm:gap-4 lg:gap-5">
-      {posts.map((post, index) => (
-        <BlogRailItem
-          key={`${ariaHidden ? 'ghost' : 'live'}-${'slug' in post ? post.slug : post.id}`}
-          post={post}
-          index={index}
-          ariaHidden={ariaHidden}
-          disableReveal={disableReveal}
-        />
-      ))}
-    </div>
-  )
-}
-
 function BlogRailItem({
   post,
-  index,
   ariaHidden,
-  disableReveal,
 }: {
   post: BlogPostSummary | LifeRailPost
-  index: number
   ariaHidden?: boolean
-  disableReveal?: boolean
 }) {
   return (
     <Link
       to={'slug' in post ? `/blog/${post.slug}` : '/life'}
       tabIndex={ariaHidden ? -1 : undefined}
       aria-hidden={ariaHidden}
-      data-home-reveal={ariaHidden || disableReveal ? undefined : 'blog-card'}
-      data-home-reveal-index={ariaHidden || disableReveal ? undefined : index}
       className="group relative flex h-44 w-[78vw] shrink-0 items-end overflow-hidden rounded-2xl border border-slate-200/70 bg-slate-950 px-5 py-5 text-white shadow-[0_20px_55px_-36px_rgba(15,23,42,0.8)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_26px_65px_-36px_rgba(15,23,42,0.9)] sm:h-48 sm:w-[22rem] sm:px-6 lg:w-[26rem] dark:border-white/10"
     >
+      <div aria-hidden="true" className="absolute inset-0 bg-slate-800" />
       {post.image ? (
         <img
           src={getOptimizedImageUrl(post.image, 'card')}
+          data-original-src={post.image}
           alt=""
           aria-hidden="true"
-          loading="lazy"
+          loading="eager"
+          fetchPriority="high"
           decoding="async"
+          referrerPolicy="no-referrer"
+          onError={(event) => {
+            const image = event.currentTarget
+            const original = image.dataset.originalSrc
+            if (original && image.src !== original) {
+              image.src = original
+            } else {
+              image.style.opacity = '0'
+            }
+          }}
           className="absolute inset-0 h-full w-full object-cover opacity-75 transition-transform duration-500 group-hover:scale-105"
         />
       ) : null}
