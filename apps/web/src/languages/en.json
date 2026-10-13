@@ -58,6 +58,15 @@
     "readingTime": "Reading time: {{minutes}} min",
     "github": "My GitHub"
   },
+  "travel": {
+    "title": "Places I've Been",
+    "description": "Here are the places I have been to, and there are still many more to explore!",
+    "countries": "Countries",
+    "provinces": "Provinces",
+    "openMap": "Open full map",
+    "interact": "Interact",
+    "mapTitle": "Interactive travel map"
+  },
   "blog": {
     "title": "Mark Xu's Blog",
     "description": "A collection of notes on technology, life, and projects from Mark Xu.",

@@ -54,9 +54,18 @@
   },
   "home": {
     "title": "欢迎来到<1/><0>Mark</0>的自留地",
-    "intro": "我会在这里放一些我的学习笔记、生活中遇到的人或事、一些个人的想法，和一些奇思妙想的作品。",
+    "intro": "我会在这里放一些我的学习笔记、生活中遇到的人或事、一些个人的想法，和一些奇奇怪怪的作品。",
     "readingTime": "阅读时间：{{minutes}} 分钟",
     "github": "我的 GitHub"
+  },
+  "travel": {
+    "title": "去过的地方",
+    "description": "这里是我曾经去过的地方，可见还有好多地方等着去探索呢！",
+    "countries": "个国家",
+    "provinces": "个省份",
+    "openMap": "打开完整地图",
+    "interact": "进行交互",
+    "mapTitle": "旅行地图交互窗口"
   },
   "blog": {
     "title": "Mark Xu 的博客",
