@@ -1505,6 +1505,22 @@ i {
 }
 
 @font-face {
+  font-family: 'BBH Bartle';
+  src: url('../fonts/BBHBartle-Subset.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Macintosh Skeletal';
+  src: url('../fonts/MacintoshSkeletal-Subset.woff2') format('woff2');
+  font-weight: 1 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Montserrat';
   src: url('../fonts/Montserrat-Subset.woff2') format('woff2');
   font-weight: 400 900;
@@ -1569,6 +1585,15 @@ img {
 .hdr-image,
 [data-hdr-image='true'] .yarl__slide_image {
   dynamic-range-limit: no-limit;
+}
+
+.mark-lab-title {
+  font-family: 'BBH Bartle', var(--font-body);
+}
+
+.mark-lab-original {
+  font-family: 'Macintosh Skeletal', var(--font-body);
+  font-weight: 500;
 }
 /* marquee animations removed: rails advance one card at a time in React */
 /* @keyframes home-blog-marquee {
