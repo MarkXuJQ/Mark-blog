@@ -9,6 +9,7 @@ import {
   SqueezeCarousel,
   type SqueezeSlide,
 } from '@/components/ui/carousel-squeeze'
+import { ORIGINAL_CENTERLINE_GLYPHS } from '@/assets/wordmarks/original-centerline'
 
 type ProjectLocale = { zh: string; en: string }
 type ProjectLinkType = 'game' | 'github' | 'computer'
@@ -58,6 +59,31 @@ const PROJECT_LINK_ICONS: Record<ProjectLinkType, IconType> = {
 
 function ProjectOverlay({ project }: { project: ProjectCardData }) {
   return <span className="truncate">{project.title}</span>
+}
+
+function OriginalWordmark() {
+  return (
+    <svg
+      aria-label="Original"
+      className="mark-lab-original-svg"
+      role="img"
+      viewBox="0 0 13100 3450"
+      preserveAspectRatio="xMinYMid meet"
+    >
+      <g transform="translate(0 2300) scale(1 -1)">
+        {ORIGINAL_CENTERLINE_GLYPHS.map((glyph, index) => (
+          <path
+            key={`${glyph.name}-${glyph.x}`}
+            className="mark-lab-original-svg__path"
+            d={glyph.d}
+            pathLength="1"
+            transform={`translate(${glyph.x} ${glyph.y})`}
+            style={{ animationDelay: `${index * 120}ms` }}
+          />
+        ))}
+      </g>
+    </svg>
+  )
 }
 
 function projectToSlide(project: ProjectCardData): SqueezeSlide {
@@ -134,17 +160,24 @@ export function Projects() {
       />
 
       <header className="-mx-4 overflow-hidden px-4 pt-8 pb-14 sm:-mx-6 sm:px-6 md:pt-14 md:pb-24">
-        <h1 className="max-w-full text-slate-950 dark:text-slate-50">
-          <span className="mark-lab-title block text-[clamp(3.5rem,13vw,9rem)] leading-[0.82] whitespace-nowrap text-slate-950 dark:text-slate-50">
-            MARK
-          </span>
-          <span className="mark-lab-original mt-5 block pl-[13%] text-[clamp(4rem,16vw,11rem)] leading-[0.78] whitespace-nowrap text-slate-950 dark:text-slate-50">
-            <span className="mark-lab-title mr-3 align-baseline text-[0.34em] font-normal text-slate-950 dark:text-slate-50">
-              THE
+        <div className="mark-lab-wordmark">
+          <h1 className="max-w-full text-slate-950 dark:text-slate-50">
+            <span className="mark-lab-mark-row">
+              <span className="mark-lab-title mark-lab-mark">MARK</span>
+              <img
+                src="/images/IMG_1766.JPG"
+                alt="Mark"
+                className="mark-lab-avatar rounded-full object-cover ring-1 ring-slate-900/10 dark:ring-white/15"
+              />
             </span>
-            Original.
-          </span>
-        </h1>
+            <span className="mark-lab-second-line text-slate-950 dark:text-slate-50">
+              <span className="mark-lab-title mark-lab-the">THE</span>
+              <span className="mark-lab-original">
+                <OriginalWordmark />
+              </span>
+            </span>
+          </h1>
+        </div>
       </header>
 
       <div className="mt-2 md:mt-6">
@@ -153,6 +186,7 @@ export function Projects() {
           label={t('projects.title')}
           accent="var(--brand-600)"
           height="clamp(190px, 34cqi, 360px)"
+          controls={false}
           autoplay={projects.length > 1}
         />
       </div>
