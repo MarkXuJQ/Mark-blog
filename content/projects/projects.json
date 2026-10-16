@@ -1,51 +1,10 @@
 {
   "sections": [
     {
-      "id": "games",
+      "id": "projects",
       "title": {
-        "zh": "游戏",
-        "en": "Games"
-      },
-      "projects": [
-        {
-          "id": "fingerblock",
-          "title": {
-            "zh": "Finger Block",
-            "en": "Finger Block"
-          },
-          "description": {
-            "zh": "一款使用摄像头识别手势进行互动的节奏游戏，也支持触屏操作。但最好还是用电脑玩，手机和平板的优化有点差。（My bad）",
-            "en": "A camera-controlled rhythm game with gesture interaction and touch controls."
-          },
-          "alt": {
-            "zh": "Finger Block 游戏主界面预览",
-            "en": "Preview of the Finger Block game interface"
-          },
-          "preview": {
-            "src": "/images/fingerblock-preview.png",
-            "avifSrc": "/images/fingerblock-preview.avif"
-          },
-          "links": [
-            {
-              "type": "game",
-              "href": "/lab/fingerblock/",
-              "localHref": "https://finger-block.vercel.app/",
-              "labelKey": "live"
-            },
-            {
-              "type": "github",
-              "href": "https://github.com/MarkXuJQ/finger-block",
-              "labelKey": "source"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "website",
-      "title": {
-        "zh": "网页",
-        "en": "Website"
+        "zh": "项目",
+        "en": "Projects"
       },
       "projects": [
         {
@@ -135,16 +94,39 @@
               "labelKey": "source"
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "widgets",
-      "title": {
-        "zh": "Widgets",
-        "en": "Widgets"
-      },
-      "projects": [
+        },
+        {
+          "id": "fingerblock",
+          "title": {
+            "zh": "Finger Block",
+            "en": "Finger Block"
+          },
+          "description": {
+            "zh": "一款使用摄像头识别手势进行互动的节奏游戏，也支持触屏操作。但最好还是用电脑玩，手机和平板的优化有点差。（My bad）",
+            "en": "A camera-controlled rhythm game with gesture interaction and touch controls."
+          },
+          "alt": {
+            "zh": "Finger Block 游戏主界面预览",
+            "en": "Preview of the Finger Block game interface"
+          },
+          "preview": {
+            "src": "/images/fingerblock-preview.png",
+            "avifSrc": "/images/fingerblock-preview.avif"
+          },
+          "links": [
+            {
+              "type": "game",
+              "href": "/lab/fingerblock/",
+              "localHref": "https://finger-block.vercel.app/",
+              "labelKey": "live"
+            },
+            {
+              "type": "github",
+              "href": "https://github.com/MarkXuJQ/finger-block",
+              "labelKey": "source"
+            }
+          ]
+        },
         {
           "id": "yearProgress",
           "title": {

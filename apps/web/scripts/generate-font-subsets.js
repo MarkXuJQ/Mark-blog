@@ -48,12 +48,17 @@ const montserratFontOutput = path.join(
   projectRoot,
   'src/assets/fonts/Montserrat-Subset.woff2'
 )
+const macintoshSkeletalFontOutput = path.join(
+  projectRoot,
+  'src/assets/fonts/MacintoshSkeletal-Subset.woff2'
+)
 const requiredFontOutputs = [
   alibabaMediumFontOutput,
   alibabaSemiBoldFontOutput,
   pixelFontOutput,
   nerdFontOutput,
   montserratFontOutput,
+  macintoshSkeletalFontOutput,
 ]
 
 const chineseTextPath = path.join(generatedDir, 'font-chinese-chars.txt')
@@ -64,6 +69,10 @@ const alibabaSemiBoldTextPath = path.join(
 const pixelTextPath = path.join(generatedDir, 'font-pixel-chars.txt')
 const nerdFontTextPath = path.join(generatedDir, 'font-nerd-chars.txt')
 const montserratTextPath = path.join(generatedDir, 'font-montserrat-chars.txt')
+const macintoshSkeletalTextPath = path.join(
+  generatedDir,
+  'font-macintosh-skeletal-chars.txt'
+)
 const fontSafelistPath = path.join(
   projectRoot,
   'src/assets/fonts/font-safelist.txt'
@@ -108,6 +117,11 @@ const montserratFontSource = resolveFontSource({
   roots: [path.join(projectRoot, 'src/assets/fonts/Montserrat')],
   baseNames: ['Montserrat-VariableFont_wght'],
 })
+const macintoshSkeletalFontSource = resolveFontSource({
+  envVar: 'MACINTOSH_SKELETAL_FONT_SOURCE',
+  roots: [path.join(projectRoot, 'src/assets/fonts/BBH_Bartle')],
+  baseNames: ['MacintoshSkeletalFilled'],
+})
 
 if (
   nerdFontSource &&
@@ -141,6 +155,11 @@ const safeCodeExtras = [
   '←↑→↓↔↕↖↗↘↙│┃┌┐└┘├┤┬┴┼─━',
   '✓✔✕✖•',
 ].join('')
+
+const macintoshSkeletalText =
+  Array.from({ length: 95 }, (_, index) => String.fromCharCode(index + 32)).join(
+    ''
+  ) + '–—‘’…'
 
 function collectTextFiles(dirPath, files = []) {
   if (!fs.existsSync(dirPath)) return files
@@ -356,6 +375,7 @@ function findPyftsubset() {
     pixelFontSource,
     nerdFontSource,
     montserratFontSource,
+    macintoshSkeletalFontSource,
   ].find(Boolean)
   const candidates = [
     process.env.PYFTSUBSET,
@@ -598,6 +618,7 @@ async function main() {
   fs.writeFileSync(pixelTextPath, pixelText)
   fs.writeFileSync(nerdFontTextPath, nerdFontText)
   fs.writeFileSync(montserratTextPath, montserratText)
+  fs.writeFileSync(macintoshSkeletalTextPath, macintoshSkeletalText)
 
   const pyftsubsetPath = findPyftsubset()
   const fonttoolsPath = findFonttools()
@@ -640,11 +661,19 @@ async function main() {
 
   generateMontserratOrReuse(pyftsubsetPath, fonttoolsPath)
 
+  generateOrReuse(pyftsubsetPath, {
+    input: macintoshSkeletalFontSource,
+    textFile: macintoshSkeletalTextPath,
+    output: macintoshSkeletalFontOutput,
+    label: 'Macintosh Skeletal Filled',
+  })
+
   logOutput(alibabaMediumFontOutput)
   logOutput(alibabaSemiBoldFontOutput)
   logOutput(pixelFontOutput)
   logOutput(nerdFontOutput)
   logOutput(montserratFontOutput)
+  logOutput(macintoshSkeletalFontOutput)
 }
 
 main().catch((error) => {

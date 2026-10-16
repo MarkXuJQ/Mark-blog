@@ -162,6 +162,7 @@ apps/web/.venv-fonttools/
 
 # Local source fonts used only for subset generation
 apps/web/src/assets/fonts/Montserrat/
+apps/web/src/assets/fonts/BBH_Bartle/
 apps/web/src/assets/fonts/AlibabaPuHuiTi-3-65-Medium/
 apps/web/src/assets/fonts/AlibabaPuHuiTi-3-75-SemiBold/
 

@@ -466,21 +466,19 @@ function TravelFootprintMapPanel({
             <span>{t('travel.interact')}</span>
           </button>
         </div>
-        <>
-          <iframe
-            title={t('travel.mapTitle')}
-            src={EMBED_MAP_URL}
-            loading="eager"
-            referrerPolicy="strict-origin-when-cross-origin"
-            className={cn(
-              styles.embedFrame,
-              !isMapInteractive && styles.embedFrameLocked
-            )}
-          />
-          {!isMapInteractive ? (
-            <div aria-hidden="true" className={styles.embedInteractionVeil} />
-          ) : null}
-        </>
+        <iframe
+          title={t('travel.mapTitle')}
+          src={EMBED_MAP_URL}
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+          className={cn(
+            styles.embedFrame,
+            !isMapInteractive && styles.embedFrameLocked
+          )}
+        />
+        {!isMapInteractive ? (
+          <div aria-hidden="true" className={styles.embedInteractionVeil} />
+        ) : null}
       </div>
     </motion.section>
   )

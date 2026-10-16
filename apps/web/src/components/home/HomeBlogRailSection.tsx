@@ -8,8 +8,15 @@ import { getAllPosts } from '@/lib/content/posts'
 import { getOptimizedImageUrl } from '@/lib/image'
 import { CategoryLabel } from '@/components/blog/CategoryLabel'
 import type { BlogPostSummary } from '@/lib/content/posts'
+import { getLifeProvince } from '@/lib/life/provinces'
 
-type LifeRailPost = { id: string; title: string; image?: string; city?: string }
+type LifeRailPost = {
+  id: string
+  title: string
+  date: string
+  image?: string
+  city?: string
+}
 type LifeRecord = {
     id: string
     title: string
@@ -111,6 +118,7 @@ export function HomeBlogRailSection({
         .map((post) => ({
           id: post.id,
           title: post.title,
+          date: post.date,
           image:
             typeof post.images?.[0] === 'string'
               ? post.images[0]
@@ -417,10 +425,20 @@ function BlogRailItem({
             className="mt-2 text-[0.62rem] tracking-[0.16em] text-white/70 uppercase"
             iconClassName="h-3 w-3"
           />
-        ) : 'city' in post && post.city ? (
-          <span className="mt-2 block text-[0.62rem] tracking-[0.16em] text-white/70 uppercase">
-            {post.city}
-          </span>
+        ) : 'city' in post ? (
+          <div className="mt-2 flex items-center gap-2 text-[0.62rem] tracking-[0.12em] text-white/70">
+            <time dateTime={post.date}>{post.date}</time>
+            <span aria-hidden="true">·</span>
+            {getLifeProvince(post.city)?.icon ? (
+              <img
+                src={getLifeProvince(post.city)?.icon}
+                alt=""
+                aria-hidden="true"
+                className="h-4 w-4 shrink-0 object-contain text-white/80"
+              />
+            ) : null}
+            <span className="truncate">{post.city ?? 'Location not noted'}</span>
+          </div>
         ) : null}
       </div>
     </Link>
