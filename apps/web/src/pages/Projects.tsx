@@ -9,7 +9,6 @@ import {
   SqueezeCarousel,
   type SqueezeSlide,
 } from '@/components/ui/carousel-squeeze'
-import { ORIGINAL_CENTERLINE_GLYPHS } from '@/assets/wordmarks/original-centerline'
 
 type ProjectLocale = { zh: string; en: string }
 type ProjectLinkType = 'game' | 'github' | 'computer'
@@ -63,26 +62,13 @@ function ProjectOverlay({ project }: { project: ProjectCardData }) {
 
 function OriginalWordmark() {
   return (
-    <svg
+    <span
       aria-label="Original"
-      className="mark-lab-original-svg"
+      className="mark-lab-original"
       role="img"
-      viewBox="0 0 13100 3450"
-      preserveAspectRatio="xMinYMid meet"
     >
-      <g transform="translate(0 2300) scale(1 -1)">
-        {ORIGINAL_CENTERLINE_GLYPHS.map((glyph, index) => (
-          <path
-            key={`${glyph.name}-${glyph.x}`}
-            className="mark-lab-original-svg__path"
-            d={glyph.d}
-            pathLength="1"
-            transform={`translate(${glyph.x} ${glyph.y})`}
-            style={{ animationDelay: `${index * 120}ms` }}
-          />
-        ))}
-      </g>
-    </svg>
+      Original.
+    </span>
   )
 }
 
@@ -159,11 +145,13 @@ export function Projects() {
         description={t('projects.description')}
       />
 
-      <header className="-mx-4 overflow-hidden px-4 pt-8 pb-14 sm:-mx-6 sm:px-6 md:pt-14 md:pb-24">
+      <header className="-mx-4 overflow-hidden px-4 pt-2 pb-14 sm:-mx-6 sm:px-6 sm:pt-4 md:pt-8 md:pb-24">
         <div className="mark-lab-wordmark">
           <h1 className="max-w-full text-slate-950 dark:text-slate-50">
             <span className="mark-lab-mark-row">
-              <span className="mark-lab-title mark-lab-mark">MARK</span>
+              <span className="mark-lab-field mark-lab-title mark-lab-mark">
+                MARK
+              </span>
               <img
                 src="/images/IMG_1766.JPG"
                 alt="Mark"
@@ -171,10 +159,10 @@ export function Projects() {
               />
             </span>
             <span className="mark-lab-second-line text-slate-950 dark:text-slate-50">
-              <span className="mark-lab-title mark-lab-the">THE</span>
-              <span className="mark-lab-original">
-                <OriginalWordmark />
+              <span className="mark-lab-field mark-lab-title mark-lab-the">
+                THE
               </span>
+              <OriginalWordmark />
             </span>
           </h1>
         </div>

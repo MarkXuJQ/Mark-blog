@@ -1,6 +1,5 @@
-// Generated from MacintoshSkeletalVariable.otf at wght 500.
-// The glyph sequence includes the font's contextual alternates and bridge
-// glyphs so the SVG follows the same connected writing shape as the font.
+// Editable vector source retained for the Figma wordmark file.
+// The Projects page renders the filled Macintosh Skeletal subset directly.
 
 export type OriginalCenterlineGlyph = {
   name: string
