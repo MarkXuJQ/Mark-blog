@@ -145,7 +145,7 @@ export function Projects() {
         description={t('projects.description')}
       />
 
-      <header className="-mx-4 overflow-hidden px-4 pt-2 pb-14 sm:-mx-6 sm:px-6 sm:pt-4 md:pt-8 md:pb-24">
+      <header className="mark-lab-header overflow-visible pt-2 pb-14 sm:pt-4 md:pt-8 md:pb-24">
         <div className="mark-lab-wordmark">
           <h1 className="max-w-full text-slate-950 dark:text-slate-50">
             <span className="mark-lab-mark-row">

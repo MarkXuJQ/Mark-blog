@@ -1,5 +1,13 @@
 [
   {
+    "id": "qf-20261016",
+    "date": "2026-10-16",
+    "content": [
+      "重做 Projects 页布局：改为挤压卡片形式，并合并项目分类",
+      "添加project页标语“Mark the Original.”"
+    ]
+  },
+  {
     "id": "qf-20261013",
     "date": "2026-10-13",
     "content": [
