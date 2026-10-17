@@ -1,4 +1,5 @@
 import type { IconType } from 'react-icons'
+import { motion, useReducedMotion } from 'framer-motion'
 import { IoGameController } from 'react-icons/io5'
 import { LuGithub } from 'react-icons/lu'
 import { RiComputerLine } from 'react-icons/ri'
@@ -9,6 +10,7 @@ import {
   SqueezeCarousel,
   type SqueezeSlide,
 } from '@/components/ui/carousel-squeeze'
+import { TextRevealBlock } from '@/components/ui/text-reveal-block'
 
 type ProjectLocale = { zh: string; en: string }
 type ProjectLinkType = 'game' | 'github' | 'computer'
@@ -50,6 +52,20 @@ type ProjectCardData = {
   links: ProjectLink[]
 }
 
+const WORDMARK_BLOCK_COLOR = '#ff5941'
+const WORDMARK_SPEED_FACTOR = 0.8
+const MARK_REVEAL_DURATION = 0.62 * WORDMARK_SPEED_FACTOR
+const THE_REVEAL_DURATION = 0.68 * WORDMARK_SPEED_FACTOR
+// 0 = start with MARK, 1 = wait until MARK has fully finished.
+const THE_REVEAL_START_PROGRESS = 0.6
+const THE_REVEAL_DELAY =
+  MARK_REVEAL_DURATION * 2 * THE_REVEAL_START_PROGRESS
+const ORIGINAL_REVEAL_DELAY = 2
+const ORIGINAL_REVEAL_DURATION = 1.02
+const ORIGINAL_TO_AVATAR_GAP = 0.3
+const AVATAR_REVEAL_DELAY =
+  ORIGINAL_REVEAL_DELAY + ORIGINAL_REVEAL_DURATION + ORIGINAL_TO_AVATAR_GAP
+
 const PROJECT_LINK_ICONS: Record<ProjectLinkType, IconType> = {
   game: IoGameController,
   github: LuGithub,
@@ -60,15 +76,65 @@ function ProjectOverlay({ project }: { project: ProjectCardData }) {
   return <span className="truncate">{project.title}</span>
 }
 
-function OriginalWordmark() {
+function OriginalReveal() {
+  const shouldReduceMotion = useReducedMotion()
+
   return (
-    <span
-      aria-label="Original"
+    <motion.span
       className="mark-lab-original"
+      initial={shouldReduceMotion ? false : { clipPath: 'inset(0 100% 0 0)' }}
+      animate={{ clipPath: 'inset(0 0% 0 0)' }}
+      transition={
+        shouldReduceMotion
+          ? { duration: 0 }
+          : {
+              delay: ORIGINAL_REVEAL_DELAY,
+              duration: ORIGINAL_REVEAL_DURATION,
+              ease: [0.22, 1, 0.36, 1],
+            }
+      }
+      aria-label="Original"
       role="img"
     >
       Original.
-    </span>
+    </motion.span>
+  )
+}
+
+function AvatarReveal() {
+  const shouldReduceMotion = useReducedMotion()
+
+  return (
+    <div
+      className="mark-lab-avatar-reveal"
+      aria-label="Mark"
+      role="img"
+    >
+      <motion.img
+        src="/images/IMG_1766.JPG"
+        alt=""
+        className="mark-lab-avatar"
+        initial={shouldReduceMotion ? false : { clipPath: 'circle(0% at 50% 50%)' }}
+        animate={{
+          clipPath: [
+            'circle(0% at 50% 50%)',
+            'circle(68% at 50% 50%)',
+            'circle(82% at 50% 50%)',
+            'circle(75% at 50% 50%)',
+          ],
+        }}
+        transition={
+          shouldReduceMotion
+            ? { duration: 0 }
+            : {
+                delay: AVATAR_REVEAL_DELAY,
+                duration: 0.6,
+                times: [0, 0.58, 0.82, 1],
+                ease: ['easeOut', 'easeInOut', 'easeOut'],
+              }
+        }
+      />
+    </div>
   )
 }
 
@@ -145,30 +211,37 @@ export function Projects() {
         description={t('projects.description')}
       />
 
-      <header className="mark-lab-header overflow-visible pt-2 pb-14 sm:pt-4 md:pt-8 md:pb-24">
+      <header className="mark-lab-header overflow-visible pt-2 pb-20 sm:pt-4 md:pt-8 md:pb-32">
         <div className="mark-lab-wordmark">
           <h1 className="max-w-full text-slate-950 dark:text-slate-50">
             <span className="mark-lab-mark-row">
-              <span className="mark-lab-field mark-lab-title mark-lab-mark">
-                MARK
-              </span>
-              <img
-                src="/images/IMG_1766.JPG"
-                alt="Mark"
-                className="mark-lab-avatar rounded-full object-cover ring-1 ring-slate-900/10 dark:ring-white/15"
+              <TextRevealBlock
+                animateOnScroll={false}
+                as="span"
+                className="mark-lab-field mark-lab-title mark-lab-mark"
+                blockColor={WORDMARK_BLOCK_COLOR}
+                duration={MARK_REVEAL_DURATION}
+                text="MARK"
               />
+              <AvatarReveal />
             </span>
             <span className="mark-lab-second-line text-slate-950 dark:text-slate-50">
-              <span className="mark-lab-field mark-lab-title mark-lab-the">
-                THE
-              </span>
-              <OriginalWordmark />
+              <TextRevealBlock
+                animateOnScroll={false}
+                as="span"
+                className="mark-lab-field mark-lab-title mark-lab-the"
+                blockColor={WORDMARK_BLOCK_COLOR}
+                delay={THE_REVEAL_DELAY}
+                duration={THE_REVEAL_DURATION}
+                text="THE"
+              />
+              <OriginalReveal />
             </span>
           </h1>
         </div>
       </header>
 
-      <div className="mt-2 md:mt-6">
+      <div className="mark-lab-showcase">
         <SqueezeCarousel
           slides={projects.map(projectToSlide)}
           label={t('projects.title')}
