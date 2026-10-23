@@ -51,6 +51,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://markxu.icu/blog/why-unix-signal-sender-is-called-kill-cn</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://markxu.icu/blog/why-does-some-website-has-www-2-cn</loc>
     <lastmod>2026-10-01</lastmod>
     <changefreq>weekly</changefreq>
