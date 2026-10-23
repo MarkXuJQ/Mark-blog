@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T02:18:18.096Z",
+  "generatedAt": "2026-10-23T09:36:13.293Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -13,9 +13,9 @@
     "playedCount": 149,
     "unplayedCount": 78,
     "totalMinutes": 171204,
-    "totalRecentMinutes": 71,
+    "totalRecentMinutes": 0,
     "totalUnlockedAchievements": 1917,
-    "totalAvailableAchievements": 7341,
+    "totalAvailableAchievements": 7349,
     "featuredAppId": 2246340
   },
   "featured": [
@@ -23,7 +23,7 @@
       "appid": 2246340,
       "name": "Monster Hunter Wilds",
       "playtimeMinutes": 16315,
-      "recentPlaytimeMinutes": 38,
+      "recentPlaytimeMinutes": 0,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2246340/23474d61e4506351f9b26f230fd417d017cf2806.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/2246340",
@@ -32,12 +32,7 @@
         "unlockedCount": 50,
         "totalCount": 50
       },
-      "reviewSummary": {
-        "totalPositive": 165548,
-        "totalNegative": 167721,
-        "totalReviews": 333269,
-        "positivePercent": 50
-      },
+      "reviewSummary": null,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2246340/header.jpg?t=1787549555",
       "shortDescription": "The unbridled force of nature runs wild and relentless, with environments transforming drastically from one moment to the next. This is a story of monsters and humans and their struggles to live in harmony in a world of duality.",
       "releaseDate": "27 Feb, 2025",
@@ -64,12 +59,7 @@
         "unlockedCount": 64,
         "totalCount": 100
       },
-      "reviewSummary": {
-        "totalPositive": 461020,
-        "totalNegative": 58098,
-        "totalReviews": 519118,
-        "positivePercent": 89
-      },
+      "reviewSummary": null,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/582010/header.jpg?t=1791439347",
       "shortDescription": "Welcome to a new world! In Monster Hunter: World, the latest installment in the series, you can enjoy the ultimate hunting experience, using everything at your disposal to hunt monsters in a new world teeming with surprises and excitement.",
       "releaseDate": "8 Aug, 2018",
@@ -94,12 +84,7 @@
         "unlockedCount": 38,
         "totalCount": 54
       },
-      "reviewSummary": {
-        "totalPositive": 834124,
-        "totalNegative": 27716,
-        "totalReviews": 861840,
-        "positivePercent": 97
-      },
+      "reviewSummary": null,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
       "shortDescription": "Baldur’s Gate 3 is a story-rich, party-based RPG set in the universe of Dungeons &amp; Dragons, where your choices shape a tale of fellowship and betrayal, survival and sacrifice, and the lure of absolute power.",
       "releaseDate": "3 Aug, 2023",
@@ -117,7 +102,7 @@
       "appid": 292030,
       "name": "The Witcher 3: Wild Hunt — Remastered",
       "playtimeMinutes": 9546,
-      "recentPlaytimeMinutes": 33,
+      "recentPlaytimeMinutes": 0,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/292030/7b52d11edee478d652ef4e7103e00644bed2c74c.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/292030",
@@ -126,12 +111,7 @@
         "unlockedCount": 48,
         "totalCount": 78
       },
-      "reviewSummary": {
-        "totalPositive": 871168,
-        "totalNegative": 32627,
-        "totalReviews": 903795,
-        "positivePercent": 96
-      },
+      "reviewSummary": null,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/e8afc4252e3fee8ed2525ab2fd7675cca39aa38d/header_alt_assets_1.jpg?t=1790845156",
       "shortDescription": "The Witcher 3: Wild Hunt — Remastered modernizes the acclaimed role-playing game with a range of upgrades and enhancements. Become monster slayer for hire Geralt of Rivia and journey across a dark fantasy open world in an epic quest to find your adopted daughter Ciri.",
       "releaseDate": "18 May, 2015",
@@ -156,13 +136,8 @@
         "unlockedCount": 59,
         "totalCount": 320
       },
-      "reviewSummary": {
-        "totalPositive": 327662,
-        "totalNegative": 52569,
-        "totalReviews": 380231,
-        "positivePercent": 86
-      },
-      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1784651829",
+      "reviewSummary": null,
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1792718069",
       "shortDescription": "Expand your empire, advance your culture and go head-to-head against history’s greatest leaders. Will your civilization stand the test of time?",
       "releaseDate": "20 Oct, 2016",
       "developers": [
@@ -188,12 +163,7 @@
         "unlockedCount": 67,
         "totalCount": 93
       },
-      "reviewSummary": {
-        "totalPositive": 168232,
-        "totalNegative": 21429,
-        "totalReviews": 189661,
-        "positivePercent": 89
-      },
+      "reviewSummary": null,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1786633104",
       "shortDescription": "In this action-adventure game, set sail for Ancient Greece to alter its fate. Fight in visceral battles on land and sea, shape your destiny from outcast to legend, and uncover secrets of your past.",
       "releaseDate": "5 Oct, 2018",
@@ -215,7 +185,7 @@
       "appid": 2246340,
       "name": "Monster Hunter Wilds",
       "playtimeMinutes": 16315,
-      "recentPlaytimeMinutes": 38,
+      "recentPlaytimeMinutes": 0,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/2246340/23474d61e4506351f9b26f230fd417d017cf2806.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/2246340",
@@ -260,7 +230,7 @@
       "appid": 292030,
       "name": "The Witcher 3: Wild Hunt — Remastered",
       "playtimeMinutes": 9546,
-      "recentPlaytimeMinutes": 33,
+      "recentPlaytimeMinutes": 0,
       "iconUrl": "https://media.steampowered.com/steamcommunity/public/images/apps/292030/7b52d11edee478d652ef4e7103e00644bed2c74c.jpg",
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/292030",
@@ -1668,7 +1638,7 @@
       "communityUrl": "https://steamcommunity.com/app/227300",
       "achievementStats": {
         "unlockedCount": 1,
-        "totalCount": 106
+        "totalCount": 114
       }
     },
     {

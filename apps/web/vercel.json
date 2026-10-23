@@ -134,6 +134,11 @@
       "permanent": true
     },
     {
+      "source": "/blog/24.kill与进程通信",
+      "destination": "/blog/why-unix-signal-sender-is-called-kill-cn",
+      "permanent": true
+    },
+    {
       "source": "/blog/3.My-first-blog",
       "destination": "/blog/first-blog-post-en",
       "permanent": true
@@ -256,6 +261,11 @@
     {
       "source": "/blog/why-im-not-bullish-on-humanoid-robots",
       "destination": "/blog/why-im-not-bullish-on-humanoid-robots-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/why-unix-signal-sender-is-called-kill",
+      "destination": "/blog/why-unix-signal-sender-is-called-kill-cn",
       "permanent": true
     }
   ],
