@@ -37,13 +37,13 @@ export function BlogPostCard({
   const displayDate = shouldShowUpdatedDate ? post.updated : post.date
   const DateIcon = shouldShowUpdatedDate ? LuHammer : LuPencilLine
   const titleClass = cn(
-    'mb-2 line-clamp-2 text-2xl font-medium leading-snug transition-colors',
+    'mb-1.5 text-xl font-medium leading-snug transition-colors',
     'text-slate-900 group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400'
   )
   const summaryClass =
     'text-sm leading-6 text-[var(--text-secondary)] sm:text-[0.95rem]'
   const metaClass =
-    'mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-slate-100 pt-2 text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400'
+    'flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-500 dark:text-slate-400'
   const metaItemClass = 'inline-flex items-center gap-1.5 leading-none'
   const categoryClass = 'text-sm'
   const categoryIconClass = 'h-4 w-4'
@@ -53,8 +53,8 @@ export function BlogPostCard({
     return (
       <div className={className} style={style}>
         <Link to={detailPath} onClick={onOpenPost} className="block">
-          <Card className="group block border border-slate-200/70 p-4 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-transform hover:-translate-y-1 hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] sm:p-5 dark:border-0 dark:shadow-none">
-            <article>
+          <Card className="group block border border-slate-200/70 p-3.5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-transform hover:-translate-y-1 hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] sm:p-4 dark:border-0 dark:shadow-none">
+            <article className="flex flex-col">
               {/* Title */}
               <PostSharedElement
                 slug={post.slug}
@@ -66,7 +66,7 @@ export function BlogPostCard({
               </PostSharedElement>
 
               {/* Summary */}
-              <p className={cn('mb-3 line-clamp-3', summaryClass)}>
+              <p className={cn('mb-3', summaryClass)}>
                 {post.summary}
               </p>
 
@@ -75,10 +75,10 @@ export function BlogPostCard({
                 slug={post.slug}
                 element="meta"
                 enabled={sharedTransitionEnabled}
-                className="overflow-hidden rounded-xl"
+                className="mt-1 overflow-hidden rounded-xl"
               >
-                <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
-                  <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-500 dark:text-slate-400">
                     {post.category && (
                       <CategoryLabel
                         category={post.category}
@@ -110,9 +110,9 @@ export function BlogPostCard({
       <Link to={detailPath} onClick={onOpenPost} className="block">
         <Card className="group block overflow-hidden border border-slate-200/70 p-0 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-transform hover:-translate-y-1 hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] sm:p-0 dark:border-0 dark:shadow-none">
           {/* Mobile template */}
-          <article className="flex min-h-[220px] flex-col sm:hidden">
+          <article className="flex min-h-[210px] flex-col sm:hidden">
             {/* Image (top, golden ratio portion) */}
-            <div className="relative isolate h-[120px] overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,1)_60%,rgba(0,0,0,0.4)_82%,rgba(0,0,0,0)_100%)] [-webkit-mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,1)_60%,rgba(0,0,0,0.4)_82%,rgba(0,0,0,0)_100%)]">
+            <div className="relative isolate h-[108px] overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,1)_60%,rgba(0,0,0,0.4)_82%,rgba(0,0,0,0)_100%)] [-webkit-mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,1)_60%,rgba(0,0,0,0.4)_82%,rgba(0,0,0,0)_100%)]">
               <PostSharedElement
                 slug={post.slug}
                 element="cover"
@@ -141,13 +141,15 @@ export function BlogPostCard({
                 <h2 className={titleClass}>{post.title}</h2>
               </PostSharedElement>
 
-              <p className={cn('mb-2 pb-4', summaryClass)}>{post.summary}</p>
+              <p className={cn('mb-2 flex-1 pb-2', summaryClass)}>
+                {post.summary}
+              </p>
 
               <PostSharedElement
                 slug={post.slug}
                 element="meta"
                 enabled={sharedTransitionEnabled && !isDesktopLayout}
-                className="overflow-hidden rounded-xl"
+                className="mt-auto overflow-hidden rounded-xl"
               >
                 <div className={metaClass}>
                   {post.category && (
@@ -171,9 +173,9 @@ export function BlogPostCard({
           </article>
 
           {/* Desktop template */}
-          <article className="hidden min-h-[170px] sm:grid sm:grid-cols-[minmax(0,1.618fr)_minmax(0,1fr)] sm:grid-rows-1">
+          <article className="hidden min-h-[150px] sm:grid sm:grid-cols-[minmax(0,1.618fr)_minmax(0,1fr)] sm:grid-rows-1">
             {/* Text (left) */}
-            <div className="relative z-10 order-1 flex min-w-0 flex-col overflow-hidden p-4">
+            <div className="relative z-10 order-1 flex min-w-0 flex-col overflow-hidden p-3.5">
               <PostSharedElement
                 slug={post.slug}
                 element="title"
@@ -183,13 +185,15 @@ export function BlogPostCard({
                 <h2 className={titleClass}>{post.title}</h2>
               </PostSharedElement>
 
-              <p className={cn('mb-2 pb-6', summaryClass)}>{post.summary}</p>
+              <p className={cn('mb-2 flex-1 pb-2', summaryClass)}>
+                {post.summary}
+              </p>
 
               <PostSharedElement
                 slug={post.slug}
                 element="meta"
                 enabled={sharedTransitionEnabled && isDesktopLayout}
-                className="overflow-hidden rounded-xl"
+                className="mt-auto overflow-hidden rounded-xl"
               >
                 <div className={metaClass}>
                   {post.category && (
