@@ -6,7 +6,7 @@ import { ChevronDown, Menu, X, Sun, Moon, Monitor } from 'lucide-react'
 import { FaPhotoFilm } from 'react-icons/fa6'
 import { HiMiniBeaker } from 'react-icons/hi2'
 import { IoGameController } from 'react-icons/io5'
-import { RiMovie2Line } from 'react-icons/ri'
+import { RiLinksLine, RiMovie2Line } from 'react-icons/ri'
 import { TbTimeline } from 'react-icons/tb'
 import type { IconType } from 'react-icons'
 import { cn } from '@/lib/classNames'
@@ -111,6 +111,7 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
       label: t('nav.projects'),
       icon: HiMiniBeaker,
     },
+    { to: '/links', label: t('nav.links'), icon: RiLinksLine },
   ]
   const mobilePrimaryItems = [
     { to: '/', label: t('nav.homepage') },
@@ -155,7 +156,6 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
         >
           {t('nav.about')}
         </NavLink>
-
         <NavDropdown title={t('nav.others')} items={otherItems} />
 
         <SegmentedToggle
@@ -293,7 +293,7 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
 
 const styles = {
   header:
-    'relative mb-6 flex h-14 items-center justify-between rounded-full bg-white/80 px-4 py-3 shadow-sm backdrop-blur transition-colors duration-300 sm:px-6 dark:bg-[#17191c] dark:text-slate-100',
+    'relative mb-4 flex h-14 items-center justify-between rounded-full bg-white/80 px-4 py-3 shadow-sm backdrop-blur transition-colors duration-300 sm:px-6 dark:bg-[#17191c] dark:text-slate-100',
   logo: {
     link: 'heading-brand flex items-center gap-2 text-lg font-semibold transition-opacity hover:opacity-80',
     img: 'h-8 w-8 rounded-sm',
@@ -305,7 +305,7 @@ const styles = {
         'transition-colors',
         isActive
           ? 'font-bold text-slate-900 dark:text-slate-100'
-          : 'font-normal text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+          : 'font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
       ),
   },
   mobile: {
@@ -317,7 +317,7 @@ const styles = {
         'flex min-h-11 items-center justify-start rounded-xl px-3 py-2.5 text-sm text-left transition-colors',
         isActive
           ? 'bg-slate-100 font-bold text-slate-900 dark:bg-[#23262c] dark:text-slate-100'
-          : 'font-normal text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-[#23262c] dark:hover:text-slate-200'
+          : 'font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-[#23262c] dark:hover:text-slate-200'
       ),
     section: 'mt-2 border-t border-slate-100 pt-2 dark:border-[#2b2f36]',
     sectionTitle:
@@ -341,13 +341,13 @@ const styles = {
         'flex cursor-pointer items-center gap-1 transition-colors',
         isActive || isOpen
           ? 'font-bold text-slate-900 dark:text-slate-100'
-          : 'font-normal text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
+          : 'font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
       ),
     label: 'inline-flex w-[3.75rem] justify-center truncate text-center',
     menu: 'translate-x-2 grid w-[14rem] grid-cols-2 gap-1',
     item: (isActive: boolean) =>
       cn(
-        'flex min-w-0 items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
+        'flex min-w-0 items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
         isActive
           ? 'bg-slate-100 text-slate-900 dark:bg-[#23262c] dark:text-slate-100'
           : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-[#23262c] dark:hover:text-slate-200'

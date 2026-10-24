@@ -1533,8 +1533,19 @@ i {
 
 @font-face {
   font-family: 'Alibaba PuHuiTi 3';
+  src: url('../fonts/AlibabaPuHuiTi-3-55-Regular-Subset.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+2E80-2EFF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
+    U+FE10-FE1F, U+FE30-FE4F, U+FF00-FFEF;
+}
+
+@font-face {
+  font-family: 'Alibaba PuHuiTi 3';
   src: url('../fonts/AlibabaPuHuiTi-3-65-Medium-Subset.woff2') format('woff2');
-  font-weight: 400 500;
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
   unicode-range:

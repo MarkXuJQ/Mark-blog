@@ -214,8 +214,8 @@ export function RootLayout() {
       <div
         className={`z-50 w-full transition-transform duration-300 ${
           isHome || hasPageBackgroundUnderNav
-            ? 'pointer-events-none fixed inset-x-0 top-6'
-            : 'pointer-events-none sticky top-6 mb-8'
+            ? 'pointer-events-none fixed inset-x-0 top-4'
+            : 'pointer-events-none sticky top-4 mb-6'
         } ${
           isNavBarVisible &&
           !isOverlayOpen &&

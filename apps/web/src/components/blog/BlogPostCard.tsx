@@ -35,9 +35,10 @@ export function BlogPostCard({
   const shouldShowUpdatedDate =
     sortBy === 'updated' && Boolean(post.updated && post.updated !== post.date)
   const displayDate = shouldShowUpdatedDate ? post.updated : post.date
+  const formattedDisplayDate = formatBlogListDate(displayDate)
   const DateIcon = shouldShowUpdatedDate ? LuHammer : LuPencilLine
   const titleClass = cn(
-    'mb-1.5 text-xl font-medium leading-snug transition-colors',
+    'mb-1.5 text-[1.375rem] font-medium leading-snug transition-colors',
     'text-slate-900 group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400'
   )
   const summaryClass =
@@ -66,7 +67,7 @@ export function BlogPostCard({
               </PostSharedElement>
 
               {/* Summary */}
-              <p className={cn('mb-3', summaryClass)}>
+              <p className={cn('mb-3 flex-1', summaryClass)}>
                 {post.summary}
               </p>
 
@@ -75,7 +76,7 @@ export function BlogPostCard({
                 slug={post.slug}
                 element="meta"
                 enabled={sharedTransitionEnabled}
-                className="mt-1 overflow-hidden rounded-xl"
+                className="mt-auto overflow-hidden rounded-xl"
               >
                 <div className="flex items-center justify-between pt-1">
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-500 dark:text-slate-400">
@@ -88,7 +89,7 @@ export function BlogPostCard({
                     )}
                     <span className={metaItemClass}>
                       <DateIcon className="h-4 w-4" aria-hidden="true" />
-                      <span>{displayDate}</span>
+                      <span>{formattedDisplayDate}</span>
                     </span>
                     <span className={metaItemClass}>
                       <LuWholeWord className="h-4 w-4" aria-hidden="true" />
@@ -119,14 +120,20 @@ export function BlogPostCard({
                 enabled={sharedTransitionEnabled && !isDesktopLayout}
                 className="h-full w-full overflow-hidden"
               >
-                <img
-                  src={coverImage}
-                  alt={post.title}
-                  loading="lazy"
-                  decoding="async"
-                  referrerPolicy="no-referrer"
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                <div className="relative h-full w-full">
+                  <img
+                    src={coverImage}
+                    alt={post.title}
+                    loading="lazy"
+                    decoding="async"
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div
+                    className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0)_100%)] dark:bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_100%)]"
+                    aria-hidden="true"
+                  />
+                </div>
               </PostSharedElement>
             </div>
 
@@ -161,7 +168,7 @@ export function BlogPostCard({
                   )}
                   <span className={metaItemClass}>
                     <DateIcon className="h-4 w-4" aria-hidden="true" />
-                    <span>{displayDate}</span>
+                    <span>{formattedDisplayDate}</span>
                   </span>
                   <span className={metaItemClass}>
                     <LuWholeWord className="h-4 w-4" aria-hidden="true" />
@@ -205,7 +212,7 @@ export function BlogPostCard({
                   )}
                   <span className={metaItemClass}>
                     <DateIcon className="h-4 w-4" aria-hidden="true" />
-                    <span>{displayDate}</span>
+                    <span>{formattedDisplayDate}</span>
                   </span>
                   <span className={metaItemClass}>
                     <LuWholeWord className="h-4 w-4" aria-hidden="true" />
@@ -223,14 +230,20 @@ export function BlogPostCard({
                 enabled={sharedTransitionEnabled && isDesktopLayout}
                 className="absolute inset-0 -left-10 w-[calc(100%+2.5rem)] overflow-hidden [mask-image:linear-gradient(to_left,black_0%,black_78%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_left,black_0%,black_78%,transparent_100%)]"
               >
-                <img
-                  src={coverImage}
-                  alt={post.title}
-                  loading="lazy"
-                  decoding="async"
-                  referrerPolicy="no-referrer"
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                <div className="relative h-full w-full">
+                  <img
+                    src={coverImage}
+                    alt={post.title}
+                    loading="lazy"
+                    decoding="async"
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div
+                    className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0)_100%)] dark:bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_100%)]"
+                    aria-hidden="true"
+                  />
+                </div>
               </PostSharedElement>
             </div>
           </article>
@@ -238,4 +251,31 @@ export function BlogPostCard({
       </Link>
     </div>
   )
+}
+
+function formatBlogListDate(date: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date)
+  if (!match) return date
+
+  const [, yearText, monthText, dayText] = match
+  const year = Number(yearText)
+  const month = Number(monthText)
+  const day = Number(dayText)
+  const parsedDate = new Date(year, month - 1, day)
+
+  if (
+    parsedDate.getFullYear() !== year ||
+    parsedDate.getMonth() !== month - 1 ||
+    parsedDate.getDate() !== day
+  ) {
+    return date
+  }
+
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: 'numeric',
+    ...(year !== new Date().getFullYear() ? { year: 'numeric' as const } : {}),
+  }
+
+  return new Intl.DateTimeFormat('en-US', options).format(parsedDate)
 }

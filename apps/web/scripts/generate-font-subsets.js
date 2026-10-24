@@ -28,6 +28,10 @@ const fontSourceExtensions = ['.ttf', '.otf', '.woff2', '.woff']
 const generatedDir = path.join(projectRoot, '.generated')
 const SKIP_FONT_GENERATION_ENV = 'SKIP_FONT_GENERATION'
 
+const alibabaRegularFontOutput = path.join(
+  projectRoot,
+  'src/assets/fonts/AlibabaPuHuiTi-3-55-Regular-Subset.woff2'
+)
 const alibabaMediumFontOutput = path.join(
   projectRoot,
   'src/assets/fonts/AlibabaPuHuiTi-3-65-Medium-Subset.woff2'
@@ -53,6 +57,7 @@ const macintoshSkeletalFontOutput = path.join(
   'src/assets/fonts/MacintoshSkeletal-Subset.woff2'
 )
 const requiredFontOutputs = [
+  alibabaRegularFontOutput,
   alibabaMediumFontOutput,
   alibabaSemiBoldFontOutput,
   pixelFontOutput,
@@ -78,6 +83,14 @@ const fontSafelistPath = path.join(
   'src/assets/fonts/font-safelist.txt'
 )
 
+const alibabaRegularFontSource = resolveFontSource({
+  envVar: 'ALIBABA_REGULAR_FONT_SOURCE',
+  roots: [
+    path.join(projectRoot, 'src/assets/fonts/AlibabaPuHuiTi-3-55-Regular'),
+    path.join(projectRoot, 'src/assets/fonts'),
+  ],
+  baseNames: ['AlibabaPuHuiTi-3-55-Regular'],
+})
 const alibabaMediumFontSource = resolveFontSource({
   envVar: 'ALIBABA_MEDIUM_FONT_SOURCE',
   roots: [
@@ -370,6 +383,7 @@ function canEncodeWoff2(candidate, inputFont) {
 
 function findPyftsubset() {
   const probeFontSource = [
+    alibabaRegularFontSource,
     alibabaMediumFontSource,
     alibabaSemiBoldFontSource,
     pixelFontSource,
@@ -605,7 +619,7 @@ async function main() {
   }
 
   ensureDir(generatedDir)
-  ensureDir(path.dirname(alibabaMediumFontOutput))
+  ensureDir(path.dirname(alibabaRegularFontOutput))
 
   const chineseText = buildChineseText()
   const alibabaSemiBoldText = buildAlibabaSemiBoldText()
@@ -630,6 +644,13 @@ async function main() {
       'pyftsubset not found, reusing committed subset fonts if available.'
     )
   }
+
+  generateOrReuse(pyftsubsetPath, {
+    input: alibabaRegularFontSource,
+    textFile: chineseTextPath,
+    output: alibabaRegularFontOutput,
+    label: 'Alibaba PuHuiTi Regular',
+  })
 
   generateOrReuse(pyftsubsetPath, {
     input: alibabaMediumFontSource,
@@ -668,6 +689,7 @@ async function main() {
     label: 'Macintosh Skeletal Filled',
   })
 
+  logOutput(alibabaRegularFontOutput)
   logOutput(alibabaMediumFontOutput)
   logOutput(alibabaSemiBoldFontOutput)
   logOutput(pixelFontOutput)
