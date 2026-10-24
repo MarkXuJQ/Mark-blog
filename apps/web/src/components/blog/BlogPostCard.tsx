@@ -34,7 +34,7 @@ export function BlogPostCard({
   const coverImage = post.image ? getOptimizedImageUrl(post.image, 'card') : ''
   const shouldShowUpdatedDate =
     sortBy === 'updated' && Boolean(post.updated && post.updated !== post.date)
-  const displayDate = shouldShowUpdatedDate ? post.updated : post.date
+  const displayDate = shouldShowUpdatedDate ? (post.updated ?? post.date) : post.date
   const formattedDisplayDate = formatBlogListDate(displayDate)
   const DateIcon = shouldShowUpdatedDate ? LuHammer : LuPencilLine
   const titleClass = cn(
