@@ -199,7 +199,7 @@ function FriendLinksContent() {
   const label = i18n.language?.startsWith('zh') ? '朋友们' : 'Friends'
 
   return (
-    <Link to="/links" className={styles.widgetHeader}>
+    <Link to="/links" className={styles.widgetHeaderLast}>
       <RiLinksLine size={20} className="text-blue-500" />
       <h3 className={styles.widgetTitle}>{label}</h3>
     </Link>
@@ -220,7 +220,7 @@ export function LeftSidebarWidget() {
   return (
     <Card as="aside" className={styles.widgetCard}>
       <ProfileContent />
-      <div className="my-6 border-t border-slate-100 dark:border-slate-800" />
+      <div className="my-6 h-px" aria-hidden="true" />
       <ArchiveContent />
       <FriendLinksContent />
     </Card>
@@ -529,6 +529,7 @@ const styles = {
   // Common Widget
   widgetHeader:
     'mb-4 flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-800',
+  widgetHeaderLast: 'mb-4 flex items-center gap-2 pb-3',
   widgetTitle: 'font-medium text-slate-800 dark:text-slate-100',
 
   // Stats

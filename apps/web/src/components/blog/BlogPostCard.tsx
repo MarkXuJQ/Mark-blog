@@ -34,16 +34,17 @@ export function BlogPostCard({
   const coverImage = post.image ? getOptimizedImageUrl(post.image, 'card') : ''
   const shouldShowUpdatedDate =
     sortBy === 'updated' && Boolean(post.updated && post.updated !== post.date)
-  const displayDate = shouldShowUpdatedDate ? post.updated : post.date
+  const displayDate = shouldShowUpdatedDate ? (post.updated ?? post.date) : post.date
+  const formattedDisplayDate = formatBlogListDate(displayDate)
   const DateIcon = shouldShowUpdatedDate ? LuHammer : LuPencilLine
   const titleClass = cn(
-    'mb-2 line-clamp-2 text-2xl font-medium leading-snug transition-colors',
+    'mb-1.5 text-[1.375rem] font-medium leading-snug transition-colors',
     'text-slate-900 group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400'
   )
   const summaryClass =
     'text-sm leading-6 text-[var(--text-secondary)] sm:text-[0.95rem]'
   const metaClass =
-    'mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-slate-100 pt-2 text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400'
+    'flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-500 dark:text-slate-400'
   const metaItemClass = 'inline-flex items-center gap-1.5 leading-none'
   const categoryClass = 'text-sm'
   const categoryIconClass = 'h-4 w-4'
@@ -53,8 +54,8 @@ export function BlogPostCard({
     return (
       <div className={className} style={style}>
         <Link to={detailPath} onClick={onOpenPost} className="block">
-          <Card className="group block border border-slate-200/70 p-4 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-transform hover:-translate-y-1 hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] sm:p-5 dark:border-0 dark:shadow-none">
-            <article>
+          <Card className="group block border border-slate-200/70 p-3.5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-transform hover:-translate-y-1 hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] sm:p-4 dark:border-0 dark:shadow-none">
+            <article className="flex flex-col">
               {/* Title */}
               <PostSharedElement
                 slug={post.slug}
@@ -66,7 +67,7 @@ export function BlogPostCard({
               </PostSharedElement>
 
               {/* Summary */}
-              <p className={cn('mb-3 line-clamp-3', summaryClass)}>
+              <p className={cn('mb-3 flex-1', summaryClass)}>
                 {post.summary}
               </p>
 
@@ -75,10 +76,10 @@ export function BlogPostCard({
                 slug={post.slug}
                 element="meta"
                 enabled={sharedTransitionEnabled}
-                className="overflow-hidden rounded-xl"
+                className="mt-auto overflow-hidden rounded-xl"
               >
-                <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
-                  <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-500 dark:text-slate-400">
                     {post.category && (
                       <CategoryLabel
                         category={post.category}
@@ -88,7 +89,7 @@ export function BlogPostCard({
                     )}
                     <span className={metaItemClass}>
                       <DateIcon className="h-4 w-4" aria-hidden="true" />
-                      <span>{displayDate}</span>
+                      <span>{formattedDisplayDate}</span>
                     </span>
                     <span className={metaItemClass}>
                       <LuWholeWord className="h-4 w-4" aria-hidden="true" />
@@ -110,23 +111,29 @@ export function BlogPostCard({
       <Link to={detailPath} onClick={onOpenPost} className="block">
         <Card className="group block overflow-hidden border border-slate-200/70 p-0 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-transform hover:-translate-y-1 hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] sm:p-0 dark:border-0 dark:shadow-none">
           {/* Mobile template */}
-          <article className="flex min-h-[220px] flex-col sm:hidden">
+          <article className="flex min-h-[210px] flex-col sm:hidden">
             {/* Image (top, golden ratio portion) */}
-            <div className="relative isolate h-[120px] overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,1)_60%,rgba(0,0,0,0.4)_82%,rgba(0,0,0,0)_100%)] [-webkit-mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,1)_60%,rgba(0,0,0,0.4)_82%,rgba(0,0,0,0)_100%)]">
+            <div className="relative isolate h-[108px] overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,1)_60%,rgba(0,0,0,0.4)_82%,rgba(0,0,0,0)_100%)] [-webkit-mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_0%,rgba(0,0,0,1)_60%,rgba(0,0,0,0.4)_82%,rgba(0,0,0,0)_100%)]">
               <PostSharedElement
                 slug={post.slug}
                 element="cover"
                 enabled={sharedTransitionEnabled && !isDesktopLayout}
                 className="h-full w-full overflow-hidden"
               >
-                <img
-                  src={coverImage}
-                  alt={post.title}
-                  loading="lazy"
-                  decoding="async"
-                  referrerPolicy="no-referrer"
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                <div className="relative h-full w-full">
+                  <img
+                    src={coverImage}
+                    alt={post.title}
+                    loading="lazy"
+                    decoding="async"
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div
+                    className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0)_100%)] dark:bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_100%)]"
+                    aria-hidden="true"
+                  />
+                </div>
               </PostSharedElement>
             </div>
 
@@ -141,13 +148,15 @@ export function BlogPostCard({
                 <h2 className={titleClass}>{post.title}</h2>
               </PostSharedElement>
 
-              <p className={cn('mb-2 pb-4', summaryClass)}>{post.summary}</p>
+              <p className={cn('mb-2 flex-1 pb-2', summaryClass)}>
+                {post.summary}
+              </p>
 
               <PostSharedElement
                 slug={post.slug}
                 element="meta"
                 enabled={sharedTransitionEnabled && !isDesktopLayout}
-                className="overflow-hidden rounded-xl"
+                className="mt-auto overflow-hidden rounded-xl"
               >
                 <div className={metaClass}>
                   {post.category && (
@@ -159,7 +168,7 @@ export function BlogPostCard({
                   )}
                   <span className={metaItemClass}>
                     <DateIcon className="h-4 w-4" aria-hidden="true" />
-                    <span>{displayDate}</span>
+                    <span>{formattedDisplayDate}</span>
                   </span>
                   <span className={metaItemClass}>
                     <LuWholeWord className="h-4 w-4" aria-hidden="true" />
@@ -171,9 +180,9 @@ export function BlogPostCard({
           </article>
 
           {/* Desktop template */}
-          <article className="hidden min-h-[170px] sm:grid sm:grid-cols-[minmax(0,1.618fr)_minmax(0,1fr)] sm:grid-rows-1">
+          <article className="hidden min-h-[150px] sm:grid sm:grid-cols-[minmax(0,1.618fr)_minmax(0,1fr)] sm:grid-rows-1">
             {/* Text (left) */}
-            <div className="relative z-10 order-1 flex min-w-0 flex-col overflow-hidden p-4">
+            <div className="relative z-10 order-1 flex min-w-0 flex-col overflow-hidden p-3.5">
               <PostSharedElement
                 slug={post.slug}
                 element="title"
@@ -183,13 +192,15 @@ export function BlogPostCard({
                 <h2 className={titleClass}>{post.title}</h2>
               </PostSharedElement>
 
-              <p className={cn('mb-2 pb-6', summaryClass)}>{post.summary}</p>
+              <p className={cn('mb-2 flex-1 pb-2', summaryClass)}>
+                {post.summary}
+              </p>
 
               <PostSharedElement
                 slug={post.slug}
                 element="meta"
                 enabled={sharedTransitionEnabled && isDesktopLayout}
-                className="overflow-hidden rounded-xl"
+                className="mt-auto overflow-hidden rounded-xl"
               >
                 <div className={metaClass}>
                   {post.category && (
@@ -201,7 +212,7 @@ export function BlogPostCard({
                   )}
                   <span className={metaItemClass}>
                     <DateIcon className="h-4 w-4" aria-hidden="true" />
-                    <span>{displayDate}</span>
+                    <span>{formattedDisplayDate}</span>
                   </span>
                   <span className={metaItemClass}>
                     <LuWholeWord className="h-4 w-4" aria-hidden="true" />
@@ -219,14 +230,20 @@ export function BlogPostCard({
                 enabled={sharedTransitionEnabled && isDesktopLayout}
                 className="absolute inset-0 -left-10 w-[calc(100%+2.5rem)] overflow-hidden [mask-image:linear-gradient(to_left,black_0%,black_78%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_left,black_0%,black_78%,transparent_100%)]"
               >
-                <img
-                  src={coverImage}
-                  alt={post.title}
-                  loading="lazy"
-                  decoding="async"
-                  referrerPolicy="no-referrer"
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                <div className="relative h-full w-full">
+                  <img
+                    src={coverImage}
+                    alt={post.title}
+                    loading="lazy"
+                    decoding="async"
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div
+                    className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0)_100%)] dark:bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_100%)]"
+                    aria-hidden="true"
+                  />
+                </div>
               </PostSharedElement>
             </div>
           </article>
@@ -234,4 +251,31 @@ export function BlogPostCard({
       </Link>
     </div>
   )
+}
+
+function formatBlogListDate(date: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date)
+  if (!match) return date
+
+  const [, yearText, monthText, dayText] = match
+  const year = Number(yearText)
+  const month = Number(monthText)
+  const day = Number(dayText)
+  const parsedDate = new Date(year, month - 1, day)
+
+  if (
+    parsedDate.getFullYear() !== year ||
+    parsedDate.getMonth() !== month - 1 ||
+    parsedDate.getDate() !== day
+  ) {
+    return date
+  }
+
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: 'numeric',
+    ...(year !== new Date().getFullYear() ? { year: 'numeric' as const } : {}),
+  }
+
+  return new Intl.DateTimeFormat('en-US', options).format(parsedDate)
 }

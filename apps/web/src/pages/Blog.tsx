@@ -375,7 +375,7 @@ export function Blog() {
       <div ref={paginationContentRef}>
         {currentPosts.length > 0 ? (
           <>
-            <StaggeredList className={simpleMode ? 'space-y-0' : 'space-y-6'}>
+            <StaggeredList className={simpleMode ? 'space-y-0' : 'space-y-4'}>
               {currentPosts.map((post) => {
                 const isSharedTransitionPost =
                   sharedTransitionEnabled && transitionPostSlug === post.slug
