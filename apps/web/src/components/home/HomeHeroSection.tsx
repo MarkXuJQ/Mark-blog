@@ -6,6 +6,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
 import { getImageUrl } from '@/lib/image'
 import { HomeHeroAvatarScene } from './HomeHeroAvatarScene'
+import { HomeHeroStickers } from './HomeHeroStickers'
 
 interface HomeHeroSectionProps {
   avatarSrc: string
@@ -173,6 +174,7 @@ export function HomeHeroSection({
         >
           <HomeHeroBackground isDarkMode={isDarkMode} />
         </motion.div>
+        <HomeHeroStickers isZh={isZh} />
         {isDarkMode ? (
           <>
             <div
@@ -195,6 +197,7 @@ export function HomeHeroSection({
               <h1
                 className={cn(
                   styles.title,
+                  !isZh && styles.titleEnglish,
                   titleClass,
                   styles.heroTitle,
                   'heading-brand',
@@ -207,7 +210,7 @@ export function HomeHeroSection({
                     staggerDuration={titleStagger}
                     staggerFrom="first"
                     transition={HERO_TITLE_REVEAL_TRANSITION}
-                    containerClassName="inline-flex"
+                    containerClassName={isZh ? 'inline-flex' : 'flex'}
                   >
                     {titlePrefix}
                   </VerticalCutReveal>
@@ -215,7 +218,8 @@ export function HomeHeroSection({
                   <span
                     className={cn(
                       styles.titleTailLine,
-                      isZh && isMobile && styles.titleTailLineMobileZh
+                      isZh && isMobile && styles.titleTailLineMobileZh,
+                      !isZh && styles.titleTailLineEnglish
                     )}
                   >
                     <span className={styles.titleNameGroup}>
@@ -386,11 +390,14 @@ const styles = {
   title: cn(
     'mt-2 w-full max-w-full text-center text-5xl font-bold leading-[1.08] tracking-normal sm:text-6xl lg:mt-6 lg:text-left lg:text-[clamp(4rem,12cqw,5rem)] lg:leading-[1.02]'
   ),
+  titleEnglish:
+    'text-[34px] min-[375px]:text-[40px] sm:text-[56px] lg:text-[72px]',
   heroTitle: 'hero-title',
   titleLine: 'inline-block max-w-full',
   titleTailLine:
     'inline-flex max-w-full flex-nowrap items-baseline justify-center whitespace-nowrap lg:justify-start',
   titleTailLineMobileZh: 'flex flex-col items-center',
+  titleTailLineEnglish: 'flex flex-col items-center lg:items-start',
   titleNameGroup: 'inline-flex flex-nowrap items-baseline whitespace-nowrap',
   titleNameSpace: 'whitespace-pre',
   titleEndingGroup: 'inline-flex flex-nowrap items-baseline whitespace-nowrap',
