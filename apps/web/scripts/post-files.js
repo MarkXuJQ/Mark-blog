@@ -25,7 +25,19 @@ export function collectMarkdownFiles(dirPath) {
 }
 
 export function collectPostMarkdownFiles(postsDir) {
-  return POST_LANGUAGE_DIRECTORIES.flatMap((directory) =>
-    collectMarkdownFiles(path.join(postsDir, directory))
-  )
+  if (!fs.existsSync(postsDir)) return []
+
+  return fs
+    .readdirSync(postsDir, { withFileTypes: true })
+    .filter(
+      (entry) =>
+        entry.isDirectory() &&
+        (entry.name === 'before-2026' || /^\d{4}$/.test(entry.name))
+    )
+    .flatMap((year) =>
+      POST_LANGUAGE_DIRECTORIES.flatMap((language) =>
+        collectMarkdownFiles(path.join(postsDir, year.name, language))
+      )
+    )
+    .sort()
 }

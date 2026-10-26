@@ -21,10 +21,7 @@ const OUTPUT_FILE = path.resolve(__dirname, '../src/data/post-summaries.json')
 const MOVIE_REVIEW_SUMMARY_MAX_LENGTH = 140
 
 function resolveLanguageFromPath(filePath) {
-  const normalized = filePath.replaceAll('\\', '/')
-  if (normalized.includes('/posts/chinese/')) return 'zh'
-  if (normalized.includes('/posts/english/')) return 'en'
-  return 'zh'
+  return path.basename(path.dirname(filePath)) === 'english' ? 'en' : 'zh'
 }
 
 function normalizeOptionalString(value) {

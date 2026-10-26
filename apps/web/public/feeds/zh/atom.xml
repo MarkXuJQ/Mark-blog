@@ -3,7 +3,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://markxu.icu</id>
     <title>Mark的自留地</title>
-    <updated>2026-10-22T00:00:00.000Z</updated>
+    <updated>2026-10-25T00:00:00.000Z</updated>
     <generator>Mark Xu Blog Generator</generator>
     <author>
         <name>Mark Xu</name>
@@ -16,6 +16,20 @@
     <logo>https://markxu.icu/images/IMG_1766.JPG</logo>
     <icon>https://markxu.icu/favicon.png</icon>
     <rights>All rights reserved 2026, Mark Xu</rights>
+    <entry>
+        <title type="html"><![CDATA[或许我们将来只有文科和工科，看3B1B视频有感]]></title>
+        <id>https://markxu.icu/blog/future-of-liberal-arts-and-engineering-cn</id>
+        <link href="https://markxu.icu/blog/future-of-liberal-arts-and-engineering-cn"/>
+        <link rel="enclosure" href="https://img.markxu.icu/imge1ca44fe-e495-4e4f-951f-46ea158d947b.png" type="image/png"/>
+        <updated>2026-10-25T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[今天晚上看完了 3Blue1Brown 的《投身数学，从未有过比现在更好的时候》的视频，有些感触，简单记录下。]]></summary>
+        <content type="html"><![CDATA[<img src="https://img.markxu.icu/imge1ca44fe-e495-4e4f-951f-46ea158d947b.png" alt="或许我们将来只有文科和工科，看3B1B视频有感" /> <p>今天晚上看完了 3Blue1Brown 的《投身数学，从未有过比现在更好的时候》的视频，有些感触，简单记录下。</p> <a class="view-full" href="https://markxu.icu/blog/future-of-liberal-arts-and-engineering-cn" target="_blank">点击查看全文</a>]]></content>
+        <author>
+            <name>Mark Xu</name>
+            <email>xujianqiao86@gmail.com</email>
+            <uri>https://markxu.icu</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[从408操作系统到生产环境：为什么发信号的函数叫 kill，而不是send？]]></title>
         <id>https://markxu.icu/blog/why-unix-signal-sender-is-called-kill-cn</id>

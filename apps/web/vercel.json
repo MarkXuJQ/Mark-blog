@@ -139,6 +139,11 @@
       "permanent": true
     },
     {
+      "source": "/blog/25.3b1b视频有感",
+      "destination": "/blog/future-of-liberal-arts-and-engineering-cn",
+      "permanent": true
+    },
+    {
       "source": "/blog/3.My-first-blog",
       "destination": "/blog/first-blog-post-en",
       "permanent": true
@@ -216,6 +221,11 @@
     {
       "source": "/blog/frontend-effects-resources",
       "destination": "/blog/frontend-effects-resources-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/future-of-liberal-arts-and-engineering",
+      "destination": "/blog/future-of-liberal-arts-and-engineering-cn",
       "permanent": true
     },
     {

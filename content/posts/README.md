@@ -2,7 +2,7 @@
 
 这里统一记录博客文章格式、可复用文章块和交互能力。新增写作组件时，应同步更新这份文档，不再依靠旧文章反查写法。
 
-`README.md` 位于 `content/posts` 根目录，不会被当作博客文章发布。中文文章放在 `chinese`，英文文章放在 `english`。
+`README.md` 位于 `content/posts` 根目录，不会被当作博客文章发布。文章按 Front Matter 的 `date`（首次发表日期）归档：2026 年的文章放在 `2026/chinese` 或 `2026/english`；2026 年以前的文章放在 `before-2026/chinese` 或 `before-2026/english`。后续年份沿用 `<年份>/chinese` 和 `<年份>/english`。`updated` 不影响归档位置。
 
 ## 新建文章
 
