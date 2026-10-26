@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation, Trans } from 'react-i18next'
 import { DeferredComments } from '@/components/comments/DeferredComments'
+import { AboutStickers } from '@/components/about/AboutStickers'
 import { Seo } from '@/app/seo/Seo'
 import { cn } from '@/lib/classNames'
 import { WebsiteCard } from '@/components/article/WebsiteCard'
@@ -19,7 +20,9 @@ type CopyState = {
 export function About() {
   useAboutDisplayFont()
 
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const isZh = i18n.language?.startsWith('zh') ?? false
+  const aboutRef = useRef<HTMLDivElement>(null)
   const commentsRef = useRef<HTMLDivElement>(null)
   const [copyState, setCopyState] = useState<CopyState>({
     target: null,
@@ -93,7 +96,11 @@ export function About() {
     <>
       <Seo title={t('about.title')} description={t('about.description')} />
 
-      <div className="relative mx-auto w-full max-w-2xl px-8 py-12 sm:px-6 md:py-20 lg:max-w-3xl lg:px-8">
+      <div
+        ref={aboutRef}
+        className="relative mx-auto w-full max-w-2xl px-8 py-12 sm:px-6 md:py-20 lg:max-w-3xl lg:px-8"
+      >
+        <AboutStickers isZh={isZh} containerRef={aboutRef} />
         <h1 className="mb-8 text-left text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-slate-100">
           {t('about.title')}
         </h1>
