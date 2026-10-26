@@ -14,6 +14,7 @@ interface StaggeredListProps {
   itemClassName?: string
   as?: 'div' | 'section' | 'ul'
   startIndex?: number
+  animate?: boolean
 }
 
 interface StaggeredChildProps {
@@ -27,6 +28,7 @@ export function StaggeredList({
   className,
   itemClassName,
   startIndex = 0,
+  animate = true,
 }: StaggeredListProps) {
   let index = startIndex
   const animatedChildren = Children.map(children, (child) => {
@@ -39,7 +41,7 @@ export function StaggeredList({
       className: cn(
         child.props.className,
         itemClassName,
-        'blog-list-item-enter'
+        animate && 'blog-list-item-enter'
       ),
       style: {
         ...child.props.style,

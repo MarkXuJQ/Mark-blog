@@ -33,7 +33,6 @@ import { StaggeredList } from '@/components/ui/StaggeredList'
 import { useBlogPosts } from '@/hooks/useBlogPosts'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
-import { getOptimizedImageUrl } from '@/lib/image'
 import { PostSharedElement } from '@/components/transitions/PostSharedElement'
 import { POST_SHARED_TRANSITION_SETTLE_MS } from '@/lib/transitions/postSharedTransition'
 import {
@@ -157,6 +156,42 @@ export function Blog() {
     const start = (safeCurrentPage - 1) * ITEMS_PER_PAGE
     return posts.slice(start, start + ITEMS_PER_PAGE)
   }, [posts, safeCurrentPage])
+
+  const [suppressListEnter, setSuppressListEnter] = useState(
+    () => Boolean(returnTransitionPostSlug)
+  )
+  const listStateRef = useRef({
+    currentPage: safeCurrentPage,
+    searchQuery,
+    selectedCategory,
+    sortBy,
+  })
+
+  useEffect(() => {
+    const previousState = listStateRef.current
+    const listChanged =
+      previousState.currentPage !== safeCurrentPage ||
+      previousState.searchQuery !== searchQuery ||
+      previousState.selectedCategory !== selectedCategory ||
+      previousState.sortBy !== sortBy
+
+    if (suppressListEnter && listChanged) {
+      setSuppressListEnter(false)
+    }
+
+    listStateRef.current = {
+      currentPage: safeCurrentPage,
+      searchQuery,
+      selectedCategory,
+      sortBy,
+    }
+  }, [
+    safeCurrentPage,
+    searchQuery,
+    selectedCategory,
+    sortBy,
+    suppressListEnter,
+  ])
 
   useEffect(() => {
     if (safeCurrentPage !== currentPage) {
@@ -375,13 +410,14 @@ export function Blog() {
       <div ref={paginationContentRef}>
         {currentPosts.length > 0 ? (
           <>
-            <StaggeredList className={simpleMode ? 'space-y-0' : 'space-y-4'}>
+            <StaggeredList
+              className={simpleMode ? 'space-y-0' : 'space-y-4'}
+              animate={!suppressListEnter}
+            >
               {currentPosts.map((post) => {
                 const isSharedTransitionPost =
                   sharedTransitionEnabled && transitionPostSlug === post.slug
-                const shouldSuppressListEnter =
-                  isSharedTransitionPost ||
-                  returnTransitionPostSlug === post.slug
+                const shouldSuppressListEnter = isSharedTransitionPost
 
                 return simpleMode ? (
                   <SimpleBlogPostItem
@@ -505,25 +541,8 @@ function SimpleBlogPostItem({
       <Link
         to={detailPath}
         onClick={onOpenPost}
-        className="group flex min-w-0 gap-4"
+        className="group block min-w-0"
       >
-        {post.image ? (
-          <PostSharedElement
-            slug={post.slug}
-            element="cover"
-            enabled={sharedTransitionEnabled}
-            className="mt-1 aspect-[4/3] w-28 shrink-0 overflow-hidden bg-slate-100 sm:w-36 dark:bg-slate-800"
-          >
-            <img
-              src={getOptimizedImageUrl(post.image, 'card')}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              referrerPolicy="no-referrer"
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          </PostSharedElement>
-        ) : null}
         <div className="min-w-0">
           <PostSharedElement
             slug={post.slug}
