@@ -1,21 +1,29 @@
 import {
   useCallback,
-  useRef,
   useEffect,
+  useRef,
+  useState,
   type KeyboardEvent as ReactKeyboardEvent,
   type RefObject,
 } from 'react'
 import { motion, useMotionValue } from 'framer-motion'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import batmanSticker from '@/assets/home/stickers/batman.webp'
 import playstationSticker from '@/assets/home/stickers/playstation-symbols.webp'
 import chatGptSticker from '@/assets/home/stickers/think-less-more-chatgpt.webp'
+
+const MIN_SIDE_SPACE = 260
 
 const STICKERS = [
   {
     src: playstationSticker,
     alt: { zh: 'PlayStation 按键符号贴纸', en: 'PlayStation symbols sticker' },
-    className:
-      'left-[18%] top-[23%] w-[76px] sm:left-[15%] sm:w-[108px] lg:left-[13%] lg:w-[132px]',
+    className: 'left-[-8.25rem] top-[16%] w-[132px]',
+  },
+  {
+    src: batmanSticker,
+    alt: { zh: '蝙蝠侠贴纸', en: 'Batman sticker' },
+    className: 'left-[-13.75rem] top-[48%] w-[320px]',
   },
   {
     src: chatGptSticker,
@@ -23,19 +31,57 @@ const STICKERS = [
       zh: 'Think Less More ChatGPT 贴纸',
       en: 'Think Less More ChatGPT sticker',
     },
-    className:
-      'left-[66%] top-[83%] w-[176px] sm:left-[74%] sm:top-[80%] sm:w-[248px] lg:left-[82%] lg:top-[78%] lg:w-[312px]',
-  },
-  {
-    src: batmanSticker,
-    alt: { zh: '蝙蝠侠贴纸', en: 'Batman sticker' },
-    className:
-      'left-[32%] top-[82%] w-[184px] sm:left-[26%] sm:top-[80%] sm:w-[248px] lg:left-[18%] lg:top-[78%] lg:w-[300px]',
+    className: 'right-[-16.25rem] top-[70%] w-[360px]',
   },
 ] as const
 
-export function HomeHeroStickers({ isZh }: { isZh: boolean }) {
+export function AboutStickers({
+  isZh,
+  containerRef,
+}: {
+  isZh: boolean
+  containerRef: RefObject<HTMLElement | null>
+}) {
+  const isWideDesktop = useMediaQuery('(min-width: 1280px)')
+  const [hasSideSpace, setHasSideSpace] = useState(false)
   const safeBoundsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!isWideDesktop) {
+      setHasSideSpace(false)
+      return
+    }
+
+    const updateSideSpace = () => {
+      const container = containerRef.current
+      if (!container) {
+        setHasSideSpace(false)
+        return
+      }
+
+      const bounds = container.getBoundingClientRect()
+      const leftSpace = bounds.left
+      const rightSpace = window.innerWidth - bounds.right
+      setHasSideSpace(
+        leftSpace >= MIN_SIDE_SPACE && rightSpace >= MIN_SIDE_SPACE
+      )
+    }
+
+    updateSideSpace()
+    window.addEventListener('resize', updateSideSpace)
+    const observer =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(updateSideSpace)
+    if (observer && containerRef.current) observer.observe(containerRef.current)
+
+    return () => {
+      window.removeEventListener('resize', updateSideSpace)
+      observer?.disconnect()
+    }
+  }, [containerRef, isWideDesktop])
+
+  if (!isWideDesktop || !hasSideSpace) return null
 
   return (
     <div
@@ -45,12 +91,12 @@ export function HomeHeroStickers({ isZh }: { isZh: boolean }) {
           ? '点击或拖放后会随机旋转的贴纸'
           : 'Stickers that rotate after clicking or dragging'
       }
-      className="pointer-events-none absolute inset-0 z-20 overflow-hidden"
+      className="pointer-events-none absolute inset-0 z-20 overflow-visible"
     >
       <div
         ref={safeBoundsRef}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-[5%]"
+        className="pointer-events-none absolute inset-y-[5%] -right-[260px] -left-[260px]"
       />
       <div className="pointer-events-none absolute inset-0">
         {STICKERS.map((sticker) => (
@@ -184,14 +230,14 @@ function Sticker({
           ? `点击或拖放${alt}以随机旋转`
           : `Click or drag ${alt} to rotate it randomly`
       }
-      className={`pointer-events-auto absolute [translate:-50%_-50%] cursor-grab touch-none border-0 bg-transparent p-0 drop-shadow-[0_9px_12px_rgba(15,23,42,0.2)] focus-visible:rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400 active:cursor-grabbing ${sticker.className}`}
+      className={`pointer-events-auto absolute [translate:0_-50%] cursor-grab touch-none border-0 bg-transparent p-0 drop-shadow-[0_9px_12px_rgba(15,23,42,0.2)] focus-visible:rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400 active:cursor-grabbing ${sticker.className}`}
     >
       <img
         src={sticker.src}
         alt={alt}
         draggable={false}
         className="block h-auto w-full select-none"
-        loading="eager"
+        loading="lazy"
         decoding="async"
       />
     </motion.button>

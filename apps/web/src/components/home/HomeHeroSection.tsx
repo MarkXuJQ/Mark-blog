@@ -6,7 +6,6 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
 import { getImageUrl } from '@/lib/image'
 import { HomeHeroAvatarScene } from './HomeHeroAvatarScene'
-import { HomeHeroStickers } from './HomeHeroStickers'
 
 interface HomeHeroSectionProps {
   avatarSrc: string
@@ -174,7 +173,6 @@ export function HomeHeroSection({
         >
           <HomeHeroBackground isDarkMode={isDarkMode} />
         </motion.div>
-        <HomeHeroStickers isZh={isZh} />
         {isDarkMode ? (
           <>
             <div
