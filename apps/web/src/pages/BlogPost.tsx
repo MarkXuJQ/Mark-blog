@@ -339,6 +339,19 @@ export function BlogPost() {
           </div>
         </header>
 
+        {hasCoverImage ? (
+          <div className={styles.simpleReadingCover}>
+            <ProgressiveCoverImage
+              placeholderSrc={coverThumbnail}
+              highSrc={coverImage}
+              alt={post.title}
+              data-original-src={originalCoverImage}
+              referrerPolicy="no-referrer"
+              className={styles.simpleReadingCoverImage}
+            />
+          </div>
+        ) : null}
+
         <MarkdownContent
           key={`simple-${post.slug}`}
           ref={contentRef}
@@ -734,5 +747,8 @@ const styles = {
     'not-prose mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[var(--article-muted)]',
   simpleReadingTitle:
     'mb-4 text-4xl font-bold tracking-tight text-[var(--article-heading)] md:text-5xl',
+  simpleReadingCover:
+    'not-prose mb-10 w-full overflow-hidden rounded-xl',
+  simpleReadingCoverImage: 'block h-auto w-full object-contain',
   simpleReadingComments: 'not-prose mt-16 mb-4',
 }

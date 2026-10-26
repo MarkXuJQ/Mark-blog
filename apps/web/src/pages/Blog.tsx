@@ -33,7 +33,6 @@ import { StaggeredList } from '@/components/ui/StaggeredList'
 import { useBlogPosts } from '@/hooks/useBlogPosts'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
-import { getOptimizedImageUrl } from '@/lib/image'
 import { PostSharedElement } from '@/components/transitions/PostSharedElement'
 import { POST_SHARED_TRANSITION_SETTLE_MS } from '@/lib/transitions/postSharedTransition'
 import {
@@ -505,25 +504,8 @@ function SimpleBlogPostItem({
       <Link
         to={detailPath}
         onClick={onOpenPost}
-        className="group flex min-w-0 gap-4"
+        className="group block min-w-0"
       >
-        {post.image ? (
-          <PostSharedElement
-            slug={post.slug}
-            element="cover"
-            enabled={sharedTransitionEnabled}
-            className="mt-1 aspect-[4/3] w-28 shrink-0 overflow-hidden bg-slate-100 sm:w-36 dark:bg-slate-800"
-          >
-            <img
-              src={getOptimizedImageUrl(post.image, 'card')}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              referrerPolicy="no-referrer"
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          </PostSharedElement>
-        ) : null}
         <div className="min-w-0">
           <PostSharedElement
             slug={post.slug}
