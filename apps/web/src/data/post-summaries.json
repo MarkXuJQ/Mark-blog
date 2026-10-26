@@ -1,5 +1,21 @@
 [
   {
+    "id": "future-of-liberal-arts-and-engineering-cn",
+    "slug": "future-of-liberal-arts-and-engineering-cn",
+    "language": "zh",
+    "title": "或许我们将来只有文科和工科，看3B1B视频有感",
+    "date": "2026-10-25",
+    "summary": "今天晚上看完了 3Blue1Brown 的《投身数学，从未有过比现在更好的时候》的视频，有些感触，简单记录下。",
+    "wordCount": 971,
+    "image": "https://img.markxu.icu/imge1ca44fe-e495-4e4f-951f-46ea158d947b.png",
+    "tags": [
+      "Math",
+      "AI",
+      "Education"
+    ],
+    "category": "essay"
+  },
+  {
     "id": "why-unix-signal-sender-is-called-kill-cn",
     "slug": "why-unix-signal-sender-is-called-kill-cn",
     "language": "zh",

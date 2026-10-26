@@ -45,10 +45,7 @@ if (!fs.existsSync(POSTS_DIR)) {
 const files = collectPostMarkdownFiles(POSTS_DIR)
 
 const resolveLanguageFromPath = (filePath) => {
-  const normalized = filePath.replaceAll('\\', '/')
-  if (normalized.includes('/posts/chinese/')) return 'zh'
-  if (normalized.includes('/posts/english/')) return 'en'
-  return 'zh'
+  return path.basename(path.dirname(filePath)) === 'english' ? 'en' : 'zh'
 }
 
 const resolvePostSlug = (filePath, data) => {

@@ -42,13 +42,12 @@ function resolveLanguage(language?: string): PostLanguage {
 }
 
 function resolveFolderFromPath(path: string): PostFolder | null {
-  if (path.includes('/posts/chinese/')) return 'chinese'
-  if (path.includes('/posts/english/')) return 'english'
-  return null
+  const folder = path.match(/\/posts\/[^/]+\/(chinese|english)\//)?.[1]
+  return folder === 'chinese' || folder === 'english' ? folder : null
 }
 
 const markdownFiles = import.meta.glob<MarkdownPost>(
-  ['@content/posts/chinese/*.md', '@content/posts/english/*.md'],
+  ['@content/posts/*/chinese/*.md', '@content/posts/*/english/*.md'],
   { eager: true }
 )
 
