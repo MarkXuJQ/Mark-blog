@@ -2,6 +2,7 @@ import { motion, type MotionValue } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { VerticalCutReveal } from '@/components/ui/vertical-cut-reveal'
 import { TextRotate } from '@/components/ui/text-rotate'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
 import { getImageUrl } from '@/lib/image'
 import { HomeHeroAvatarScene } from './HomeHeroAvatarScene'
@@ -130,6 +131,7 @@ export function HomeHeroSection({
   handleNameKeyDown,
 }: HomeHeroSectionProps) {
   const { t } = useTranslation()
+  const isMobile = useMediaQuery('(max-width: 639px)')
   const frameClass = isDarkMode ? styles.heroFrameNight : styles.heroFrameLight
   const auraClass = isDarkMode ? styles.heroAuraNight : styles.heroAuraLight
   const contentToneClass = isDarkMode
@@ -210,7 +212,12 @@ export function HomeHeroSection({
                     {titlePrefix}
                   </VerticalCutReveal>
                   {isZh ? <br /> : null}
-                  <span className={styles.titleTailLine}>
+                  <span
+                    className={cn(
+                      styles.titleTailLine,
+                      isZh && isMobile && styles.titleTailLineMobileZh
+                    )}
+                  >
                     <span className={styles.titleNameGroup}>
                       <span
                         className={styles.highlightText}
@@ -257,51 +264,53 @@ export function HomeHeroSection({
                         </span>
                       ) : null}
                     </span>
-                    {titleSuffixLead ? (
-                      <VerticalCutReveal
-                        splitBy="characters"
-                        staggerDuration={titleStagger}
-                        staggerFrom="last"
-                        reverse
-                        transition={{
-                          ...HERO_TITLE_REVEAL_TRANSITION,
-                          delay: prefersReducedMotion ? 0 : 0.34,
-                        }}
-                        containerClassName="inline-flex"
-                      >
-                        {titleSuffixLead}
-                      </VerticalCutReveal>
-                    ) : null}
-                    <span className={styles.titleRotateBadge}>
-                      <TextRotate
-                        texts={titleMorphTexts}
-                        auto={!prefersReducedMotion}
-                        rotationInterval={2300}
-                        staggerFrom="last"
-                        staggerDuration={0.018}
-                        initial={{ y: '105%', opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: '-105%', opacity: 0 }}
-                        transition={{
-                          type: 'spring',
-                          damping: 24,
-                          stiffness: 360,
-                          mass: 0.65,
-                        }}
-                        layoutTransition={{
-                          type: 'tween',
-                          duration: 0.46,
-                          ease: [0.33, 1, 0.68, 1],
-                        }}
-                        mainClassName={styles.titleRotateWrap}
-                        splitLevelClassName={styles.titleRotateSplit}
-                        elementLevelClassName={styles.titleRotateGlyph}
-                      />
-                      <span
-                        aria-hidden="true"
-                        className={styles.titleRotateStar}
-                      >
-                        *
+                    <span className={styles.titleEndingGroup}>
+                      {titleSuffixLead ? (
+                        <VerticalCutReveal
+                          splitBy="characters"
+                          staggerDuration={titleStagger}
+                          staggerFrom="last"
+                          reverse
+                          transition={{
+                            ...HERO_TITLE_REVEAL_TRANSITION,
+                            delay: prefersReducedMotion ? 0 : 0.34,
+                          }}
+                          containerClassName="inline-flex"
+                        >
+                          {titleSuffixLead}
+                        </VerticalCutReveal>
+                      ) : null}
+                      <span className={styles.titleRotateBadge}>
+                        <TextRotate
+                          texts={titleMorphTexts}
+                          auto={!prefersReducedMotion}
+                          rotationInterval={2300}
+                          staggerFrom="last"
+                          staggerDuration={0.018}
+                          initial={{ y: '105%', opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          exit={{ y: '-105%', opacity: 0 }}
+                          transition={{
+                            type: 'spring',
+                            damping: 24,
+                            stiffness: 360,
+                            mass: 0.65,
+                          }}
+                          layoutTransition={{
+                            type: 'tween',
+                            duration: 0.46,
+                            ease: [0.33, 1, 0.68, 1],
+                          }}
+                          mainClassName={styles.titleRotateWrap}
+                          splitLevelClassName={styles.titleRotateSplit}
+                          elementLevelClassName={styles.titleRotateGlyph}
+                        />
+                        <span
+                          aria-hidden="true"
+                          className={styles.titleRotateStar}
+                        >
+                          *
+                        </span>
                       </span>
                     </span>
                   </span>
@@ -367,22 +376,24 @@ const styles = {
   heroAuraNight:
     'bg-[radial-gradient(circle_at_18%_28%,rgba(56,189,248,0.18),rgba(56,189,248,0)_32%),radial-gradient(circle_at_78%_24%,rgba(251,191,36,0.16),rgba(251,191,36,0)_28%),radial-gradient(circle_at_52%_78%,rgba(255,255,255,0.1),rgba(255,255,255,0)_36%)]',
   heroContent:
-    'relative z-10 flex h-[100vh] items-center px-5 pt-28 pb-10 sm:px-8 sm:pt-32 lg:px-10',
+    'relative z-10 flex h-[100vh] items-center px-5 pt-24 pb-8 sm:px-8 sm:pt-32 sm:pb-10 lg:px-10',
   heroContentLight: 'text-black',
   heroContentDark: 'text-white',
   heroContentInner:
-    'mx-auto grid w-full min-w-0 max-w-7xl grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.96fr)] lg:gap-12',
+    'mx-auto grid w-full min-w-0 max-w-7xl -translate-y-5 grid-cols-1 items-center gap-4 sm:translate-y-0 sm:gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.96fr)] lg:gap-12',
   heroCopy:
-    'home-hero-copy-enter order-2 flex min-w-0 w-full [container-type:inline-size] flex-col items-center text-center lg:order-1 lg:items-start lg:text-left',
+    'home-hero-copy-enter order-2 flex min-w-0 w-full -translate-y-4 [container-type:inline-size] flex-col items-center text-center sm:translate-y-0 lg:order-1 lg:items-start lg:text-left',
   title: cn(
     'mt-2 w-full max-w-full text-center text-5xl font-bold leading-[1.08] tracking-normal sm:text-6xl lg:mt-6 lg:text-left lg:text-[clamp(4rem,12cqw,5rem)] lg:leading-[1.02]'
   ),
   heroTitle: 'hero-title',
   titleLine: 'inline-block max-w-full',
   titleTailLine:
-    'inline-flex max-w-full flex-wrap items-baseline justify-center lg:justify-start',
+    'inline-flex max-w-full flex-nowrap items-baseline justify-center whitespace-nowrap lg:justify-start',
+  titleTailLineMobileZh: 'flex flex-col items-center',
   titleNameGroup: 'inline-flex flex-nowrap items-baseline whitespace-nowrap',
   titleNameSpace: 'whitespace-pre',
+  titleEndingGroup: 'inline-flex flex-nowrap items-baseline whitespace-nowrap',
   titleRotateBadge:
     'relative mx-[0.1em] inline-flex items-baseline align-baseline',
   titleRotateWrap:
