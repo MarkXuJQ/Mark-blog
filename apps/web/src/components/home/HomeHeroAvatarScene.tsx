@@ -599,7 +599,7 @@ export function HomeHeroAvatarScene({
 
 const styles = {
   frameWrap:
-    'relative mx-auto aspect-[0.94] w-full max-w-[360px] [perspective:1800px] sm:max-w-[420px] lg:max-w-[560px]',
+    'relative mx-auto aspect-square w-full max-w-[256px] -translate-y-4 [perspective:1800px] sm:max-w-[320px] sm:-translate-y-4 lg:aspect-[0.94] lg:max-w-[560px] lg:translate-y-0',
   frame: 'relative h-full w-full',
   backGlow:
     'absolute left-1/2 top-1/2 hidden h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl lg:block lg:h-[30rem] lg:w-[30rem]',
@@ -654,7 +654,7 @@ const styles = {
   tagB: 'right-3 top-12 sm:right-6 sm:top-16',
   tagC: 'bottom-0 left-1/5 -translate-x-1/2',
   avatarStage:
-    'relative flex min-h-[18rem] w-full items-center justify-center rounded-[30px] [transform-style:preserve-3d] sm:min-h-[20rem] lg:min-h-[29rem]',
+    'relative flex min-h-[13rem] w-full items-center justify-center rounded-[30px] [transform-style:preserve-3d] sm:min-h-[15rem] lg:min-h-[29rem]',
   avatarBackdrop:
     'absolute hidden h-[15rem] w-[15rem] rounded-[38%] blur-3xl lg:block lg:h-[18rem] lg:w-[18rem]',
   avatarBackdropLight:
@@ -666,7 +666,7 @@ const styles = {
   avatarEchoLight: 'bg-white/16',
   avatarEchoDark: 'bg-slate-900/18',
   avatarShell:
-    'relative z-10 flex h-[15rem] w-[15rem] items-center justify-center rounded-[38%] bg-white/10 p-4 shadow-[0_30px_68px_-34px_rgba(15,23,42,0.82)] backdrop-blur-xl sm:h-[16.5rem] sm:w-[16.5rem] sm:p-[1.125rem] lg:h-[18rem] lg:w-[18rem] lg:p-5 lg:shadow-[0_45px_90px_-48px_rgba(15,23,42,0.82)] lg:[transform:translateZ(70px)]',
+    'relative z-10 flex h-[11rem] w-[11rem] items-center justify-center rounded-[38%] bg-white/10 p-3 shadow-[0_30px_68px_-34px_rgba(15,23,42,0.82)] backdrop-blur-xl sm:h-[12.5rem] sm:w-[12.5rem] sm:p-4 lg:h-[18rem] lg:w-[18rem] lg:p-5 lg:shadow-[0_45px_90px_-48px_rgba(15,23,42,0.82)] lg:[transform:translateZ(70px)]',
   avatarHalo:
     'absolute inset-[8%] rounded-[36%] bg-[radial-gradient(circle,rgba(255,255,255,0.36)_0%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0)_72%)] blur-2xl',
   avatarMask:
