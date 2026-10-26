@@ -157,6 +157,42 @@ export function Blog() {
     return posts.slice(start, start + ITEMS_PER_PAGE)
   }, [posts, safeCurrentPage])
 
+  const [suppressListEnter, setSuppressListEnter] = useState(
+    () => Boolean(returnTransitionPostSlug)
+  )
+  const listStateRef = useRef({
+    currentPage: safeCurrentPage,
+    searchQuery,
+    selectedCategory,
+    sortBy,
+  })
+
+  useEffect(() => {
+    const previousState = listStateRef.current
+    const listChanged =
+      previousState.currentPage !== safeCurrentPage ||
+      previousState.searchQuery !== searchQuery ||
+      previousState.selectedCategory !== selectedCategory ||
+      previousState.sortBy !== sortBy
+
+    if (suppressListEnter && listChanged) {
+      setSuppressListEnter(false)
+    }
+
+    listStateRef.current = {
+      currentPage: safeCurrentPage,
+      searchQuery,
+      selectedCategory,
+      sortBy,
+    }
+  }, [
+    safeCurrentPage,
+    searchQuery,
+    selectedCategory,
+    sortBy,
+    suppressListEnter,
+  ])
+
   useEffect(() => {
     if (safeCurrentPage !== currentPage) {
       setCurrentPage(safeCurrentPage)
@@ -374,13 +410,14 @@ export function Blog() {
       <div ref={paginationContentRef}>
         {currentPosts.length > 0 ? (
           <>
-            <StaggeredList className={simpleMode ? 'space-y-0' : 'space-y-4'}>
+            <StaggeredList
+              className={simpleMode ? 'space-y-0' : 'space-y-4'}
+              animate={!suppressListEnter}
+            >
               {currentPosts.map((post) => {
                 const isSharedTransitionPost =
                   sharedTransitionEnabled && transitionPostSlug === post.slug
-                const shouldSuppressListEnter =
-                  isSharedTransitionPost ||
-                  returnTransitionPostSlug === post.slug
+                const shouldSuppressListEnter = isSharedTransitionPost
 
                 return simpleMode ? (
                   <SimpleBlogPostItem

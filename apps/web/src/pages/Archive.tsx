@@ -386,7 +386,8 @@ const styles = {
   postTitle:
     'min-w-0 text-lg font-bold text-slate-900 transition-colors group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400',
   postLink: 'focus:outline-none',
-  postTags: 'relative z-10 mt-2 flex shrink-0 flex-wrap gap-2 sm:mt-0',
+  postTags:
+    'relative z-10 mt-2 hidden shrink-0 flex-wrap gap-2 sm:mt-0 sm:flex',
   postTag:
     'relative z-10 inline-flex cursor-pointer items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 transition-[background-color,color,box-shadow,transform] hover:-translate-y-0.5 hover:bg-slate-900 hover:text-white hover:shadow-[0_10px_22px_-16px_rgba(15,23,42,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-100 dark:hover:text-slate-950 dark:hover:shadow-none',
   postTagActive:

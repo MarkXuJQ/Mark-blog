@@ -1454,8 +1454,13 @@ i {
 }
 
 .blog-list-item-enter {
-  animation: blog-list-item-enter 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: calc(var(--blog-list-item-index, 0) * 42ms);
+  --blog-list-item-enter-duration: 308ms;
+  --blog-list-item-enter-stagger: 83ms;
+  animation: blog-list-item-enter var(--blog-list-item-enter-duration)
+    cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(
+    var(--blog-list-item-index, 0) * var(--blog-list-item-enter-stagger)
+  );
 }
 
 .blog-list-item-enter.blog-post-shared-transition-source {
