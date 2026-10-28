@@ -22,7 +22,7 @@ export function About() {
 
   const { t, i18n } = useTranslation()
   const isZh = i18n.language?.startsWith('zh') ?? false
-  const aboutRef = useRef<HTMLDivElement>(null)
+  const stickerAreaRef = useRef<HTMLDivElement>(null)
   const commentsRef = useRef<HTMLDivElement>(null)
   const [copyState, setCopyState] = useState<CopyState>({
     target: null,
@@ -96,92 +96,96 @@ export function About() {
     <>
       <Seo title={t('about.title')} description={t('about.description')} />
 
-      <div
-        ref={aboutRef}
-        className="relative mx-auto w-full max-w-2xl px-8 py-12 sm:px-6 md:py-20 lg:max-w-3xl lg:px-8"
-      >
-        <AboutStickers isZh={isZh} containerRef={aboutRef} />
-        <h1 className="mb-8 text-left text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-slate-100">
-          {t('about.title')}
-        </h1>
+      <div className="mx-auto w-full max-w-2xl lg:max-w-3xl">
+        <div
+          ref={stickerAreaRef}
+          className="relative px-8 py-12 sm:px-6 md:py-20 lg:px-8"
+        >
+          <AboutStickers isZh={isZh} containerRef={stickerAreaRef} />
+          <h1 className="mb-8 text-left text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-slate-100">
+            {t('about.title')}
+          </h1>
 
-        <article className="prose prose-lg dark:prose-invert prose-slate max-w-none">
-          <div className="space-y-8 text-slate-700 dark:text-slate-300">
-            {/* Self Intro */}
-            <p className="text-xl leading-relaxed font-medium text-slate-800 dark:text-slate-200">
-              {t('about.intro')}
-            </p>
-
-            {/* About Website */}
-            <section>
-              <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-slate-100">
-                {t('about.originTitle')}
-              </h2>
-              <p className="mb-6 leading-relaxed">
-                <Trans
-                  i18nKey="about.originContent"
-                  components={[
-                    <a
-                      key="0"
-                      href="https://blog.zhilu.site/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 underline decoration-2 underline-offset-2 transition-colors hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                    >
-                      blog.zhilu.site
-                    </a>,
-                  ]}
-                />
+          <article className="prose prose-lg dark:prose-invert prose-slate max-w-none">
+            <div className="space-y-8 text-slate-700 dark:text-slate-300">
+              {/* Self Intro */}
+              <p className="text-xl leading-relaxed font-medium text-slate-800 dark:text-slate-200">
+                {t('about.intro')}
               </p>
 
-              <WebsiteCard
-                url="https://blog.zhilu.site/"
-                title="纸鹿摸鱼处"
-                description="纸鹿大佬的博客，精美又高效，文笔成熟，是本站的灵感来源之一。"
-                variant="horizontal"
-                className="not-prose mx-auto my-6 max-w-lg"
-              />
-            </section>
+              {/* About Website */}
+              <section>
+                <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-slate-100">
+                  {t('about.originTitle')}
+                </h2>
+                <p className="mb-6 leading-relaxed">
+                  <Trans
+                    i18nKey="about.originContent"
+                    components={[
+                      <a
+                        key="0"
+                        href="https://blog.zhilu.site/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline decoration-2 underline-offset-2 transition-colors hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                      >
+                        blog.zhilu.site
+                      </a>,
+                    ]}
+                  />
+                </p>
 
-            {/* Building Process */}
-            <section>
-              <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-slate-100">
-                {t('about.techTitle')}
-              </h2>
-              <p className="leading-relaxed">{t('about.techContent')}</p>
+                <WebsiteCard
+                  url="https://blog.zhilu.site/"
+                  title="纸鹿摸鱼处"
+                  description="纸鹿大佬的博客，精美又高效，文笔成熟，是本站的灵感来源之一。"
+                  variant="horizontal"
+                  className="not-prose mx-auto my-6 max-w-lg"
+                />
+              </section>
 
-              <WebsiteCard
-                url="https://github.com/MarkXuJQ/Mark-blog"
-                title="我的网站源码"
-                description="这里是我的网站的源码仓库，欢迎同学们前来发现问题、一起学习！"
-                variant="horizontal"
-                className="not-prose mx-auto my-6 max-w-lg"
-              />
-            </section>
+              {/* Building Process */}
+              <section>
+                <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-slate-100">
+                  {t('about.techTitle')}
+                </h2>
+                <p className="leading-relaxed">{t('about.techContent')}</p>
 
-            {/* Future */}
-            <p className="border-l-4 border-slate-200 pl-4 leading-relaxed text-slate-600 dark:border-slate-700 dark:text-slate-400">
-              {t('about.futureContent')}
-            </p>
-          </div>
-        </article>
+                <WebsiteCard
+                  url="https://github.com/MarkXuJQ/Mark-blog"
+                  title="我的网站源码"
+                  description="这里是我的网站的源码仓库，欢迎同学们前来发现问题、一起学习！"
+                  variant="horizontal"
+                  className="not-prose mx-auto my-6 max-w-lg"
+                />
+              </section>
+
+              {/* Future */}
+              <p className="border-l-4 border-slate-200 pl-4 leading-relaxed text-slate-600 dark:border-slate-700 dark:text-slate-400">
+                {t('about.futureContent')}
+              </p>
+            </div>
+          </article>
+        </div>
 
         {/* Comments Section */}
-        <div
-          ref={commentsRef}
-          id="about-comments"
-          className="relative mt-16 scroll-mt-24 pt-8"
-        >
-          <ContactPanel
-            copyState={copyState}
-            nudge={shouldNudgeContact}
-            open={isContactOpen}
-            onClose={() => setIsContactOpen(false)}
-            onCopyContact={handleCopyContact}
-            onToggle={() => setIsContactOpen((prev) => !prev)}
-            t={t}
-          />
-          <DeferredComments />
+        <div className="px-8 sm:px-6 lg:px-8">
+          <div
+            ref={commentsRef}
+            id="about-comments"
+            className="relative mt-16 scroll-mt-24 pt-8 pb-12 md:pb-20"
+          >
+            <ContactPanel
+              copyState={copyState}
+              nudge={shouldNudgeContact}
+              open={isContactOpen}
+              onClose={() => setIsContactOpen(false)}
+              onCopyContact={handleCopyContact}
+              onToggle={() => setIsContactOpen((prev) => !prev)}
+              t={t}
+            />
+            <DeferredComments />
+          </div>
         </div>
       </div>
     </>
