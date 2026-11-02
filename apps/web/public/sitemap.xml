@@ -57,7 +57,19 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://markxu.icu/blog/future-of-liberal-arts-and-engineering-en</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://markxu.icu/blog/why-unix-signal-sender-is-called-kill-cn</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://markxu.icu/blog/why-unix-signal-sender-is-called-kill-en</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -69,7 +81,19 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://markxu.icu/blog/why-does-some-website-has-www-2-en</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://markxu.icu/blog/why-does-some-website-has-www-1-cn</loc>
+    <lastmod>2026-09-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://markxu.icu/blog/why-does-some-website-has-www-1-en</loc>
     <lastmod>2026-09-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -81,7 +105,19 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://markxu.icu/blog/FingerBlock-A-game-Demo-by-AI-en</loc>
+    <lastmod>2026-09-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://markxu.icu/blog/rss-feed-beautification-cn</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://markxu.icu/blog/rss-feed-beautification-en</loc>
     <lastmod>2026-09-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -93,13 +129,31 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://markxu.icu/blog/why-im-not-bullish-on-humanoid-robots-en</loc>
+    <lastmod>2026-09-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://markxu.icu/blog/frontend-effects-resources-cn</loc>
     <lastmod>2026-08-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://markxu.icu/blog/frontend-effects-resources-en</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://markxu.icu/blog/queue-implementation-decision-tree-cn</loc>
+    <lastmod>2026-07-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://markxu.icu/blog/queue-implementation-decision-tree-en</loc>
     <lastmod>2026-07-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -171,6 +225,12 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://markxu.icu/blog/what-do-computer-science-majors-learn-en</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://markxu.icu/blog/why-I-recommend-everyone-to-write-blog-cn</loc>
     <lastmod>2026-05-22</lastmod>
     <changefreq>weekly</changefreq>
@@ -184,6 +244,12 @@
   </url>
   <url>
     <loc>https://markxu.icu/blog/websurf-tools-recommendation-cn</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://markxu.icu/blog/websurf-tools-recommendation-en</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -214,6 +280,12 @@
   </url>
   <url>
     <loc>https://markxu.icu/blog/university-info-drawers-cn</loc>
+    <lastmod>2026-05-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://markxu.icu/blog/university-info-drawers-en</loc>
     <lastmod>2026-05-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>

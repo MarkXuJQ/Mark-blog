@@ -42,6 +42,19 @@ interface HomeBlogRailSectionProps {
 
 const BLOG_POST_LIMIT = 7
 const RAIL_INTERVAL = 4500
+// Embla silently turns its loop off when the slides can't fill the viewport
+// plus one extra slide. The curated English list is short (5 posts), so on wide
+// screens the rail used to stop on the last card instead of wrapping. Repeat
+// the list until there are enough slides for loop mode on large viewports
+// (14 slides at the desktop card width cover screens up to ~5K wide).
+const LOOP_MIN_SLIDES = 14
+
+function buildLoopSlides<T>(slides: T[]): T[] {
+  if (slides.length === 0) return slides
+  const copies = Math.ceil(LOOP_MIN_SLIDES / slides.length)
+  if (copies <= 1) return slides
+  return Array.from({ length: copies }, () => slides).flat()
+}
 type EmblaApi = NonNullable<ReturnType<typeof useEmblaCarousel>[1]>
 const railImageCache = new Map<string, string>()
 const railImagePreloadCache = new Map<string, Promise<void>>()
@@ -160,6 +173,16 @@ export function HomeBlogRailSection({
       BLOG_POST_LIMIT
     )
   }, [allPosts])
+  // When reduced motion is requested the rail doesn't auto-advance and looping
+  // is disabled, so keep the slides unique in that case.
+  const blogSlides = useMemo(
+    () => (shouldReduceMotion ? posts : buildLoopSlides(posts)),
+    [posts, shouldReduceMotion]
+  )
+  const lifeSlides = useMemo(
+    () => (shouldReduceMotion ? lifePosts : buildLoopSlides(lifePosts)),
+    [lifePosts, shouldReduceMotion]
+  )
   useEffect(() => {
     const urls = [...posts, ...lifePosts]
       .map((post) => post.image)
@@ -289,14 +312,14 @@ export function HomeBlogRailSection({
 
                 <div className="flex flex-col gap-5 sm:gap-6 lg:gap-7">
                   <BlogRailRow
-                    posts={posts}
+                    posts={blogSlides}
                     reverse={false}
                     shouldReduceMotion={shouldReduceMotion}
                     railApisRef={railApisRef}
                     railKey="blog"
                   />
                   <BlogRailRow
-                    posts={lifePosts}
+                    posts={lifeSlides}
                     reverse
                     shouldReduceMotion={shouldReduceMotion}
                     railApisRef={railApisRef}
@@ -364,9 +387,9 @@ function BlogRailRow({
       className="overflow-hidden"
     >
       <div className="flex touch-pan-y">
-        {posts.map((post) => (
+        {posts.map((post, index) => (
           <div
-            key={'slug' in post ? post.slug : post.id}
+            key={`${'slug' in post ? post.slug : post.id}-${index}`}
             dir="ltr"
             className={`min-w-0 shrink-0 basis-[min(78vw,calc(100vw_-_2rem))] sm:basis-[22rem] lg:basis-[26rem] ${reverse ? 'ml-3 sm:ml-4 lg:ml-5' : 'mr-3 sm:mr-4 lg:mr-5'}`}
           >

@@ -24,6 +24,11 @@
       "permanent": true
     },
     {
+      "source": "/blog/11.what-do-computer-science-majors-learn",
+      "destination": "/blog/what-do-computer-science-majors-learn-en",
+      "permanent": true
+    },
+    {
       "source": "/blog/11.计算机都学些什么？",
       "destination": "/blog/what-do-computer-science-majors-learn-cn",
       "permanent": true
@@ -89,8 +94,18 @@
       "permanent": true
     },
     {
+      "source": "/blog/18.queue-implementation-decision-tree",
+      "destination": "/blog/queue-implementation-decision-tree-en",
+      "permanent": true
+    },
+    {
       "source": "/blog/18.队列的实现方式选择",
       "destination": "/blog/queue-implementation-decision-tree-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/19.frontend-effects-resources",
+      "destination": "/blog/frontend-effects-resources-en",
       "permanent": true
     },
     {
@@ -109,8 +124,18 @@
       "permanent": true
     },
     {
+      "source": "/blog/20.why-im-not-bullish-on-humanoid-robots",
+      "destination": "/blog/why-im-not-bullish-on-humanoid-robots-en",
+      "permanent": true
+    },
+    {
       "source": "/blog/20.为什么我不看好人形机器人？",
       "destination": "/blog/why-im-not-bullish-on-humanoid-robots-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/21.rss-feed-beautification",
+      "destination": "/blog/rss-feed-beautification-en",
       "permanent": true
     },
     {
@@ -119,13 +144,28 @@
       "permanent": true
     },
     {
+      "source": "/blog/22.FingerBlock-A-game-Demo-by-AI",
+      "destination": "/blog/FingerBlock-A-game-Demo-by-AI-en",
+      "permanent": true
+    },
+    {
       "source": "/blog/22.FingerBlock\\:由AI完成的游戏Demo",
       "destination": "/blog/FingerBlock-A-game-Demo-by-AI-cn",
       "permanent": true
     },
     {
+      "source": "/blog/23-1.why-does-some-website-has-www-1",
+      "destination": "/blog/why-does-some-website-has-www-1-en",
+      "permanent": true
+    },
+    {
       "source": "/blog/23-1.为什么有的网站有 www，有的没有？",
       "destination": "/blog/why-does-some-website-has-www-1-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/23-2.why-does-some-website-has-www-2",
+      "destination": "/blog/why-does-some-website-has-www-2-en",
       "permanent": true
     },
     {
@@ -139,8 +179,18 @@
       "permanent": true
     },
     {
+      "source": "/blog/24.why-unix-signal-sender-is-called-kill",
+      "destination": "/blog/why-unix-signal-sender-is-called-kill-en",
+      "permanent": true
+    },
+    {
       "source": "/blog/25.3b1b视频有感",
       "destination": "/blog/future-of-liberal-arts-and-engineering-cn",
+      "permanent": true
+    },
+    {
+      "source": "/blog/25.future-of-liberal-arts-and-engineering",
+      "destination": "/blog/future-of-liberal-arts-and-engineering-en",
       "permanent": true
     },
     {
@@ -174,6 +224,11 @@
       "permanent": true
     },
     {
+      "source": "/blog/6.university-info-drawers",
+      "destination": "/blog/university-info-drawers-en",
+      "permanent": true
+    },
+    {
       "source": "/blog/6.大学四年，我的几个“小抽屉”",
       "destination": "/blog/university-info-drawers-cn",
       "permanent": true
@@ -199,13 +254,13 @@
       "permanent": true
     },
     {
-      "source": "/blog/9.上网的小工具推荐",
-      "destination": "/blog/websurf-tools-recommendation-cn",
+      "source": "/blog/9.websurf-tools-recommendation",
+      "destination": "/blog/websurf-tools-recommendation-en",
       "permanent": true
     },
     {
-      "source": "/blog/FingerBlock-A-game-Demo-by-AI",
-      "destination": "/blog/FingerBlock-A-game-Demo-by-AI-cn",
+      "source": "/blog/9.上网的小工具推荐",
+      "destination": "/blog/websurf-tools-recommendation-cn",
       "permanent": true
     },
     {
@@ -219,63 +274,8 @@
       "permanent": true
     },
     {
-      "source": "/blog/frontend-effects-resources",
-      "destination": "/blog/frontend-effects-resources-cn",
-      "permanent": true
-    },
-    {
-      "source": "/blog/future-of-liberal-arts-and-engineering",
-      "destination": "/blog/future-of-liberal-arts-and-engineering-cn",
-      "permanent": true
-    },
-    {
       "source": "/blog/guangzhou-travel-notes",
       "destination": "/blog/guangzhou-trip-notes-en",
-      "permanent": true
-    },
-    {
-      "source": "/blog/queue-implementation-decision-tree",
-      "destination": "/blog/queue-implementation-decision-tree-cn",
-      "permanent": true
-    },
-    {
-      "source": "/blog/rss-feed-beautification",
-      "destination": "/blog/rss-feed-beautification-cn",
-      "permanent": true
-    },
-    {
-      "source": "/blog/university-info-drawers",
-      "destination": "/blog/university-info-drawers-cn",
-      "permanent": true
-    },
-    {
-      "source": "/blog/websurf-tools-recommendation",
-      "destination": "/blog/websurf-tools-recommendation-cn",
-      "permanent": true
-    },
-    {
-      "source": "/blog/what-do-computer-science-majors-learn",
-      "destination": "/blog/what-do-computer-science-majors-learn-cn",
-      "permanent": true
-    },
-    {
-      "source": "/blog/why-does-some-website-has-www-1",
-      "destination": "/blog/why-does-some-website-has-www-1-cn",
-      "permanent": true
-    },
-    {
-      "source": "/blog/why-does-some-website-has-www-2",
-      "destination": "/blog/why-does-some-website-has-www-2-cn",
-      "permanent": true
-    },
-    {
-      "source": "/blog/why-im-not-bullish-on-humanoid-robots",
-      "destination": "/blog/why-im-not-bullish-on-humanoid-robots-cn",
-      "permanent": true
-    },
-    {
-      "source": "/blog/why-unix-signal-sender-is-called-kill",
-      "destination": "/blog/why-unix-signal-sender-is-called-kill-cn",
       "permanent": true
     }
   ],

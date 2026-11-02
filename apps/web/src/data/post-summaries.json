@@ -16,6 +16,22 @@
     "category": "essay"
   },
   {
+    "id": "future-of-liberal-arts-and-engineering-en",
+    "slug": "future-of-liberal-arts-and-engineering-en",
+    "language": "en",
+    "title": "Maybe the Future Will Only Have the Liberal Arts and Engineering: Thoughts on a 3Blue1Brown Video",
+    "date": "2026-10-25",
+    "summary": "[AI-translated] Tonight I finished watching 3Blue1Brown's video “There Has Never Been a Better Time to Devote Yourself to Mathematics,” and it stirred up some feelings that I record briefly here.",
+    "wordCount": 696,
+    "image": "https://img.markxu.icu/imge1ca44fe-e495-4e4f-951f-46ea158d947b.png",
+    "tags": [
+      "Math",
+      "AI",
+      "Education"
+    ],
+    "category": "essay"
+  },
+  {
     "id": "why-unix-signal-sender-is-called-kill-cn",
     "slug": "why-unix-signal-sender-is-called-kill-cn",
     "language": "zh",
@@ -23,6 +39,20 @@
     "date": "2026-10-22",
     "summary": "在408强化的阶段，我注意到进程之间的通信函数名是 kill()，让我不禁好奇其具体含义。",
     "wordCount": 2514,
+    "tags": [
+      "408",
+      "OS"
+    ],
+    "category": "tech"
+  },
+  {
+    "id": "why-unix-signal-sender-is-called-kill-en",
+    "slug": "why-unix-signal-sender-is-called-kill-en",
+    "language": "en",
+    "title": "From the 408 OS Exam to Production: Why Is the Signal-Sending Function Called kill Instead of send?",
+    "date": "2026-10-22",
+    "summary": "[AI-translated] While in the intensive review phase for the 408 exam, I noticed that the inter-process communication function is named kill(), which made me curious about what the name actually means.",
+    "wordCount": 1676,
     "tags": [
       "408",
       "OS"
@@ -46,6 +76,23 @@
     "category": "tech"
   },
   {
+    "id": "why-does-some-website-has-www-2-en",
+    "slug": "why-does-some-website-has-www-2-en",
+    "language": "en",
+    "title": "Why Do Some Websites Have “www” and Others Don’t? — The Modern Configuration Edition",
+    "date": "2026-10-01",
+    "updated": "2026-10-20",
+    "summary": "[AI-translated] Picking up where the previous post left off, this one focuses on why we no longer use www today, and on how we actually handle it now.",
+    "wordCount": 1256,
+    "image": "https://img.markxu.icu/img20261001152633367.png",
+    "tags": [
+      "Network",
+      "Websites",
+      "DNS"
+    ],
+    "category": "tech"
+  },
+  {
     "id": "why-does-some-website-has-www-1-cn",
     "slug": "why-does-some-website-has-www-1-cn",
     "language": "zh",
@@ -53,6 +100,23 @@
     "date": "2026-09-26",
     "summary": "一直以为地址栏里的 www 只是被浏览器藏起来了，随着深入了解，发现其实这连着早期互联网的服务分工、DNS 的限制，以及今天网站部署方式的变化。",
     "wordCount": 2264,
+    "image": "https://img.markxu.icu/img20260926225709745.png",
+    "selected": true,
+    "tags": [
+      "Network",
+      "Websites",
+      "DNS"
+    ],
+    "category": "tech"
+  },
+  {
+    "id": "why-does-some-website-has-www-1-en",
+    "slug": "why-does-some-website-has-www-1-en",
+    "language": "en",
+    "title": "Why Do Some Websites Have “www” and Others Don't? — The Origin Story",
+    "date": "2026-09-26",
+    "summary": "[AI-translated] I always assumed the www in the address bar was just something the browser hid from us. The more I looked into it, the more I found that it connects to the division of services on the early Internet, the constraints of DNS, and the way websites are deployed today.",
+    "wordCount": 1625,
     "image": "https://img.markxu.icu/img20260926225709745.png",
     "selected": true,
     "tags": [
@@ -80,6 +144,23 @@
     "category": "project"
   },
   {
+    "id": "FingerBlock-A-game-Demo-by-AI-en",
+    "slug": "FingerBlock-A-game-Demo-by-AI-en",
+    "language": "en",
+    "title": "FingerBlock: A Game Demo Built with AI",
+    "date": "2026-09-19",
+    "updated": "2026-09-26",
+    "summary": "[AI-translated] A chance update notice from a hand-tracking library gave me the idea, and a day and a half later I had a simple rhythm game demo.",
+    "wordCount": 2903,
+    "image": "/images/fingerblock-preview.png",
+    "tags": [
+      "Projects",
+      "Game Demo",
+      "AI"
+    ],
+    "category": "project"
+  },
+  {
     "id": "rss-feed-beautification-cn",
     "slug": "rss-feed-beautification-cn",
     "language": "zh",
@@ -87,6 +168,24 @@
     "date": "2026-09-13",
     "summary": "记录了我的个人网站的 RSS 订阅的发展过程：能用->美化->突然失效->解决问题。",
     "wordCount": 2213,
+    "image": "https://img.markxu.icu/img16cadbcd5c793.png",
+    "selected": true,
+    "tags": [
+      "Blog",
+      "RSS feeds",
+      "Atom",
+      "XSLT"
+    ],
+    "category": "tech"
+  },
+  {
+    "id": "rss-feed-beautification-en",
+    "slug": "rss-feed-beautification-en",
+    "language": "en",
+    "title": "The Story of Beautifying My RSS Feed Page",
+    "date": "2026-09-13",
+    "summary": "[AI-translated] A record of how the RSS feed on my personal site evolved: working, beautified, suddenly broken, and finally fixed.",
+    "wordCount": 1597,
     "image": "https://img.markxu.icu/img16cadbcd5c793.png",
     "selected": true,
     "tags": [
@@ -115,6 +214,23 @@
     "category": "essay"
   },
   {
+    "id": "why-im-not-bullish-on-humanoid-robots-en",
+    "slug": "why-im-not-bullish-on-humanoid-robots-en",
+    "language": "en",
+    "title": "Why I Am Not Bullish on Humanoid Robots",
+    "date": "2026-08-31",
+    "updated": "2026-09-19",
+    "summary": "[AI-translated] I have never been bullish on humanoid robots becoming the next generation of general-purpose productivity. I want to put my current judgment on the record: if I end up being proven wrong, I will at least be able to look back and see exactly which of my concerns the industry managed to overcome.",
+    "wordCount": 3937,
+    "image": "https://img.markxu.icu/img20260915182504981.png",
+    "tags": [
+      "Humanoid-Robots",
+      "Embodied AI",
+      "Case studies"
+    ],
+    "category": "essay"
+  },
+  {
     "id": "frontend-effects-resources-cn",
     "slug": "frontend-effects-resources-cn",
     "language": "zh",
@@ -122,6 +238,21 @@
     "date": "2026-08-29",
     "summary": "分享下最近我在网上看到的很炫酷的前端组件！",
     "wordCount": 1627,
+    "tags": [
+      "Tools",
+      "Websites",
+      "Sources"
+    ],
+    "category": "Share"
+  },
+  {
+    "id": "frontend-effects-resources-en",
+    "slug": "frontend-effects-resources-en",
+    "language": "en",
+    "title": "How Easy Is It to Build Web Effects Now? A Few Frontend Components and Animation Resources to Share",
+    "date": "2026-08-29",
+    "summary": "[AI-translated] Sharing some really cool frontend components I have come across online recently!",
+    "wordCount": 1090,
     "tags": [
       "Tools",
       "Websites",
@@ -154,6 +285,21 @@
     "date": "2026-07-30",
     "summary": "回顾数据结构，发现队列的实现方式总是做错，于是想利用决策树把考虑因素列出来，做个总结。",
     "wordCount": 513,
+    "tags": [
+      "Data Structure",
+      "Computer Science",
+      "408"
+    ],
+    "category": "tech"
+  },
+  {
+    "id": "queue-implementation-decision-tree-en",
+    "slug": "queue-implementation-decision-tree-en",
+    "language": "en",
+    "title": "Queue Implementation Approaches: From Constraints to a Decision Tree",
+    "date": "2026-07-30",
+    "summary": "[AI-translated] While reviewing data structures, I realized I keep choosing the wrong way to implement a queue, so I built a decision tree to lay out the factors involved and summarize them.",
+    "wordCount": 429,
     "tags": [
       "Data Structure",
       "Computer Science",
@@ -347,6 +493,23 @@
     "category": "essay"
   },
   {
+    "id": "what-do-computer-science-majors-learn-en",
+    "slug": "what-do-computer-science-majors-learn-en",
+    "language": "en",
+    "title": "What Do Computer Science Majors Actually Learn?",
+    "date": "2026-05-27",
+    "updated": "2026-08-05",
+    "summary": "[AI-translated] For anyone who wants to know what a computer science and technology major actually studies: it is not just writing code, and not just fixing computers, but a whole course of training built around computation, systems, software, and engineering practice.",
+    "wordCount": 3776,
+    "image": "https://img.markxu.icu/img20260527160205221.png",
+    "tags": [
+      "College",
+      "Computer Science",
+      "Major"
+    ],
+    "category": "essay"
+  },
+  {
     "id": "why-I-recommend-everyone-to-write-blog-cn",
     "slug": "why-I-recommend-everyone-to-write-blog-cn",
     "language": "zh",
@@ -389,6 +552,22 @@
     "updated": "2026-05-17",
     "summary": "这里记录着我是如何使用浏览器的小插件，或者一些其他推荐的上网小工具",
     "wordCount": 1198,
+    "tags": [
+      "Tools",
+      "Websites",
+      "Sources"
+    ],
+    "category": "Share"
+  },
+  {
+    "id": "websurf-tools-recommendation-en",
+    "slug": "websurf-tools-recommendation-en",
+    "language": "en",
+    "title": "Handy Little Tools for Surfing the Web",
+    "date": "2026-05-17",
+    "updated": "2026-05-17",
+    "summary": "[AI-translated] A running record of the browser extensions I use and the other small web tools I recommend.",
+    "wordCount": 858,
     "tags": [
       "Tools",
       "Websites",
@@ -469,6 +648,23 @@
     "date": "2026-05-11",
     "summary": "一直有搜集各种有趣的信息源的习惯，想要把我印象中高质量，经常更新且好玩好读的几个信息源记录下，留给未来的自己，也分享给大家。",
     "wordCount": 1703,
+    "image": "https://img.markxu.icu/img06bdb9ed7cc5e8.png",
+    "tags": [
+      "News",
+      "Sources",
+      "Blogs",
+      "Websites"
+    ],
+    "category": "Share"
+  },
+  {
+    "id": "university-info-drawers-en",
+    "slug": "university-info-drawers-en",
+    "language": "en",
+    "title": "Four Years at University, and a Few of My “Little Drawers”",
+    "date": "2026-05-11",
+    "summary": "[AI-translated] I have always had a habit of collecting interesting sources of information, so I wanted to write down the few that I remember as high quality, frequently updated, and genuinely fun to read—for my future self, and to share with everyone else.",
+    "wordCount": 1203,
     "image": "https://img.markxu.icu/img06bdb9ed7cc5e8.png",
     "tags": [
       "News",
