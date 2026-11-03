@@ -78,6 +78,17 @@
     "nextPost": "Next Post",
     "readingTime": "{{minutes}} min",
     "wordCount": "{{count}} words",
+    "readerMode": {
+      "label": "Reading Mode",
+      "rich": "Rich",
+      "simple": "Simple",
+      "switchToRich": "Switch to rich mode",
+      "switchToSimple": "Switch to simple mode",
+      "richOn": "Rich mode is on",
+      "simpleOn": "Simple mode is on",
+      "useRich": "Rich",
+      "useSimple": "Simple"
+    },
     "rss": {
       "subscribe": "Subscribe via RSS"
     },

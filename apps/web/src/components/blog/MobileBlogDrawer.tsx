@@ -231,16 +231,12 @@ export function MobileBlogDrawer({
                       <div className={styles.modePanel}>
                         <div>
                           <p className={styles.modeTitle}>
-                            {isZh ? '阅读模式' : 'Reading Mode'}
+                            {t('blog.readerMode.label')}
                           </p>
                           <p className={styles.modeHint}>
                             {simpleMode
-                              ? isZh
-                                ? '当前是简洁模式'
-                                : 'Simple mode is on'
-                              : isZh
-                                ? '当前是丰富模式'
-                                : 'Rich mode is on'}
+                              ? t('blog.readerMode.simpleOn')
+                              : t('blog.readerMode.richOn')}
                           </p>
                         </div>
                         <button
@@ -250,12 +246,8 @@ export function MobileBlogDrawer({
                           aria-pressed={simpleMode}
                         >
                           {simpleMode
-                            ? isZh
-                              ? '切回丰富'
-                              : 'Use Rich'
-                            : isZh
-                              ? '切到简洁'
-                              : 'Use Simple'}
+                            ? t('blog.readerMode.useRich')
+                            : t('blog.readerMode.useSimple')}
                         </button>
                       </div>
                     </motion.aside>
