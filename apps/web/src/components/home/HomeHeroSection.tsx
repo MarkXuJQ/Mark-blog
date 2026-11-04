@@ -6,6 +6,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
 import { getImageUrl } from '@/lib/image'
 import { HomeHeroAvatarScene } from './HomeHeroAvatarScene'
+import { HomeHeroName } from './HomeHeroName'
 
 interface HomeHeroSectionProps {
   avatarSrc: string
@@ -22,8 +23,7 @@ interface HomeHeroSectionProps {
   heroMediaY: MotionValue<number>
   heroContentOpacity: MotionValue<number>
   heroContentY: MotionValue<number>
-  handleNameClick: () => void
-  handleNameKeyDown: (event: React.KeyboardEvent<HTMLSpanElement>) => void
+  handleNameUnlock: () => void
 }
 
 interface ResponsiveBackgroundSources {
@@ -127,8 +127,7 @@ export function HomeHeroSection({
   heroMediaY,
   heroContentOpacity,
   heroContentY,
-  handleNameClick,
-  handleNameKeyDown,
+  handleNameUnlock,
 }: HomeHeroSectionProps) {
   const { t } = useTranslation()
   const isMobile = useMediaQuery('(max-width: 639px)')
@@ -221,27 +220,10 @@ export function HomeHeroSection({
                     )}
                   >
                     <span className={styles.titleNameGroup}>
-                      <span
-                        className={styles.highlightText}
-                        role="link"
-                        tabIndex={0}
-                        onClick={handleNameClick}
-                        onKeyDown={handleNameKeyDown}
-                      >
-                        <VerticalCutReveal
-                          splitBy="characters"
-                          staggerDuration={titleStagger}
-                          staggerFrom="center"
-                          transition={{
-                            ...HERO_TITLE_REVEAL_TRANSITION,
-                            delay: prefersReducedMotion ? 0 : 0.22,
-                          }}
-                          containerClassName="inline-flex"
-                          elementLevelClassName={styles.highlightGlyph}
-                        >
-                          Mark
-                        </VerticalCutReveal>
-                      </span>
+                      <HomeHeroName
+                        prefersReducedMotion={prefersReducedMotion}
+                        onUnlock={handleNameUnlock}
+                      />
                       {titlePossessive ? (
                         <VerticalCutReveal
                           splitBy="characters"
@@ -409,12 +391,6 @@ const styles = {
     'pointer-events-none absolute right-[0.18em] top-[0.14em] z-10 text-[0.42em] font-black leading-none text-white/95 drop-shadow-[0_1px_0_rgba(154,52,18,0.4)]',
   titleLight: 'text-black',
   titleDark: 'text-white drop-shadow-[0_10px_30px_rgba(15,23,42,0.35)]',
-  highlightText: cn(
-    'inline-flex cursor-pointer items-baseline',
-    'transition-transform duration-300 hover:-translate-y-1 hover:scale-105 hover:rotate-3'
-  ),
-  highlightGlyph:
-    'bg-gradient-to-r from-orange-500 via-orange-500 to-red-500 bg-clip-text text-transparent',
   contentContainer:
     'mx-auto mt-6 max-w-2xl space-y-5 px-2 text-base font-medium leading-relaxed sm:text-lg lg:mx-0 lg:px-0',
   contentContainerLight: 'text-black/80',

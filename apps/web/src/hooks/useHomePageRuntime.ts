@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type KeyboardEvent as ReactKeyboardEvent,
-  type RefObject,
-} from 'react'
+import { useEffect, useState, type RefObject } from 'react'
 import { useLenis } from 'lenis/react'
 import { requestPageTransition } from '@/lib/transitions/pageTransitionBus'
 
@@ -73,39 +67,15 @@ function useLenisPageResize(pageRef: RefObject<HTMLDivElement | null>) {
 
 export function useHomePageRuntime(pageRef: RefObject<HTMLDivElement | null>) {
   const isDarkMode = useIsDarkMode()
-  const nameClickCountRef = useRef(0)
-  const lastNameClickMsRef = useRef(0)
 
   useLenisPageResize(pageRef)
 
-  const handleNameClick = () => {
-    const now = Date.now()
-    const isWithinWindow = now - lastNameClickMsRef.current <= 600
-
-    if (!isWithinWindow) {
-      nameClickCountRef.current = 0
-    }
-
-    lastNameClickMsRef.current = now
-    nameClickCountRef.current += 1
-
-    if (nameClickCountRef.current >= 7) {
-      nameClickCountRef.current = 0
-      lastNameClickMsRef.current = 0
-      requestPageTransition('/about')
-    }
-  }
-
-  const handleNameKeyDown = (event: ReactKeyboardEvent<HTMLSpanElement>) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      requestPageTransition('/about')
-    }
+  const handleNameUnlock = () => {
+    requestPageTransition('/about')
   }
 
   return {
-    handleNameClick,
-    handleNameKeyDown,
+    handleNameUnlock,
     isDarkMode,
   }
 }

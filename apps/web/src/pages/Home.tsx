@@ -58,8 +58,7 @@ export function Home() {
   const compactAvatarSrc = getImageUrl('/images/avatar-96.webp')
   const siteUrl = getSiteUrl()
   const isZh = i18n.language?.startsWith('zh')
-  const { handleNameClick, handleNameKeyDown, isDarkMode } =
-    useHomePageRuntime(pageRef)
+  const { handleNameUnlock, isDarkMode } = useHomePageRuntime(pageRef)
   const language = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const webSiteSchema: JsonLd = {
     '@context': 'https://schema.org',
@@ -110,8 +109,7 @@ export function Home() {
           heroMediaY={hero.mediaY}
           heroContentOpacity={hero.contentOpacity}
           heroContentY={hero.contentY}
-          handleNameClick={handleNameClick}
-          handleNameKeyDown={handleNameKeyDown}
+          handleNameUnlock={handleNameUnlock}
         />
 
         <HomeBlogRailSection
