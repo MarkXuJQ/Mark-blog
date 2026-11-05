@@ -6,11 +6,10 @@ import { RiComputerLine } from 'react-icons/ri'
 import { useTranslation } from 'react-i18next'
 import projectContent from '@content/projects/projects.json'
 import { Seo } from '@/app/seo/Seo'
-import {
-  SqueezeCarousel,
-  type SqueezeSlide,
-} from '@/components/ui/carousel-squeeze'
+import { GithubShowcase } from '@/components/ui/github-showcase'
+import { ProjectWebglGallery } from '@/components/ui/project-webgl-gallery'
 import { TextRevealBlock } from '@/components/ui/text-reveal-block'
+import { useGithubStats } from '@/hooks/useGithubStats'
 
 type ProjectLocale = { zh: string; en: string }
 type ProjectLinkType = 'game' | 'github' | 'computer'
@@ -58,8 +57,7 @@ const MARK_REVEAL_DURATION = 0.62 * WORDMARK_SPEED_FACTOR
 const THE_REVEAL_DURATION = 0.68 * WORDMARK_SPEED_FACTOR
 // 0 = start with MARK, 1 = wait until MARK has fully finished.
 const THE_REVEAL_START_PROGRESS = 0.6
-const THE_REVEAL_DELAY =
-  MARK_REVEAL_DURATION * 2 * THE_REVEAL_START_PROGRESS
+const THE_REVEAL_DELAY = MARK_REVEAL_DURATION * 2 * THE_REVEAL_START_PROGRESS
 const ORIGINAL_REVEAL_DELAY = 2
 const ORIGINAL_REVEAL_DURATION = 1.02
 const ORIGINAL_TO_AVATAR_GAP = 0.3
@@ -70,10 +68,6 @@ const PROJECT_LINK_ICONS: Record<ProjectLinkType, IconType> = {
   game: IoGameController,
   github: LuGithub,
   computer: RiComputerLine,
-}
-
-function ProjectOverlay({ project }: { project: ProjectCardData }) {
-  return <span className="truncate">{project.title}</span>
 }
 
 function OriginalReveal() {
@@ -105,16 +99,14 @@ function AvatarReveal() {
   const shouldReduceMotion = useReducedMotion()
 
   return (
-    <div
-      className="mark-lab-avatar-reveal"
-      aria-label="Mark"
-      role="img"
-    >
+    <div className="mark-lab-avatar-reveal" aria-label="Mark" role="img">
       <motion.img
         src="/images/IMG_1766.JPG"
         alt=""
         className="mark-lab-avatar"
-        initial={shouldReduceMotion ? false : { clipPath: 'circle(0% at 50% 50%)' }}
+        initial={
+          shouldReduceMotion ? false : { clipPath: 'circle(0% at 50% 50%)' }
+        }
         animate={{
           clipPath: [
             'circle(0% at 50% 50%)',
@@ -138,42 +130,9 @@ function AvatarReveal() {
   )
 }
 
-function projectToSlide(project: ProjectCardData): SqueezeSlide {
-  return {
-    id: project.id,
-    title: project.title,
-    description: project.description,
-    image: project.preview?.src,
-    imageSrcSet: project.preview?.avifSrc,
-    imageAlt: project.preview?.alt,
-    imageObjectFit: project.preview?.objectFit,
-    background: 'linear-gradient(135deg, #173b4a, #2e7ea3)',
-    overlay: <ProjectOverlay project={project} />,
-    actions: (
-      <>
-        {project.links.map((link) => {
-          const LinkIcon = link.icon
-          return (
-            <a
-              key={link.href}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={link.label}
-              className="inline-flex items-center gap-2 rounded-md border border-slate-200/80 bg-white/75 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-white focus-visible:ring-2 focus-visible:ring-[var(--sq-accent)] focus-visible:outline-none dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
-            >
-              <LinkIcon className="size-4" aria-hidden="true" />
-              <span>{link.label}</span>
-            </a>
-          )
-        })}
-      </>
-    ),
-  }
-}
-
 export function Projects() {
   const { t, i18n } = useTranslation()
+  const githubStats = useGithubStats()
   const localPreview =
     typeof window !== 'undefined' &&
     (window.location.hostname === 'localhost' ||
@@ -241,16 +200,35 @@ export function Projects() {
         </div>
       </header>
 
-      <div className="mark-lab-showcase">
-        <SqueezeCarousel
-          slides={projects.map(projectToSlide)}
-          label={t('projects.title')}
-          accent="var(--brand-600)"
-          height="clamp(190px, 34cqi, 360px)"
-          controls={false}
-          autoplay={projects.length > 1}
+      <div className="mark-lab-github-wrap">
+        <GithubShowcase
+          data={githubStats.data}
+          status={githubStats.status}
+          strings={{
+            title: t('projects.githubTitle'),
+            description: t('projects.githubDescription'),
+            moreOnGithub: t('projects.moreOnGithub'),
+            totalLabel: t('projects.githubTotal'),
+            streakLabel: t('projects.githubStreak'),
+            daysLabel: t('projects.githubDays'),
+            topReposLabel: t('projects.githubTopRepos'),
+            emptyRepos: t('projects.githubEmpty'),
+            demoHint: t('projects.githubDemoHint'),
+            toggle3d: '3D',
+            toggle2d: '2D',
+            scrollLabel1: t('projects.githubScroll1'),
+            scrollLabel2: t('projects.githubScroll2'),
+            scrollLabel3: t('projects.githubScroll3'),
+          }}
         />
       </div>
+
+      <ProjectWebglGallery
+        items={projects}
+        title={t('projects.showcaseTitle')}
+        description=""
+        openLabel={t('projects.open')}
+      />
     </div>
   )
 }
