@@ -1730,8 +1730,8 @@ img {
   border-top: 1px solid var(--border-color);
 }
 
-/* Sticky immersive stage pinned while the section scrolls, driving the
-   continuous horizontal sweep through --mw-rail-offset (set in React). */
+/* Sticky immersive stage pinned while the section scrolls, hosting the
+   3D perspective fan that advances through the project list. */
 .mark-lab-webgl__stage {
   position: sticky;
   top: 0;
@@ -1776,33 +1776,34 @@ img {
   font-size: 0.95rem;
 }
 
-/* ----- Horizontal infinite rail ----- */
-.mark-lab-webgl__rail {
-  position: relative;
+/* ----- WebGL-style perspective fan (infinite, recycles slots) ----- */
+.mark-lab-webgl__air {
+  position: absolute;
+  inset: 0;
   z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: clamp(1.25rem, 3vw, 2rem);
-  width: max-content;
-  padding-block: 2rem;
-  transform: translate3d(var(--mw-rail-offset, 0), 0, 0);
-  will-change: transform;
+  perspective: var(--mw-perspective, 2200px);
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
   touch-action: pan-y;
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
 }
 
-.mark-lab-webgl__rail:active {
+.mark-lab-webgl__air:active {
   cursor: grabbing;
 }
 
 .mark-lab-webgl__card {
-  position: relative;
+  --mw-card-w: clamp(14rem, 24vw, 23rem);
+  position: absolute;
+  left: 50%;
+  top: 50%;
   display: block;
-  flex: none;
-  width: clamp(13rem, 24vw, 22rem);
+  width: var(--mw-card-w);
   aspect-ratio: 1.6;
+  margin-left: calc(var(--mw-card-w) / -2);
+  margin-top: calc(var(--mw-card-w) / 1.6 / -2);
   padding: 0;
   border: 0;
   border-radius: 0.85rem;
@@ -1810,17 +1811,27 @@ img {
   box-shadow: none;
   cursor: pointer;
   outline: none;
-  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-  transform: scale(1);
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  will-change: transform, opacity;
 }
 
 .mark-lab-webgl__card:hover,
 .mark-lab-webgl__card:focus-visible {
-  transform: scale(1.045) translateY(-4px);
+  filter: brightness(1.06);
 }
 
-.mark-lab-webgl__card:active {
-  transform: scale(0.99);
+.mark-lab-webgl__card .mark-lab-webgl__card-face {
+  opacity: var(--mw-card-opacity, 1);
+  filter: saturate(1);
+  transition:
+    opacity 220ms ease,
+    filter 220ms ease;
+}
+
+.mark-lab-webgl__card.is-focus .mark-lab-webgl__card-face {
+  opacity: 1;
+  filter: saturate(1.06) brightness(1.02);
 }
 
 .mark-lab-webgl__card:focus-visible .mark-lab-webgl__card-face {
@@ -2113,7 +2124,7 @@ img {
   }
 
   .mark-lab-webgl__card {
-    width: min(15rem, 68vw);
+    --mw-card-w: min(15rem, 68vw);
   }
 
   .mark-lab-webgl__modal-body {

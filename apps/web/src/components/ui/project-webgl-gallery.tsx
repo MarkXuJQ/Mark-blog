@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
@@ -41,9 +42,24 @@ type ProjectWebglGalleryProps = {
   className?: string
 }
 
-// Render a few full passes of the list so the panned row never reveals a gap
-// no matter how far it scrolls horizontally.
-const REPEATS = 3
+// Fan look: horizontal perspective rail where cards sit at evenly spaced steps
+// around a focused center slot, receding in Z and dimming away from focus.
+const PERSPECTIVE = 2200
+const DEPTH_STEP = 4 // Z offset per slot away from center (px)
+const FOCUS_SCALE = 1 // scale of the center card
+const OUTER_SCALE = 0.92
+
+function useViewportWidth() {
+  const [width, setWidth] = useState(
+    typeof window !== 'undefined' ? window.innerWidth : 1440
+  )
+  useEffect(() => {
+    const onResize = () => setWidth(window.innerWidth)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  return width
+}
 
 export function ProjectWebglGallery({
   items,
@@ -58,81 +74,45 @@ export function ProjectWebglGallery({
 }: ProjectWebglGalleryProps) {
   const { ref, progress } = useSectionScrollProgress<HTMLElement>()
   const railRef = useRef<HTMLDivElement>(null)
-  const dragRef = useRef<{ x: number; offset: number } | null>(null)
-  const draggedRef = useRef(false)
+  const dragRef = useRef<{ x: number; offset: number; moved: boolean } | null>(
+    null
+  )
   const [dragOffset, setDragOffset] = useState(0)
-  const [cardStep, setCardStep] = useState(240)
-  const [base, setBase] = useState(0)
   const [selected, setSelected] = useState<ProjectWebglItem | null>(null)
-  const [reducedMotion, setReducedMotion] = useState(false)
 
   const total = items.length
+  const viewportWidth = useViewportWidth()
 
-  // Measure one card + gap so the wrap distance tracks responsive layout, and
-  // keep a base inset so the loop starts visually centered in the viewport.
-  useEffect(() => {
-    const rail = railRef.current
-    if (!rail || !total) return
-    const measure = () => {
-      const first = rail.firstElementChild as HTMLElement | null
-      const second = first?.nextElementSibling as HTMLElement | null
-      if (first && second) {
-        const step = second.offsetLeft - first.offsetLeft
-        if (Number.isFinite(step) && step > 0) setCardStep(step)
-        setBase(Math.max((window.innerWidth - first.offsetWidth) / 2, 16))
-      }
+  // Step scales with viewport so the fan always spans nicely edge to edge.
+  const STEP = viewportWidth < 640 ? 120 : viewportWidth < 1024 ? 160 : 196
+
+  // Continuous driving position: scroll progress moves it forward, drag nudges
+  // it freely. Never clamped -> the fan keeps advancing forever.
+  const scrollPx = useReducedMotion() ? 0 : progress * 2600
+  const t = scrollPx + dragOffset // horizontal travel in px
+
+  // Seamless infinite loop: cards live on a ring of `total` slots spanning
+  // STEP px each. Which item sits at the focused center slides continuously
+  // with t; `f` is the px drift within the ring, so adjacent frames keep the
+  // arrangement visually continuous as t grows toward infinity.
+  const centerSlot = Math.round(t / STEP)
+  const centerIndex = ((centerSlot % total) + total) % total
+  const f = t - centerSlot * STEP // remainder in [-STEP/2, STEP/2]
+
+  // Build a full fan frame. Render roughly enough slots to cover the viewport
+  // on both sides of center, each mapped to an item via modulo wrap.
+  const halfSpan = Math.ceil(viewportWidth / STEP / 2) + 1
+  const slots = useMemo(() => {
+    const out: { item: ProjectWebglItem; rel: number }[] = []
+    for (let rel = -halfSpan + 1; rel < halfSpan; rel++) {
+      const item = items[(((centerIndex + rel) % total) + total) % total]
+      out.push({ item, rel })
     }
-    measure()
-    const observer = new ResizeObserver(measure)
-    observer.observe(rail)
-    window.addEventListener('resize', measure)
-    return () => {
-      observer.disconnect()
-      window.removeEventListener('resize', measure)
-    }
-  }, [total])
-
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const read = () => setReducedMotion(query.matches)
-    read()
-    query.addEventListener('change', read)
-    return () => query.removeEventListener('change', read)
-  }, [])
-
-  // Resolved horizontal offset: scroll progress drives a continuous sweep from
-  // left->right, drag adds a relative nudge, plus a base inset that centers the
-  // loop in the viewport. Wrapped into one pass so it loops infinitely.
-  const scrollOffset = reducedMotion ? 0 : progress * 2600
-  const raw = base + scrollOffset + dragOffset
-  const wrap = cardStep * total
-  const resolved = wrap > 0 ? ((((raw % wrap) + wrap) % wrap)) : 0
-
-  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === 'mouse' && event.button !== 0) return
-    dragRef.current = { x: event.clientX, offset: dragOffset }
-    draggedRef.current = false
-  }
-
-  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!dragRef.current) return
-    const dx = event.clientX - dragRef.current.x
-    if (Math.abs(dx) > 4) {
-      draggedRef.current = true
-      // Only capture after intent-to-drag is clear so a plain click still
-      // reaches the card button underneath.
-      event.currentTarget.setPointerCapture(event.pointerId)
-    }
-    setDragOffset(dragRef.current.offset + dx)
-  }
-
-  const handlePointerEnd = () => {
-    dragRef.current = null
-    window.setTimeout(() => (draggedRef.current = false), 0)
-  }
+    return out
+  }, [items, centerIndex, halfSpan, total])
 
   const openProject = (item: ProjectWebglItem) => {
-    if (draggedRef.current) return
+    if (dragRef.current?.moved) return
     setSelected(item)
   }
 
@@ -146,13 +126,26 @@ export function ProjectWebglGallery({
     return () => window.removeEventListener('keydown', onKey)
   }, [closeProject])
 
-  useEffect(() => {
-    const reset = () => setDragOffset(0)
-    window.addEventListener('resize', reset)
-    return () => window.removeEventListener('resize', reset)
-  }, [])
+  if (!total) return null
 
-  if (!items.length) return null
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+    dragRef.current = { x: event.clientX, offset: dragOffset, moved: false }
+  }
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current) return
+    const dx = event.clientX - dragRef.current.x
+    if (Math.abs(dx) > 4) {
+      dragRef.current.moved = true
+      event.currentTarget.setPointerCapture(event.pointerId)
+    }
+    setDragOffset(dragRef.current.offset + dx)
+  }
+
+  const handlePointerEnd = () => {
+    dragRef.current = null
+  }
 
   return (
     <section
@@ -168,19 +161,41 @@ export function ProjectWebglGallery({
 
         <div
           ref={railRef}
-          className="mark-lab-webgl__rail"
+          className="mark-lab-webgl__air"
+          style={
+            {
+              '--mw-perspective': `${PERSPECTIVE}px`,
+            } as CSSProperties
+          }
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerEnd}
           onPointerCancel={handlePointerEnd}
-          style={{ '--mw-rail-offset': `${resolved}px` } as CSSProperties}
         >
-          {Array.from({ length: REPEATS }, (_, copy) =>
-            items.map((item) => (
+          {slots.map(({ item, rel }) => {
+            const isCenter = rel === 0
+            const absRel = Math.abs(rel)
+            const x = rel * STEP + f
+            const z = -absRel * DEPTH_STEP
+            const scale = isCenter ? FOCUS_SCALE : OUTER_SCALE
+            const zIndex = 1000 - absRel
+            const transform = `translate3d(${x}px, 0, ${z}px) skewY(29.5deg) scale3d(${scale}, ${scale}, 1)`
+
+            return (
               <button
-                key={`${copy}-${item.id}`}
+                key={`slot-${rel}`}
                 type="button"
-                className="mark-lab-webgl__card"
+                className={cn(
+                  'mark-lab-webgl__card',
+                  isCenter && 'is-focus'
+                )}
+                style={
+                  {
+                    zIndex,
+                    transform,
+                    '--mw-card-opacity': Math.max(1 - absRel * 0.16, 0.12),
+                  } as CSSProperties
+                }
                 onClick={() => openProject(item)}
               >
                 <span className="mark-lab-webgl__card-face">
@@ -218,8 +233,8 @@ export function ProjectWebglGallery({
                   </span>
                 </span>
               </button>
-            ))
-          )}
+            )
+          })}
         </div>
 
         <div className="mark-lab-webgl__hint" aria-hidden="true">
@@ -235,9 +250,6 @@ export function ProjectWebglGallery({
             className="mark-lab-webgl__modal-backdrop"
             aria-hidden="true"
             onMouseDown={closeProject}
-            onKeyDown={(event) => {
-              if (event.key === 'Escape') closeProject()
-            }}
           />
           <div
             className="mark-lab-webgl__modal-dialog"
@@ -291,6 +303,18 @@ export function ProjectWebglGallery({
       ) : null}
     </section>
   )
+}
+
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(false)
+  useEffect(() => {
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const read = () => setReduced(query.matches)
+    read()
+    query.addEventListener('change', read)
+    return () => query.removeEventListener('change', read)
+  }, [])
+  return reduced
 }
 
 export default ProjectWebglGallery
