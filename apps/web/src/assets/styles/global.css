@@ -1745,7 +1745,7 @@ img {
 
 .mark-lab-webgl__header {
   position: absolute;
-  top: clamp(4.5rem, 9vh, 6.5rem);
+  top: clamp(2.5rem, 5.5vh, 4rem);
   left: 50%;
   z-index: 4;
   width: min(100% - 3rem, 72rem);
@@ -1790,7 +1790,7 @@ img {
 }
 
 .mark-lab-webgl__card {
-  --mw-card-w: clamp(14rem, 24vw, 23rem);
+  --mw-card-w: clamp(16rem, 30vw, 29rem);
   position: absolute;
   left: 50%;
   top: 50%;
@@ -1801,7 +1801,7 @@ img {
   margin-top: calc(var(--mw-card-w) / 1.6 / -2);
   padding: 0;
   border: 0;
-  border-radius: 0.85rem;
+  border-radius: 0.5rem;
   background: transparent;
   box-shadow: none;
   cursor: pointer;
@@ -1812,9 +1812,7 @@ img {
 }
 
 .mark-lab-webgl__card.is-hovered .mark-lab-webgl__card-face {
-  box-shadow:
-    0 2rem 4.5rem -1.5rem color-mix(in srgb, #020617 70%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--brand-400) 45%, transparent);
+  box-shadow: none;
 }
 
 .mark-lab-webgl__card.is-dimmed .mark-lab-webgl__card-face {
@@ -1824,6 +1822,15 @@ img {
 .mark-lab-webgl__card.is-hovered,
 .mark-lab-webgl__card:focus-visible {
   filter: brightness(1.06);
+}
+
+/* Pull-out: when the user clicks a card it separates from the fan, soaring
+   toward the viewer, before the detail modal takes over. Transitioning the
+   transform makes the extraction feel like a smooth yank out of the stack. */
+.mark-lab-webgl__card.is-pulled {
+  transition:
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 160ms ease;
 }
 
 .mark-lab-webgl__card .mark-lab-webgl__card-face {
@@ -1840,9 +1847,7 @@ img {
 }
 
 .mark-lab-webgl__card:focus-visible .mark-lab-webgl__card-face {
-  box-shadow:
-    0 0 0 3px var(--brand-400),
-    0 1.5rem 3rem -1.5rem color-mix(in srgb, #020617 62%, transparent);
+  box-shadow: 0 1.5rem 3rem -1.5rem color-mix(in srgb, #020617 62%, transparent);
 }
 
 .mark-lab-webgl__card-face {
@@ -1851,12 +1856,10 @@ img {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--text-primary) 12%, transparent);
+  border: 0;
   border-radius: inherit;
   background: var(--surface-card);
-  box-shadow:
-    0 1.5rem 3.5rem -1.5rem color-mix(in srgb, #020617 55%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--surface-0) 70%, transparent);
+  box-shadow: 0 1.5rem 3.5rem -1.5rem color-mix(in srgb, #020617 55%, transparent);
   transform: translateZ(0);
 }
 
@@ -1976,37 +1979,46 @@ img {
 
 .mark-lab-webgl__modal-close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  z-index: 3;
+  top: 10%;
+  left: -1.3rem; /* circle center sits on the image's left edge */
+  z-index: 5;
   display: grid;
   place-items: center;
   width: 2.6rem;
   height: 2.6rem;
-  border: 1px solid color-mix(in srgb, #fff 22%, transparent);
+  border: 2px solid var(--surface-0);
   border-radius: 50%;
   font-size: 1.4rem;
   line-height: 1;
-  color: white;
-  background: rgb(2 6 23 / 0.5);
+  color: #fff;
+  background: var(--mw-modal-theme, #888);
+  box-shadow: 0 0.5rem 1.25rem -0.4rem color-mix(in srgb, #000 55%, transparent);
   cursor: pointer;
-  transition: background-color 180ms ease, transform 180ms ease;
+  transition: transform 180ms ease, filter 180ms ease;
+}
+.mark-lab-webgl__modal-close svg {
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
-.mark-lab-webgl__modal-close:hover {
-  background: rgb(2 6 23 / 0.75);
+.mark-lab-webgl__modal-close:hover,
+.mark-lab-webgl__modal-close:focus-visible {
+  filter: brightness(1.1);
   transform: rotate(90deg);
+}
+.mark-lab-webgl__modal-close:focus-visible {
+  outline: 2px solid var(--mw-modal-theme, #888);
+  outline-offset: 2px;
 }
 
 .mark-lab-webgl__modal-dialog {
   position: relative;
-  width: min(52rem, 100%);
+  width: min(56rem, 100%);
   max-height: 88vh;
-  overflow: auto;
+  overflow: visible;
   outline: none;
-  background: var(--surface-card);
-  border: 1px solid var(--border-color);
-  border-radius: 1rem;
+  background: transparent;
+  border-radius: 1.1rem;
   box-shadow: 0 3rem 6rem -2rem color-mix(in srgb, #020617 70%, transparent);
   animation: mw-modal-rise 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -2023,39 +2035,53 @@ img {
 }
 
 .mark-lab-webgl__modal-preview {
+  display: block;
   width: 100%;
-  aspect-ratio: 16 / 8.5;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  background: color-mix(in srgb, var(--text-primary) 6%, transparent);
+  border-radius: 1.1rem;
+  background: #020617;
 }
-
 .mark-lab-webgl__modal-preview picture,
 .mark-lab-webgl__modal-preview img {
   display: block;
   width: 100%;
   height: 100%;
 }
-
 .mark-lab-webgl__modal-preview img {
   object-fit: cover;
 }
 
-.mark-lab-webgl__modal-body {
-  padding: 1.5rem 1.75rem 1.75rem;
+/* Overlay card pinned to the right, lower-middle of the image. It straddles
+   the picture's right edge so roughly 60% sits over the image and 40% hangs
+   off its edge onto the backdrop — the dialog itself allows overflow so the
+   card can keep its rounded, theme-aware look outside the photo. */
+.mark-lab-webgl__modal-card {
+  position: absolute;
+  right: calc(min(21rem, 42%) * -0.4);
+  bottom: 9%;
+  z-index: 4;
+  width: min(21rem, 42%);
+  padding: 1.25rem 1.35rem 1.35rem;
+  border-radius: 0.9rem;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 
-.mark-lab-webgl__modal-body h3 {
+.mark-lab-webgl__modal-card h3 {
   margin: 0;
-  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
-  line-height: 1.1;
+  font-size: clamp(1.15rem, 2.6vw, 1.7rem);
+  line-height: 1.15;
+  color: var(--text-primary);
 }
 
-.mark-lab-webgl__modal-body > p {
+.mark-lab-webgl__modal-card > p {
   max-width: 44rem;
-  margin: 0.8rem 0 0;
+  margin: 0.7rem 0 0;
   color: var(--text-secondary);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 0.88rem;
+  line-height: 1.55;
 }
 
 .mark-lab-webgl__actions {
@@ -2086,13 +2112,14 @@ img {
 
 .mark-lab-webgl__actions a:hover,
 .mark-lab-webgl__actions a:focus-visible {
-  border-color: var(--brand-400);
-  background: color-mix(in srgb, var(--brand-400) 12%, transparent);
+  border-color: var(--mw-modal-theme, #888);
+  background: color-mix(in srgb, var(--mw-modal-theme, #888) 18%, transparent);
+  color: var(--text-primary);
   transform: translateY(-2px);
 }
 
 .mark-lab-webgl__actions a:focus-visible {
-  outline: 2px solid var(--brand-400);
+  outline: 2px solid var(--mw-modal-theme, #888);
   outline-offset: 2px;
 }
 
@@ -2129,11 +2156,14 @@ img {
   }
 
   .mark-lab-webgl__card {
-    --mw-card-w: min(15rem, 68vw);
+    --mw-card-w: min(17rem, 72vw);
   }
 
-  .mark-lab-webgl__modal-body {
-    padding: 1.25rem 1.25rem 1.5rem;
+  .mark-lab-webgl__modal-card {
+    width: min(16rem, 78%);
+    right: 0.9rem;
+    bottom: 6%;
+    padding: 0.9rem 0.95rem 1rem;
   }
 
   .mark-lab-webgl__actions {
