@@ -91,20 +91,27 @@ export function ProjectWebglGallery({
   const scrollPx = useReducedMotion() ? 0 : progress * 2600
   const t = scrollPx + dragOffset // horizontal travel in px
 
-  // Seamless infinite loop: cards live on a ring of `total` slots spanning
-  // STEP px each. Which item sits at the focused center slides continuously
-  // with t; `f` is the px drift within the ring, so adjacent frames keep the
-  // arrangement visually continuous as t grows toward infinity.
-  const centerSlot = Math.round(t / STEP)
-  const centerIndex = ((centerSlot % total) + total) % total
-  const f = t - centerSlot * STEP // remainder in [-STEP/2, STEP/2]
+  // ---- Continuous infinite scroll ----
+  // We keep the cards moving in lockstep with t via a translation phase, and
+  // recycle slots when they reach a slot boundary. Using floor() keeps the
+  // phase frac in [0,1) and strictly continuous: as frac→1, slot r's x slides
+  // from (r-1)·STEP toward r·STEP while the floor ticks up, so the SAME item
+  // that was at slot r is seamlessly taken over by slot r-1 at the wrap — no
+  // positional or content jump, ever. The whole fan therefore scrolls fluidly
+  // for any, arbitrarily large, t.
+  const slotRaw = t / STEP
+  const slotFloor = Math.floor(slotRaw)
+  const phase = slotRaw - slotFloor // shift in slots, in [0, 1)
+  const centerIndex = ((slotFloor % total) + total) % total
 
-  // Build a full fan frame. Render roughly enough slots to cover the viewport
-  // on both sides of center, each mapped to an item via modulo wrap.
+  // Build a full fan frame. Render enough slots to cover the viewport on both
+  // sides of the reading position, each mapped to an item via modulo wrap. rel
+  // is the recycle-slot label (stable across edits to keep DOM nodes alive);
+  // x and all fan visuals derive from the continuous phase, not from rel.
   const halfSpan = Math.ceil(viewportWidth / STEP / 2) + 1
   const slots = useMemo(() => {
     const out: { item: ProjectWebglItem; rel: number }[] = []
-    for (let rel = -halfSpan + 1; rel < halfSpan; rel++) {
+    for (let rel = -halfSpan; rel < halfSpan; rel++) {
       const item = items[(((centerIndex + rel) % total) + total) % total]
       out.push({ item, rel })
     }
@@ -173,13 +180,19 @@ export function ProjectWebglGallery({
           onPointerCancel={handlePointerEnd}
         >
           {slots.map(({ item, rel }) => {
-            const isCenter = rel === 0
-            const absRel = Math.abs(rel)
-            const x = rel * STEP + f
-            const z = -absRel * DEPTH_STEP
-            const scale = isCenter ? FOCUS_SCALE : OUTER_SCALE
-            const zIndex = 1000 - absRel
-            const transform = `translate3d(${x}px, 0, ${z}px) skewY(29.5deg) scale3d(${scale}, ${scale}, 1)`
+            // (rel - phase)·STEP slides each slot's card continuously; the item
+            // 'centerIndex+rel' glides into the x≈0 focus with no stepping.
+            const x = (rel - phase) * STEP
+            const dist = rel - phase // signed slot distance from focus (in slots)
+            const absDist = Math.abs(dist)
+            // Continuous fan: interpolate scale/opacity by distance, so the
+            // focused card glides from one item to the next with no stepping.
+            const k =
+              FOCUS_SCALE + (OUTER_SCALE - FOCUS_SCALE) * Math.min(1, absDist)
+            const opacity = Math.max(1 - absDist * 0.28, 0.12)
+            const zIndex = Math.round(1000 - absDist * 100)
+            const isCenter = absDist < 0.5
+            const transform = `translate3d(${x}px, 0, ${-absDist * DEPTH_STEP}px) skewY(29.5deg) scale3d(${k}, ${k}, 1)`
 
             return (
               <button
@@ -193,7 +206,7 @@ export function ProjectWebglGallery({
                   {
                     zIndex,
                     transform,
-                    '--mw-card-opacity': Math.max(1 - absRel * 0.16, 0.12),
+                    '--mw-card-opacity': opacity,
                   } as CSSProperties
                 }
                 onClick={() => openProject(item)}
