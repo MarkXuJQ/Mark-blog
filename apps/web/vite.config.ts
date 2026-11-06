@@ -118,6 +118,7 @@ function vercelApiDevPlugin(): Plugin {
   const apiHandlers = {
     '/api/tmdb': path.resolve(__dirname, './api/tmdb.js'),
     '/api/steam': path.resolve(__dirname, './api/steam.js'),
+    '/api/github': path.resolve(__dirname, './api/github.js'),
   }
   const moduleVersionCache = new Map<string, string>()
 

@@ -100,11 +100,16 @@ export function RootLayout() {
   )
   const themeCurtainTimers = useRef<number[]>([])
   const isHome = pathname === '/'
+  // The lab/projects route uses the brand's pure-white surface in light mode
+  // instead of the site-wide cream, across the whole page shell (nav gutters,
+  // content, footer) so the page feels like one continuous white surface.
+  const isLabRoute = pathname === '/projects'
   const hasPageBackgroundUnderNav =
     pathname === '/life' ||
     pathname.startsWith('/life/') ||
     pathname === '/movies' ||
-    pathname.startsWith('/movies/reviews/')
+    pathname.startsWith('/movies/reviews/') ||
+    pathname === '/projects'
   const hideBackToTop = pathname === '/' || hasMobileBlogDrawerTrigger
   const supportsLinkPreviews = pathname.startsWith('/blog/')
 
@@ -209,7 +214,11 @@ export function RootLayout() {
   }, [])
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-[var(--page-background)] text-[var(--text-primary)] transition-colors duration-300">
+    <div
+      className={`relative flex min-h-screen w-full flex-col bg-[var(--page-background)] text-[var(--text-primary)] transition-colors duration-300 ${
+        isLabRoute ? 'lab-page-shell' : ''
+      }`}
+    >
       {/* Sticky NavBar Container - Floating Effect */}
       <div
         className={`z-50 w-full transition-transform duration-300 ${
