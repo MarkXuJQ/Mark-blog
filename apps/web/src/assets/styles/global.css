@@ -1721,8 +1721,8 @@ img {
 
 .mark-lab-webgl {
   position: relative;
+  min-height: 100svh;
   width: 100vw;
-  height: 280vh;
   margin-top: clamp(6rem, 12vw, 12rem);
   margin-left: calc(50% - 50vw);
   color: var(--text-primary);
@@ -1730,11 +1730,10 @@ img {
   border-top: 1px solid var(--border-color);
 }
 
-/* Sticky immersive stage pinned while the section scrolls, hosting the
-   3D perspective fan that advances through the project list. */
+/* Immersive stage that fills the viewport and hosts the 3D perspective fan.
+   No longer pinned to page scroll — the fan follows the cursor instead. */
 .mark-lab-webgl__stage {
-  position: sticky;
-  top: 0;
+  position: relative;
   height: 100svh;
   min-height: 42rem;
   overflow: hidden;
@@ -1785,13 +1784,9 @@ img {
   perspective-origin: 50% 50%;
   transform-style: preserve-3d;
   touch-action: pan-y;
-  cursor: grab;
+  cursor: default;
   user-select: none;
   -webkit-user-select: none;
-}
-
-.mark-lab-webgl__air:active {
-  cursor: grabbing;
 }
 
 .mark-lab-webgl__card {
@@ -1816,7 +1811,17 @@ img {
   will-change: transform, opacity;
 }
 
-.mark-lab-webgl__card:hover,
+.mark-lab-webgl__card.is-hovered .mark-lab-webgl__card-face {
+  box-shadow:
+    0 2rem 4.5rem -1.5rem color-mix(in srgb, #020617 70%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--brand-400) 45%, transparent);
+}
+
+.mark-lab-webgl__card.is-dimmed .mark-lab-webgl__card-face {
+  filter: brightness(0.9) saturate(0.75);
+}
+
+.mark-lab-webgl__card.is-hovered,
 .mark-lab-webgl__card:focus-visible {
   filter: brightness(1.06);
 }
@@ -2112,7 +2117,7 @@ img {
 
 @media (max-width: 640px) {
   .mark-lab-webgl {
-    height: 260vh;
+    min-height: 100svh;
   }
 
   .mark-lab-webgl__stage {
@@ -2148,9 +2153,34 @@ img {
 }
 
 /* ===== GitHub Contributions Showcase ===== */
+.mark-lab-page {
+  min-height: 100vh;
+}
+
+/* The lab/projects route paints the whole page shell the shared cream surface
+   (the RootLayout shell also carries `.lab-page-shell`) so there's no pure-white
+   clash with the rest of the site. Dark mode keeps the dark surfaces. */
+html:not(.dark) .lab-page-shell {
+  --page-background: #fdf9f0;
+}
+
+/* Keep the full-bleed lab sections on the same cream surface so nothing peeks
+   through their borders/margins. Redundant with the shell override but kept
+   for safety against any inline cream. */
+html:not(.dark) .mark-lab-header,
+html:not(.dark) .mark-lab-github-wrap,
+html:not(.dark) .mark-lab-webgl {
+  background: #fdf9f0;
+}
+
 .mark-lab-github-wrap {
   position: relative;
   margin-bottom: clamp(5rem, 10vw, 9rem);
+  /* Break out of the max-w-6xl page wrapper so the github section spans the
+     full viewport width instead of wasting left/right space at this stage. */
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+  overflow-x: clip;
 }
 
 .mark-lab-github {
@@ -2176,10 +2206,14 @@ img {
 
 .mark-lab-github__layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+  /* Left detail column 50%, heatmap 50% of the usable width. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: clamp(1.5rem, 4vw, 3.5rem);
   align-items: center;
   width: 100%;
+  /* Even though the section is full-bleed, keep at least an 8% boundary on
+     each side so content never hugs the viewport edges. */
+  padding-inline: 8%;
 }
 
 /* Heatmap column (right side) sits on top so a tall pinned cell stays centered. */
@@ -2192,8 +2226,18 @@ img {
   grid-row: 1;
 }
 
+/* In the lab, the FocusCity heatmap is shown chrome-free: drop the card's
+   border, rounded corner, background and shadow so the chart melts into the
+   page instead of sitting in its own framed box. */
 .mark-lab-github__heatmap .focus-city {
   max-width: none;
+  margin-inline: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+  width: 100%;
 }
 
 .mark-lab-github__side {
@@ -2282,8 +2326,34 @@ img {
   list-style: none;
 }
 
+/* Single column by default; fans into two columns on very wide screens so we
+   can surface up to 8 hot repos beside the heatmap. */
+.gh-repos__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 1.25rem;
+  row-gap: 0;
+}
+
+@media (min-width: 1600px) {
+  .gh-repos__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .gh-repos li + li {
   border-top: 1px solid var(--border-color);
+}
+
+@media (min-width: 1600px) {
+  /* Two-column grid: only start-of-row cards carry a divider (the ones after
+     the first row) so rows are separated without weird borders mid-row. */
+  .gh-repos__grid li {
+    border-top: 0;
+  }
+  .gh-repos__grid li:nth-child(n + 3) {
+    border-top: 1px solid var(--border-color);
+  }
 }
 
 .gh-repos a {
@@ -2304,6 +2374,9 @@ img {
   display: block;
   font-size: 0.9rem;
   font-weight: 700;
+  /* Long / unbroken project names must wrap instead of overflowing the card. */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .gh-repo-desc {

@@ -164,7 +164,7 @@ export function Projects() {
   const projects = sections.flatMap((section) => section.projects)
 
   return (
-    <div className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 md:py-10">
+    <div className="mark-lab-page mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 md:py-10">
       <Seo
         title={t('projects.title')}
         description={t('projects.description')}

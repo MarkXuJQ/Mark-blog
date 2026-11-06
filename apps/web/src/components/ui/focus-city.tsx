@@ -44,6 +44,9 @@ export interface FocusCityProps {
   onDaySelect?: (day: FocusDay) => void
   /** Hide the built-in stats row (rendered elsewhere / outside the figure). */
   hideStats?: boolean
+  /** Hide the plot header hints, legend and the date/navigation footer, leaving
+   *  only the heatmap itself with the header tools (range + 2D/3D). */
+  hideChrome?: boolean
   /** Fires whenever the visible-window stats change, so a parent can render
    *  the same numbers outside the component. */
   onStats?: (stats: FocusStats) => void
@@ -152,7 +155,8 @@ function geometry(
     const y = block.row
     const size = 0.79
     // Tallest visible day becomes the peak; others scale relative to it.
-    const z = block.future ? 0 : normalized(block.count, maxCount ?? 1) * 0.42
+    // 5× lift to make the height variation between tall/short days pop.
+    const z = block.future ? 0 : normalized(block.count, maxCount ?? 1) * 0.42 * 5
     return {
       base: [
         project(x, y),
@@ -318,6 +322,7 @@ export function FocusCity({
   style,
   onDaySelect,
   hideStats = false,
+  hideChrome = false,
   onStats,
 }: FocusCityProps) {
   const today = iso(new Date())
@@ -454,7 +459,10 @@ export function FocusCity({
       aria-label={title}
     >
       <style>{styles}</style>
-      <header className="fc-header">
+      <header
+        className="fc-header"
+        data-chrome={hideChrome ? 'bare' : 'full'}
+      >
         {title ? (
           <div className="fc-heading">
             <span className="fc-emblem">
@@ -536,25 +544,27 @@ export function FocusCity({
         </div>
       </div>
       ) : null}
-      <div className="fc-plot-header">
-        <span>
-          <CalendarDays size={12} aria-hidden="true" />
-          {shortDate(available[0].day.date)} — {shortDate(lastDate)}
-        </span>
-        <span>
-          {view === 'city' ? 'Drag to orbit' : 'Select a day'}
-          {cameraChanged && view === 'city' && (
-            <button
-              className="fc-camera cursor-interaction"
-              type="button"
-              aria-label="Reset city angle"
-              onClick={() => setYaw(Math.PI / 6)}
-            >
-              <RotateCcw size={12} aria-hidden="true" />
-            </button>
-          )}
-        </span>
-      </div>
+      {!hideChrome ? (
+        <div className="fc-plot-header">
+          <span>
+            <CalendarDays size={12} aria-hidden="true" />
+            {shortDate(available[0].day.date)} — {shortDate(lastDate)}
+          </span>
+          <span>
+            {view === 'city' ? 'Drag to orbit' : 'Select a day'}
+            {cameraChanged && view === 'city' && (
+              <button
+                className="fc-camera cursor-interaction"
+                type="button"
+                aria-label="Reset city angle"
+                onClick={() => setYaw(Math.PI / 6)}
+              >
+                <RotateCcw size={12} aria-hidden="true" />
+              </button>
+            )}
+          </span>
+        </div>
+      ) : null}
       <div
         ref={plotRef}
         className={`fc-plot ${dragging ? 'fc-dragging' : ''}`}
@@ -758,19 +768,24 @@ export function FocusCity({
           </div>
         )}
       </div>
-      <div className="fc-legend">
-        <span>
-          {view === 'city' ? 'One day. One building.' : 'One day. One square.'}
-        </span>
-        <div>
-          <span>0</span>
-          {[0, 1, 2, 3, 4].map((value) => (
-            <i key={value} data-level={value} aria-hidden="true" />
-          ))}
-          <span>12+</span>
+      {!hideChrome ? (
+        <div className="fc-legend">
+          <span>
+            {view === 'city'
+              ? 'One day. One building.'
+              : 'One day. One square.'}
+          </span>
+          <div>
+            <span>0</span>
+            {[0, 1, 2, 3, 4].map((value) => (
+              <i key={value} data-level={value} aria-hidden="true" />
+            ))}
+            <span>12+</span>
+          </div>
         </div>
-      </div>
-      <div className="fc-day-row">
+      ) : null}
+      {!hideChrome ? (
+        <div className="fc-day-row">
         <div className="fc-day-identity">
           <span className="fc-day-icon">
             <Clock3 size={15} strokeWidth={1.7} aria-hidden="true" />
@@ -820,6 +835,7 @@ export function FocusCity({
           </button>
         </div>
       </div>
+      ) : null}
     </section>
   )
 }
@@ -830,7 +846,7 @@ const styles = `
 .focus-city{--fc-surface:light-dark(#fff,#111);--fc-ink:light-dark(#171717,#ededed);--fc-muted:light-dark(#5b6b78,#9fb0bd);--fc-border:light-dark(#e6ecf2,#26313c);--fc-hover:light-dark(#f4f8fb,#1d262f);--fc-subtle:light-dark(#fafdfe,#151c22);--fc-selected:light-dark(#17222b,#e4edf5);--fc-on-selected:light-dark(#fff,#14202a);--fc-ground:light-dark(#eef3f6,#18222a);--fc-empty:light-dark(#dfe9ef,#25323d);--fc-green-1:light-dark(#d3e8f4,#2b5b7d);--fc-green-2:light-dark(#a4d0ea,#39779f);--fc-green-3:light-dark(#6eb3dc,#4b97c2);--fc-green-4:light-dark(#3e94c7,#7cc4e8);--fc-shadow:light-dark(#00000008,#00000030);color:var(--fc-ink);background:var(--fc-surface);border:1px solid var(--fc-border);border-radius:14px;box-shadow:0 3px 16px var(--fc-shadow);width:100%;max-width:720px;margin-inline:auto;overflow:hidden;font-family:var(--font-body,'Inter',Geist,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif);font-size:13px;line-height:1.5;text-align:left;box-sizing:border-box;isolation:isolate}
 .focus-city[data-theme=light]{color-scheme:light}.focus-city[data-theme=dark]{color-scheme:dark}.dark .focus-city[data-theme=auto]{color-scheme:dark}
 .focus-city *,.focus-city *::before,.focus-city *::after{box-sizing:border-box}.focus-city button,.focus-city select,.focus-city input{font:inherit;color:inherit}.focus-city button{transition:background .16s ease,color .16s ease,transform .16s ease}.focus-city button:active:not(:disabled){transform:translateY(1px)}.focus-city button:disabled{opacity:.3;cursor:default}.focus-city svg:not(.fc-chart){flex:none}.fc-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.fc-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:23px 24px 0}.fc-heading{display:flex;gap:11px;align-items:center;min-width:0}.fc-emblem{width:34px;height:34px;border:1px solid var(--fc-border);border-radius:9px;display:grid;place-items:center;background:var(--fc-subtle);flex:none}.fc-heading h2{font-size:15px;font-weight:500;letter-spacing:-.3px;line-height:1.3;margin:0}.fc-heading p{font-size:12px;line-height:1.4;color:var(--fc-muted);margin:4px 0 0}.fc-tools{display:flex;align-items:center;gap:8px;flex:none}.fc-range{display:flex;position:relative;align-items:center}.fc-range select{appearance:none;background:var(--fc-surface);border:1px solid var(--fc-border);border-radius:7px;height:32px;padding:0 27px 0 10px;font-size:12px}.fc-range>svg{position:absolute;right:9px;pointer-events:none;color:var(--fc-muted)}.fc-switch{display:flex;padding:3px;background:var(--fc-subtle);border:1px solid var(--fc-border);border-radius:8px;gap:2px}.fc-switch button{display:flex;align-items:center;justify-content:center;gap:5px;border:0;background:transparent;border-radius:5px;height:25px;padding:0 8px;font-size:12px;color:var(--fc-muted)}.fc-switch button:hover{background:var(--fc-hover);color:var(--fc-ink)}.fc-switch button[aria-pressed=true]{background:var(--fc-selected);color:var(--fc-on-selected);box-shadow:0 1px 2px var(--fc-shadow)}.fc-switch button[aria-pressed=true]:hover{background:var(--fc-selected);color:var(--fc-on-selected)}
+.fc-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:23px 24px 0}.fc-header[data-chrome=bare]{position:absolute;top:6px;right:6px;z-index:2;padding:0}.fc-header[data-chrome=bare] .fc-tools{margin:0 0 0 auto}.fc-heading{display:flex;gap:11px;align-items:center;min-width:0}.fc-emblem{width:34px;height:34px;border:1px solid var(--fc-border);border-radius:9px;display:grid;place-items:center;background:var(--fc-subtle);flex:none}.fc-heading h2{font-size:15px;font-weight:500;letter-spacing:-.3px;line-height:1.3;margin:0}.fc-heading p{font-size:12px;line-height:1.4;color:var(--fc-muted);margin:4px 0 0}.fc-tools{display:flex;align-items:center;gap:8px;flex:none}.fc-range{display:flex;position:relative;align-items:center}.fc-range select{appearance:none;background:var(--fc-surface);border:1px solid var(--fc-border);border-radius:7px;height:32px;padding:0 27px 0 10px;font-size:12px}.fc-range>svg{position:absolute;right:9px;pointer-events:none;color:var(--fc-muted)}.fc-switch{display:flex;padding:3px;background:var(--fc-subtle);border:1px solid var(--fc-border);border-radius:8px;gap:2px}.fc-switch button{display:flex;align-items:center;justify-content:center;gap:5px;border:0;background:transparent;border-radius:5px;height:25px;padding:0 8px;font-size:12px;color:var(--fc-muted)}.fc-switch button:hover{background:var(--fc-hover);color:var(--fc-ink)}.fc-switch button[aria-pressed=true]{background:var(--fc-selected);color:var(--fc-on-selected);box-shadow:0 1px 2px var(--fc-shadow)}.fc-switch button[aria-pressed=true]:hover{background:var(--fc-selected);color:var(--fc-on-selected)}
 .fc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:26px 24px 21px}.fc-stats>div{display:flex;flex-direction:column}.fc-stats>div+div{padding-left:22px;border-left:1px solid var(--fc-border)}.fc-stats span{color:var(--fc-muted);font-size:12px}.fc-stats strong{display:block;font-size:24px;line-height:1.35;font-weight:500;letter-spacing:-.8px;margin:3px 0 2px;font-variant-numeric:tabular-nums;white-space:nowrap}.fc-stats em{font-size:15px;font-weight:400;font-style:normal;letter-spacing:-.2px}.fc-stats small{font-size:11px;color:var(--fc-muted)}
 .fc-plot-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 24px;color:var(--fc-muted);font-size:11px;min-height:23px}.fc-plot-header>span{display:flex;align-items:center;gap:6px}.fc-camera{height:24px;width:24px;border:0;background:transparent;display:grid;place-items:center;border-radius:5px;padding:0}.fc-camera:hover{background:var(--fc-hover)}.fc-plot{position:relative;margin:0 10px;touch-action:pan-y}.fc-chart{display:block;overflow:visible;user-select:none}.fc-plot[data-view=city] .fc-chart{cursor:grab}.fc-dragging .fc-chart{cursor:grabbing!important}.fc-block{--fc-top:var(--fc-empty)}.fc-block[data-level="1"]{--fc-top:var(--fc-green-1)}.fc-block[data-level="2"]{--fc-top:var(--fc-green-2)}.fc-block[data-level="3"]{--fc-top:var(--fc-green-3)}.fc-block[data-level="4"]{--fc-top:var(--fc-green-4)}.fc-roof{fill:var(--fc-top)}.fc-left{fill:color-mix(in srgb,var(--fc-top) 87%,var(--fc-ink) 13%)}.fc-right{fill:color-mix(in srgb,var(--fc-top) 72%,var(--fc-ink) 28%)}.fc-face{transition:filter .14s ease}.fc-hovered .fc-face{filter:brightness(1.08)}.fc-axis text{fill:var(--fc-muted);font-size:11px;font-family:inherit}.fc-tooltip{position:absolute;min-width:150px;z-index:3;pointer-events:none;border:1px solid var(--fc-border);border-radius:8px;padding:8px 10px;box-shadow:0 4px 16px var(--fc-shadow);background:var(--fc-surface);display:flex;flex-direction:column;gap:2px;font-size:11px}.fc-tooltip>span{color:var(--fc-muted)}.fc-tooltip>strong{font-size:13px;font-weight:500}.fc-tooltip small{font-size:11px;color:var(--fc-muted);font-weight:400}
 .fc-legend{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 24px 18px;font-size:11px;color:var(--fc-muted)}.fc-legend>div{display:flex;align-items:center;gap:4px}.fc-legend i{width:10px;height:10px;border-radius:2px;background:var(--fc-empty)}.fc-legend i[data-level="1"]{background:var(--fc-green-1)}.fc-legend i[data-level="2"]{background:var(--fc-green-2)}.fc-legend i[data-level="3"]{background:var(--fc-green-3)}.fc-legend i[data-level="4"]{background:var(--fc-green-4)}.fc-legend>div>span:first-child{margin-right:3px}.fc-legend>div>span:last-child{margin-left:3px}

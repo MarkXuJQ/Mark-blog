@@ -1,5 +1,5 @@
 import { Star } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { GithubStats, GithubTopRepo } from '@/lib/github/types'
 import { cn } from '@/lib/classNames'
 import { useSectionScrollProgress } from '@/hooks/useSectionScrollProgress'
@@ -8,6 +8,15 @@ import {
   type FocusDay,
   type FocusStats,
 } from '@/components/ui/focus-city'
+
+// At least this many hot-repo cards are shown even when the heatmap is short,
+// so the block never collapses to a single lonely repo.
+const MIN_HOT_REPOS = 3
+// Max repo rows shown; 1-col → up to 4 repos, 2-col → up to 8 repos.
+const MAX_ROWS = 4
+// Above this viewport width the hot-repo grid uses two columns (up to 8 repos).
+// Below it, a single column capped at MAX_ROWS.
+const TWO_COL_BREAKPOINT = 1600
 
 /** GitHub's official language colours, used for the per-language plot. */
 const GH_LANG_COLORS: Record<string, string> = {
@@ -182,6 +191,28 @@ export function GithubShowcase({
   const total = data?.totalCount ?? 0
   const activeDays = days.filter((day) => day.count > 0).length
   const repos = data?.topRepos ?? []
+
+  // How many hot-repo cards to surface is a pure function of viewport width,
+  // per the spec: phones / narrow desktops get a single column (capped at
+  // MAX_ROWS = 4, at least MIN_HOT_REPOS); wide screens fan into two columns
+  // (up to 2 × MAX_ROWS = 8 repos). No height coupling — react to width only.
+  const [visibleCount, setVisibleCount] = useState(repos.length)
+
+  useEffect(() => {
+    const apply = () => {
+      const cols = window.innerWidth >= TWO_COL_BREAKPOINT ? 2 : 1
+      const target = Math.min(cols * MAX_ROWS, repos.length)
+      const next = Math.max(MIN_HOT_REPOS, target)
+      setVisibleCount((prev) => (prev === next ? prev : next))
+    }
+    apply()
+    window.addEventListener('resize', apply)
+    return () => window.removeEventListener('resize', apply)
+    // `repos.length` drives the ceiling; re-run when the data set changes size.
+  }, [repos.length])
+
+  const visibleRepos =
+    visibleCount >= repos.length ? repos : repos.slice(0, visibleCount)
   const [focusStats, setFocusStats] = useState<FocusStats | null>(null)
   const [hoveredRepo, setHoveredRepo] = useState<GithubTopRepo | null>(null)
 
@@ -203,8 +234,48 @@ export function GithubShowcase({
       ? hoveredRepo.languages
       : null
   const activeLanguages =
-    hoveredLanguages ?? aggregateRepoLanguages(repos)
+    hoveredLanguages ?? aggregateRepoLanguages(visibleRepos)
   const activeLabel = hoveredRepo ? hoveredRepo.name : strings.topReposLabel
+
+  // Reserve a stable height for the language strip so hovering a repo never
+  // reflows the list above it (which otherwise makes the cursor "tick" as the
+  // item underneath keeps changing). We measure the strip's natural height for
+  // the aggregate view (the union of every repo's languages, i.e. the tallest
+  // case) and pin the container to that exact height; single-repo hover views
+  // slot in without resizing the column.
+  const stripRef = useRef<HTMLDivElement>(null)
+  const [stripLockHeight, setStripLockHeight] = useState<number | null>(null)
+
+  // The currently-active languages drive the strip's on-screen content; when a
+  // repo is hovered we compare against the reserved aggregate so the container
+  // height never changes.
+  const aggregateLanguages = useMemo(
+    () => aggregateRepoLanguages(visibleRepos),
+    [visibleRepos]
+  )
+
+  // Measure the strip's natural height in the aggregate (no-hover) state and
+  // freeze it, while re-measuring if the data set or viewport changes. We only
+  // lock when the current content matches the aggregate so we capture the
+  // tallest footprint; hover swaps happen without a resize.
+  useLayoutEffect(() => {
+    const strip = stripRef.current
+    if (!strip) return
+    const measure = () => {
+      // Only ever raise the reserved height to the tallest content seen (the
+      // aggregate is the union and thus tallest); never shrink it, so hover
+      // swaps never reflow the column above.
+      setStripLockHeight((prev) => {
+        const natural = strip.scrollHeight
+        if (natural > (prev ?? 0)) return natural
+        return prev
+      })
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(strip)
+    return () => ro.disconnect()
+  }, [aggregateLanguages, hoveredLanguages])
 
   return (
     <section
@@ -261,9 +332,9 @@ export function GithubShowcase({
 
                   <div className="gh-repos">
                     <h3>{strings.topReposLabel}</h3>
-                    {repos.length ? (
-                      <ul>
-                        {repos.map((repo) => (
+                    {visibleRepos.length ? (
+                      <ul className="gh-repos__grid">
+                        {visibleRepos.map((repo) => (
                           <li key={repo.name}>
                             <a
                               href={repo.url}
@@ -277,14 +348,7 @@ export function GithubShowcase({
                               <span className="gh-repo-name">
                                 {repo.name}
                               </span>
-                              <span className="gh-repo-desc">
-                                {repo.description ||
-                                  strings.emptyRepos}
-                              </span>
                               <span className="gh-repo-meta">
-                                {repo.language ? (
-                                  <em>{repo.language}</em>
-                                ) : null}
                                 <span className="gh-repo-stars">
                                   <Star
                                     size={12}
@@ -292,6 +356,10 @@ export function GithubShowcase({
                                   />
                                   {repo.stars.toLocaleString()}
                                 </span>
+                              </span>
+                              <span className="gh-repo-desc">
+                                {repo.description ||
+                                  strings.emptyRepos}
                               </span>
                             </a>
                           </li>
@@ -304,7 +372,15 @@ export function GithubShowcase({
                     )}
                   </div>
 
-                  <div className="gh-repo-lang-strip">
+                  <div
+                    ref={stripRef}
+                    className="gh-repo-lang-strip"
+                    style={
+                      stripLockHeight
+                        ? { minHeight: `${stripLockHeight}px` }
+                        : undefined
+                    }
+                  >
                     <div className="gh-repo-lang-strip__head">
                       <span>
                         {strings.repoLanguagesLabel ?? 'Languages'}
@@ -338,13 +414,9 @@ export function GithubShowcase({
                 title=""
                 description=""
                 hideStats
+                hideChrome
                 onStats={setFocusStats}
               />
-              <div className="mark-lab-github__scroll-hint" aria-hidden="true">
-                <span>{strings.scrollLabel1}</span>
-                <span>{strings.scrollLabel2}</span>
-                <span>{strings.scrollLabel3}</span>
-              </div>
             </div>
           </div>
         </div>

@@ -285,8 +285,9 @@ export async function fetchGithubStats(config) {
 
   const repoNodes =
     repoResult.data?.user?.repositories?.nodes?.filter(Boolean) ?? []
-  // Only the user's own repos (no forks), the 3 most starred.
-  const topRepos = repoNodes
+  // Only the user's own repos (no forks), most starred; the front-end then
+  // shows however many fit next to the heatmap column.
+  const sortedRepos = repoNodes
     .map((node) => {
       const languages = {}
       for (const edge of node.languages?.edges ?? []) {
@@ -302,7 +303,9 @@ export async function fetchGithubStats(config) {
       }
     })
     .sort((a, b) => b.stars - a.stars)
-    .slice(0, 3)
+    .slice(0, 8)
+
+  const topRepos = sortedRepos
 
   const languages = {}
   for (const repo of topRepos) {
