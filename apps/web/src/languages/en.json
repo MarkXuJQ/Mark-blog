@@ -382,6 +382,7 @@
     "githubDailyAvg": "Daily average",
     "githubBestStreak": "Best streak",
     "githubWindow": "weeks window",
+    "githubLanguages": "Languages",
     "githubTopRepos": "Top repositories",
     "githubEmpty": "No GitHub data yet.",
     "githubDemoHint": "Showing sample activity. Add a GITHUB_TOKEN to see your real data.",

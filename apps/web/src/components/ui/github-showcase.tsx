@@ -9,6 +9,57 @@ import {
   type FocusStats,
 } from '@/components/ui/focus-city'
 
+/** GitHub's official language colours, used for the per-language plot. */
+const GH_LANG_COLORS: Record<string, string> = {
+  TypeScript: '#3178c6',
+  JavaScript: '#f1e05a',
+  Python: '#3572A5',
+  HTML: '#e34c26',
+  CSS: '#563d7c',
+  'Jupyter Notebook': '#DA5B0B',
+  SVG: '#ffb13b',
+  Java: '#b07219',
+  Go: '#00ADD8',
+  Rust: '#dea584',
+  Dart: '#00B4AB',
+  C: '#555555',
+  'C++': '#f34b7d',
+  'C#': '#178600',
+  Shell: '#89e051',
+  Ruby: '#701516',
+  PHP: '#4F5D95',
+  Kotlin: '#A97BFF',
+  Swift: '#F05138',
+  Elixir: '#6e4a7e',
+  'F#': '#b845fc',
+  Lua: '#000080',
+  R: '#198CE7',
+  Vue: '#41b883',
+  Svelte: '#ff3e00',
+  MDX: '#fcb32c',
+  Markdown: '#083fa1',
+  JSON: '#292929',
+  YAML: '#cb171e',
+  Dockerfile: '#384d54',
+}
+
+const GH_LANG_DEFAULT_COLOR = '#8b949e'
+
+/** Returns the GitHub colour for a language, falling back to a neutral grey. */
+function langColor(name: string): string {
+  return GH_LANG_COLORS[name] ?? GH_LANG_DEFAULT_COLOR
+}
+
+/** Sum byte counts and normalise to a sorted [name, ratio] list. */
+function toRatios(languages: Record<string, number>) {
+  const entries = Object.entries(languages).sort((a, b) => b[1] - a[1])
+  const total = entries.reduce((sum, [, v]) => sum + v, 0) || 1
+  return entries.map(([name, value]) => ({
+    name,
+    ratio: value / total,
+  }))
+}
+
 export type GithubShowcaseStrings = {
   title?: string
   description?: string
@@ -44,33 +95,56 @@ function LanguageBar({
   languages: Record<string, number>
   compact?: boolean
 }) {
-  const entries = Object.entries(languages).sort((a, b) => b[1] - a[1])
-  if (!entries.length) return null
-  const total = entries.reduce((sum, [, value]) => sum + value, 0)
+  const ratios = toRatios(languages)
+  if (!ratios.length) return null
   return (
     <div
       className={cn('gh-languages', compact && 'gh-languages--compact')}
       aria-label="Language breakdown"
     >
       <ul>
-        {entries.map(([name, value]) => (
+        {ratios.map(({ name, ratio }) => (
           <li key={name}>
+            <span
+              className="gh-languages__dot"
+              style={{ background: langColor(name) }}
+            />
             <span>{name}</span>
-            <strong>{Math.round((value / total) * 100)}%</strong>
+            <strong>{Math.round(ratio * 100)}%</strong>
           </li>
         ))}
       </ul>
       <div className="gh-language-bar" aria-hidden="true">
-        {entries.map(([name, value]) => (
+        {ratios.map(({ name, ratio }) => (
           <i
             key={name}
             title={name}
-            style={{ width: `${(value / total) * 100}%` }}
+            style={{
+              width: `${ratio * 100}%`,
+              background: langColor(name),
+            }}
           />
         ))}
       </div>
     </div>
   )
+}
+
+/** Aggregate the hot repos' language bytes into one map (all-repos view). */
+function aggregateRepoLanguages(
+  repos: GithubTopRepo[]
+): Record<string, number> {
+  const aggregate: Record<string, number> = {}
+  for (const repo of repos) {
+    if (repo.languages) {
+      for (const [lang, bytes] of Object.entries(repo.languages)) {
+        aggregate[lang] = (aggregate[lang] ?? 0) + bytes
+      }
+    } else if (repo.language) {
+      aggregate[repo.language] = (aggregate[repo.language] ?? 0) + repo.stars
+    }
+  }
+  return aggregate
 }
 
 function WindowStat({
@@ -119,6 +193,18 @@ export function GithubShowcase({
     days: 0,
     weeks: 0,
   }
+
+  // Language breakdown: show the hovered repo's proportions, otherwise the
+  // aggregate over all hot repos.
+  const hoveredLanguages =
+    hoveredRepo &&
+    hoveredRepo.languages &&
+    Object.keys(hoveredRepo.languages).length > 0
+      ? hoveredRepo.languages
+      : null
+  const activeLanguages =
+    hoveredLanguages ?? aggregateRepoLanguages(repos)
+  const activeLabel = hoveredRepo ? hoveredRepo.name : strings.topReposLabel
 
   return (
     <section
@@ -208,26 +294,27 @@ export function GithubShowcase({
                                 </span>
                               </span>
                             </a>
-                            {/* Per-repo language proportions appear on hover
-                                (or keyboard focus); falls back to the single
-                                primary language otherwise. */}
-                            {hoveredRepo?.name === repo.name &&
-                            repo.languages &&
-                            Object.keys(repo.languages).length > 0 ? (
-                              <LanguageBar
-                                languages={repo.languages}
-                                compact
-                              />
-                            ) : (
-                              <div className="gh-repo-lang--single">
-                                {repo.language ?? '\u2014'}
-                              </div>
-                            )}
                           </li>
                         ))}
                       </ul>
                     ) : (
                       <p className="gh-repos-empty">
+                        {strings.emptyRepos}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="gh-repo-lang-strip">
+                    <div className="gh-repo-lang-strip__head">
+                      <span>
+                        {strings.repoLanguagesLabel ?? 'Languages'}
+                      </span>
+                      <em>{activeLabel}</em>
+                    </div>
+                    {Object.keys(activeLanguages).length ? (
+                      <LanguageBar languages={activeLanguages} />
+                    ) : (
+                      <p className="gh-repo-lang-strip__empty">
                         {strings.emptyRepos}
                       </p>
                     )}

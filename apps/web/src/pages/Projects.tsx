@@ -214,6 +214,7 @@ export function Projects() {
             dailyAvgLabel: t('projects.githubDailyAvg'),
             bestStreakLabel: t('projects.githubBestStreak'),
             windowLabel: t('projects.githubWindow'),
+            repoLanguagesLabel: t('projects.githubLanguages'),
             topReposLabel: t('projects.githubTopRepos'),
             emptyRepos: t('projects.githubEmpty'),
             demoHint: t('projects.githubDemoHint'),
