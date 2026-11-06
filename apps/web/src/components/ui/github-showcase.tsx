@@ -160,13 +160,15 @@ function WindowStat({
   label,
   value,
   hint,
+  className,
 }: {
   label: string
   value: string
   hint?: string
+  className?: string
 }) {
   return (
-    <div className="gh-card">
+    <div className={cn('gh-card', className)}>
       <span>{label}</span>
       <strong>{value}</strong>
       {hint ? <small>{hint}</small> : null}
@@ -180,7 +182,58 @@ export function GithubShowcase({
   strings,
   className,
 }: GithubShowcaseProps) {
-  const { ref, progress } = useSectionScrollProgress<HTMLElement>()
+  const { ref, progress: sectionProgress } = useSectionScrollProgress<HTMLElement>()
+
+  // The progress that drives the 2D -> 3D lift differs by layout:
+  //  • Wide screens use the pinned scroll track — the stage is sticky and stays
+  //    centered while the section scrolls, so the heatmap's own viewport offset
+  //    is constant and useless. Section progress is the right signal there.
+  //  • On mobile (≤820px) the layout stacks vertically (side column above, heatmap
+  //    below) and the section spans far more than the heatmap. Section progress
+  //    can hit 0.5 while the heatmap is still far below the fold, lifting the
+  //    city a beat too early. We measure the heatmap's own viewport progress so
+  //    it lifts exactly as it scrolls into center.
+  const heatmapRef = useRef<HTMLDivElement>(null)
+  const [heatmapProgress, setHeatmapProgress] = useState(0)
+  const [isStacked, setIsStacked] = useState(false)
+  useEffect(() => {
+    const set = () => setIsStacked(window.innerWidth <= 820)
+    set()
+    window.addEventListener('resize', set)
+    return () => window.removeEventListener('resize', set)
+  }, [])
+  useEffect(() => {
+    const node = heatmapRef.current
+    if (!node) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setHeatmapProgress(1)
+      return
+    }
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const rect = node.getBoundingClientRect()
+      const viewport = window.innerHeight
+      // 0 while the heatmap's bottom is still below the viewport top, then ramps
+      // to 1 as it rises; ~0.5 means roughly centered — the city lift point.
+      const entered = viewport - rect.bottom + rect.height / 2
+      const clamped = Math.max(0, Math.min(1, entered / (viewport * 0.8)))
+      setHeatmapProgress(clamped)
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [status, data])
+
+  const progress = isStacked ? heatmapProgress : sectionProgress
 
   const days: FocusDay[] = (data?.days ?? []).map((day) => ({
     date: day.date,
@@ -317,6 +370,10 @@ export function GithubShowcase({
                           : undefined
                       }
                     />
+                    {/* The best-streak card is dropped on narrow screens: on a
+                        small column there isn't room for all three stats, and
+                        the streak is the least essential of them. Hidden via
+                        `.gh-card--best` in CSS. */}
                     <WindowStat
                       label={strings.bestStreakLabel ?? 'Best streak'}
                       value={`${stats.bestStreak}`}
@@ -325,10 +382,9 @@ export function GithubShowcase({
                           ? `${stats.activeDays} ${strings.daysLabel ?? 'days'}`
                           : undefined
                       }
+                      className="gh-card--best"
                     />
                   </div>
-
-                  <div className="gh-divider" />
 
                   <div className="gh-repos">
                     <h3>{strings.topReposLabel}</h3>
@@ -405,7 +461,7 @@ export function GithubShowcase({
               )}
             </div>
 
-            <div className="mark-lab-github__heatmap">
+            <div ref={heatmapRef} className="mark-lab-github__heatmap">
               <FocusCity
                 days={days}
                 progress={progress}

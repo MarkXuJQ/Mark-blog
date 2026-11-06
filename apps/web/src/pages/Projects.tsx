@@ -6,10 +6,12 @@ import { RiComputerLine } from 'react-icons/ri'
 import { useTranslation } from 'react-i18next'
 import projectContent from '@content/projects/projects.json'
 import { Seo } from '@/app/seo/Seo'
+import { GradientASCII } from '@/components/ui/gradient-ascii'
 import { GithubShowcase } from '@/components/ui/github-showcase'
 import { ProjectWebglGallery } from '@/components/ui/project-webgl-gallery'
 import { TextRevealBlock } from '@/components/ui/text-reveal-block'
 import { useGithubStats } from '@/hooks/useGithubStats'
+import { useIsDarkMode } from '@/hooks/useIsDarkMode'
 
 type ProjectLocale = { zh: string; en: string }
 type ProjectLinkType = 'game' | 'github' | 'computer'
@@ -130,8 +132,12 @@ function AvatarReveal() {
   )
 }
 
+const ASCII_BACKDROP_LIGHT_COLORS = ['#cfe8ff', '#ff5941', '#4e98ba']
+const ASCII_BACKDROP_DARK_COLORS = ['#0ea5e9', '#ff5941', '#8ab4ff']
+
 export function Projects() {
   const { t, i18n } = useTranslation()
+  const isDark = useIsDarkMode()
   const githubStats = useGithubStats()
   const localPreview =
     typeof window !== 'undefined' &&
@@ -170,9 +176,34 @@ export function Projects() {
         description={t('projects.description')}
       />
 
-      <header className="mark-lab-header overflow-visible pt-2 pb-20 sm:pt-4 md:pt-8 md:pb-32">
+      <div className="mark-lab-ascii-stage" aria-hidden="true">
+        <div className="mark-lab-ascii">
+          <GradientASCII
+            colors={
+              isDark
+                ? ASCII_BACKDROP_DARK_COLORS
+                : ASCII_BACKDROP_LIGHT_COLORS
+            }
+            shape="horizon"
+            cellSize={22}
+            density={0.72}
+            glyphOpacity={0.6}
+            glow={0.35}
+            depthOfField={0.12}
+            flicker={0.14}
+            flow={0.75}
+            softness={0.55}
+            scale={1.15}
+            gradientOpacity={0.5}
+            grain={0.06}
+            intro
+          />
+        </div>
+      </div>
+
+      <header className="mark-lab-header overflow-visible pt-24 pb-20 sm:pt-28 md:pt-32 md:pb-[calc(100svh_-_41.75rem)]">
         <div className="mark-lab-wordmark">
-          <h1 className="max-w-full text-slate-950 dark:text-slate-50">
+          <h1 className="mark-lab-ascii-content relative max-w-full text-slate-950 dark:text-slate-50">
             <span className="mark-lab-mark-row">
               <TextRevealBlock
                 animateOnScroll={false}
@@ -232,9 +263,6 @@ export function Projects() {
         title={t('projects.showcaseTitle')}
         description=""
         openLabel={t('projects.open')}
-        hintScroll={t('projects.showcaseHintScroll')}
-        hintDrag={t('projects.showcaseHintDrag')}
-        hintClick={t('projects.showcaseHintClick')}
       />
     </div>
   )

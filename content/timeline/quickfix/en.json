@@ -1,5 +1,37 @@
 [
   {
+    "id": "qf-20261106",
+    "date": "2026-11-06",
+    "content": [
+      "Added a GitHub contribution showcase to the Projects page: a scroll-morphing commit heatmap and a WebGL project gallery",
+      "Turned Made in Mark into a 3D perspective fan gallery with infinite scrolling, drag support, and click-to-expand detail modals",
+      "Added GitHub-colored language ratio strips per repo, with hover to inspect each repository's language breakdown",
+      "Unified the Projects showcase palette, relocated stats and controls, added 3 hot repos, and amplified the 3D city heights"
+    ]
+  },
+  {
+    "id": "qf-20261104",
+    "date": "2026-11-04",
+    "content": [
+      "Added an interactive homepage title: click it to trigger a particle burst effect"
+    ]
+  },
+  {
+    "id": "qf-20261103",
+    "date": "2026-11-03",
+    "content": [
+      "Added Chinese and English internationalization for the reader mode toggle",
+      "Enhanced the reader mode toggle with improved drag-and-drop behavior and smoother transitions"
+    ]
+  },
+  {
+    "id": "qf-20261028",
+    "date": "2026-10-28",
+    "content": [
+      "Reworked the About page layout, integrating the sticker area with improved responsiveness"
+    ]
+  },
+  {
     "id": "qf-20261026",
     "date": "2026-10-26",
     "content": [

@@ -108,7 +108,8 @@ export function RootLayout() {
     pathname === '/life' ||
     pathname.startsWith('/life/') ||
     pathname === '/movies' ||
-    pathname.startsWith('/movies/reviews/')
+    pathname.startsWith('/movies/reviews/') ||
+    pathname === '/projects'
   const hideBackToTop = pathname === '/' || hasMobileBlogDrawerTrigger
   const supportsLinkPreviews = pathname.startsWith('/blog/')
 

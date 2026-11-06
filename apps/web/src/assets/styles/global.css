@@ -1617,6 +1617,7 @@ img {
 }
 
 .mark-lab-wordmark {
+  position: relative;
   container-type: inline-size;
   width: 100%;
   --mark-lab-mark-size: clamp(3rem, 8vw, 6rem);
@@ -1626,6 +1627,43 @@ img {
     13.2rem
   );
   margin-top: clamp(-1rem, -2.5vw, -0.5rem);
+}
+
+/* ASCII gradient backdrop spanning from the very top of the viewport down
+   through the full lab header. The stage is positioned relative to the
+   .mark-lab-page wrapper (whose box starts at the viewport top when the navbar
+   is floating/fixed), so it begins at the top edge — behind the floating navbar
+   and under the wordmark — and runs for the height of the header. Content that
+   follows (header, github section, gallery) paints on top, so the effect reads
+   as a full-bleed hero background. Degrades gracefully: if WebGL2 is
+   unavailable the component renders nothing and the wordmark stays readable. */
+.mark-lab-ascii-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Break out of the max-w-6xl page wrapper so the backdrop is full-bleed. */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  /* Cover the whole first viewport so no neighbouring section peeks into the
+     opening screen; falls back to vh for older engines. */
+  height: 100svh;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.mark-lab-ascii {
+  position: absolute;
+  inset: 0;
+  opacity: 0.9;
+}
+
+.mark-lab-ascii-content {
+  position: relative;
+  isolation: isolate;
+  z-index: 1;
 }
 
 .mark-lab-field {
@@ -1721,7 +1759,7 @@ img {
 
 .mark-lab-webgl {
   position: relative;
-  min-height: 100svh;
+  height: 280vh;
   width: 100vw;
   margin-top: clamp(6rem, 12vw, 12rem);
   margin-left: calc(50% - 50vw);
@@ -1730,10 +1768,13 @@ img {
   border-top: 1px solid var(--border-color);
 }
 
-/* Immersive stage that fills the viewport and hosts the 3D perspective fan.
-   No longer pinned to page scroll — the fan follows the cursor instead. */
+/* Sticky immersive stage pinned while the section scrolls, hosting the
+   3D perspective fan that advances through the project list. Scrolling the
+   page carries the fan through the projects (scroll-coupled), rather than a
+   static full-screen block that only nudges on wheel/drag. */
 .mark-lab-webgl__stage {
-  position: relative;
+  position: sticky;
+  top: 0;
   height: 100svh;
   min-height: 42rem;
   overflow: hidden;
@@ -1922,33 +1963,6 @@ img {
   box-shadow: 0 0 0.6rem var(--brand-400);
 }
 
-.mark-lab-webgl__hint {
-  position: absolute;
-  bottom: clamp(1.25rem, 4vh, 2.5rem);
-  left: 50%;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  transform: translateX(-50%);
-  color: var(--text-secondary);
-  font-family: var(--font-code);
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  white-space: nowrap;
-}
-
-.mark-lab-webgl__hint span {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.mark-lab-webgl__hint span + span::before {
-  content: '·';
-  opacity: 0.5;
-}
-
 /* ----- Project detail modal ----- */
 .mark-lab-webgl__modal {
   position: fixed;
@@ -1957,7 +1971,7 @@ img {
   display: grid;
   place-items: center;
   padding: 1.5rem;
-  animation: mw-modal-fade 260ms ease both;
+  animation: mw-modal-fade 520ms ease both;
 }
 
 .mark-lab-webgl__modal-backdrop {
@@ -1994,7 +2008,10 @@ img {
   background: var(--mw-modal-theme, #888);
   box-shadow: 0 0.5rem 1.25rem -0.4rem color-mix(in srgb, #000 55%, transparent);
   cursor: pointer;
-  transition: transform 180ms ease, filter 180ms ease;
+  /* Pop in a beat after the image so the title/summary read over a settled
+     picture, not during its rise — a second, gentler pulse. */
+  animation: mw-pop 760ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
+  transition: transform 360ms ease, filter 360ms ease;
 }
 .mark-lab-webgl__modal-close svg {
   width: 1.15rem;
@@ -2020,17 +2037,31 @@ img {
   background: transparent;
   border-radius: 1.1rem;
   box-shadow: 0 3rem 6rem -2rem color-mix(in srgb, #020617 70%, transparent);
-  animation: mw-modal-rise 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: mw-modal-rise 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes mw-modal-rise {
   from {
     opacity: 0;
-    transform: translateY(1.25rem) scale(0.97);
+    /* The preview itself grows and rises from a near-card-like pose into its
+       final frame — one clean, continuous motion from selection to open, no
+       separate card-flip stage. */
+    transform: translateY(1.5rem) scale(0.94);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes mw-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(0.6rem);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 
@@ -2055,7 +2086,9 @@ img {
 /* Overlay card pinned to the right, lower-middle of the image. It straddles
    the picture's right edge so roughly 60% sits over the image and 40% hangs
    off its edge onto the backdrop — the dialog itself allows overflow so the
-   card can keep its rounded, theme-aware look outside the photo. */
+   card can keep its rounded, theme-aware look outside the photo. It pops in a
+   beat after the preview has settled so the text reads over a calm, static
+   image rather than mid-rise. */
 .mark-lab-webgl__modal-card {
   position: absolute;
   right: calc(min(21rem, 42%) * -0.4);
@@ -2067,6 +2100,7 @@ img {
   background: var(--surface-card);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
+  animation: mw-pop 760ms cubic-bezier(0.22, 1, 0.36, 1) 220ms both;
 }
 
 .mark-lab-webgl__modal-card h3 {
@@ -2105,9 +2139,9 @@ img {
   font-weight: 650;
   text-decoration: none;
   transition:
-    background-color 180ms ease,
-    border-color 180ms ease,
-    transform 180ms ease;
+    background-color 360ms ease,
+    border-color 360ms ease,
+    transform 360ms ease;
 }
 
 .mark-lab-webgl__actions a:hover,
@@ -2136,15 +2170,11 @@ img {
   .mark-lab-webgl__header p {
     max-width: 19rem;
   }
-
-  .mark-lab-webgl__hint {
-    gap: 0.9rem;
-  }
 }
 
 @media (max-width: 640px) {
   .mark-lab-webgl {
-    min-height: 100svh;
+    height: 280vh;
   }
 
   .mark-lab-webgl__stage {
@@ -2159,10 +2189,33 @@ img {
     --mw-card-w: min(17rem, 72vw);
   }
 
+  .mark-lab-webgl__modal-dialog {
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 30rem);
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+
+  .mark-lab-webgl__modal-preview {
+    flex: none;
+  }
+
+  .mark-lab-webgl__modal-close {
+    top: 0.6rem;
+    left: 0.6rem;
+  }
+
+  /* On small screens the intro card drops BELOW the preview instead of
+     overlapping its corner, so the whole card is readable without obscuring
+     the image. */
   .mark-lab-webgl__modal-card {
-    width: min(16rem, 78%);
-    right: 0.9rem;
-    bottom: 6%;
+    position: relative;
+    order: 0;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    margin-top: 0.85rem;
     padding: 0.9rem 0.95rem 1rem;
   }
 
@@ -2176,6 +2229,8 @@ img {
   .mark-lab-webgl__card-name,
   .mark-lab-webgl__actions a,
   .mark-lab-webgl__modal-dialog,
+  .mark-lab-webgl__modal-close,
+  .mark-lab-webgl__modal-card,
   .mark-lab-webgl__modal {
     transition: none !important;
     animation: none !important;
@@ -2195,9 +2250,8 @@ html:not(.dark) .lab-page-shell {
 }
 
 /* Keep the full-bleed lab sections on the same cream surface so nothing peeks
-   through their borders/margins. Redundant with the shell override but kept
-   for safety against any inline cream. */
-html:not(.dark) .mark-lab-header,
+   through their borders/margins. The lab header is deliberately excluded: it
+   is transparent so the ASCII hero backdrop shows through beneath the wordmark. */
 html:not(.dark) .mark-lab-github-wrap,
 html:not(.dark) .mark-lab-webgl {
   background: #fdf9f0;
@@ -2258,7 +2312,8 @@ html:not(.dark) .mark-lab-webgl {
 
 /* In the lab, the FocusCity heatmap is shown chrome-free: drop the card's
    border, rounded corner, background and shadow so the chart melts into the
-   page instead of sitting in its own framed box. */
+   page instead of sitting in its own framed box. The plot is nudged down and
+   the 2D/3D + date-range controls hover above it. */
 .mark-lab-github__heatmap .focus-city {
   max-width: none;
   margin-inline: 0;
@@ -2268,6 +2323,10 @@ html:not(.dark) .mark-lab-webgl {
   box-shadow: none;
   overflow: visible;
   width: 100%;
+}
+
+.mark-lab-github__heatmap .fc-plot {
+  margin-top: 0.9rem;
 }
 
 .mark-lab-github__side {
@@ -2310,6 +2369,17 @@ html:not(.dark) .mark-lab-webgl {
   gap: 0.75rem;
 }
 
+@media (max-width: 720px) {
+  /* When there isn't room for all three stats side-by-side we drop the least
+     essential one (best streak) so the remaining two keep comfortable spacing. */
+  .gh-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .gh-card--best {
+    display: none;
+  }
+}
+
 .gh-card {
   padding: 1rem 1.1rem;
   border: 1px solid var(--border-color);
@@ -2339,10 +2409,9 @@ html:not(.dark) .mark-lab-webgl {
   font-size: 0.68rem;
 }
 
-.gh-divider {
-  height: 1px;
-  margin: 1.5rem 0;
-  background: var(--border-color);
+.gh-repos {
+  margin-top: 1.75rem; /* breathing room between the stats numbers above and
+                          the "热门仓库" subtitle */
 }
 
 .gh-repos h3 {
@@ -2371,7 +2440,7 @@ html:not(.dark) .mark-lab-webgl {
   }
 }
 
-.gh-repos li + li {
+.gh-repos li {
   border-top: 1px solid var(--border-color);
 }
 
@@ -2380,6 +2449,9 @@ html:not(.dark) .mark-lab-webgl {
      the first row) so rows are separated without weird borders mid-row. */
   .gh-repos__grid li {
     border-top: 0;
+  }
+  .gh-repos__grid li:first-child {
+    border-top: 1px solid var(--border-color);
   }
   .gh-repos__grid li:nth-child(n + 3) {
     border-top: 1px solid var(--border-color);
@@ -2555,17 +2627,42 @@ html:not(.dark) .mark-lab-webgl {
     grid-column: 1;
     grid-row: auto;
     order: 2;
+    margin-top: 1rem;
   }
   .mark-lab-github__side {
     grid-column: 1;
     grid-row: auto;
     order: 1;
   }
-}
 
-@media (max-width: 480px) {
-  .gh-stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* On the stacked mobile layout the side column (with its language strip) sits
+     directly above the heatmap. The FocusCity bare header is absolutely
+     positioned to float above the plot (top:-2.5rem), which on mobile pokes it
+     up into the language progress strip and they overlap. Anchor it back into
+     flow so the 2D/3D + date-range controls take their own row above the chart
+     instead of colliding with the language bar. */
+  .mark-lab-github__heatmap .fc-header[data-chrome='bare'] {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    padding: 0 0 0.5rem;
+    justify-content: flex-end;
+  }
+  .mark-lab-github__heatmap .fc-switch button {
+    height: 38px;
+    min-width: 44px;
+  }
+  .mark-lab-github__heatmap .fc-range select {
+    height: 44px;
+    font-size: 16px;
+  }
+  .mark-lab-github__heatmap .fc-plot {
+    margin-top: 0.4rem;
+  }
+  .mark-lab-github__side {
+    max-height: none;
+    overflow-y: visible;
   }
 }
 

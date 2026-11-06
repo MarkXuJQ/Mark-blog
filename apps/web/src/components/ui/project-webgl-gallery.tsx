@@ -9,6 +9,7 @@ import {
 } from 'react'
 import type { IconType } from 'react-icons'
 import { cn } from '@/lib/classNames'
+import { useSectionScrollProgress } from '@/hooks/useSectionScrollProgress'
 
 export type ProjectWebglLink = {
   href: string
@@ -35,9 +36,6 @@ type ProjectWebglGalleryProps = {
   title: string
   description: string
   openLabel: string
-  hintScroll?: string
-  hintDrag?: string
-  hintClick?: string
   closeLabel?: string
   className?: string
 }
@@ -76,14 +74,47 @@ function themeColorFor(id: string): string {
   return THEME_COLORS[h % THEME_COLORS.length]
 }
 
-// Movement: the only two drivers are a gentle scroll-linked drift and a 1:1
-// drag. Both write to a shared `target` travel value that eases smoothly.
-const WHEEL_SENS = 0.22 // px of fan travel per px of wheel deltaY
-const EASE = 0.08 // exponential follow per frame
+// Movement: the fan is driven chiefly by page scroll (the pinned track) with a
+// 1:1 drag on top. Both write to a shared `target` travel value that eases.
+const SCROLL_RANGE = 2600 // px of fan travel across the full sticky track
 const DRAG_THRESHOLD = 4 // px before a pointer-down becomes a drag (vs click)
 const HOVER_LIFT = 22 // px the hovered card is raised
 const HOVER_NEIGHBOUR_LIFT = 12 // px its immediate neighbours are raised
 const HOVER_DIM = 0.45 // fixed opacity for every non-selected card (binary)
+
+// Hover lift is a spring too: the hovered card (and its neighbours) rise and
+// fall with a gentle, critically-damped curve — no jelly overshoot, just a
+// smooth, deliberate rise.
+const HOVER_LIFT_RATE = 0.09 // exponential approach rate (larger = quicker lift)
+
+// ---- Damped travel (slower, elegant glide) ----
+// The fan position is a strongly-damped spring chasing the interaction target.
+// It accelerates toward the target then decelerates smoothly to a stop — a
+// single, imperceptible approach with no visible side-to-side jello. Inertia is
+// shown by a subtle card tilt driven by velocity (see TILT_* below) instead of
+// the strip visibly bouncing.
+const SPRING_STIFFNESS = 0.045 // per-frame pull toward target (lower = slower glide)
+const SPRING_DAMPING = 0.9 // velocity retention — high → settles without oscillation
+
+// ---- Inertia cue: velocity-driven tilt ----
+// As the fan moves, cards cant horizontally (rotateY) a little, conveying
+// momentum; the cant grows with speed and eases away as it winds down. Kept
+// subtle so it reads as weight, not wobble. Direction is purely horizontal.
+const TILT_FACTOR = 0.015 // degrees of rotateY per unit of travel velocity
+const TILT_MAX = 4 // degrees — hard ceiling so it never over-rotates
+const TILT_SPRING_STIFFNESS = 0.09
+const TILT_SPRING_DAMPING = 0.88
+
+// ---- Drag plane-flex (acceleration shown through shape, not recoil) ----
+// Dragging fast must NOT bounce the strip back on release. Instead the strip's
+// plane flexes: cards behind the grab lean slightly in the direction of motion
+// (a per-card rotateY that falls off with distance), subdividing the "surface"
+// so the acceleration reads as a deformation of the plane — then they recover
+// flat at rest. No positional recoil is ever applied.
+const DRAG_TILT_FACTOR = 0.28 // degrees of extra rotateY per unit of drag velocity
+const DRAG_TILT_MAX = 7 // hard ceiling for the lean, so it looks like fabric not foam
+const DRAG_TILT_RANGE = 0.5 // how quickly the lean falls off away from the grab
+const PULL_VEL_SMOOTH = 0.5 // low-pass on the sampled drag velocity for steadier lean
 
 function useViewportWidth() {
   const [width, setWidth] = useState(
@@ -114,14 +145,17 @@ export function ProjectWebglGallery({
   title,
   description,
   openLabel,
-  hintScroll,
-  hintDrag,
-  hintClick,
   closeLabel = 'Close',
   className,
 }: ProjectWebglGalleryProps) {
   const reduced = useReducedMotion()
   const railRef = useRef<HTMLDivElement>(null)
+  // Scroll-coupled track: as the pinned section scrolls through the page,
+  // `progress` (0→1 over the 280vh track) advances the fan through the project
+  // list. It re-anchors the base position; drag adds a free offset on top.
+  const { ref: sectionRef, progress } = useSectionScrollProgress<HTMLElement>()
+  const progressRef = useRef(0)
+  progressRef.current = progress
 
   const total = items.length
   const viewportWidth = useViewportWidth()
@@ -130,9 +164,12 @@ export function ProjectWebglGallery({
 
   // ---- Shared travel value ----
   // Horizontal position of the fan, eased toward `target`. The target is the
-  // sum of every interaction: wheel scroll drifts it gently, a drag moves it
-  // 1:1 with the cursor. Keeping the eased `travel` separate from the target
-  // gives a smooth glide after each scroll / release, and hovering freezes it.
+  // scroll base (page scroll through the pinned stage) plus any drag offset,
+  // so scrolling the page carries the list forward while a drag freely nudges
+  // it on top. Keeping the eased `travel` separate from the target gives a
+  // smooth glide after each change.
+  const scrollBaseRef = useRef(0) // progress * SCROLL_RANGE
+  const dragOffsetRef = useRef(0) // free offset the user drags/wheels
   const targetRef = useRef(0)
   const travelRef = useRef(0)
   const [pos, setPos] = useState(0)
@@ -146,32 +183,140 @@ export function ProjectWebglGallery({
   // to that grab point so content follows the cursor exactly (not inverted).
   const dragRef = useRef<{
     startX: number
-    startTravel: number
+    startOffset: number
     moved: boolean
+    grabRel: number | null
+    lastX: number
+    lastT: number
+    vel: number
   } | null>(null)
 
-  // ---- Ease loop: glide travel toward the interaction target ----
+  // Mirrors of the live drag shear state for the per-frame render. Updated by
+  // the pointer handlers; read every frame in the fan layout so a fast drag
+  // shears the strip without needing a re-render on every pointermove.
+  const dragGrabRelRef = useRef<number | null>(null)
+  const dragVelRef = useRef(0)
+
+  // Inertia tilt: a horizontal rotateY on every card driven by the strip's
+  // velocity, eased by its own spring so it grows with speed and melts away as
+  // the glide winds down — the "momentum" cue that reads as weight, not jello.
+  const tiltRef = useRef(0)
+  const tiltVelRef = useRef(0)
+  const [tilt, setTilt] = useState(0)
+
+  // Helium for hover lift: a spring-driven value in [0,1] that eases after the
+  // hovered card changes so the lift rises and falls with a gentle curve.
+  const hoverAmtRef = useRef(0)
+  const [hoverAmt, setHoverAmt] = useState(0)
+
+  // Pull-out progress (0..~1): a spring driving the card that flies out of the
+  // fan toward the modal so the raise/scale/tilt follows a curved, overshooty
+  // ease (inertia) rather than a linear ramp.
+  const pullAmtRef = useRef(0)
+  const pullAmtVelRef = useRef(0)
+  const [pullAmt, setPullAmt] = useState(0)
+
+  // ---- Springy travel: glide travel toward the interaction target ----
   // While the user is actively dragging we bypass the easing entirely so the
-  // fan tracks the cursor 1:1 with zero lag (跟手); the glide only re-engages
-  // after release to settle the momentum smoothly.
+  // fan tracks the cursor 1:1 with zero lag (跟手). Between interactions the
+  // travel is a damped spring chasing `target`: it accelerates toward the new
+  // target, may overshoot once, then settles — giving scroll / release nudges
+  // a physical curve, inertia and a gentle stop. Drag velocity is tracked so a
+  // fast flick can be handed off to the spring on release.
   const draggingRef = useRef(false)
+  const travelVelRef = useRef(0) // px/frame along the fan
   useEffect(() => {
     if (reduced || !total) return
     let raf = 0
     const tick = () => {
+      // Recompute the target each frame: the page-scroll base (progress over
+      // the pinned track) plus any free offset the user has dragged. This is
+      // how scrolling the page carries the list forward while a drag rides on
+      // top. `reduced`/inactive fall through below.
+      scrollBaseRef.current = (reduced ? 0 : progressRef.current) * SCROLL_RANGE
+      targetRef.current = scrollBaseRef.current + dragOffsetRef.current
       if (draggingRef.current) {
-        // Direct follow: no easing, no lag.
+        // Direct follow: no easing, no lag, position locked to the cursor.
         travelRef.current = targetRef.current
         setPos(travelRef.current)
       } else {
         const current = travelRef.current
-        const next = current + (targetRef.current - current) * EASE
-        if (Math.abs(next - current) < 0.01) {
-          travelRef.current = targetRef.current
-        } else {
-          travelRef.current = next
+        const target = targetRef.current
+        // Critically-damped spring: accelerate toward the target, then clamp so
+        // it can never slide past and wobble back — the fan approaches in one
+        // smooth, horizontal pass instead of jello-ing either way.
+        travelVelRef.current =
+          travelVelRef.current * SPRING_DAMPING +
+          (target - current) * SPRING_STIFFNESS
+        let next = current + travelVelRef.current
+        let overshot = false
+        if ((target - current) * (next - target) > 0) {
+          next = target // clamp on first arrival — never pass the target
+          overshot = true
+        }
+        travelRef.current = next
+        // On arrival (clamped or essentially there), kill residual velocity so
+        // the fan stays put instead of bounding off the target repeatedly.
+        if (overshot || (Math.abs(target - next) < 0.001 && Math.abs(travelVelRef.current) < 0.001)) {
+          travelRef.current = target
+          travelVelRef.current = 0
         }
         setPos(travelRef.current)
+      }
+      // Hover lift: the hovered card (and neighbours) rise and fall with a smooth,
+// monotonic exponential — accelerating at first, then easing into place with
+// zero overshoot. No vertical jello; the lively inertia cue is the horizontal
+// tilt from velocity.
+      {
+        const targetAmt = hoveredRelRef.current !== null ? 1 : 0
+        const a = hoverAmtRef.current
+        if (Math.abs(targetAmt - a) < 0.0005) {
+          hoverAmtRef.current = targetAmt
+        } else {
+          hoverAmtRef.current = a + (targetAmt - a) * HOVER_LIFT_RATE
+        }
+        setHoverAmt(hoverAmtRef.current)
+      }
+      // Pull-out spring: chase 1 while a card is being pulled out, else 0.
+      {
+        const pulling = pullingRelRef.current !== null
+        const tA = pulling ? 1 : 0
+        const a = pullAmtRef.current
+        const nv =
+          pullAmtVelRef.current * SPRING_DAMPING +
+          (tA - a) * SPRING_STIFFNESS
+        pullAmtVelRef.current = nv
+        let na = a + nv
+        let overshot = false
+        if ((tA - a) * (na - tA) > 0) {
+          na = tA // no overshoot
+          overshot = true
+        }
+        if (overshot || (Math.abs(tA - na) < 0.0001 && Math.abs(nv) < 0.001)) {
+          pullAmtRef.current = tA
+          pullAmtVelRef.current = 0
+        } else {
+          pullAmtRef.current = na
+        }
+        setPullAmt(pullAmtRef.current)
+      }
+      // Inertia tilt: chase the velocity-derived target, clamped, with its own
+      // gentle spring. Velocity from the current glide (or the live drag).
+      {
+        const vel = draggingRef.current ? dragVelRef.current : travelVelRef.current
+        const target = Math.max(-TILT_MAX, Math.min(TILT_MAX, vel * TILT_FACTOR))
+        const a = tiltRef.current
+        const nv =
+          tiltVelRef.current * TILT_SPRING_DAMPING +
+          (target - a) * TILT_SPRING_STIFFNESS
+        tiltVelRef.current = nv
+        const na = a + nv
+        if (Math.abs(target - na) < 0.005 && Math.abs(nv) < 0.005) {
+          tiltRef.current = target
+        } else {
+          tiltRef.current = na
+        }
+        setTilt(tiltRef.current)
       }
       raf = requestAnimationFrame(tick)
     }
@@ -179,31 +324,30 @@ export function ProjectWebglGallery({
     return () => cancelAnimationFrame(raf)
   }, [reduced, total])
 
-  // ---- Gentle horizontal drift from scroll (wheel over the gallery) ----
-  // Mouse-wheel/scroll nudges the fan sideways by a small amount. While the
-  // cursor hovers a card we skip it so the selection never jumps around.
-  useEffect(() => {
-    const rail = railRef.current
-    if (!rail) return
-    const onWheel = (event: WheelEvent) => {
-      if (hoveringRef.current || dragRef.current) return
-      targetRef.current += event.deltaY * WHEEL_SENS
-    }
-    rail.addEventListener('wheel', onWheel, { passive: true })
-    return () => rail.removeEventListener('wheel', onWheel)
-  }, [])
-
-  // ---- 1:1 drag with a locked pivot ----
+  // 1:1 drag with a locked pivot. Page scroll (the sticky track) drives the
+  // fan forward; a drag adds a free offset on top, pivoting from where the
+  // user grabs so content follows the cursor exactly and can reverse.
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return
     event.currentTarget.setPointerCapture(event.pointerId)
+    // Which card is being grabbed (used by the drag-shear effect). The card in
+    // front under the pointer, if any.
+    const grab = findCardAtPoint(event.clientX, event.clientY)
+    const now = performance.now()
     // Lock the pivot: remember where the grab started and the travel then, so
     // the cards track the cursor exactly from this point (and can reverse).
     dragRef.current = {
       startX: event.clientX,
-      startTravel: targetRef.current,
+      startOffset: dragOffsetRef.current,
       moved: false,
+      grabRel: grab ? grab.rel : null,
+      // Velocity sampling for momentum / shear hand-off.
+      lastX: event.clientX,
+      lastT: now,
+      vel: 0,
     }
+    dragGrabRelRef.current = grab ? grab.rel : null
+    dragVelRef.current = 0
   }
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -221,32 +365,50 @@ export function ProjectWebglGallery({
     }
     if (!drag.moved) return // not yet a drag; ignore jitter before the threshold
     // Subtracting: dragging the content with the cursor is a negative travel
-    // delta (travel increases → cards move left), so we push in the same
-    // direction as the cursor. Setting the target directly (not +=) keeps the
-    // grab pivot locked — no drift accumulates on top of the drag.
-    targetRef.current = drag.startTravel - dx
+    // delta (travel increases → cards move left). The offset pivots from where
+    // the grab began so content tracks the cursor exactly (and can reverse).
+    dragOffsetRef.current = drag.startOffset - dx
+    // Sample horizontal velocity (travel px/frame) to drive the plane-flex lean.
+    const nowT = performance.now()
+    const dt = nowT - drag.lastT
+    if (dt > 0) {
+      const v = ((event.clientX - drag.lastX) / dt) * 16 // normalize to ~60fps frames
+      drag.vel =
+        v * PULL_VEL_SMOOTH + drag.vel * (1 - PULL_VEL_SMOOTH) // low-pass
+      drag.lastX = event.clientX
+      drag.lastT = nowT
+      dragVelRef.current = drag.vel
+    }
   }
 
   const handlePointerEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const wasDrag = dragRef.current?.moved ?? false
+    const drag = dragRef.current
+    const wasDrag = drag?.moved ?? false
     const endX = event.clientX
     const endY = event.clientY
     draggingRef.current = false
-    if (dragRef.current) {
+    if (drag) {
       // Release the pivot capture only if we took it.
       try {
         event.currentTarget.releasePointerCapture?.(event.pointerId)
       } catch {
         /* pointer may already be released */
       }
+      // No positional momentum hand-off: on release the strip holds exactly
+      // where it was let go, so it never glides then springs back (recoil). Any
+      // lingering velocity is discarded — the plane-flex tilt already conveyed
+      // the acceleration, so a positional shove is unnecessary and would read
+      // as the whole list bouncing.
+      travelVelRef.current = 0
     }
     dragRef.current = null
-    targetRef.current = travelRef.current
+    dragGrabRelRef.current = null
+    dragVelRef.current = 0
     // A press that never became a drag is a tap/click — open the topmost card
     // under the release point (same occlusion-aware resolution as hover).
     if (!wasDrag) {
       const hit = findCardAtPoint(endX, endY)
-      if (hit) openProject(hit.item, hit.rel)
+      if (hit) openProject(hit.item)
     }
   }
 
@@ -329,27 +491,29 @@ export function ProjectWebglGallery({
   // The slot being "pulled out" toward the viewer. While set we keep its card
   // growing and rising out of the fan for a beat, then swap in the modal.
   const [pullingRel, setPullingRel] = useState<number | null>(null)
-  const pullTimer = useRef<number | null>(null)
+  const pullingRelRef = useRef<number | null>(null)
+  const setPulling = (rel: number | null) => {
+    pullingRelRef.current = rel
+    setPullingRel(rel)
+  }
 
-  const openProject = (item: ProjectWebglItem, rel: number) => {
+  const openProject = (item: ProjectWebglItem) => {
     if (dragRef.current?.moved) return
     hoveredRelRef.current = null
     setHoveredRel(null)
-    setPullingRel(rel)
-    // Give the pull-out animation time to play before the modal replaces it,
-    // so the card visibly separates from the fan and comes forward.
-    if (pullTimer.current) window.clearTimeout(pullTimer.current)
-    pullTimer.current = window.setTimeout(() => {
-      setPullingRel(null)
-      setSelected(item)
-    }, 220)
+    pullAmtVelRef.current = 0
+    pullAmtRef.current = 0
+    setPullAmt(0)
+    // Open the modal directly: the preview image is the modal content, rising
+    // in with one clean motion and the intro card popping over it — no
+    // pull-then-handoff double stage.
+    setSelected(item)
+    setPulling(null)
   }
 
   const closeProject = useCallback(() => {
-    if (pullTimer.current) window.clearTimeout(pullTimer.current)
-    pullTimer.current = null
-    setPullingRel(null)
     setSelected(null)
+    setPulling(null)
   }, [])
 
   useEffect(() => () => closeProject(), [closeProject])
@@ -366,6 +530,7 @@ export function ProjectWebglGallery({
 
   return (
     <section
+      ref={sectionRef}
       className={cn('mark-lab-webgl', className)}
       aria-label={title}
     >
@@ -398,7 +563,6 @@ export function ProjectWebglGallery({
             // follows the recycle anchor — the "high" card travels with drag,
             // and because every card exposes a right edge, any card in the
             // band is hover-selectable, not just the middle.
-            const x = (rel - phase) * STEP
             const dist = rel - phase // signed: ↗ = further right = further back
             // depth = 0 at the left edge of the screen, growing rightward.
             const depth = Math.max(0, dist + (halfSpan - 1))
@@ -411,6 +575,35 @@ export function ProjectWebglGallery({
             const zDepth = -depth * DEPTH_STEP
             const zIndex = Math.round(2000 - depth * 90)
             const isCenter = depth < 0.5
+
+            // ---- Drag plane-flex ----
+            // Dragging fast does not shove the strip (no recoil); instead the
+            // plane of cards visibly bends: the grabbed card and the cards
+            // trailing behind it (larger `rel`, receding to the right) lean
+            // slightly in the drag direction — a per-card rotateY that falls
+            // off with distance from the grab. It reads as the surface of the
+            // fan deforming under acceleration, and recovers flat as velocity
+            // bites. No positional offset is produced, so nothing bounces on
+            // release.
+            let dragTilt = 0
+            {
+              const grabRel = dragGrabRelRef.current
+              const dVel = dragVelRef.current
+              if (grabRel !== null && draggingRef.current && Math.abs(dVel) > 0.01) {
+                const delta = rel - grabRel
+                // Lean the grabbed card and everything behind it (delta ≥ 0);
+                // cards ahead stay flat so the flex looks like a bend, not a twist.
+                if (delta >= 0) {
+                  const falloff = Math.exp(-(delta * delta) * DRAG_TILT_RANGE)
+                  const lean = DRAG_TILT_FACTOR * dVel * falloff
+                  dragTilt = Math.max(-DRAG_TILT_MAX, Math.min(DRAG_TILT_MAX, lean))
+                }
+              }
+            }
+
+            const dragAngle = tilt + dragTilt
+
+            const x = (rel - phase) * STEP
 
             // Hover selection — simple and cheap. Only the hovered card and its
             // two immediate neighbours change height (peak on the hovered card,
@@ -427,21 +620,40 @@ export function ProjectWebglGallery({
             if (anyHovered) {
               // Binary opacity: all-or-nothing.
               opacity = isHovered ? 1 : HOVER_DIM
-              // Height only changes within ±1 slot of the hovered card.
-              if (hoverDist === 0) liftY = -HOVER_LIFT
-              else if (hoverDist === 1) liftY = -HOVER_NEIGHBOUR_LIFT
+              // Height only changes within ±1 slot of the hovered card. The
+              // magnitude is scaled by the springy `hoverAmt` so the lift rises
+              // and falls with a curve (and a touch of overshoot) instead of
+              // teleporting between heights.
+              if (hoverDist === 0) liftY = -HOVER_LIFT * hoverAmt
+              else if (hoverDist === 1) liftY = -HOVER_NEIGHBOUR_LIFT * hoverAmt
             }
 
-            const transform = `translate3d(${x}px, ${liftY}px, ${zDepth}px) skewY(29.5deg) scale3d(${k}, ${k}, 1)`
+            const transform = `translate3d(${x}px, ${liftY}px, ${zDepth}px) skewY(29.5deg) rotateY(${dragAngle}deg) scale3d(${k}, ${k}, 1)`
 
             const isPulled = pullingRel === rel
             // While a card is being pulled out, give it real lift: nudge it
             // toward the viewer (way more depth), drop the skew, scale it up,
             // and raise it high above the fan so it reads as detaching. Its z
             // peaks above everything (the mask yields to the outgoing card).
+            // `pullAmt` springs from 0→1 (with overshoot) so the card's rise /
+            // scale / skew follow a curved, inertial ease instead of a linear
+            // tween — the "pick it up and lift it" solidity the user asked for.
+            const p = Math.min(1, Math.max(0, pullAmt))
+            const liftEase = p < 1 ? 1 - Math.pow(1 - p, 3) : 1
+            const pullTargetScale = 1.5
+            // As the card is pulled out it both rises AND recenters horizontally
+            // (slides from its slot x toward centre), staying dead-straight the
+            // whole way — NO skew / rotateY, so there is no "inversion" of the
+            // strip while the card detaches. By the time the modal takes over it
+            // sits centred, enlarged at the exact spot the preview will appear,
+            // so the extraction and the open read as ONE continuous motion —
+            // no card-flip-then-pop-from-centre jump.
+            const px = x * (1 - liftEase)
+            const py = -HOVER_LIFT * 2.4
+            const pz = 520
             const pullTransform =
-              `translate3d(${x}px, -${HOVER_LIFT * 2.4}px, 520px) ` +
-              `skewY(0deg) scale3d(1.45, 1.45, 1)`
+              `translate3d(${px}px, ${py * liftEase}px, ${pz * liftEase}px) ` +
+              `scale3d(${1 + (pullTargetScale - 1) * liftEase}, ${1 + (pullTargetScale - 1) * liftEase}, 1)`
 
             return (
               <button
@@ -478,7 +690,7 @@ export function ProjectWebglGallery({
                   hoveredRelRef.current = null
                   setHoveredRel(null)
                 }}
-                onClick={() => openProject(item, rel)}
+                onClick={() => openProject(item)}
               >
                 <span className="mark-lab-webgl__card-face">
                   {item.preview ? (
@@ -517,12 +729,6 @@ export function ProjectWebglGallery({
               </button>
             )
           })}
-        </div>
-
-        <div className="mark-lab-webgl__hint" aria-hidden="true">
-          <span>{hintScroll ?? 'Scroll'}</span>
-          <span>{hintDrag ?? 'Drag'}</span>
-          <span>{hintClick ?? 'Click a project'}</span>
         </div>
       </div>
 
