@@ -1722,23 +1722,34 @@ img {
 .mark-lab-webgl {
   position: relative;
   width: 100vw;
-  height: 100svh;
-  min-height: 42rem;
+  height: 280vh;
   margin-top: clamp(6rem, 12vw, 12rem);
   margin-left: calc(50% - 50vw);
-  overflow: hidden;
   color: var(--text-primary);
   background: var(--surface-0);
   border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
+}
+
+/* Sticky immersive stage pinned while the section scrolls, driving the
+   continuous horizontal sweep through --mw-rail-offset (set in React). */
+.mark-lab-webgl__stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 42rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  isolation: isolate;
 }
 
 .mark-lab-webgl__header {
   position: absolute;
-  top: 2rem;
+  top: clamp(4.5rem, 9vh, 6.5rem);
   left: 50%;
   z-index: 4;
-  width: min(100% - 2rem, 72rem);
+  width: min(100% - 3rem, 72rem);
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -1746,78 +1757,76 @@ img {
 .mark-lab-webgl__header h2 {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(2.8rem, 9vw, 8rem);
+  font-size: clamp(3rem, 9vw, 8rem);
   font-weight: 800;
   line-height: 0.9;
   letter-spacing: -0.02em !important;
   color: var(--text-primary);
 }
 
+.mark-lab-webgl__header h2::after {
+  content: '·';
+  color: var(--brand-400);
+}
+
 .mark-lab-webgl__header p {
-  max-width: 22rem;
+  max-width: 24rem;
   margin: 1rem 0 0;
   color: var(--text-secondary);
   font-size: 0.95rem;
 }
 
-.mark-lab-webgl__stage {
-  position: absolute;
-  inset: 0;
-  --mw-card-step: clamp(8.25rem, 17vw, 15rem);
-  perspective: 1400px;
-  perspective-origin: 50% 48%;
+/* ----- Horizontal infinite rail ----- */
+.mark-lab-webgl__rail {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  width: max-content;
+  padding-block: 2rem;
+  transform: translate3d(var(--mw-rail-offset, 0), 0, 0);
+  will-change: transform;
   touch-action: pan-y;
-  isolation: isolate;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.mark-lab-webgl__cards {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  transform-style: preserve-3d;
-  transform: translate3d(var(--mw-pointer-x), var(--mw-pointer-y), 0);
-  transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+.mark-lab-webgl__rail:active {
+  cursor: grabbing;
 }
 
 .mark-lab-webgl__card {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  position: relative;
   display: block;
-  width: clamp(13rem, 27vw, 24rem);
+  flex: none;
+  width: clamp(13rem, 24vw, 22rem);
   aspect-ratio: 1.6;
   padding: 0;
   border: 0;
-  border-radius: 0.7rem;
+  border-radius: 0.85rem;
   background: transparent;
   box-shadow: none;
   cursor: pointer;
-  pointer-events: auto;
-  transform: translate3d(
-      calc(-50% + var(--mw-card-offset)),
-      -50%,
-      var(--mw-card-depth)
-    )
-    skewY(29.5deg);
-  transform-style: preserve-3d;
-  transition:
-    transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    filter 500ms ease,
-    opacity 500ms ease;
-  filter: saturate(0.78) brightness(0.74);
-  opacity: 0.7;
   outline: none;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform: scale(1);
 }
 
 .mark-lab-webgl__card:hover,
-.mark-lab-webgl__card:focus-visible,
-.mark-lab-webgl__card.is-active {
-  filter: saturate(1) brightness(1);
-  opacity: 1;
+.mark-lab-webgl__card:focus-visible {
+  transform: scale(1.045) translateY(-4px);
 }
 
-.mark-lab-webgl__card:focus-visible {
-  box-shadow: 0 0 0 3px var(--brand-400);
+.mark-lab-webgl__card:active {
+  transform: scale(0.99);
+}
+
+.mark-lab-webgl__card:focus-visible .mark-lab-webgl__card-face {
+  box-shadow:
+    0 0 0 3px var(--brand-400),
+    0 1.5rem 3rem -1.5rem color-mix(in srgb, #020617 62%, transparent);
 }
 
 .mark-lab-webgl__card-face {
@@ -1826,11 +1835,11 @@ img {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--text-primary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-primary) 12%, transparent);
   border-radius: inherit;
   background: var(--surface-card);
   box-shadow:
-    0 2rem 4rem -2rem color-mix(in srgb, #020617 62%, transparent),
+    0 1.5rem 3.5rem -1.5rem color-mix(in srgb, #020617 55%, transparent),
     0 0 0 1px color-mix(in srgb, var(--surface-0) 70%, transparent);
   transform: translateZ(0);
 }
@@ -1857,25 +1866,23 @@ img {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent 45%, rgb(2 6 23 / 0.72));
+  background: linear-gradient(180deg, transparent 48%, rgb(2 6 23 / 0.7));
 }
 
 .mark-lab-webgl__card-name {
   position: absolute;
-  right: 0.85rem;
-  bottom: 0.85rem;
-  left: 0.85rem;
+  right: 0.9rem;
+  bottom: 0.9rem;
   z-index: 2;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  width: fit-content;
-  max-width: calc(100% - 1.7rem);
-  padding: 0.42rem 0.8rem;
-  border: 1px solid color-mix(in srgb, #fff 24%, transparent);
-  border-radius: 0.5rem;
+  max-width: calc(100% - 1.8rem);
+  padding: 0.45rem 0.85rem;
+  border: 1px solid color-mix(in srgb, #fff 26%, transparent);
+  border-radius: 0.55rem;
   color: white;
-  font-size: clamp(0.72rem, 1.1vw, 0.9rem);
+  font-size: clamp(0.74rem, 1.1vw, 0.92rem);
   font-weight: 700;
   line-height: 1;
   white-space: nowrap;
@@ -1884,11 +1891,6 @@ img {
   background: rgb(2 6 23 / 0.62);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  opacity: 0;
-  transform: translateY(6px);
-  transition:
-    opacity 220ms ease,
-    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .mark-lab-webgl__card-name::before {
@@ -1901,43 +1903,143 @@ img {
   box-shadow: 0 0 0.6rem var(--brand-400);
 }
 
-.mark-lab-webgl__card:hover .mark-lab-webgl__card-name,
-.mark-lab-webgl__card:focus-visible .mark-lab-webgl__card-name,
-.mark-lab-webgl__card.is-active .mark-lab-webgl__card-name {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.mark-lab-webgl__panel {
+.mark-lab-webgl__hint {
   position: absolute;
-  right: 50%;
-  bottom: 2rem;
-  z-index: 4;
+  bottom: clamp(1.25rem, 4vh, 2.5rem);
+  left: 50%;
+  z-index: 3;
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 2rem;
-  width: min(100% - 2rem, 72rem);
-  transform: translateX(50%);
-}
-
-.mark-lab-webgl__panel > div:first-child {
-  min-width: 0;
-  max-width: 38rem;
-}
-
-.mark-lab-webgl__panel h3 {
-  margin: 0;
-  font-size: clamp(1.5rem, 3vw, 2.4rem);
-  line-height: 1;
-}
-
-.mark-lab-webgl__panel > div:first-child > p:last-child {
-  max-width: 38rem;
-  margin: 0.65rem 0 0;
+  align-items: center;
+  gap: 1.25rem;
+  transform: translateX(-50%);
   color: var(--text-secondary);
-  font-size: 0.92rem;
-  line-height: 1.55;
+  font-family: var(--font-code);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+}
+
+.mark-lab-webgl__hint span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mark-lab-webgl__hint span + span::before {
+  content: '·';
+  opacity: 0.5;
+}
+
+/* ----- Project detail modal ----- */
+.mark-lab-webgl__modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  animation: mw-modal-fade 260ms ease both;
+}
+
+.mark-lab-webgl__modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, #020617 55%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+@keyframes mw-modal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.mark-lab-webgl__modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 1px solid color-mix(in srgb, #fff 22%, transparent);
+  border-radius: 50%;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: white;
+  background: rgb(2 6 23 / 0.5);
+  cursor: pointer;
+  transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.mark-lab-webgl__modal-close:hover {
+  background: rgb(2 6 23 / 0.75);
+  transform: rotate(90deg);
+}
+
+.mark-lab-webgl__modal-dialog {
+  position: relative;
+  width: min(52rem, 100%);
+  max-height: 88vh;
+  overflow: auto;
+  outline: none;
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  box-shadow: 0 3rem 6rem -2rem color-mix(in srgb, #020617 70%, transparent);
+  animation: mw-modal-rise 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes mw-modal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.mark-lab-webgl__modal-preview {
+  width: 100%;
+  aspect-ratio: 16 / 8.5;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--text-primary) 6%, transparent);
+}
+
+.mark-lab-webgl__modal-preview picture,
+.mark-lab-webgl__modal-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mark-lab-webgl__modal-preview img {
+  object-fit: cover;
+}
+
+.mark-lab-webgl__modal-body {
+  padding: 1.5rem 1.75rem 1.75rem;
+}
+
+.mark-lab-webgl__modal-body h3 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+  line-height: 1.1;
+}
+
+.mark-lab-webgl__modal-body > p {
+  max-width: 44rem;
+  margin: 0.8rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .mark-lab-webgl__actions {
@@ -1945,6 +2047,7 @@ img {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.55rem;
+  margin-top: 1.5rem;
 }
 
 .mark-lab-webgl__actions a {
@@ -1952,9 +2055,9 @@ img {
   align-items: center;
   gap: 0.45rem;
   min-height: 2.5rem;
-  padding: 0.6rem 0.8rem;
+  padding: 0.6rem 0.85rem;
   border: 1px solid var(--border-color);
-  border-radius: 0.45rem;
+  border-radius: 0.5rem;
   color: var(--text-primary);
   font-size: 0.8rem;
   font-weight: 650;
@@ -1982,48 +2085,54 @@ img {
   height: 1rem;
 }
 
-@media (max-width: 640px) {
-  .mark-lab-webgl {
-    height: max(100svh, 42rem);
-    min-height: 42rem;
+@media (max-width: 820px) {
+  .mark-lab-webgl__header {
+    top: 4.5rem;
   }
 
-  .mark-lab-webgl__header {
-    top: 2rem;
+  .mark-lab-webgl__header p {
+    max-width: 19rem;
+  }
+
+  .mark-lab-webgl__hint {
+    gap: 0.9rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .mark-lab-webgl {
+    height: 260vh;
+  }
+
+  .mark-lab-webgl__stage {
+    min-height: 40rem;
   }
 
   .mark-lab-webgl__header h2 {
     font-size: clamp(2.8rem, 12vw, 4rem);
   }
 
-  .mark-lab-webgl__header p {
-    max-width: 18rem;
-  }
-
-  .mark-lab-webgl__stage {
-    --mw-card-step: clamp(6.25rem, 29vw, 8rem);
-  }
-
   .mark-lab-webgl__card {
-    width: min(16rem, 70vw);
+    width: min(15rem, 68vw);
   }
 
-  .mark-lab-webgl__panel {
-    display: block;
-    bottom: 1.5rem;
+  .mark-lab-webgl__modal-body {
+    padding: 1.25rem 1.25rem 1.5rem;
   }
 
   .mark-lab-webgl__actions {
     justify-content: flex-start;
-    margin-top: 1.2rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .mark-lab-webgl__card,
   .mark-lab-webgl__card-name,
-  .mark-lab-webgl__actions a {
+  .mark-lab-webgl__actions a,
+  .mark-lab-webgl__modal-dialog,
+  .mark-lab-webgl__modal {
     transition: none !important;
+    animation: none !important;
   }
 }
 
@@ -2035,75 +2144,6 @@ img {
 
 .mark-lab-github {
   color: var(--text-primary);
-}
-
-.mark-lab-github__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
-}
-
-/* Compact header: just the username + link, no big title/subtitle. */
-.mark-lab-github__header--bare {
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.mark-lab-github__header--bare .mark-lab-github__eyebrow {
-  margin: 0;
-}
-
-.mark-lab-github__eyebrow {
-  margin: 0 0 0.4rem;
-  color: var(--brand-500);
-  font-family: var(--font-code);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-}
-
-.mark-lab-github__header h2 {
-  margin: 0;
-  font-size: clamp(2rem, 4.5vw, 3.4rem);
-  line-height: 1;
-}
-
-.mark-lab-github__desc {
-  max-width: 36rem;
-  margin: 0.9rem 0 0;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
-
-.mark-lab-github__github-link {
-  display: inline-flex;
-  align-items: center;
-  flex: none;
-  gap: 0.4rem;
-  margin-top: 0.6rem;
-  padding: 0.6rem 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  color: var(--text-primary);
-  font-size: 0.82rem;
-  font-weight: 650;
-  text-decoration: none;
-  transition:
-    background-color 180ms ease,
-    border-color 180ms ease,
-    transform 180ms ease;
-}
-
-.mark-lab-github__github-link:hover,
-.mark-lab-github__github-link:focus-visible {
-  border-color: var(--brand-400);
-  background: color-mix(in srgb, var(--brand-400) 10%, transparent);
-  transform: translateY(-2px);
 }
 
 /* --- Apple-style pinned scroll track -------------------------------------- */
@@ -2125,7 +2165,7 @@ img {
 
 .mark-lab-github__layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
   gap: clamp(1.5rem, 4vw, 3.5rem);
   align-items: center;
   width: 100%;
@@ -2365,20 +2405,11 @@ img {
     grid-row: auto;
     order: 1;
   }
-  .mark-lab-github__header {
-    flex-direction: column;
-  }
 }
 
 @media (max-width: 480px) {
   .gh-stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mark-lab-github__github-link {
-    transition: none !important;
   }
 }
 

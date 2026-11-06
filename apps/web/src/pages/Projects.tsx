@@ -228,6 +228,9 @@ export function Projects() {
         title={t('projects.showcaseTitle')}
         description=""
         openLabel={t('projects.open')}
+        hintScroll={t('projects.showcaseHintScroll')}
+        hintDrag={t('projects.showcaseHintDrag')}
+        hintClick={t('projects.showcaseHintClick')}
       />
     </div>
   )

@@ -28,7 +28,7 @@ export interface FocusCityProps {
   autoMorph?: boolean
   defaultView?: 'auto' | 'city' | 'heatmap'
   /** Visible range in weeks. Auto-picked from the container width when omitted. */
-  defaultWeeks?: 4 | 12 | 26 | 52
+  defaultWeeks?: 12 | 26
   theme?: 'auto' | 'light' | 'dark'
   className?: string
   style?: React.CSSProperties
@@ -65,23 +65,25 @@ const dateLabel = (date: string) =>
     day: 'numeric',
     timeZone: 'UTC',
   }).format(parse(date))
-const level = (count: number) =>
-  count === 0
-    ? 0
-    : count < 3
-      ? 1
-      : count < 6
-        ? 2
-        : count < 12
-          ? 3
-          : 4
 /**
- * Normalized intensity in [0, 1] relative to the largest visible count.
- * Used so the tallest building in the current window is the max contribution
- * day — i.e. height is normalized to the visible range, not a fixed cap.
+ * Normalized intensity in [0, 1] relative to the largest visible count. The
+ * tallest building in the current window is always the max contribution day —
+ * height is normalized to the visible range, not a fixed cap.
  */
 const normalized = (count: number, maxCount: number) =>
   maxCount > 0 ? Math.max(0, Math.min(1, count / maxCount)) : 0
+/**
+ * Range-relative intensity bucket 0..4 based on the largest visible count, so
+ * the color scale adapts to however sparse or dense the current window is.
+ */
+const rangeLevel = (count: number, maxCount: number): 0 | 1 | 2 | 3 | 4 => {
+  if (count === 0) return 0
+  const n = normalized(count, maxCount)
+  if (n < 0.18) return 1
+  if (n < 0.4) return 2
+  if (n < 0.7) return 3
+  return 4
+}
 const points = (vertices: Point[]) =>
   vertices.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(' ')
 const lerpPoints = (
@@ -316,7 +318,7 @@ export function FocusCity({
   const { morph, setManual } = useMorphProgress(progress, autoMorph, defaultView)
   const view: 'city' | 'heatmap' = morph >= 0.5 ? 'city' : 'heatmap'
   const morphProgress = morph
-  const [weeks, setWeeks] = React.useState<4 | 12 | 26 | 52>(defaultWeeks ?? 12)
+  const [weeks, setWeeks] = React.useState<12 | 26>(defaultWeeks ?? 26)
   const [manualRange, setManualRange] = React.useState(false)
   const lastDate =
     endDate ?? validDays.map((day) => day.date).sort().at(-1) ?? today
@@ -346,17 +348,9 @@ export function FocusCity({
       const nextWidth = Math.max(240, element.getBoundingClientRect().width)
       setWidth(nextWidth)
       if (defaultWeeks === undefined && !manualRange) {
-        // Auto range from the container width: wide → a full year, medium →
-        // half a year, narrow → ~12 weeks. Keeps the cells a readable size.
-        setWeeks(
-          nextWidth >= 1120
-            ? 52
-            : nextWidth >= 720
-              ? 26
-              : nextWidth >= 480
-                ? 12
-                : 12
-        )
+        // Auto range from the container width: wide → half a year, narrower
+        // → ~3 months so each cell stays a readable size.
+        setWeeks(nextWidth >= 840 ? 26 : 12)
       }
     }
     measure()
@@ -387,7 +381,9 @@ export function FocusCity({
     streak = block.count > 0 ? streak + 1 : 0
     bestStreak = Math.max(streak, bestStreak)
   }
-  const height = width < 480 ? 240 : 264
+  // The plot grows with the available width so tiles get larger and clearer on
+  // bigger screens instead of being squeezed into a fixed box.
+  const height = width < 480 ? 260 : Math.round((width / 640) * 320)
   const maxCount = Math.max(1, ...available.map((block) => block.count))
   const layout = React.useMemo(
     () => geometry(blocks, width, height, yaw, maxCount),
@@ -427,30 +423,30 @@ export function FocusCity({
     >
       <style>{styles}</style>
       <header className="fc-header">
-        <div className="fc-heading">
-          <span className="fc-emblem">
-            <Timer size={17} strokeWidth={1.7} aria-hidden="true" />
-          </span>
-          <div>
-            <h2>{title}</h2>
-            <p>{description}</p>
+        {title ? (
+          <div className="fc-heading">
+            <span className="fc-emblem">
+              <Timer size={17} strokeWidth={1.7} aria-hidden="true" />
+            </span>
+            <div>
+              <h2>{title}</h2>
+              <p>{description}</p>
+            </div>
           </div>
-        </div>
+        ) : null}
         <div className="fc-tools">
           <label className="fc-range">
             <span className="fc-sr-only">Visible period</span>
             <select
               value={weeks}
               onChange={(event) => {
-                setWeeks(Number(event.target.value) as 4 | 12 | 26 | 52)
+                setWeeks(Number(event.target.value) as 12 | 26)
                 setManualRange(true)
                 setHover(null)
               }}
             >
-              <option value={4}>4 weeks</option>
-              <option value={12}>12 weeks</option>
+              <option value={12}>3 months</option>
               <option value={26}>Half year</option>
-              <option value={52}>1 year</option>
             </select>
             <ChevronDown size={12} aria-hidden="true" />
           </label>
@@ -614,7 +610,7 @@ export function FocusCity({
               <g
                 key={block.day.date}
                 data-date={block.day.date}
-                data-level={level(block.count)}
+                data-level={rangeLevel(block.count, maxCount)}
                 className={`fc-block cursor-interaction ${
                   isSelected ? 'fc-selected' : ''
                 } ${isHovered ? 'fc-hovered' : ''}`}
@@ -797,7 +793,7 @@ export function FocusCity({
 export default FocusCity
 
 const styles = `
-.focus-city{--fc-surface:light-dark(#fff,#111);--fc-ink:light-dark(#171717,#ededed);--fc-muted:light-dark(#686868,#aaa);--fc-border:light-dark(#e8e8e8,#2a2a2a);--fc-hover:light-dark(#f5f5f5,#242424);--fc-subtle:light-dark(#fafafa,#181818);--fc-selected:light-dark(#171717,#ededed);--fc-on-selected:light-dark(#fff,#151515);--fc-ground:light-dark(#f3f5f4,#191e1b);--fc-empty:light-dark(#e5eae7,#26332c);--fc-green-1:light-dark(#d0ead9,#2e6748);--fc-green-2:light-dark(#99d4b0,#408d60);--fc-green-3:light-dark(#58b781,#5cbe83);--fc-green-4:light-dark(#25935a,#88d4a5);--fc-shadow:light-dark(#00000008,#00000030);color:var(--fc-ink);background:var(--fc-surface);border:1px solid var(--fc-border);border-radius:14px;box-shadow:0 3px 16px var(--fc-shadow);width:100%;max-width:720px;margin-inline:auto;overflow:hidden;font-family:Inter,Geist,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;line-height:1.5;text-align:left;box-sizing:border-box;isolation:isolate}
+.focus-city{--fc-surface:light-dark(#fff,#111);--fc-ink:light-dark(#171717,#ededed);--fc-muted:light-dark(#5b6b78,#9fb0bd);--fc-border:light-dark(#e6ecf2,#26313c);--fc-hover:light-dark(#f4f8fb,#1d262f);--fc-subtle:light-dark(#fafdfe,#151c22);--fc-selected:light-dark(#17222b,#e4edf5);--fc-on-selected:light-dark(#fff,#14202a);--fc-ground:light-dark(#eef3f6,#18222a);--fc-empty:light-dark(#dfe9ef,#25323d);--fc-green-1:light-dark(#d3e8f4,#2b5b7d);--fc-green-2:light-dark(#a4d0ea,#39779f);--fc-green-3:light-dark(#6eb3dc,#4b97c2);--fc-green-4:light-dark(#3e94c7,#7cc4e8);--fc-shadow:light-dark(#00000008,#00000030);color:var(--fc-ink);background:var(--fc-surface);border:1px solid var(--fc-border);border-radius:14px;box-shadow:0 3px 16px var(--fc-shadow);width:100%;max-width:720px;margin-inline:auto;overflow:hidden;font-family:var(--font-body,'Inter',Geist,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif);font-size:13px;line-height:1.5;text-align:left;box-sizing:border-box;isolation:isolate}
 .focus-city[data-theme=light]{color-scheme:light}.focus-city[data-theme=dark]{color-scheme:dark}.dark .focus-city[data-theme=auto]{color-scheme:dark}
 .focus-city *,.focus-city *::before,.focus-city *::after{box-sizing:border-box}.focus-city button,.focus-city select,.focus-city input{font:inherit;color:inherit}.focus-city button{transition:background .16s ease,color .16s ease,transform .16s ease}.focus-city button:active:not(:disabled){transform:translateY(1px)}.focus-city button:disabled{opacity:.3;cursor:default}.focus-city svg:not(.fc-chart){flex:none}.fc-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .fc-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:23px 24px 0}.fc-heading{display:flex;gap:11px;align-items:center;min-width:0}.fc-emblem{width:34px;height:34px;border:1px solid var(--fc-border);border-radius:9px;display:grid;place-items:center;background:var(--fc-subtle);flex:none}.fc-heading h2{font-size:15px;font-weight:500;letter-spacing:-.3px;line-height:1.3;margin:0}.fc-heading p{font-size:12px;line-height:1.4;color:var(--fc-muted);margin:4px 0 0}.fc-tools{display:flex;align-items:center;gap:8px;flex:none}.fc-range{display:flex;position:relative;align-items:center}.fc-range select{appearance:none;background:var(--fc-surface);border:1px solid var(--fc-border);border-radius:7px;height:32px;padding:0 27px 0 10px;font-size:12px}.fc-range>svg{position:absolute;right:9px;pointer-events:none;color:var(--fc-muted)}.fc-switch{display:flex;padding:3px;background:var(--fc-subtle);border:1px solid var(--fc-border);border-radius:8px;gap:2px}.fc-switch button{display:flex;align-items:center;justify-content:center;gap:5px;border:0;background:transparent;border-radius:5px;height:25px;padding:0 8px;font-size:12px;color:var(--fc-muted)}.fc-switch button:hover{background:var(--fc-hover);color:var(--fc-ink)}.fc-switch button[aria-pressed=true]{background:var(--fc-selected);color:var(--fc-on-selected);box-shadow:0 1px 2px var(--fc-shadow)}.fc-switch button[aria-pressed=true]:hover{background:var(--fc-selected);color:var(--fc-on-selected)}

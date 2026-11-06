@@ -97,22 +97,6 @@ export function GithubShowcase({
       className={cn('mark-lab-github', className)}
       aria-label={strings.moreOnGithub}
     >
-      <header className="mark-lab-github__header mark-lab-github__header--bare">
-        <p className="mark-lab-github__eyebrow">
-          {data?.username ? `@${data.username}` : strings.moreOnGithub}
-        </p>
-        {data?.username ? (
-          <a
-            className="mark-lab-github__github-link"
-            href={`https://github.com/${data.username}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {strings.moreOnGithub}
-          </a>
-        ) : null}
-      </header>
-
       {/* Apple-style pinned scroll stage: the scene is sticky while the track
           scrolls, and the heatmap lifts from 2D to 3D as it reaches viewport
           center. The info column flows beside it, right → heatmap on the right. */}
