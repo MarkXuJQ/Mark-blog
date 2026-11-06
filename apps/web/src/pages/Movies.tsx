@@ -7,7 +7,7 @@ import { MovieStatsPanel } from '@/components/movies/MovieStatsPanel'
 import { MoviesToolbar } from '@/components/movies/MoviesToolbar'
 import { WatchActivityCalendar } from '@/components/movies/WatchActivityCalendar'
 import { Seo } from '@/app/seo/Seo'
-import { RevealText } from '@/components/ui/reveal-text'
+import { RevealText } from '@/components/movies/reveal-text'
 import { useMovieCatalog } from '@/hooks/movies/useMovieCatalog'
 import { useTmdbEnrichment } from '@/hooks/movies/useTmdbEnrichment'
 import {

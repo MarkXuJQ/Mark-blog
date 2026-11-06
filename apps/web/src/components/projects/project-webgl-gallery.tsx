@@ -9,7 +9,7 @@ import {
 } from 'react'
 import type { IconType } from 'react-icons'
 import { cn } from '@/lib/classNames'
-import { useSectionScrollProgress } from '@/hooks/useSectionScrollProgress'
+import { useSectionScrollProgress } from '@/hooks/projects/useSectionScrollProgress'
 
 export type ProjectWebglLink = {
   href: string
@@ -76,8 +76,15 @@ function themeColorFor(id: string): string {
 
 // Movement: the fan is driven chiefly by page scroll (the pinned track) with a
 // 1:1 drag on top. Both write to a shared `target` travel value that eases.
-const SCROLL_RANGE = 2600 // px of fan travel across the full sticky track
+// `SCROLL_RANGE` sets how far the fan travels across the full sticky track;
+// a smaller value makes the same page scroll advance the list more gently
+// (slower relative to scrolling) instead of whipping past.
+const SCROLL_RANGE = 1500 // px of fan travel across the full sticky track
 const DRAG_THRESHOLD = 4 // px before a pointer-down becomes a drag (vs click)
+// Touch: how much net movement (px) is still tolerated as a deliberate tap.
+// A vertical page scroll over the rail moves the pointer; requiring the release
+// to stay within this small radius keeps scrolling from accidentally selecting.
+const TOUCH_TAP_RADIUS = 10
 const HOVER_LIFT = 22 // px the hovered card is raised
 const HOVER_NEIGHBOUR_LIFT = 12 // px its immediate neighbours are raised
 const HOVER_DIM = 0.45 // fixed opacity for every non-selected card (binary)
@@ -183,6 +190,7 @@ export function ProjectWebglGallery({
   // to that grab point so content follows the cursor exactly (not inverted).
   const dragRef = useRef<{
     startX: number
+    startY: number
     startOffset: number
     moved: boolean
     grabRel: number | null
@@ -190,6 +198,11 @@ export function ProjectWebglGallery({
     lastT: number
     vel: number
   } | null>(null)
+
+  // Where a touch began, so a card's native `click` can tell a stationary tap
+  // from a vertical scroll that happened to start (and end) on a card. Guarding
+  // the card button's onClick independently from the rail's pointer handlers.
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
   // Mirrors of the live drag shear state for the per-frame render. Updated by
   // the pointer handlers; read every frame in the fan layout so a fast drag
@@ -330,6 +343,11 @@ export function ProjectWebglGallery({
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return
     event.currentTarget.setPointerCapture(event.pointerId)
+    if (event.pointerType === 'touch') {
+      touchStartRef.current = { x: event.clientX, y: event.clientY }
+    } else {
+      touchStartRef.current = null
+    }
     // Which card is being grabbed (used by the drag-shear effect). The card in
     // front under the pointer, if any.
     const grab = findCardAtPoint(event.clientX, event.clientY)
@@ -338,6 +356,7 @@ export function ProjectWebglGallery({
     // the cards track the cursor exactly from this point (and can reverse).
     dragRef.current = {
       startX: event.clientX,
+      startY: event.clientY,
       startOffset: dragOffsetRef.current,
       moved: false,
       grabRel: grab ? grab.rel : null,
@@ -405,11 +424,31 @@ export function ProjectWebglGallery({
     dragGrabRelRef.current = null
     dragVelRef.current = 0
     // A press that never became a drag is a tap/click — open the topmost card
-    // under the release point (same occlusion-aware resolution as hover).
-    if (!wasDrag) {
+    // under the release point (same occlusion-aware resolution as hover). On
+    // touch, tolerate only a near-vertical-free, short tap: a page scroll (a
+    // vertical swipe over the rail) or a wobble must never select a card, so we
+    // only open when the pointer barely moved from where it landed.
+    if (!wasDrag && isTapLike(event, drag)) {
       const hit = findCardAtPoint(endX, endY)
       if (hit) openProject(hit.item)
     }
+  }
+
+  // Distinguish a deliberate tap from a scroll/wobble. On pointer devices
+  // (mouse, pen) any click resolves — generous. On touch the pointer may move
+  // a little while the user is simply scrolling the page vertically over the
+  // rail, which must not be treated as selecting a card. We require the release
+  // to be within a small radius of the touchdown, so only a real, stationary
+  // tap on an actual card opens it (桌面端可放宽，触屏更严格).
+  const isTapLike = (
+    event: ReactPointerEvent<HTMLDivElement> | { clientX: number; clientY: number; pointerType?: string },
+    drag: { startX: number; startY: number; moved: boolean } | null
+  ): boolean => {
+    if ((event.pointerType ?? '') !== 'touch') return true
+    if (!drag) return false
+    const dx = event.clientX - drag.startX
+    const dy = event.clientY - drag.startY
+    return Math.abs(dx) < TOUCH_TAP_RADIUS && Math.abs(dy) < TOUCH_TAP_RADIUS
   }
 
   // ---- Robust pointer activity at the rail level ----
@@ -690,7 +729,19 @@ export function ProjectWebglGallery({
                   hoveredRelRef.current = null
                   setHoveredRel(null)
                 }}
-                onClick={() => openProject(item)}
+                onClick={(e) => {
+                  // Touch only: a stationary tap on the card opens it; a swipe
+                  // that started/ended here suppresses click on touch, but guard
+                  // anyway so any residual click from a scroll never pops the
+                  // modal. Mouse/pen fall straight through (no touchStart).
+                  const ts = touchStartRef.current
+                  if (ts) {
+                    const dx = e.clientX - ts.x
+                    const dy = e.clientY - ts.y
+                    if (dx * dx + dy * dy > TOUCH_TAP_RADIUS * TOUCH_TAP_RADIUS) return
+                  }
+                  openProject(item)
+                }}
               >
                 <span className="mark-lab-webgl__card-face">
                   {item.preview ? (

@@ -8,7 +8,7 @@ import {
 import { getAllPostSummaries } from '@/lib/content/postSummaries'
 import type { BlogPostSummary } from '@/lib/content/posts'
 import type { BlogSortBy } from '@/lib/blog/blogNavigation'
-import { useSearch } from './useSearch'
+import { useSearch } from '../useSearch'
 
 export type SortBy = BlogSortBy
 

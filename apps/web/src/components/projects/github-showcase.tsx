@@ -2,12 +2,12 @@ import { Star } from 'lucide-react'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { GithubStats, GithubTopRepo } from '@/lib/github/types'
 import { cn } from '@/lib/classNames'
-import { useSectionScrollProgress } from '@/hooks/useSectionScrollProgress'
+import { useSectionScrollProgress } from '@/hooks/projects/useSectionScrollProgress'
 import {
   FocusCity,
   type FocusDay,
   type FocusStats,
-} from '@/components/ui/focus-city'
+} from '@/components/projects/focus-city'
 
 // At least this many hot-repo cards are shown even when the heatmap is short,
 // so the block never collapses to a single lonely repo.

@@ -1,4 +1,4 @@
-import { useMediaQuery } from './useMediaQuery'
+import { useMediaQuery } from '../useMediaQuery'
 
 interface SidebarItemLimitOptions {
   maxItems?: number

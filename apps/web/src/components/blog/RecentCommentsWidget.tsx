@@ -10,7 +10,7 @@ import {
   loadRecentComments,
 } from '@/lib/comments/recentCommentsCache'
 import type { TwikooRecentComment } from '@/lib/comments/twikooLoader'
-import { useSidebarItemLimit } from '@/hooks/useSidebarItemLimit'
+import { useSidebarItemLimit } from '@/hooks/blog/useSidebarItemLimit'
 
 const RECENT_COMMENTS_LIMIT = 5
 const DEFAULT_TWIKOO_ENV_ID = 'https://comments.markxu.icu/api/twikoo'

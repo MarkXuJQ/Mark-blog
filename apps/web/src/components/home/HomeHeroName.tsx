@@ -7,7 +7,7 @@ import {
   type MouseEvent as ReactMouseEvent,
 } from 'react'
 import { motion, useAnimationControls, type Transition } from 'framer-motion'
-import { VerticalCutReveal } from '@/components/ui/vertical-cut-reveal'
+import { VerticalCutReveal } from '@/components/home/vertical-cut-reveal'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
 

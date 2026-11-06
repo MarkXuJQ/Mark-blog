@@ -13,7 +13,7 @@ import {
   mix,
   segmentProgress,
   useHomeRadarScene,
-} from '@/hooks/useHomeRadarScene'
+} from '@/hooks/home/useHomeRadarScene'
 import {
   getNodeDotSize,
   isLightHexColor,

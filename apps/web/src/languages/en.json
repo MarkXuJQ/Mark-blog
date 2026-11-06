@@ -14,16 +14,9 @@
   },
   "timeline": {
     "items": "items",
-    "notes": "Quick fixes",
     "websiteTab": "Website Milestones",
     "quickfixTab": "Quick Fixes",
     "lifeTab": "Life Log",
-    "websiteTitle": "Website Timeline",
-    "websiteDesc": "Major milestones and feature drops, grouped by release.",
-    "quickfixTitle": "Quick Fixes",
-    "quickfixDesc": "Small patches and UI tweaks tracked as standalone entries.",
-    "lifeTitle": "Life Log",
-    "lifeDesc": "Personal progress and moments.",
     "progress": {
       "ariaLabel": "Time progress",
       "dayOfYear": "Day of the Year",
@@ -39,8 +32,7 @@
     "noResults": "No results found.",
     "resultsCount": "{{count}} results",
     "sections": {
-      "posts": "Posts",
-      "timeline": "Timeline"
+      "posts": "Posts"
     }
   },
   "codeBlock": {
@@ -53,10 +45,7 @@
     "collapse": "Collapse Code"
   },
   "home": {
-    "title": "Welcome to <0>Mark</0>'s Backyard",
-    "intro": " I'll update my tech notes📒, life bits, and small projects growing in public.",
-    "readingTime": "Reading time: {{minutes}} min",
-    "github": "My GitHub"
+    "intro": " I'll update my tech notes📒, life bits, and small projects growing in public."
   },
   "travel": {
     "title": "Places I've Been",
@@ -70,12 +59,8 @@
   "blog": {
     "title": "Mark Xu's Blog",
     "description": "A collection of notes on technology, life, and projects from Mark Xu.",
-    "readMore": "Read More",
-    "publishedOn": "Published on",
     "updatedOn": "Updated",
     "back": "Back to Blog",
-    "prevPost": "Previous Post",
-    "nextPost": "Next Post",
     "readingTime": "{{minutes}} min",
     "wordCount": "{{count}} words",
     "readerMode": {
@@ -120,7 +105,6 @@
           "year": "year",
           "years": "years"
         },
-        "days": "Days",
         "units": {
           "year": "year",
           "years": "years",
@@ -148,7 +132,6 @@
       "title": "Recommended"
     },
     "filter": {
-      "allTags": "All Tags",
       "allCategories": "All Posts"
     },
     "archive": {
@@ -176,7 +159,6 @@
     },
     "copyright": {
       "author": "Author",
-      "link": "Link",
       "license": "Copyright",
       "statement": "All articles in this blog are licensed under <0>{{license}}</0> unless stating otherwise."
     }
@@ -195,24 +177,13 @@
   },
   "travellings": {
     "title": "Travelling",
-    "description": "Visit another independent site at random",
     "aria": "Travelling link relay"
   },
   "movies": {
     "description": "A small archive of movies I have watched, with a few simple stats and notes along the way.",
     "stats": {
       "watchedCount": "Watched Movies",
-      "ratedCount": "Rated",
-      "overallScore": "Overall Score out of 100",
-      "overallScoreHint": "Calculated from rated movies",
-      "ratingBreakdown": "Rating Distribution",
-      "latestWatch": "Latest Watch"
-    },
-    "mode": {
-      "label": "Data Mode",
-      "csv": "Default",
-      "tmdb": "Enhanced",
-      "hint": "Default mode works without external access."
+      "ratingBreakdown": "Rating Distribution"
     },
     "layout": {
       "label": "Layout",
@@ -238,24 +209,13 @@
       }
     },
     "tmdb": {
-      "notice": "TMDB may be inaccessible from mainland China.",
-      "loading": "Loading TMDB data for this page...",
-      "noPoster": "No poster",
-      "releaseDate": "Release",
-      "errors": {
-        "missingConfig": "TMDB server credentials are missing. Add TMDB_API_TOKEN or TMDB_API_KEY in apps/web/.env.local or Vercel environment variables.",
-        "authFailed": "TMDB authentication failed. Please verify your token/key.",
-        "network": "TMDB request failed (network may be blocked)."
-      }
+      "noPoster": "No poster"
     },
     "searchPlaceholder": "Search title, original title, platform, or notes...",
     "filters": {
       "label": "Filter",
       "allMovies": "All Movies",
-      "withReviews": "With Reviews",
-      "allPlatforms": "All Platforms",
-      "newestFirst": "Newest Watched First",
-      "oldestFirst": "Oldest Watched First"
+      "withReviews": "With Reviews"
     },
     "empty": {
       "title": "No movie data available",
@@ -263,8 +223,7 @@
     },
     "noResults": "No movies match the current filters.",
     "rating": {
-      "value": "{{rating}} stars",
-      "unrated": "Not rated"
+      "value": "{{rating}} stars"
     },
     "watchDate": "Watch date",
     "actions": {
@@ -274,8 +233,7 @@
       "pageTitle": "Movie Reviews",
       "backToMovies": "Back to Movies",
       "notFoundTitle": "Review not found",
-      "hasReviewBadge": "Review",
-      "readReview": "Read Review"
+      "hasReviewBadge": "Review"
     }
   },
   "games": {
@@ -287,12 +245,7 @@
       "grid": "Grid"
     },
     "hero": {
-      "eyebrow": "Steam Library",
       "title": "{{name}}'s Library",
-      "subtitle": "A movie-style view of the public Steam collection, with library stats, playtime, and a quick snapshot of what has been played the most.",
-      "topGameLabel": "Most Played",
-      "topGameValue": "{{hours}} hrs total",
-      "topGameEmpty": "No playable history is available yet.",
       "updatedAt": "Refreshed: {{date}}"
     },
     "profile": {
@@ -301,14 +254,9 @@
     },
     "stats": {
       "totalGames": "Library Size",
-      "totalGamesHint": "All owned games that Steam currently exposes.",
       "totalHours": "Lifetime Hours",
-      "totalHoursHint": "Combined playtime across the full library.",
       "recentHours": "Last 2 Weeks",
-      "recentHoursHint": "A quick read on current activity and reopened games.",
-      "totalAchievements": "Achievements Earned",
-      "playedGames": "Played Games",
-      "playedGamesHint": "{{remaining}} games are still untouched."
+      "totalAchievements": "Achievements Earned"
     },
     "featured": {
       "title": "Most Played",
@@ -336,9 +284,7 @@
     "sort": {
       "playtime": "Most played",
       "recent": "Recently active",
-      "achievements": "Achievement completion",
-      "alphabetical": "Alphabetical",
-      "leastPlayed": "Least played"
+      "achievements": "Achievement completion"
     },
     "actions": {
       "openStore": "Open Steam store page"
@@ -361,18 +307,9 @@
   "projects": {
     "title": "Lab",
     "description": "A small shelf for strange ideas that made it all the way into code.",
-    "layout": {
-      "label": "Layout",
-      "list": "List",
-      "grid": "Grid"
-    },
     "source": "View source",
     "open": "Open app",
     "showcaseTitle": "#MadebyMark",
-    "showcaseDescription": "Ideas that made it all the way into a browser.",
-    "showcaseHintScroll": "Scroll",
-    "showcaseHintDrag": "Drag",
-    "showcaseHintClick": "Click a project",
     "githubTitle": "The Lab, in numbers",
     "githubDescription": "A live slice of my GitHub: daily commits turning into a little city that grows as you scroll.",
     "moreOnGithub": "More on GitHub",
@@ -389,8 +326,6 @@
     "githubScroll1": "Scroll",
     "githubScroll2": "2D",
     "githubScroll3": "3D",
-    "flip": "View project details",
-    "flipBack": "Back to preview",
     "live": "Play online"
   },
   "about": {

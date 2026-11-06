@@ -29,11 +29,11 @@ import {
   type JsonLd,
 } from '@/lib/seo'
 import { Card } from '@/components/ui/Card'
-import { useArticleCodeBlockEnhancements } from '@/hooks/useArticleCodeBlockEnhancements'
-import { useArticleImageLightbox } from '@/hooks/useArticleImageLightbox'
-import { useArticleProgressiveImages } from '@/hooks/useArticleProgressiveImages'
-import { useArticlePhotoScroll } from '@/hooks/useArticlePhotoScroll'
-import { useArticlePhotoRoutes } from '@/hooks/useArticlePhotoRoutes'
+import { useArticleCodeBlockEnhancements } from '@/hooks/article/useArticleCodeBlockEnhancements'
+import { useArticleImageLightbox } from '@/hooks/article/useArticleImageLightbox'
+import { useArticleProgressiveImages } from '@/hooks/article/useArticleProgressiveImages'
+import { useArticlePhotoScroll } from '@/hooks/article/useArticlePhotoScroll'
+import { useArticlePhotoRoutes } from '@/hooks/article/useArticlePhotoRoutes'
 import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
 import {
   getAdjacentPosts,
@@ -50,7 +50,7 @@ import { cn } from '@/lib/classNames'
 import { getImageUrl, getOptimizedImageUrl } from '@/lib/image'
 import type { BlogPostOutletContext } from '@/layouts/BlogPostLayout'
 import { PostSharedElement } from '@/components/transitions/PostSharedElement'
-import { usePostDetailTransition } from '@/hooks/usePostDetailTransition'
+import { usePostDetailTransition } from '@/hooks/article/usePostDetailTransition'
 import '@/assets/styles/article-blocks.css'
 
 export function BlogPost() {

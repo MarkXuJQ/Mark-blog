@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowDown } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/classNames'
-import type { SortBy } from '@/hooks/useBlogPosts'
+import type { SortBy } from '@/hooks/blog/useBlogPosts'
 import { canonicalBlogCategoryKey } from '@/lib/blog/categories'
 import {
   getBlogCategoryMeta,

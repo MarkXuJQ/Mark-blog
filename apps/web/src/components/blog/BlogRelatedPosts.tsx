@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { getOptimizedImageUrl } from '@/lib/image'
 import { cn } from '@/lib/classNames'
 import type { BlogPost, BlogPostSummary } from '@/lib/content/posts'
-import { useSidebarItemLimit } from '@/hooks/useSidebarItemLimit'
+import { useSidebarItemLimit } from '@/hooks/blog/useSidebarItemLimit'
 
 interface BlogRelatedPostsProps {
   currentPost: BlogPost | null

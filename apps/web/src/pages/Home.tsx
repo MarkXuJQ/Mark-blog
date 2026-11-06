@@ -5,10 +5,10 @@ import { HomeRadarPlaceholder } from '@/components/home/HomeDeferredPlaceholders
 import { HomeBlogRailSection } from '@/components/home/HomeBlogRailSection'
 import { HomeHeroSection } from '@/components/home/HomeHeroSection'
 import { HomeWidgetStackSection } from '@/components/home/HomeWidgetStackSection'
-import { useHomePageSceneMotion } from '@/hooks/useHomePageSceneMotion'
-import { useHomePageRuntime } from '@/hooks/useHomePageRuntime'
-import { useHomeReveal } from '@/hooks/useHomeReveal'
-import { useHomeSectionPager } from '@/hooks/useHomeSectionPager'
+import { useHomePageSceneMotion } from '@/hooks/home/useHomePageSceneMotion'
+import { useHomePageRuntime } from '@/hooks/home/useHomePageRuntime'
+import { useHomeReveal } from '@/hooks/home/useHomeReveal'
+import { useHomeSectionPager } from '@/hooks/home/useHomeSectionPager'
 import { Seo } from '@/app/seo/Seo'
 import {
   DEFAULT_DESCRIPTION,
@@ -16,7 +16,7 @@ import {
   toAbsoluteUrl,
   type JsonLd,
 } from '@/lib/seo'
-import { useDeferredRender } from '@/hooks/useDeferredRender'
+import { useDeferredRender } from '@/hooks/home/useDeferredRender'
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
 import { getImageUrl } from '@/lib/image'
 
