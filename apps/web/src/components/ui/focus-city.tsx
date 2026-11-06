@@ -16,6 +16,15 @@ import type { GithubDay } from '@/lib/github/types'
 
 export type FocusDay = GithubDay
 
+export type FocusStats = {
+  total: number
+  dailyAverage: number
+  bestStreak: number
+  activeDays: number
+  days: number
+  weeks: number
+}
+
 export interface FocusCityProps {
   days: FocusDay[]
   /** Last visible calendar date. Defaults to the latest supplied date. */
@@ -33,6 +42,11 @@ export interface FocusCityProps {
   className?: string
   style?: React.CSSProperties
   onDaySelect?: (day: FocusDay) => void
+  /** Hide the built-in stats row (rendered elsewhere / outside the figure). */
+  hideStats?: boolean
+  /** Fires whenever the visible-window stats change, so a parent can render
+   *  the same numbers outside the component. */
+  onStats?: (stats: FocusStats) => void
 }
 
 type Point = [number, number]
@@ -303,6 +317,8 @@ export function FocusCity({
   className = '',
   style,
   onDaySelect,
+  hideStats = false,
+  onStats,
 }: FocusCityProps) {
   const today = iso(new Date())
   const validDays = React.useMemo(
@@ -399,6 +415,22 @@ export function FocusCity({
     if (next) selectDay(next.day)
   }
   const cameraChanged = Math.abs(yaw - Math.PI / 6) > 0.005
+
+  const stats: FocusStats = {
+    total,
+    dailyAverage: available.length
+      ? total / available.length
+      : 0,
+    bestStreak,
+    activeDays: available.filter((block) => block.count > 0).length,
+    days: available.length,
+    weeks,
+  }
+  React.useEffect(() => {
+    onStats?.(stats)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stats.total, stats.bestStreak, stats.activeDays, stats.days, stats.weeks])
+
   const pointerPosition = (event: React.PointerEvent) => {
     const rect = plotRef.current!.getBoundingClientRect()
     return {
@@ -482,7 +514,8 @@ export function FocusCity({
           </div>
         </div>
       </header>
-      <div className="fc-stats">
+      {!hideStats ? (
+        <div className="fc-stats">
         <div>
           <span>Total contributions</span>
           <strong>{total.toLocaleString()}</strong>
@@ -502,6 +535,7 @@ export function FocusCity({
           <small>consecutive activity</small>
         </div>
       </div>
+      ) : null}
       <div className="fc-plot-header">
         <span>
           <CalendarDays size={12} aria-hidden="true" />

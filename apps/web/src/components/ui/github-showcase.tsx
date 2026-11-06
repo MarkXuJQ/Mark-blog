@@ -1,8 +1,13 @@
 import { Star } from 'lucide-react'
-import type { GithubStats } from '@/lib/github/types'
+import { useState } from 'react'
+import type { GithubStats, GithubTopRepo } from '@/lib/github/types'
 import { cn } from '@/lib/classNames'
 import { useSectionScrollProgress } from '@/hooks/useSectionScrollProgress'
-import { FocusCity, type FocusDay } from '@/components/ui/focus-city'
+import {
+  FocusCity,
+  type FocusDay,
+  type FocusStats,
+} from '@/components/ui/focus-city'
 
 export type GithubShowcaseStrings = {
   title?: string
@@ -14,6 +19,10 @@ export type GithubShowcaseStrings = {
   emptyRepos: string
   demoHint: string
   daysLabel?: string
+  dailyAvgLabel?: string
+  bestStreakLabel?: string
+  windowLabel?: string
+  repoLanguagesLabel?: string
   toggle3d: string
   toggle2d: string
   scrollLabel1: string
@@ -28,30 +37,21 @@ export interface GithubShowcaseProps {
   className?: string
 }
 
-function StatCard({
-  label,
-  value,
-  hint,
+function LanguageBar({
+  languages,
+  compact = false,
 }: {
-  label: string
-  value: string
-  hint?: string
+  languages: Record<string, number>
+  compact?: boolean
 }) {
-  return (
-    <div className="gh-card">
-      <span>{label}</span>
-      <strong>{value}</strong>
-      {hint ? <small>{hint}</small> : null}
-    </div>
-  )
-}
-
-function LanguageBar({ languages }: { languages: Record<string, number> }) {
   const entries = Object.entries(languages).sort((a, b) => b[1] - a[1])
   if (!entries.length) return null
   const total = entries.reduce((sum, [, value]) => sum + value, 0)
   return (
-    <div className="gh-languages" aria-label="Language breakdown">
+    <div
+      className={cn('gh-languages', compact && 'gh-languages--compact')}
+      aria-label="Language breakdown"
+    >
       <ul>
         {entries.map(([name, value]) => (
           <li key={name}>
@@ -73,6 +73,24 @@ function LanguageBar({ languages }: { languages: Record<string, number> }) {
   )
 }
 
+function WindowStat({
+  label,
+  value,
+  hint,
+}: {
+  label: string
+  value: string
+  hint?: string
+}) {
+  return (
+    <div className="gh-card">
+      <span>{label}</span>
+      <strong>{value}</strong>
+      {hint ? <small>{hint}</small> : null}
+    </div>
+  )
+}
+
 export function GithubShowcase({
   data,
   status,
@@ -90,6 +108,17 @@ export function GithubShowcase({
   const total = data?.totalCount ?? 0
   const activeDays = days.filter((day) => day.count > 0).length
   const repos = data?.topRepos ?? []
+  const [focusStats, setFocusStats] = useState<FocusStats | null>(null)
+  const [hoveredRepo, setHoveredRepo] = useState<GithubTopRepo | null>(null)
+
+  const stats = focusStats ?? {
+    total,
+    dailyAverage: activeDays ? total / activeDays : 0,
+    bestStreak: 0,
+    activeDays,
+    days: 0,
+    weeks: 0,
+  }
 
   return (
     <section
@@ -99,7 +128,8 @@ export function GithubShowcase({
     >
       {/* Apple-style pinned scroll stage: the scene is sticky while the track
           scrolls, and the heatmap lifts from 2D to 3D as it reaches viewport
-          center. The info column flows beside it, right → heatmap on the right. */}
+          center. The info column flows on the left; the heatmap with its
+          date-range + 2D/3D switches stays on the right. */}
       <div className="mark-lab-github__track">
         <div className="mark-lab-github__stage">
           <div className="mark-lab-github__layout">
@@ -116,17 +146,28 @@ export function GithubShowcase({
               ) : (
                 <>
                   <div className="gh-stats-grid">
-                    <StatCard
+                    <WindowStat
                       label={strings.totalLabel}
-                      value={total.toLocaleString()}
+                      value={stats.total.toLocaleString()}
+                      hint={stats.weeks ? `${stats.days} ${strings.daysLabel ?? 'days'}` : undefined}
                     />
-                    <StatCard
-                      label={strings.streakLabel}
-                      value={String(data.streak ?? 0)}
+                    <WindowStat
+                      label={strings.dailyAvgLabel ?? 'Daily average'}
+                      value={stats.dailyAverage.toFixed(1)}
+                      hint={
+                        stats.weeks
+                          ? `${stats.weeks} ${strings.windowLabel ?? 'weeks'}`
+                          : undefined
+                      }
                     />
-                    <StatCard
-                      label={strings.daysLabel ?? 'Active days'}
-                      value={String(activeDays)}
+                    <WindowStat
+                      label={strings.bestStreakLabel ?? 'Best streak'}
+                      value={`${stats.bestStreak}`}
+                      hint={
+                        stats.activeDays
+                          ? `${stats.activeDays} ${strings.daysLabel ?? 'days'}`
+                          : undefined
+                      }
                     />
                   </div>
 
@@ -142,6 +183,10 @@ export function GithubShowcase({
                               href={repo.url}
                               target="_blank"
                               rel="noopener noreferrer"
+                              onMouseEnter={() => setHoveredRepo(repo)}
+                              onMouseLeave={() => setHoveredRepo(null)}
+                              onFocus={() => setHoveredRepo(repo)}
+                              onBlur={() => setHoveredRepo(null)}
                             >
                               <span className="gh-repo-name">
                                 {repo.name}
@@ -163,6 +208,21 @@ export function GithubShowcase({
                                 </span>
                               </span>
                             </a>
+                            {/* Per-repo language proportions appear on hover
+                                (or keyboard focus); falls back to the single
+                                primary language otherwise. */}
+                            {hoveredRepo?.name === repo.name &&
+                            repo.languages &&
+                            Object.keys(repo.languages).length > 0 ? (
+                              <LanguageBar
+                                languages={repo.languages}
+                                compact
+                              />
+                            ) : (
+                              <div className="gh-repo-lang--single">
+                                {repo.language ?? '\u2014'}
+                              </div>
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -172,8 +232,6 @@ export function GithubShowcase({
                       </p>
                     )}
                   </div>
-
-                  <LanguageBar languages={data.languages ?? {}} />
 
                   {data.source === 'demo' ? (
                     <p className="mark-lab-github__demo-hint">
@@ -192,6 +250,8 @@ export function GithubShowcase({
                 defaultView="auto"
                 title=""
                 description=""
+                hideStats
+                onStats={setFocusStats}
               />
               <div className="mark-lab-github__scroll-hint" aria-hidden="true">
                 <span>{strings.scrollLabel1}</span>

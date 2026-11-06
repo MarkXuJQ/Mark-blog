@@ -2338,6 +2338,37 @@ img {
   font-variant-numeric: tabular-nums;
 }
 
+/* Per-repo language proportions shown on hover inside the repo list.
+   Fallback single-language label shares its spacing with the bar block. */
+.gh-repo-lang--single {
+  padding: 0.3rem 0.5rem 0.75rem;
+  color: var(--text-disabled);
+  font-family: var(--font-code);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+}
+
+.gh-languages--compact {
+  margin-top: 0.4rem;
+  padding: 0.6rem 0.5rem 0.5rem;
+  border-top: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--surface-card) 55%, transparent);
+  border-radius: 0.4rem;
+}
+
+.gh-languages--compact ul {
+  margin-bottom: 0.45rem;
+  gap: 0.3rem 0.85rem;
+}
+
+.gh-languages--compact li {
+  font-size: 0.68rem;
+}
+
+.gh-languages--compact .gh-language-bar {
+  height: 4px;
+}
+
 .gh-repos-empty {
   color: var(--text-secondary);
   font-size: 0.85rem;

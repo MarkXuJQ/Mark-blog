@@ -10,6 +10,8 @@ export type GithubTopRepo = {
   description: string
   stars: number
   language: string | null
+  /** Byte counts per language, for a per-repo breakdown bar. */
+  languages?: Record<string, number>
 }
 
 export type GithubStats = {

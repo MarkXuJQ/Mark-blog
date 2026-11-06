@@ -123,6 +123,7 @@ export function createGithubDemoData(username) {
         description: 'The site you are reading.',
         stars: 12,
         language: 'TypeScript',
+        languages: { TypeScript: 58, CSS: 22, JavaScript: 12, HTML: 8 },
       },
       {
         name: 'hello-markxu',
@@ -130,6 +131,7 @@ export function createGithubDemoData(username) {
         description: 'A small social experiment.',
         stars: 8,
         language: 'TypeScript',
+        languages: { TypeScript: 70, HTML: 20, CSS: 10 },
       },
       {
         name: 'china-province-svg-icons',
@@ -137,20 +139,7 @@ export function createGithubDemoData(username) {
         description: 'SVG icons for Chinese provinces.',
         stars: 6,
         language: 'SVG',
-      },
-      {
-        name: 'MoodToDo',
-        url: `https://github.com/${username}/MoodToDo`,
-        description: 'A mood-aware todo list.',
-        stars: 4,
-        language: 'TypeScript',
-      },
-      {
-        name: 'MineBili',
-        url: `https://github.com/${username}/MineBili`,
-        description: 'A minimal Bilibili client.',
-        stars: 3,
-        language: 'Dart',
+        languages: { SVG: 88, JavaScript: 12 },
       },
     ],
     languages: { TypeScript: 60, SVG: 20, Dart: 10, CSS: 10 },
@@ -216,7 +205,7 @@ const REPO_QUERY = `
 query ($username: String!) {
   user(login: $username) {
     repositories(
-      first: 20
+      first: 10
       orderBy: { field: STARGAZERS, direction: DESC }
       ownerAffiliations: [OWNER]
       isFork: false
@@ -227,6 +216,12 @@ query ($username: String!) {
         description
         stargazerCount
         primaryLanguage { name }
+        languages(first: 6, orderBy: { field: SIZE, direction: DESC }) {
+          edges {
+            size
+            node { name }
+          }
+        }
       }
     }
   }
@@ -290,17 +285,24 @@ export async function fetchGithubStats(config) {
 
   const repoNodes =
     repoResult.data?.user?.repositories?.nodes?.filter(Boolean) ?? []
-  // Only the user's own repos (no forks), the 5 most starred.
+  // Only the user's own repos (no forks), the 3 most starred.
   const topRepos = repoNodes
-    .map((node) => ({
-      name: node.name,
-      url: node.url,
-      description: node.description ?? '',
-      stars: node.stargazerCount ?? 0,
-      language: node.primaryLanguage?.name ?? null,
-    }))
+    .map((node) => {
+      const languages = {}
+      for (const edge of node.languages?.edges ?? []) {
+        languages[edge.node.name] = edge.size
+      }
+      return {
+        name: node.name,
+        url: node.url,
+        description: node.description ?? '',
+        stars: node.stargazerCount ?? 0,
+        language: node.primaryLanguage?.name ?? null,
+        languages,
+      }
+    })
     .sort((a, b) => b.stars - a.stars)
-    .slice(0, 5)
+    .slice(0, 3)
 
   const languages = {}
   for (const repo of topRepos) {
