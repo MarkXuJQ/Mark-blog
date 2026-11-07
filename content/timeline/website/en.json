@@ -1,5 +1,62 @@
 [
   {
+    "date": "2026-11-07",
+    "title": "Rebuilt the Projects Page and Refreshed Comments",
+    "description": "One of the bigger rounds so far: reworked how Projects presents itself, redesigned the comment section across the site, and gave the emoji picker a lot more to offer.",
+    "categories": [
+      {
+        "title": "Projects Rebuild",
+        "items": [
+          {
+            "id": "site-update-20261107-1",
+            "content": "Added a GitHub contribution showcase with a scroll-driven commit heatmap and a WebGL project gallery",
+            "date": "2026-11-06"
+          },
+          {
+            "id": "site-update-20261107-2",
+            "content": "Turned Made in Mark into a 3D perspective fan gallery with infinite scroll, dragging, and expandable cards",
+            "date": "2026-11-06"
+          },
+          {
+            "id": "site-update-20261107-3",
+            "content": "Added GitHub-coloured language bars to every repository, with hover details for each repo's breakdown",
+            "date": "2026-11-06"
+          }
+        ]
+      },
+      {
+        "title": "Comments Redesign",
+        "items": [
+          {
+            "id": "site-update-20261107-4",
+            "content": "Simplified the composer into one quiet input that expands to reveal name/email/website and actions on click",
+            "date": "2026-11-07"
+          },
+          {
+            "id": "site-update-20261107-5",
+            "content": "Showed the comment count next to the heading, dropped the duplicate counter row, and kept sorting and refresh",
+            "date": "2026-11-07"
+          },
+          {
+            "id": "site-update-20261107-6",
+            "content": "Made the composer placeholder and empty-state messages rotate on a timer",
+            "date": "2026-11-07"
+          },
+          {
+            "id": "site-update-20261107-7",
+            "content": "Grew the emotion pack to 7 groups and 830 emoji, adding alu, Heybox, weisuomeng, and 罗小黑",
+            "date": "2026-11-07"
+          },
+          {
+            "id": "site-update-20261107-8",
+            "content": "Fixed reply boxes that would not expand, a comment section freeze on load, and mixed Chinese/English UI copy",
+            "date": "2026-11-07"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-09-10",
     "title": "Continued Improving the Site's Features and Experience",
     "description": "Recent work brought together the Lab, movies, games, comments, and image experience into one focused round of refinement, making the site easier to explore and browse.",

@@ -352,7 +352,22 @@
   "comments": {
     "title": "Leave a Comment!",
     "loading": "Loading comments...",
-    "unavailable": "Comments failed to load. Please try again shortly."
+    "unavailable": "Comments failed to load. Please try again shortly.",
+    "emailHint": "Required — a QQ email fetches your avatar",
+    "required": "Required",
+    "optional": "Optional",
+    "empty1": "No comments yet — the first seat is yours ~",
+    "empty2": "Be the first to leave a note 🎈",
+    "empty3": "It's quiet in here…",
+    "empty4": "Looking forward to your first message 🌱",
+    "mailLabel": "Email",
+    "nickLabel": "Nickname",
+    "linkLabel": "Website",
+    "placeholder1": "Say something — you're already here ✨",
+    "placeholder2": "This spot needs a comment with 0% plagiarism",
+    "placeholder3": "Fine wine in hand, a comment in demand",
+    "placeholder4": "Guess who my comment section is waiting for?",
+    "placeholder5": "Honestly? It's not that I don't want to comment."
   },
   "footer": {
     "copyright": "© {{year}} Mark Xu. All rights reserved.",
