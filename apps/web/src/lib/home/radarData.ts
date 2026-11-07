@@ -1,4 +1,3 @@
-import radarConfig from '@content/Links/radar.json'
 import linkSites from '@content/Links/sites.json'
 import { REMOTE_AVATARS } from '../links/remoteAvatars'
 
@@ -43,30 +42,6 @@ interface LinkSiteContentItem {
   }
 }
 
-interface RadarNodeConfigItem {
-  id: string
-  cardAlignX: RadarNode['cardAlignX']
-  cardAlignY: RadarNode['cardAlignY']
-  color: string
-  dotScaleSteps?: number
-}
-
-interface RadarConfig {
-  nodes: RadarNodeConfigItem[]
-}
-
-interface RadarSiteContentItem extends Omit<
-  RadarNode,
-  'faviconSrc' | 'label' | 'category'
-> {
-  faviconKey: keyof typeof REMOTE_AVATARS
-  category: RadarNodeCategory
-  label: {
-    zh: string
-    en: string
-  }
-}
-
 export interface SignalPortalState {
   node: RadarNode
   originTop: number
@@ -90,37 +65,47 @@ export const RADAR_CATEGORY_LABELS: Record<
   'interesting-site': { zh: '有意思的网站', en: 'Interesting sites' },
 }
 
-const LINK_SITE_BY_ID = new Map(
-  (linkSites as LinkSiteContentItem[]).map((site) => [site.id, site])
-)
+/**
+ * Palette and layout auto-assigned to radar signals, indexed by their
+ * position in `sites.json`. Colors repeat in a loop so sites added later
+ * automatically pick up the next color and card alignment without needing
+ * a separate hand-maintained radar config file.
+ */
+const RADAR_PALETTE = ['#FF6F43', '#10A64B', '#7670E8', '#F4C433']
+const RADAR_CARD_ALIGNMENTS: {
+  cardAlignX: RadarNode['cardAlignX']
+  cardAlignY: RadarNode['cardAlignY']
+}[] = [
+  { cardAlignX: 'left', cardAlignY: 'top' },
+  { cardAlignX: 'right', cardAlignY: 'bottom' },
+  { cardAlignX: 'center', cardAlignY: 'top' },
+  { cardAlignX: 'right', cardAlignY: 'top' },
+  { cardAlignX: 'left', cardAlignY: 'bottom' },
+  { cardAlignX: 'center', cardAlignY: 'bottom' },
+]
 
-export const RADAR_NODES: RadarNode[] = (radarConfig as RadarConfig).nodes
-  .map((nodeConfig): RadarSiteContentItem | null => {
-    const site = LINK_SITE_BY_ID.get(nodeConfig.id)
-    if (!site) return null
+export const RADAR_NODES: RadarNode[] = (
+  linkSites as LinkSiteContentItem[]
+).map((site, index): RadarNode => {
+  const paletteColor = RADAR_PALETTE[index % RADAR_PALETTE.length]
+  const alignment = RADAR_CARD_ALIGNMENTS[index % RADAR_CARD_ALIGNMENTS.length]
 
-    return {
-      id: site.id,
-      category: site.radarCategory,
-      href: site.href,
-      faviconKey: site.faviconKey,
-      label: {
-        zh: site.name,
-        en: site.name,
-      },
-      eyebrow: site.eyebrow,
-      description: site.description,
-      cardAlignX: nodeConfig.cardAlignX,
-      cardAlignY: nodeConfig.cardAlignY,
-      color: nodeConfig.color,
-      dotScaleSteps: nodeConfig.dotScaleSteps,
-    }
-  })
-  .filter((site): site is RadarSiteContentItem => site != null)
-  .map(({ faviconKey, ...site }) => ({
-    ...site,
-    faviconSrc: REMOTE_AVATARS[faviconKey] ?? REMOTE_AVATARS.ruanyifeng,
-  }))
+  return {
+    id: site.id,
+    category: site.radarCategory,
+    href: site.href,
+    faviconSrc: REMOTE_AVATARS[site.faviconKey] ?? REMOTE_AVATARS.ruanyifeng,
+    label: {
+      zh: site.name,
+      en: site.name,
+    },
+    eyebrow: site.eyebrow,
+    description: site.description,
+    cardAlignX: alignment.cardAlignX,
+    cardAlignY: alignment.cardAlignY,
+    color: paletteColor,
+  }
+})
 
 export const RING_INSETS = ['8%', '18%', '30%', '42%', '54%']
 export const SIGNAL_DOT_SIZE_PX = 44
