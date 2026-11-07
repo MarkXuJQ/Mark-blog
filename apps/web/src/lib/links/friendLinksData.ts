@@ -1,43 +1,6 @@
 import friendLinksConfig from '@content/Links/links.json'
-import blurredcodeFavicon from '@/assets/home/radar/blurredcode.ico'
-import dbushellFavicon from '@/assets/home/radar/dbushell.png'
-import eventuallymakingFavicon from '@/assets/home/radar/eventuallymaking.png'
-import inneiFavicon from '@/assets/home/radar/innei.png'
-import joshwcomeauFavicon from '@/assets/home/radar/joshwcomeau.png'
-import leitaoFavicon from '@/assets/home/radar/leitao.png'
-import lmbFavicon from '@/assets/home/radar/lmb.png'
-import lucumrFavicon from '@/assets/home/radar/lucumr.png'
-import nineteenHundredFavicon from '@/assets/home/radar/nineteen-hundred.png'
-import ooowlFavicon from '@/assets/home/radar/ooowl.png'
-import pathosFavicon from '@/assets/home/radar/pathos.png'
-import ruanyifengFavicon from '@/assets/home/radar/ruanyifeng.png'
-import spacesFavicon from '@/assets/home/radar/spaces.svg'
-import ttqukFavicon from '@/assets/home/radar/ttquk.png'
-import victorzhouFavicon from '@/assets/home/radar/victorzhou.png'
-import yunyitangFavicon from '@/assets/home/radar/yunyitang.ico'
-import zhheoFavicon from '@/assets/home/radar/zhheo.png'
-import zhiluFavicon from '@/assets/home/radar/zhilu.png'
-
-const LINK_FAVICONS = {
-  blurredcode: blurredcodeFavicon,
-  dbushell: dbushellFavicon,
-  eventuallymaking: eventuallymakingFavicon,
-  innei: inneiFavicon,
-  joshwcomeau: joshwcomeauFavicon,
-  leitao: leitaoFavicon,
-  lmb: lmbFavicon,
-  lucumr: lucumrFavicon,
-  'nineteen-hundred': nineteenHundredFavicon,
-  ooowl: ooowlFavicon,
-  pathos: pathosFavicon,
-  ruanyifeng: ruanyifengFavicon,
-  spaces: spacesFavicon,
-  ttquk: ttqukFavicon,
-  victorzhou: victorzhouFavicon,
-  yunyitang: yunyitangFavicon,
-  zhheo: zhheoFavicon,
-  zhilu: zhiluFavicon,
-} as const
+import { REMOTE_AVATARS } from './remoteAvatars'
+import lostFriendsData from '@/data/lost-friends.json'
 
 export type FriendLinkCategory = 'recommended' | 'neighbors'
 
@@ -48,13 +11,15 @@ export interface FriendLink {
   href: string
   description: string
   faviconSrc: string
+  comment?: string
 }
 
 interface FriendLinkContentItem {
   name: string
   url: string
-  avatar: keyof typeof LINK_FAVICONS | string
+  avatar: keyof typeof REMOTE_AVATARS | string
   description: string
+  comment?: string
 }
 
 interface FriendLinksConfig {
@@ -93,6 +58,20 @@ export function getFriendLinkLabels(isZh: boolean) {
     emptyNeighbors: isZh
       ? zh('这里还在等新朋友，欢迎在下面打个招呼。')
       : 'This corner is waiting for new friends. Say hello below.',
+    archivedTitle: isZh ? zh('失联的朋友们') : 'Friends Who Went Quiet',
+    archivedDescription: isZh
+      ? zh(
+          '下面这些朋友的网站暂时打不开了，可能是迁移、换地址或者暂时失联。如果再次拜访时恢复了，我会把它们移回来。'
+        )
+      : "These friends' sites can't be reached right now — they might have moved, changed addresses, or drifted offline. If they come back, I'll move them back to the active list.",
+    archivedEmpty: isZh
+      ? zh('暂时没有失联的朋友，大家都在线。')
+      : 'Everyone is reachable right now — no archived friends.',
+    checkedAtNote: isZh
+      ? zh('该状态在站点构建时自动检查。')
+      : 'Availability is checked automatically at build time.',
+    archivedCount: (count: number) =>
+      isZh ? `${count} 位` : `${count} archived`,
     rules: isZh
       ? [
           zh('希望你的小站里已经住进了一些文章，平时也还会回来打理。'),
@@ -115,8 +94,8 @@ function resolveFriendLinks(
 ): FriendLink[] {
   return items.map((site) => {
     const faviconSrc =
-      site.avatar in LINK_FAVICONS
-        ? LINK_FAVICONS[site.avatar as keyof typeof LINK_FAVICONS]
+      site.avatar in REMOTE_AVATARS
+        ? REMOTE_AVATARS[site.avatar as keyof typeof REMOTE_AVATARS]
         : site.avatar
 
     return {
@@ -126,16 +105,33 @@ function resolveFriendLinks(
       href: site.url,
       description: site.description,
       faviconSrc,
+      comment: site.comment,
     }
   })
 }
 
 const FRIEND_LINK_CONFIG = friendLinksConfig as FriendLinksConfig
 
-export const FRIEND_LINKS: FriendLink[] = [
+export const ARCHIVED_LINK_URLS: ReadonlySet<string> = new Set(
+  lostFriendsData.archived.map((site) => site.url)
+)
+
+const ALL_FRIEND_LINKS: FriendLink[] = [
   ...resolveFriendLinks(FRIEND_LINK_CONFIG.recommended, 'recommended'),
   ...resolveFriendLinks(FRIEND_LINK_CONFIG.neighbors, 'neighbors'),
 ]
+
+/** Every friend link (including archived), keyed by href, for resolving details. */
+const LINK_BY_HREF = new Map(ALL_FRIEND_LINKS.map((link) => [link.href, link]))
+
+/** Links currently shown in the active groups (archived friends removed). */
+export const FRIEND_LINKS: FriendLink[] = ALL_FRIEND_LINKS.filter(
+  (link) => !ARCHIVED_LINK_URLS.has(link.href)
+)
+
+export function getFriendLinkByHref(href: string): FriendLink | undefined {
+  return LINK_BY_HREF.get(href)
+}
 
 export const FRIEND_LINK_CATEGORY_ORDER = [
   'recommended',

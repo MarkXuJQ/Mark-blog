@@ -1,56 +1,6 @@
 import radarConfig from '@content/Links/radar.json'
 import linkSites from '@content/Links/sites.json'
-import blurredcodeFavicon from '../../assets/home/radar/blurredcode.ico'
-import dbushellFavicon from '../../assets/home/radar/dbushell.png'
-import distillFavicon from '../../assets/home/radar/distill.png'
-import eventuallymakingFavicon from '../../assets/home/radar/eventuallymaking.png'
-import geokashFavicon from '../../assets/home/radar/geokash.png'
-import inneiFavicon from '../../assets/home/radar/innei.png'
-import joshwcomeauFavicon from '../../assets/home/radar/joshwcomeau.png'
-import leitaoFavicon from '../../assets/home/radar/leitao.png'
-import lucumrFavicon from '../../assets/home/radar/lucumr.png'
-import messengerFavicon from '../../assets/home/radar/messenger.png'
-import nineteenHundredFavicon from '../../assets/home/radar/nineteen-hundred.png'
-import ooowlFavicon from '../../assets/home/radar/ooowl.png'
-import pathosFavicon from '../../assets/home/radar/pathos.png'
-import peterOravecFavicon from '../../assets/home/radar/peter-oravec.png'
-import radiogardenFavicon from '../../assets/home/radar/radiogarden.png'
-import rleonardiFavicon from '../../assets/home/radar/rleonardi.png'
-import ruanyifengFavicon from '../../assets/home/radar/ruanyifeng.png'
-import spacesFavicon from '../../assets/home/radar/spaces.svg'
-import tongliaoFavicon from '../../assets/home/radar/tongliao.png'
-import ttqukFavicon from '../../assets/home/radar/ttquk.png'
-import uselesswebFavicon from '../../assets/home/radar/uselessweb.png'
-import victorzhouFavicon from '../../assets/home/radar/victorzhou.png'
-import zhheoFavicon from '../../assets/home/radar/zhheo.png'
-import zhiluFavicon from '../../assets/home/radar/zhilu.png'
-
-const RADAR_FAVICONS = {
-  blurredcode: blurredcodeFavicon,
-  dbushell: dbushellFavicon,
-  distill: distillFavicon,
-  eventuallymaking: eventuallymakingFavicon,
-  geokash: geokashFavicon,
-  innei: inneiFavicon,
-  joshwcomeau: joshwcomeauFavicon,
-  leitao: leitaoFavicon,
-  lucumr: lucumrFavicon,
-  messenger: messengerFavicon,
-  'nineteen-hundred': nineteenHundredFavicon,
-  ooowl: ooowlFavicon,
-  pathos: pathosFavicon,
-  'peter-oravec': peterOravecFavicon,
-  radiogarden: radiogardenFavicon,
-  rleonardi: rleonardiFavicon,
-  ruanyifeng: ruanyifengFavicon,
-  spaces: spacesFavicon,
-  tongliao: tongliaoFavicon,
-  ttquk: ttqukFavicon,
-  uselessweb: uselesswebFavicon,
-  victorzhou: victorzhouFavicon,
-  zhheo: zhheoFavicon,
-  zhilu: zhiluFavicon,
-} as const
+import { REMOTE_AVATARS } from '../links/remoteAvatars'
 
 export type RadarNodeCategory = 'personal-blog' | 'interesting-site'
 
@@ -82,7 +32,7 @@ interface LinkSiteContentItem {
   radarCategory: RadarNodeCategory
   name: string
   href: string
-  faviconKey: keyof typeof RADAR_FAVICONS
+  faviconKey: keyof typeof REMOTE_AVATARS
   eyebrow: {
     zh: string
     en: string
@@ -109,7 +59,7 @@ interface RadarSiteContentItem extends Omit<
   RadarNode,
   'faviconSrc' | 'label' | 'category'
 > {
-  faviconKey: keyof typeof RADAR_FAVICONS
+  faviconKey: keyof typeof REMOTE_AVATARS
   category: RadarNodeCategory
   label: {
     zh: string
@@ -169,7 +119,7 @@ export const RADAR_NODES: RadarNode[] = (radarConfig as RadarConfig).nodes
   .filter((site): site is RadarSiteContentItem => site != null)
   .map(({ faviconKey, ...site }) => ({
     ...site,
-    faviconSrc: RADAR_FAVICONS[faviconKey] ?? RADAR_FAVICONS.ruanyifeng,
+    faviconSrc: REMOTE_AVATARS[faviconKey] ?? REMOTE_AVATARS.ruanyifeng,
   }))
 
 export const RING_INSETS = ['8%', '18%', '30%', '42%', '54%']
