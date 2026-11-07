@@ -946,6 +946,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                           className={styles.signalIconImage}
                           loading="lazy"
                           decoding="async"
+                          referrerPolicy="no-referrer"
                           style={{ scale: faviconScale }}
                         />
                       </span>
@@ -1086,6 +1087,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                     className={styles.signalIconImage}
                     loading="lazy"
                     decoding="async"
+                    referrerPolicy="no-referrer"
                     style={{
                       scale: signalPortalState.expanded
                         ? 1.08
@@ -1221,6 +1223,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                         alt=""
                         loading="lazy"
                         decoding="async"
+                        referrerPolicy="no-referrer"
                         className={styles.signalSourceIcon}
                       />
                     </span>

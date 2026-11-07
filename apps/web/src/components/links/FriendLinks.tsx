@@ -106,6 +106,7 @@ function FriendLinkCard({
               aria-hidden="true"
               loading="lazy"
               decoding="async"
+              referrerPolicy="no-referrer"
               className={cn(
                 styles.faviconImage,
                 simple ? styles.simpleFaviconImage : styles.richFaviconImage
@@ -174,6 +175,7 @@ function FriendLinkTooltipDetail({
             aria-hidden="true"
             loading="lazy"
             decoding="async"
+            referrerPolicy="no-referrer"
             className={styles.tooltipAvatar}
           />
         )}

@@ -131,14 +131,30 @@ const LINK_FRIEND_ITEMS = [
 ] as FriendLinkContentItem[]
 
 const MERGED: RadarSiteContentItem[] = [...radarSites] as RadarSiteContentItem[]
-const seen = new Set(radarSites.map((s) => normalizeKey(s.href)))
+const seen = new Map(radarSites.map((s) => [normalizeKey(s.href), s]))
 
 for (const link of LINK_FRIEND_ITEMS) {
   const key = normalizeKey(link.url)
-  if (!key || seen.has(key)) continue
+  if (!key) continue
 
   const radar = link.radar ?? {}
-  MERGED.push({
+
+  // A site that already exists in sites.json: the friend link's avatar was
+  // hand-verified by the author, so it takes precedence over the sites.json
+  // favicon (which may be stale or point to a URL that doesn't load in CN).
+  if (seen.has(key)) {
+    const existing = seen.get(key)!
+    existing.href = link.url
+    existing.favicon = link.avatar
+    if (link.radarCategory ?? radar.radarCategory) {
+      existing.radarCategory = link.radarCategory ?? radar.radarCategory
+    }
+    if (radar.eyebrow) existing.eyebrow = radar.eyebrow
+    if (radar.description) existing.description = radar.description
+    continue
+  }
+
+  const newNode: RadarSiteContentItem = {
     id: key,
     name: link.name,
     href: link.url,
@@ -150,8 +166,9 @@ for (const link of LINK_FRIEND_ITEMS) {
       (link.comment
         ? { zh: link.comment, en: link.comment }
         : undefined),
-  })
-  seen.add(key)
+  }
+  MERGED.push(newNode)
+  seen.set(key, newNode)
 }
 
 export const RADAR_NODES: RadarNode[] = MERGED.filter(
