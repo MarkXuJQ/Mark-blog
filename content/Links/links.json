@@ -3,19 +3,19 @@
     {
       "name": "阮一峰的网络日志",
       "url": "https://www.ruanyifeng.com/blog/",
-      "avatar": "https://www.google.com/s2/favicons?domain=www.ruanyifeng.com&sz=64",
+      "avatar": "https://www.ruanyifeng.com/favicon.ico",
       "comment": "阮一峰老师的长期技术写作站点，记录编程、互联网、科技观察和每周分享。"
     },
     {
       "name": "Eventuallymaking",
       "url": "https://eventuallymaking.io/",
-      "avatar": "https://www.google.com/s2/favicons?domain=eventuallymaking.io&sz=64",
+      "avatar": "https://eventuallymaking.io/favicon.ico",
       "comment": "一位软件工程师的个人网站，分享工程实践、产品构建和创业相关的思考。"
     },
     {
       "name": "Pathos.page",
       "url": "https://pathos.page/",
-      "avatar": "https://www.google.com/s2/favicons?domain=pathos.page&sz=64",
+      "avatar": "https://pathos.page/favicon.ico",
       "comment": "一位法哲学研究者的博客，记录学术写作、问题意识和社会观察。"
     },
     {
@@ -28,14 +28,14 @@
     {
       "name": "Innei",
       "url": "https://innei.in/",
-      "avatar": "https://www.google.com/s2/favicons?domain=innei.in&sz=64",
+      "avatar": "https://innei.in/favicon.ico",
       "description": "Innei's personal blog on frontend and full-stack development — TypeScript, React, Next.js, AI engineering, indie hacking, travel and life.",
       "comment": "前端实现细节极讲究，文章内容也很亲切和直观，其主题和组件都值得拆开来学。"
     },
     {
       "name": "Victor Zhou",
       "url": "https://victorzhou.com/",
-      "avatar": "https://www.google.com/s2/favicons?domain=victorzhou.com&sz=64",
+      "avatar": "https://victorzhou.com/favicon.ico",
       "comment": "Victor Zhou 的个人博客，分享 Web 开发、机器学习、Python、Gatsby 和安全等工程笔记。"
     },
     {
@@ -47,13 +47,13 @@
     {
       "name": "dbushell.com",
       "url": "https://dbushell.com/",
-      "avatar": "https://www.google.com/s2/favicons?domain=dbushell.com&sz=64",
+      "avatar": "https://dbushell.com/favicon.ico",
       "comment": "David Bushell 的个人网站，内容涉及 Web 标准、前端工程、性能、可访问性和安全。同时还是个坚定的反AI主义者。"
     },
     {
       "name": "Armin Ronacher",
       "url": "https://lucumr.pocoo.org/",
-      "avatar": "https://www.google.com/s2/favicons?domain=lucumr.pocoo.org&sz=64",
+      "avatar": "https://lucumr.pocoo.org/static/avatar-small.jpg",
       "comment": "Armin Ronacher 的长期个人博客，记录 Python、Flask、Rust、开源工程和软件设计思考。"
     },
     {
@@ -67,37 +67,31 @@
     {
       "name": "Josh W. Comeau",
       "url": "https://www.joshwcomeau.com/",
-      "avatar": "https://www.google.com/s2/favicons?domain=www.joshwcomeau.com&sz=64",
+      "avatar": "https://www.joshwcomeau.com/favicon.png",
       "comment": "Josh W. Comeau 的前端教学网站，内容围绕 React、CSS、动画和交互体验展开。"
     },
     {
       "name": "张洪Heo",
       "url": "https://blog.zhheo.com/",
-      "avatar": "https://www.google.com/s2/favicons?domain=blog.zhheo.com&sz=64",
+      "avatar": "https://blog.zhheo.com/img/favicon4.0.webp",
       "comment": "张洪Heo 的个人博客，分享设计、前端开发、AI 应用和自研工具。"
     },
     {
       "name": "1900.live",
       "url": "https://1900.live/",
-      "avatar": "https://www.google.com/s2/favicons?domain=1900.live&sz=64",
+      "avatar": "https://1900.live/favicon.svg",
       "comment": "1900 的个人博客，记录骑行、编程、观影、生活感想和健康观察。"
     },
     {
       "name": "科学空间",
       "url": "https://spaces.ac.cn/",
-      "avatar": "https://www.google.com/s2/favicons?domain=spaces.ac.cn&sz=64",
+      "avatar": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IuenkeWtpuepuumXtCI+CiAgPHJlY3Qgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIHJ4PSIyOCIgZmlsbD0iI2Y3ZjNlOCIgLz4KICA8Y2lyY2xlIGN4PSI2NCIgY3k9IjY0IiByPSI0MyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWYzYjYzIiBzdHJva2Utd2lkdGg9IjgiIC8+CiAgPHBhdGgKICAgIGQ9Ik0zMiA2N2M5LTE2IDIxLTI0IDM2LTI0IDEwIDAgMTkgNCAyOCAxMiIKICAgIGZpbGw9Im5vbmUiCiAgICBzdHJva2U9IiNkODkxMmYiCiAgICBzdHJva2Utd2lkdGg9IjciCiAgICBzdHJva2UtbGluZWNhcD0icm91bmQiCiAgLz4KICA8cGF0aAogICAgZD0iTTQwIDgxYzgtMTAgMTctMTUgMjgtMTUgOSAwIDE3IDMgMjUgMTAiCiAgICBmaWxsPSJub25lIgogICAgc3Ryb2tlPSIjMWYzYjYzIgogICAgc3Ryb2tlLXdpZHRoPSI3IgogICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIC8+CiAgPGNpcmNsZSBjeD0iOTEiIGN5PSI0MiIgcj0iNiIgZmlsbD0iI2Q4OTEyZiIgLz4KPC9zdmc+Cg==",
       "comment": "苏剑林维护的长期中文科学博客，内容横跨数学、自然科学、机器学习和生活随笔。"
-    },
-    {
-      "name": "水拍石",
-      "url": "https://www.leitao.cn/",
-      "avatar": "https://www.leitao.cn/wp-content/uploads/2026/09/logo-s.svg",
-      "comment": "雷涛的个人博客，长期记录经济、投资、阅读、摄影和生活随笔。"
     },
     {
       "name": "Blurred code",
       "url": "https://www.blurredcode.com/",
-      "avatar": "https://www.google.com/s2/favicons?domain=www.blurredcode.com&sz=64",
+      "avatar": "https://www.blurredcode.com/favicon.ico",
       "comment": "记录 Unreal Engine、Vulkan、图形渲染、移动端性能与底层工程问题的技术博客。"
     },
     {
@@ -186,7 +180,7 @@
     {
       "name": "RAGNote",
       "url": "https://ragnote.top/",
-      "avatar": "https://www.google.com/s2/favicons?domain=ragnote.top&sz=64",
+      "avatar": "https://ragnote.top/favicon.ico",
       "description": "Life is code. I will debug it.",
       "comment": "网站的各种效果很帅，文章以笔记为主，也很全面。"
     }

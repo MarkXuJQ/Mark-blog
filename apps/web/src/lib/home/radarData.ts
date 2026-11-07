@@ -1,5 +1,4 @@
 import linkSites from '@content/Links/sites.json'
-import { REMOTE_AVATARS } from '../links/remoteAvatars'
 
 export type RadarNodeCategory = 'personal-blog' | 'interesting-site'
 
@@ -31,7 +30,7 @@ interface LinkSiteContentItem {
   radarCategory: RadarNodeCategory
   name: string
   href: string
-  faviconKey: keyof typeof REMOTE_AVATARS
+  favicon: string
   eyebrow: {
     zh: string
     en: string
@@ -94,7 +93,7 @@ export const RADAR_NODES: RadarNode[] = (
     id: site.id,
     category: site.radarCategory,
     href: site.href,
-    faviconSrc: REMOTE_AVATARS[site.faviconKey] ?? REMOTE_AVATARS.ruanyifeng,
+    faviconSrc: site.favicon,
     label: {
       zh: site.name,
       en: site.name,

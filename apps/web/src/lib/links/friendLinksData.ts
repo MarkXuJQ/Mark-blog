@@ -1,5 +1,4 @@
 import friendLinksConfig from '@content/Links/links.json'
-import { REMOTE_AVATARS } from './remoteAvatars'
 import lostFriendsData from '@/data/lost-friends.json'
 
 export type FriendLinkCategory = 'recommended' | 'neighbors'
@@ -17,7 +16,7 @@ export interface FriendLink {
 interface FriendLinkContentItem {
   name: string
   url: string
-  avatar: keyof typeof REMOTE_AVATARS | string
+  avatar: string
   description: string
   comment?: string
 }
@@ -93,18 +92,13 @@ function resolveFriendLinks(
   category: FriendLinkCategory
 ): FriendLink[] {
   return items.map((site) => {
-    const faviconSrc =
-      site.avatar in REMOTE_AVATARS
-        ? REMOTE_AVATARS[site.avatar as keyof typeof REMOTE_AVATARS]
-        : site.avatar
-
     return {
       id: site.url,
       category,
       name: site.name,
       href: site.url,
       description: site.description,
-      faviconSrc,
+      faviconSrc: site.avatar,
       comment: site.comment,
     }
   })
