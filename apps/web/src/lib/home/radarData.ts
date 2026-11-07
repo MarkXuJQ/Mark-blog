@@ -173,8 +173,6 @@ export const RADAR_NODES: RadarNode[] = (radarConfig as RadarConfig).nodes
   }))
 
 export const RING_INSETS = ['8%', '18%', '30%', '42%', '54%']
-export const NODE_REVEAL_ANGLE_WINDOW = 18
-export const NODE_SCAN_GLOW_ANGLE_WINDOW = 26
 export const SIGNAL_DOT_SIZE_PX = 44
 export const SIGNAL_CARD_SIZE_PX = 212
 export const SIGNAL_DOT_SIZE_STEP_PX = 8
