@@ -9,7 +9,7 @@
     {
       "name": "Eventuallymaking",
       "url": "https://eventuallymaking.io/",
-      "avatar": "https://eventuallymaking.io/favicon.ico",
+      "avatar": "https://writizzy.b-cdn.net/blogs/3d2c312a-df80-4b93-b164-0dfd3902f0f8/1772203881288-n6bfopk.png?width=128&height=128",
       "comment": "一位软件工程师的个人网站，分享工程实践、产品构建和创业相关的思考。"
     },
     {
@@ -79,14 +79,8 @@
     {
       "name": "1900.live",
       "url": "https://1900.live/",
-      "avatar": "https://1900.live/favicon.svg",
+      "avatar": "https://1900.live/logo.svg",
       "comment": "1900 的个人博客，记录骑行、编程、观影、生活感想和健康观察。"
-    },
-    {
-      "name": "科学空间",
-      "url": "https://spaces.ac.cn/",
-      "avatar": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IuenkeWtpuepuumXtCI+CiAgPHJlY3Qgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIHJ4PSIyOCIgZmlsbD0iI2Y3ZjNlOCIgLz4KICA8Y2lyY2xlIGN4PSI2NCIgY3k9IjY0IiByPSI0MyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWYzYjYzIiBzdHJva2Utd2lkdGg9IjgiIC8+CiAgPHBhdGgKICAgIGQ9Ik0zMiA2N2M5LTE2IDIxLTI0IDM2LTI0IDEwIDAgMTkgNCAyOCAxMiIKICAgIGZpbGw9Im5vbmUiCiAgICBzdHJva2U9IiNkODkxMmYiCiAgICBzdHJva2Utd2lkdGg9IjciCiAgICBzdHJva2UtbGluZWNhcD0icm91bmQiCiAgLz4KICA8cGF0aAogICAgZD0iTTQwIDgxYzgtMTAgMTctMTUgMjgtMTUgOSAwIDE3IDMgMjUgMTAiCiAgICBmaWxsPSJub25lIgogICAgc3Ryb2tlPSIjMWYzYjYzIgogICAgc3Ryb2tlLXdpZHRoPSI3IgogICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIC8+CiAgPGNpcmNsZSBjeD0iOTEiIGN5PSI0MiIgcj0iNiIgZmlsbD0iI2Q4OTEyZiIgLz4KPC9zdmc+Cg==",
-      "comment": "苏剑林维护的长期中文科学博客，内容横跨数学、自然科学、机器学习和生活随笔。"
     },
     {
       "name": "Blurred code",

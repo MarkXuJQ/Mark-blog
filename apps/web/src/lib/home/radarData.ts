@@ -1,4 +1,6 @@
 import linkSites from '@content/Links/sites.json'
+import friendLinks from '@content/Links/links.json'
+import lostFriendsData from '@/data/lost-friends.json'
 
 export type RadarNodeCategory = 'personal-blog' | 'interesting-site'
 
@@ -25,19 +27,35 @@ export interface RadarNode {
   dotScaleSteps?: number
 }
 
-interface LinkSiteContentItem {
+/** A site record as read from `sites.json`. */
+interface RadarSiteContentItem {
   id: string
-  radarCategory: RadarNodeCategory
+  radarCategory?: RadarNodeCategory
   name: string
   href: string
   favicon: string
-  eyebrow: {
+  eyebrow?: {
     zh: string
     en: string
   }
-  description: {
+  description?: {
     zh: string
     en: string
+  }
+}
+
+/** A friend-link record as read from `links.json` (radar fields optional). */
+interface FriendLinkContentItem {
+  name: string
+  url: string
+  avatar: string
+  comment?: string
+  description?: string
+  radarCategory?: RadarNodeCategory
+  radar?: {
+    radarCategory?: RadarNodeCategory
+    eyebrow?: { zh: string; en: string }
+    description?: { zh: string; en: string }
   }
 }
 
@@ -83,28 +101,83 @@ const RADAR_CARD_ALIGNMENTS: {
   { cardAlignX: 'center', cardAlignY: 'bottom' },
 ]
 
-export const RADAR_NODES: RadarNode[] = (
-  linkSites as LinkSiteContentItem[]
-).map((site, index): RadarNode => {
-  const paletteColor = RADAR_PALETTE[index % RADAR_PALETTE.length]
-  const alignment = RADAR_CARD_ALIGNMENTS[index % RADAR_CARD_ALIGNMENTS.length]
+/**
+ * The radar is fed from two sources, merged and de-duplicated by URL:
+ * - `sites.json`: curated radar sites (has full category/eyebrow/description).
+ * - `links.json`: friend links, added to the radar too. Their category
+ *   defaults to `personal-blog` unless a `radarCategory` / `radar` field
+ *   says otherwise.
+ *
+ * Only sites with no href are dropped no-op; any site currently listed in
+ * `lost-friends.json` (unreachable at last build) is excluded from the
+ * radar so offline friends never show up.
+ */
+/** Normalize a URL for de-duplication / lost-friend comparison. */
+const normalizeKey = (url: string) =>
+  url.replace(/^https?:\/\//i, '').replace(/\/+$/, '').toLowerCase()
 
-  return {
-    id: site.id,
-    category: site.radarCategory,
-    href: site.href,
-    faviconSrc: site.favicon,
-    label: {
-      zh: site.name,
-      en: site.name,
-    },
-    eyebrow: site.eyebrow,
-    description: site.description,
-    cardAlignX: alignment.cardAlignX,
-    cardAlignY: alignment.cardAlignY,
-    color: paletteColor,
-  }
-})
+const ARCHIVED_KEYS = new Set(
+  lostFriendsData.archived
+    .map((s) => s.url)
+    .filter(Boolean)
+    .map(normalizeKey)
+)
+
+const radarSites: RadarSiteContentItem[] = linkSites as RadarSiteContentItem[]
+
+const LINK_FRIEND_ITEMS = [
+  ...friendLinks.recommended,
+  ...friendLinks.neighbors,
+] as FriendLinkContentItem[]
+
+const MERGED: RadarSiteContentItem[] = [...radarSites] as RadarSiteContentItem[]
+const seen = new Set(radarSites.map((s) => normalizeKey(s.href)))
+
+for (const link of LINK_FRIEND_ITEMS) {
+  const key = normalizeKey(link.url)
+  if (!key || seen.has(key)) continue
+
+  const radar = link.radar ?? {}
+  MERGED.push({
+    id: key,
+    name: link.name,
+    href: link.url,
+    favicon: link.avatar,
+    radarCategory: link.radarCategory ?? radar.radarCategory,
+    eyebrow: radar.eyebrow,
+    description:
+      radar.description ??
+      (link.comment
+        ? { zh: link.comment, en: link.comment }
+        : undefined),
+  })
+  seen.add(key)
+}
+
+export const RADAR_NODES: RadarNode[] = MERGED.filter(
+  (site) => !ARCHIVED_KEYS.has(normalizeKey(site.href))
+)
+  .map((site, index) => {
+    const paletteColor = RADAR_PALETTE[index % RADAR_PALETTE.length]
+    const alignment =
+      RADAR_CARD_ALIGNMENTS[index % RADAR_CARD_ALIGNMENTS.length]
+
+    return {
+      id: site.id ?? site.href,
+      category: site.radarCategory ?? 'personal-blog',
+      href: site.href,
+      faviconSrc: site.favicon,
+      label: {
+        zh: site.name,
+        en: site.name,
+      },
+      eyebrow: site.eyebrow ?? { zh: '', en: '' },
+      description: site.description ?? { zh: '', en: '' },
+      cardAlignX: alignment.cardAlignX,
+      cardAlignY: alignment.cardAlignY,
+      color: paletteColor,
+    }
+  })
 
 export const RING_INSETS = ['8%', '18%', '30%', '42%', '54%']
 export const SIGNAL_DOT_SIZE_PX = 44
