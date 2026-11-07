@@ -352,7 +352,22 @@
   "comments": {
     "title": "欢迎评论呀！",
     "loading": "评论加载中...",
-    "unavailable": "评论区加载失败，请稍后重试。"
+    "unavailable": "评论区加载失败，请稍后重试。",
+    "emailHint": "必填,QQ邮箱可获取头像",
+    "required": "必填",
+    "optional": "选填",
+    "empty1": "还没人评论，沙发是你的 ~",
+    "empty2": "来做第一位留言的人吧 🎈",
+    "empty3": "此刻的评论区一片宁静...",
+    "empty4": "期待你的第一条留言 🌱",
+    "mailLabel": "邮箱",
+    "nickLabel": "昵称",
+    "linkLabel": "网址",
+    "placeholder1": "来都来了，说点什么吧 ✨",
+    "placeholder2": "这里需要一条查重率0%的评论",
+    "placeholder3": "宫廷玉液酒，评论走一走",
+    "placeholder4": "你猜我的评论区在等谁？",
+    "placeholder5": "其实，才不是不想评论呢"
   },
   "footer": {
     "copyright": "© {{year}} Mark Xu. 保留所有权利。",

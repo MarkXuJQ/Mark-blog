@@ -1,7 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LinkGuard } from './LinkGuard'
-import { getTwikooApi, loadTwikooScript } from '@/lib/comments/twikooLoader'
+import {
+  applyEmotionPack,
+  getTwikooApi,
+  loadTwikooScript,
+} from '@/lib/comments/twikooLoader'
 import { cn } from '@/lib/classNames'
 
 // Declare Twikoo on window
@@ -10,6 +14,27 @@ declare global {
     __PRERENDER__?: boolean
   }
 }
+
+// Re-entrancy guard: our own DOM edits below are observed by the MutationObserver
+// and would otherwise re-trigger applyCustomizations in an endless loop, freezing
+// the page. Set/check this flag around every pass.
+let applyingCustomizations = false
+
+// Custom OwO pack shipped with the site: the stock 颜文字/Emoji/Bilibili groups
+// plus alu / Heybox / weisumeng / 罗小黑, merged into public/emotions/owo.json.
+// Resolved against the current origin so it works in dev, preview and prod.
+const EMOTION_CDN =
+  import.meta.env.VITE_TWIKOO_EMOTION_CDN ||
+  (typeof window === 'undefined'
+    ? '/emotions/owo.json'
+    : new URL('/emotions/owo.json', window.location.origin).toString())
+
+// Only one retry loop may run across mounts; the pack is a global Twikoo setting.
+let emotionRetryBound = false
+
+// Shared cadence for both rotating texts: the composer placeholder and the
+// empty-state message in the comments list.
+const ROTATE_INTERVAL_MS = 15_000
 
 export function Comments({
   containerId = 'twikoo-container',
@@ -32,11 +57,15 @@ export function Comments({
   showTitle?: boolean
   onCommentLoaded?: () => void
 } = {}) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  // Twikoo reads `lang` from its init options; keep it in sync with the site.
+  const currentLang = i18n.resolvedLanguage || i18n.language || 'zh'
   const commentRef = useRef<HTMLElement>(null)
   const mountHostRef = useRef<HTMLDivElement>(null)
   const onCommentLoadedRef = useRef(onCommentLoaded)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
+  const [commentCount, setCommentCount] = useState(0)
+  const commentCountRef = useRef(0)
 
   const TWIKOO_ENV_ID =
     import.meta.env.VITE_TWIKOO_ENV_ID ||
@@ -54,6 +83,219 @@ export function Comments({
     return false
   }
 
+  // Does the heavy DOM work; split out so the re-entrancy guard around it is
+  // a single, auditable try/finally.
+  const applyCustomizationsInner = useCallback(
+    (wrap: HTMLElement) => {
+      // --- click-to-expand composer (JS-managed so emotion picker doesn't collapse it) ---
+      // Only the top-level composer collapses; reply editors stay fully usable.
+      const submit = wrap.querySelector<HTMLElement>(
+        '.tk-comments > .tk-submit'
+      )
+      if (submit) {
+        const open = () => submit.classList.add('is-open')
+        const close = () => submit.classList.remove('is-open')
+        if (!submit.dataset.openBound) {
+          submit.dataset.openBound = 'true'
+          submit.addEventListener('click', (e) => {
+            e.stopPropagation()
+            open()
+          })
+          const outside = (ev: MouseEvent) => {
+            if (!submit.contains(ev.target as Node)) close()
+          }
+          document.addEventListener('click', outside, { capture: true })
+        }
+        // Keep open while an emotion panel is up.
+        const isOwOOpen = () =>
+          !!wrap.querySelector('.OwO-body')?.classList.contains('OwO-open')
+        if (isOwOOpen()) open()
+      }
+
+      // --- remove refresh button (rarely needed) and preview/markdown hints ---
+      wrap
+        .querySelectorAll(
+          '.tk-refresh, .tk-preview, .tk-submit-action-icon.__markdown'
+        )
+        .forEach((el) => {
+          const parent = el.parentElement
+          parent?.removeChild(el)
+        })
+
+      // --- rotating fun placeholder for the comment box (every 10s) ---
+      const textarea =
+        wrap.querySelector<HTMLTextAreaElement>('.tk-input textarea')
+      if (textarea) {
+        const lines = [
+          t('comments.placeholder1', '来都来了，说点什么吧 ✨'),
+          t('comments.placeholder2', '这里需要一条查重率0%的评论'),
+          t('comments.placeholder3', '宫廷玉液酒，评论走一走'),
+          t('comments.placeholder4', '你猜我的评论区在等谁？'),
+          t('comments.placeholder5', '其实，才不是不想评论呢'),
+        ]
+        if (!textarea.dataset.rotatorBound) {
+          textarea.dataset.rotatorBound = 'true'
+          let i = 0
+          textarea.placeholder = lines[0]
+          const timer = window.setInterval(() => {
+            // Stop once Twikoo re-rendered/replaced the composer textarea.
+            if (!textarea.isConnected) {
+              window.clearInterval(timer)
+              return
+            }
+            i = (i + 1) % lines.length
+            // Don't overwrite while the visitor is actively typing.
+            if (!textarea.value) textarea.placeholder = lines[i]
+          }, ROTATE_INTERVAL_MS)
+        } else if (!textarea.value && !lines.includes(textarea.placeholder)) {
+          // Twikoo rebinds the server-side COMMENT_PLACEHOLDER on re-render, so
+          // restore ours whenever it gets clobbered (keeps the rotation alive).
+          textarea.placeholder = lines[0]
+        }
+      }
+
+      // --- normalize meta fields: short label + a consistent fill hint ---
+      wrap
+        .querySelectorAll<HTMLElement>('.tk-meta-input .el-input')
+        .forEach((input) => {
+          const pre = input.querySelector<HTMLElement>(
+            '.el-input-group__prepend'
+          )
+          const inner =
+            input.querySelector<HTMLInputElement>('.el-input__inner')
+          if (!pre || !inner) return
+          const label = pre.textContent?.trim() ?? ''
+          // Keep the prepend labels short and identical in style (idempotent).
+          const isMail = /邮箱|郵箱|mail|email/i.test(label)
+          const isNick = /昵称|暱稱|nickname/i.test(label)
+          const isLink = /网址|網址|website/i.test(label)
+          const short = isMail
+            ? t('comments.mailLabel', '邮箱')
+            : isNick
+              ? t('comments.nickLabel', '昵称')
+              : isLink
+                ? t('comments.linkLabel', '网址')
+                : null
+          if (short && pre.textContent !== short) pre.textContent = short
+          // Restore the email fill-hint (QQ auto-avatar) that we must keep.
+          const wantPlaceholder = isMail
+            ? t('comments.emailHint', '必填,QQ邮箱可自动获取头像')
+            : isLink
+              ? t('comments.optional', '选填')
+              : t('comments.required', '必填')
+          if (
+            inner.placeholder &&
+            inner.placeholder !== wantPlaceholder &&
+            (isMail || !/QQ|邮箱/i.test(inner.placeholder))
+          ) {
+            inner.placeholder = wantPlaceholder
+          }
+        })
+
+      // --- read live comment count from Twikoo title ---
+      const countEl = wrap.querySelector<HTMLElement>(
+        '.tk-comments-count > span:first-child'
+      )
+      if (countEl) {
+        const n = parseInt(countEl.textContent ?? '', 10)
+        if (!Number.isNaN(n) && n !== commentCountRef.current) {
+          commentCountRef.current = n
+          setCommentCount(n)
+        }
+      }
+      // Hide Twikoo's own "X 条评论" counter text (数字 + suffix) while keeping
+      // the sort dropdown and refresh button next to it on the right.
+      const tkCount = wrap.querySelector<HTMLElement>('.tk-comments-count')
+      if (tkCount) {
+        const numSpan = tkCount.querySelector(':scope > span:first-child')
+        const suffixSpan = tkCount.querySelector(':scope > span:nth-child(2)')
+        if (numSpan) (numSpan as HTMLElement).style.display = 'none'
+        if (
+          suffixSpan &&
+          !suffixSpan.classList.contains('tk-comments-sort') &&
+          !suffixSpan.classList.contains('tk-icon')
+        ) {
+          ;(suffixSpan as HTMLElement).style.display = 'none'
+        }
+      }
+
+      // Diminish comment actions to just 反馈+回复; the dislike button is
+      // hidden below via CSS (it is the 2nd link: 点赞, 点踩, 回复). Deleting
+      // nodes here is unreliable across Twikoo rerenders, so CSS hides it.
+      // (no JS node removal for action buttons)
+
+      // --- creative rotating empty-state message ---
+      const emptyEl = wrap.querySelector<HTMLElement>('.tk-comments-no')
+      if (emptyEl && !emptyEl.dataset.rotatorBound) {
+        const lines = [
+          t('comments.empty1', '还没人评论，沙发是你的 ~'),
+          t('comments.empty2', '来做第一位留言的人吧 🎈'),
+          t('comments.empty3', '此刻的评论区一片宁静...'),
+          t('comments.empty4', '期待你的第一条留言 🌱'),
+        ]
+        let i = 0
+        emptyEl.dataset.rotatorBound = 'true'
+        const timer = window.setInterval(() => {
+          // Stop once Twikoo replaced the empty-state node (comments arrived).
+          if (!emptyEl.isConnected) {
+            window.clearInterval(timer)
+            return
+          }
+          i = (i + 1) % lines.length
+          emptyEl.textContent = lines[i]
+        }, ROTATE_INTERVAL_MS)
+      }
+
+      // --- richer OwO emotion pack (merged default + custom groups) ---
+      // Twikoo reads the pack URL from its server config; if the deployment
+      // hasn't set EMOTION_CDN we point it at the pack shipped with the site.
+      // Fire-and-forget with bounded retries: until the composer's Vue instance
+      // is mounted the patch can't apply, and a missing pack must never block
+      // or break the picker (Twikoo's built-in pack stays in that case).
+      if (wrap.querySelector('.OwO') && !emotionRetryBound) {
+        emotionRetryBound = true
+        let tries = 0
+        let confirmed = 0
+        const attempt = async () => {
+          tries += 1
+          const applied = await applyEmotionPack(EMOTION_CDN)
+          // Twikoo replaces the whole config object when its async GET_CONFIG
+          // response lands, which can wipe the URL we just wrote. Keep checking
+          // for a while after success so a late overwrite gets patched again.
+          confirmed = applied ? confirmed + 1 : 0
+          // Stop once the pack is verifiably rendered a few times in a row, or
+          // give up and release the lock so a later mount can retry.
+          if (confirmed >= 3 || tries >= 12) {
+            window.clearInterval(retry)
+            if (!applied) emotionRetryBound = false
+          }
+        }
+        const retry = window.setInterval(() => void attempt(), 500)
+        void attempt()
+      }
+    },
+    [t]
+  )
+
+  // Runtime DOM customization for the Twikoo composer, applied idempotently
+  // whenever Twikoo (re)renders. Only active for the unified 'default' layout.
+  const applyCustomizations = useCallback(
+    (target: HTMLElement | null) => {
+      if (!target || variant !== 'default') return
+      // Guard against observer-triggered re-entry from our own DOM writes.
+      if (applyingCustomizations) return
+      const wrap = target.closest<HTMLElement>('.twikoo-wrap')
+      if (!wrap) return
+      applyingCustomizations = true
+      try {
+        applyCustomizationsInner(wrap)
+      } finally {
+        applyingCustomizations = false
+      }
+    },
+    [variant, applyCustomizationsInner]
+  )
+
   useEffect(() => {
     onCommentLoadedRef.current = onCommentLoaded
   }, [onCommentLoaded])
@@ -66,6 +308,7 @@ export function Comments({
     let initTimer: number | null = null
     let pollTimer: number | null = null
     let observer: MutationObserver | null = null
+    let rafId: number | null = null
     const host = mountHostRef.current
 
     if (!host) return
@@ -91,24 +334,35 @@ export function Comments({
 
         if (hasRenderedTwikooContent(host)) {
           markReady()
+          applyCustomizations(host)
           return
         }
 
         if (host) {
-          observer = new MutationObserver(() => {
-            if (hasRenderedTwikooContent(host)) {
+          // Debounce with rAF: Twikoo inserts DOM node-by-node, and running a
+          // full customization pass on every insertion multiplies work.
+          const schedule = () => {
+            if (rafId !== null) return
+            rafId = window.requestAnimationFrame(() => {
+              rafId = null
+              if (cancelled || !hasRenderedTwikooContent(host)) return
               markReady()
-            }
-          })
+              applyCustomizations(host)
+            })
+          }
+
+          observer = new MutationObserver(schedule)
           observer.observe(host, {
             childList: true,
             subtree: true,
-            characterData: true,
+            // characterData: false — text-value churn (placeholders, counts,
+            // rotating empty-state) shouldn't re-trigger applyCustomizations.
           })
 
           pollTimer = window.setInterval(() => {
             if (hasRenderedTwikooContent(host)) {
               markReady()
+              applyCustomizations(host)
             }
           }, 250)
         }
@@ -117,13 +371,24 @@ export function Comments({
           envId: TWIKOO_ENV_ID,
           el: `#${containerId}`,
           path,
+          // Force Twikoo's own UI strings to follow the site language.
+          // Without this Twikoo falls back to navigator.language, which shows
+          // English placeholders ("Required", "Optional") in a Chinese page.
+          lang: currentLang.startsWith('en') ? 'en-us' : 'zh-cn',
           onCommentLoaded: () => {
             markReady()
+            applyCustomizations(host)
             onCommentLoadedRef.current?.()
           },
         })
 
-        fallbackTimer = window.setTimeout(markReady, eager ? 1200 : 2200)
+        fallbackTimer = window.setTimeout(
+          () => {
+            markReady()
+            applyCustomizations(host)
+          },
+          eager ? 1200 : 2200
+        )
       } catch (error) {
         console.error('Twikoo init error:', error)
         if (!cancelled) {
@@ -139,6 +404,10 @@ export function Comments({
     return () => {
       cancelled = true
       observer?.disconnect()
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId)
+        rafId = null
+      }
       if (pollTimer !== null) {
         window.clearInterval(pollTimer)
       }
@@ -150,7 +419,15 @@ export function Comments({
       }
       host.replaceChildren()
     }
-  }, [TWIKOO_ENV_ID, containerId, eager, path])
+  }, [
+    TWIKOO_ENV_ID,
+    containerId,
+    eager,
+    path,
+    variant,
+    applyCustomizations,
+    currentLang,
+  ])
 
   const statusMessage = !TWIKOO_ENV_ID
     ? null
@@ -171,6 +448,14 @@ export function Comments({
           <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
             {t('comments.title', '评论区')}
           </h3>
+          {commentCount > 0 ? (
+            <span
+              className="text-sm font-medium text-slate-500 opacity-80 dark:text-slate-400"
+              aria-label={`${commentCount}`}
+            >
+              {commentCount}
+            </span>
+          ) : null}
           <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800"></div>
         </div>
       ) : null}
@@ -249,6 +534,147 @@ export function Comments({
         .twikoo-wrap .tk-meta-input {
             background-color: transparent !important;
         }
+
+        /* ---- Unified composer: a single gray box by default; expands on click. ---- */
+        /* The composer header row: avatar sits standalone (no card), on the left. */
+        .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit > .tk-row:first-child {
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 0.7rem !important;
+        }
+        /* Only the input column is the gray box, so the avatar stays outside it. */
+        .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit .tk-col {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            border: 1px solid rgba(148, 163, 184, 0.22) !important;
+            border-radius: 0.9rem !important;
+            background: rgba(148, 163, 184, 0.1) !important;
+            padding: 0.45rem 0.7rem !important;
+            transition:
+                border-color 0.2s ease,
+                background 0.2s ease;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit .tk-col {
+            border-color: rgba(71, 85, 105, 0.45) !important;
+            background: rgba(71, 85, 105, 0.14) !important;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit .tk-avatar {
+            margin-top: 0.1rem !important;
+        }
+        /* Textarea transparent inside the gray box. */
+        .twikoo-wrap[data-variant="default"] .tk-input {
+            border: 0 !important;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-input textarea {
+            border: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            border-radius: 0 !important;
+            min-height: 2.6rem !important;
+            height: 2.6rem !important;
+            resize: none !important;
+            transition:
+                min-height 0.25s ease,
+                height 0.25s ease;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-input .el-input__count {
+            display: none !important;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-input textarea::-webkit-resizer {
+            display: none !important;
+        }
+        /* Closed by default: meta fields + action row (spaniks/preview/etc) hidden. */
+        .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit .tk-meta-input,
+        .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit .tk-row.actions,
+        .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit .tk-preview,
+        .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit .tk-submit-action-icon.__markdown,
+        .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit input.tk-input-image {
+            display: none !important;
+        }
+        /* .is-open (toggled by JS) reveals meta fields + actions. */
+        .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit.is-open {
+            border-color: rgba(148, 163, 184, 0.45) !important;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit.is-open {
+            border-color: rgba(100, 116, 139, 0.6) !important;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit.is-open .tk-meta-input,
+        .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit.is-open .tk-row.actions {
+            display: flex !important;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit.is-open textarea {
+            min-height: 8rem !important;
+            height: 8rem !important;
+        }
+        /* Clean meta inputs: hairline underlines only, no stacked cards. */
+        .twikoo-wrap[data-variant="default"] .tk-meta-input {
+            flex-wrap: wrap !important;
+            gap: 0.9rem !important;
+            margin: 0 0 0.4rem !important;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-meta-input .el-input {
+            flex: 1 1 0 !important;
+            min-width: 7rem !important;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-meta-input .el-input__inner {
+            border: 0 !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.25) !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding-left: 0.1rem !important;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .tk-meta-input .el-input__inner {
+            border-bottom-color: rgba(71, 85, 105, 0.5) !important;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-meta-input .el-input-group__prepend {
+            border: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 0 0.35rem !important;
+            color: rgba(100, 116, 139, 0.85) !important;
+            font-size: 0.8rem !important;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .tk-meta-input .el-input-group__prepend {
+            color: rgba(148, 163, 184, 0.8) !important;
+        }
+        /* Actions row: right-aligned, NO top divider. */
+        .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit .tk-row.actions {
+            margin-top: 0.4rem !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+        }
+        /* Comment list: separated by whitespace only (no divider bar). */
+        .twikoo-wrap[data-variant="default"] .tk-comments-container {
+            margin-top: 1.2rem !important;
+        }
+        /* Site-styled sorting dropdown (最新评论/最早/最多点赞). */
+        .twikoo-wrap[data-variant="default"] .tk-sort-select {
+            font-size: 0.8rem !important;
+            padding: 0.3rem 0.65rem !important;
+            border: 1px solid rgba(148, 163, 184, 0.25) !important;
+            border-radius: 0.55rem !important;
+            background: rgba(148, 163, 184, 0.08) !important;
+            cursor: pointer !important;
+            color: var(--text-primary, #334155) !important;
+            outline: none !important;
+            transition:
+                border-color 0.2s ease,
+                background 0.2s ease;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .tk-sort-select {
+            border-color: rgba(71, 85, 105, 0.45) !important;
+            background: rgba(71, 85, 105, 0.18) !important;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-sort-select:hover {
+            border-color: rgba(148, 163, 184, 0.5) !important;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .tk-sort-select:hover {
+            border-color: rgba(100, 116, 139, 0.7) !important;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-sort-select:focus {
+            border-color: rgba(148, 163, 184, 0.55) !important;
+        }
         
         .dark .twikoo-wrap .tk-content {
             color: #cbd5e1;
@@ -282,6 +708,10 @@ export function Comments({
             height: 1em;
             display: inline-block;
             vertical-align: -0.125em;
+        }
+        /* Hide dislike — the 2nd action link (点赞, 点踩, 回复). */
+        [data-variant="default"] .tk-action a.tk-action-link:nth-of-type(2) {
+            display: none !important;
         }
         .twikoo-wrap .tk-action-icon svg path,
         .twikoo-wrap .tk-submit-action-icon svg path {
