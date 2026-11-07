@@ -10,16 +10,17 @@ import {
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/classNames'
 import { getImageUrl } from '@/lib/image'
+import { widgetCardClass } from '@/lib/styles'
 import { Link } from 'react-router-dom'
 import { Clock, FileText, Activity, Layers } from 'lucide-react'
 import { LuGithub, LuHammer, LuWholeWord } from 'react-icons/lu'
 import {
   RiBilibiliLine,
+  RiLinksLine,
   RiSubwayFill,
   RiTwitterXFill,
   RiZhihuFill,
 } from 'react-icons/ri'
-import { RiLinksLine } from 'react-icons/ri'
 import type { BlogPostSummary } from '@/lib/content/posts'
 
 const TRAVELLINGS_URL = 'https://www.travellings.cn/go.html'
@@ -106,30 +107,34 @@ function ProfileContent() {
   )
 }
 
-// --- Social Links (Single function as requested) ---
+// --- Social Links ---
+const STATIC_SOCIAL_LINKS = [
+  {
+    href: 'https://github.com/MarkXuJQ',
+    label: 'GitHub',
+    icon: <LuGithub size={20} aria-hidden="true" />,
+  },
+  {
+    href: 'https://space.bilibili.com/351772037',
+    label: 'Bilibili',
+    icon: <RiBilibiliLine size={20} aria-hidden="true" />,
+  },
+  {
+    href: 'https://x.com/MXu269/articles',
+    label: 'X (Twitter)',
+    icon: <RiTwitterXFill size={20} aria-hidden="true" />,
+  },
+  {
+    href: 'https://www.zhihu.com/people/mark-81-75',
+    label: 'Zhihu',
+    icon: <RiZhihuFill size={20} aria-hidden="true" />,
+  },
+]
+
 function SocialLinks() {
   const { t } = useTranslation()
   const socialLinks = [
-    {
-      href: 'https://github.com/MarkXuJQ',
-      label: 'GitHub',
-      icon: <LuGithub size={20} aria-hidden="true" />,
-    },
-    {
-      href: 'https://space.bilibili.com/351772037',
-      label: 'Bilibili',
-      icon: <RiBilibiliLine size={20} aria-hidden="true" />,
-    },
-    {
-      href: 'https://x.com/MXu269/articles',
-      label: 'X (Twitter)',
-      icon: <RiTwitterXFill size={20} aria-hidden="true" />,
-    },
-    {
-      href: 'https://www.zhihu.com/people/mark-81-75',
-      label: 'Zhihu',
-      icon: <RiZhihuFill size={20} aria-hidden="true" />,
-    },
+    ...STATIC_SOCIAL_LINKS,
     {
       href: TRAVELLINGS_URL,
       label: t('travellings.aria'),
@@ -378,7 +383,7 @@ export function StatsWidget({ posts }: StatsWidgetProps) {
 
   const runningDays = Math.max(
     0,
-    Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1)
+    Math.floor((Date.now() - startDate.getTime()) / DAY_IN_MS + 1)
   )
 
   const runningTimeValue = (() => {
@@ -503,8 +508,7 @@ function StatItem({
 }
 
 const styles = {
-  widgetCard:
-    'border border-slate-200/70 p-6 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-all hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] dark:border-0 dark:shadow-none',
+  widgetCard: widgetCardClass,
 
   // Profile
   profileContainer:
