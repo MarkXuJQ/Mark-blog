@@ -48,8 +48,18 @@
             "date": "2026-11-07"
           },
           {
-            "id": "site-update-20261107-8",
+            "id": "site-update-20261107-9",
             "content": "Fixed reply boxes that would not expand, a comment section freeze on load, and mixed Chinese/English UI copy",
+            "date": "2026-11-07"
+          }
+        ]
+      },
+      {
+        "title": "Friend Links Page Upgrade",
+        "items": [
+          {
+            "id": "site-update-20261107-8",
+            "content": "Upgraded the friend links page UI, added personal comments, and supported checking website accessibility during deployment, archiving temporarily inaccessible sites",
             "date": "2026-11-07"
           }
         ]

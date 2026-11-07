@@ -76,22 +76,7 @@ export function loadEmotionPack(url: string): Promise<EmotionPack | null> {
     try {
       const res = await fetch(url, { credentials: 'omit' })
       if (!res.ok) return null
-      const data: unknown = await res.json()
-      if (!data || typeof data !== 'object' || Array.isArray(data)) return null
-
-      const groups = Object.values(
-        data as Record<string, { type?: unknown; container?: unknown }>
-      )
-      if (!groups.length) return null
-      const valid = groups.every(
-        (g) =>
-          g &&
-          typeof g === 'object' &&
-          typeof g.type === 'string' &&
-          Array.isArray(g.container) &&
-          g.container.length > 0
-      )
-      return valid ? (data as EmotionPack) : null
+      return validateEmotionPack(await res.json())
     } catch {
       return null
     }
@@ -100,101 +85,102 @@ export function loadEmotionPack(url: string): Promise<EmotionPack | null> {
   return emotionPackPromise
 }
 
-/**
- * Point Twikoo's OwO picker at a custom pack at runtime, without requiring the
- * deployment to set `EMOTION_CDN` in the Twikoo admin panel.
- *
- * Twikoo's composer component keeps `config` (the object fetched via GET_CONFIG)
- * and exposes `initOwo()`, which re-reads `config.EMOTION_CDN` and rebuilds the
- * picker. Vue mirrors each component instance onto its root element as
- * `__vue__`, so we can locate it from the DOM and re-run initOwo.
- *
- * An explicitly configured admin pack always wins, and nothing is applied when
- * the pack fails validation (leaving Twikoo's working default in place).
- */
-export async function applyEmotionPack(emotionCdn: string): Promise<boolean> {
-  if (typeof window === 'undefined') return false
+function validateEmotionPack(data: unknown): EmotionPack | null {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return null
 
-  type TwikooVm = {
-    config?: Record<string, string>
-    initOwo?: () => void
-    $twikoo?: { serverConfig?: Record<string, string> }
-  }
-
-  const mount = document.querySelector<HTMLElement>(
-    '#twikoo-container, #twikoo'
+  const groups = Object.values(
+    data as Record<string, { type?: unknown; container?: unknown }>
   )
-  if (!mount) return false
+  if (!groups.length) return null
 
-  const findVm = (): TwikooVm | null => {
-    const candidates: HTMLElement[] = []
-    const submitEl = mount.querySelector<HTMLElement>('.tk-submit')
-    if (submitEl) candidates.push(submitEl)
-    candidates.push(mount)
-    const root = mount.querySelector<HTMLElement>('.twikoo')
-    if (root) candidates.push(root)
+  const valid = groups.every(
+    (g) =>
+      g &&
+      typeof g === 'object' &&
+      typeof g.type === 'string' &&
+      Array.isArray(g.container) &&
+      g.container.length > 0
+  )
+  return valid ? (data as EmotionPack) : null
+}
 
-    for (const el of candidates) {
-      const vm = (el as unknown as { __vue__?: TwikooVm }).__vue__
-      if (vm && typeof vm.initOwo === 'function') return vm
-    }
-    return null
-  }
+let packXhrPatched = false
 
-  const vm = findVm()
-  if (!vm) return false
-
-  const config = vm.config ?? vm.$twikoo?.serverConfig
-  if (!config) return false
-
-  // Wait until the server config has actually landed. Twikoo fetches it via an
-  // async GET_CONFIG *after* first render and then replaces the whole config
-  // object, which would silently discard anything we wrote beforehand.
-  const serverReady =
-    typeof vm.$twikoo?.serverConfig === 'object' &&
-    Object.keys(vm.$twikoo.serverConfig ?? {}).length > 0
-  if (!serverReady) return false
-
-  // Respect a pack configured in the Twikoo admin panel.
-  const existing = config.EMOTION_CDN
-  if (existing && existing !== emotionCdn) return true
+/**
+ * Deterministically swap Twikoo's emotion pack.
+ *
+ * Twikoo loads the pack with a raw XMLHttpRequest to `config.EMOTION_CDN` (or its
+ * built-in default). Racing that by patching `config` and calling `initOwo()`
+ * again is inherently flaky: Twikoo replaces the whole config object when its
+ * asynchronous GET_CONFIG arrives, and mounted-order varies between loads.
+ *
+ * Instead we intercept the request at its source: any XHR for an OwO JSON gets
+ * answered with our validated pack. That makes the result identical on every
+ * load, regardless of config timing, and leaves the admin's own EMOTION_CDN
+ * untouched (we only stand in when it is unset).
+ */
+export async function installEmotionPackInterceptor(
+  emotionCdn: string
+): Promise<boolean> {
+  if (typeof window === 'undefined' || packXhrPatched) return false
 
   const pack = await loadEmotionPack(emotionCdn)
-  // Bail out instead of breaking the picker when the pack is unreachable.
+  // Without a valid pack the interceptor would only break the picker.
   if (!pack) return false
 
-  const expectedGroups = Object.keys(pack).length
-  // Ground truth: how many groups the picker actually rendered. `config` alone
-  // is unreliable because Twikoo swaps the whole object when GET_CONFIG lands.
-  const renderedGroups = (): number =>
-    mount.querySelectorAll('.OwO .OwO-packages li').length
+  packXhrPatched = true
+  const packJson = JSON.stringify(pack)
+  const originalOpen = XMLHttpRequest.prototype.open
+  const originalSend = XMLHttpRequest.prototype.send
 
-  if (renderedGroups() === expectedGroups && existing === emotionCdn) {
-    return true
-  }
+  // Remember the URL each request was opened with so send() can inspect it.
+  const urlByXhr = new WeakMap<XMLHttpRequest, string>()
 
-  config.EMOTION_CDN = emotionCdn
-  if (vm.config) vm.config.EMOTION_CDN = emotionCdn
-  if (vm.$twikoo?.serverConfig) {
-    vm.$twikoo.serverConfig.EMOTION_CDN = emotionCdn
-  }
-  vm.initOwo?.()
+  XMLHttpRequest.prototype.open = function (
+    this: XMLHttpRequest,
+    _method: string,
+    url: string | URL
+  ) {
+    urlByXhr.set(this, String(url))
+    // eslint-disable-next-line prefer-rest-params
+    return originalOpen.apply(this, arguments as never)
+  } as typeof XMLHttpRequest.prototype.open
 
-  // initOwo fetches the pack asynchronously; give it a moment to land before
-  // the caller decides whether another attempt is needed.
-  for (let i = 0; i < 12; i += 1) {
-    await new Promise((r) => setTimeout(r, 250))
-    if (renderedGroups() === expectedGroups) {
-      // Re-assert the URL: a late GET_CONFIG may have blanked it again.
-      if (vm.config) vm.config.EMOTION_CDN = emotionCdn
-      if (vm.$twikoo?.serverConfig) {
-        vm.$twikoo.serverConfig.EMOTION_CDN = emotionCdn
+  XMLHttpRequest.prototype.send = function (
+    this: XMLHttpRequest,
+    ...args: unknown[]
+  ) {
+    const url = urlByXhr.get(this) ?? ''
+    const isPackRequest =
+      /(?:^|\/)(?:owo|emotions?)(?:[\w.-]*)\.json(?:\?|$)/i.test(url) ||
+      /owo\.json/i.test(url)
+
+    // Only answer for Twikoo's default pack. If the site configured its own
+    // EMOTION_CDN, that URL is not the default one and is left alone.
+    const isDefaultPack =
+      /owo\.imaegoo\.com/i.test(url) || /\/emotions\/owo\.json/i.test(url)
+
+    if (isPackRequest && isDefaultPack) {
+      // Serve our pack without touching the network.
+      const xhr = this as XMLHttpRequest
+      for (const [key, value] of [
+        ['readyState', 4],
+        ['status', 200],
+        ['responseText', packJson],
+        ['response', packJson],
+      ] as const) {
+        Object.defineProperty(xhr, key, { value, configurable: true })
       }
-      return true
+      xhr.dispatchEvent(new Event('readystatechange'))
+      xhr.dispatchEvent(new Event('load'))
+      xhr.dispatchEvent(new Event('loadend'))
+      return
     }
-  }
 
-  return false
+    return originalSend.apply(this, args as never)
+  } as typeof XMLHttpRequest.prototype.send
+
+  return true
 }
 
 function waitForTwikooReady() {
