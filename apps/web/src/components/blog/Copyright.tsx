@@ -5,6 +5,7 @@ import {
   FaCreativeCommonsNc,
   FaCreativeCommonsSa,
 } from 'react-icons/fa'
+import { SignatureAnimation } from '@/components/blog/SignatureAnimation'
 
 export function Copyright() {
   const { t } = useTranslation()
@@ -22,46 +23,59 @@ export function Copyright() {
           <FaCreativeCommonsSa className="h-48 w-48" />
         </div>
       </div>
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-500/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-300">
-            <FaCreativeCommons className="h-5 w-5" />
-          </span>
-          <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-            {t('blog.copyright.title', 'Copyright')}
-          </span>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <div className="mb-4 flex items-center gap-2">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-500/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-300">
+              <FaCreativeCommons className="h-5 w-5" />
+            </span>
+            <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+              {t('blog.copyright.title', 'Copyright')}
+            </span>
+          </div>
+
+          <ul className="grid gap-3 text-sm sm:grid-cols-2">
+            <li className="flex items-center justify-between gap-3 sm:col-span-2 sm:gap-6">
+              <span className="flex min-w-0 shrink items-center gap-2 sm:gap-0">
+                <span className="min-w-[4rem] shrink-0 font-bold text-slate-700 dark:text-slate-200">
+                  {`${t('blog.copyright.author')}:`}
+                </span>
+                <span className="truncate text-slate-600 dark:text-slate-300">
+                  Mark Xu
+                </span>
+              </span>
+              <SignatureAnimation
+                width={160}
+                duration={2}
+                hold={1.5}
+                fade={0.4}
+                className="shrink-0 text-slate-500 dark:text-slate-300"
+              />
+            </li>
+            <li className="flex flex-col gap-1 sm:col-span-2 sm:flex-row sm:gap-2">
+              <span className="min-w-[4rem] font-bold text-slate-700 dark:text-slate-200">
+                {`${t('blog.copyright.license')}:`}
+              </span>
+              <span className="text-slate-600 dark:text-slate-300">
+                <Trans
+                  i18nKey="blog.copyright.statement"
+                  values={{ license: 'CC BY-NC-SA 4.0' }}
+                  components={[
+                    <a
+                      key="license-link"
+                      href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="CC BY-NC-SA 4.0"
+                      className="text-blue-600 hover:underline dark:text-blue-400"
+                    />,
+                  ]}
+                />
+              </span>
+            </li>
+          </ul>
         </div>
       </div>
-
-      <ul className="grid gap-3 text-sm sm:grid-cols-2">
-        <li className="flex flex-col gap-1 sm:flex-row sm:gap-2">
-          <span className="min-w-[4rem] font-bold text-slate-700 dark:text-slate-200">
-            {`${t('blog.copyright.author')}:`}
-          </span>
-          <span className="text-slate-600 dark:text-slate-300">Mark Xu</span>
-        </li>
-        <li className="flex flex-col gap-1 sm:col-span-2 sm:flex-row sm:gap-2">
-          <span className="min-w-[4rem] font-bold text-slate-700 dark:text-slate-200">
-            {`${t('blog.copyright.license')}:`}
-          </span>
-          <span className="text-slate-600 dark:text-slate-300">
-            <Trans
-              i18nKey="blog.copyright.statement"
-              values={{ license: 'CC BY-NC-SA 4.0' }}
-              components={[
-                <a
-                  key="license-link"
-                  href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="CC BY-NC-SA 4.0"
-                  className="text-blue-600 hover:underline dark:text-blue-400"
-                />,
-              ]}
-            />
-          </span>
-        </li>
-      </ul>
     </div>
   )
 }
