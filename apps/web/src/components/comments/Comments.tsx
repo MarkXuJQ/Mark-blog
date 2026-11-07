@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LinkGuard } from './LinkGuard'
 import {
-  applyEmotionPack,
   getTwikooApi,
+  installEmotionPackInterceptor,
   loadTwikooScript,
 } from '@/lib/comments/twikooLoader'
 import { cn } from '@/lib/classNames'
@@ -28,9 +28,6 @@ const EMOTION_CDN =
   (typeof window === 'undefined'
     ? '/emotions/owo.json'
     : new URL('/emotions/owo.json', window.location.origin).toString())
-
-// Only one retry loop may run across mounts; the pack is a global Twikoo setting.
-let emotionRetryBound = false
 
 // Shared cadence for both rotating texts: the composer placeholder and the
 // empty-state message in the comments list.
@@ -245,34 +242,6 @@ export function Comments({
           emptyEl.textContent = lines[i]
         }, ROTATE_INTERVAL_MS)
       }
-
-      // --- richer OwO emotion pack (merged default + custom groups) ---
-      // Twikoo reads the pack URL from its server config; if the deployment
-      // hasn't set EMOTION_CDN we point it at the pack shipped with the site.
-      // Fire-and-forget with bounded retries: until the composer's Vue instance
-      // is mounted the patch can't apply, and a missing pack must never block
-      // or break the picker (Twikoo's built-in pack stays in that case).
-      if (wrap.querySelector('.OwO') && !emotionRetryBound) {
-        emotionRetryBound = true
-        let tries = 0
-        let confirmed = 0
-        const attempt = async () => {
-          tries += 1
-          const applied = await applyEmotionPack(EMOTION_CDN)
-          // Twikoo replaces the whole config object when its async GET_CONFIG
-          // response lands, which can wipe the URL we just wrote. Keep checking
-          // for a while after success so a late overwrite gets patched again.
-          confirmed = applied ? confirmed + 1 : 0
-          // Stop once the pack is verifiably rendered a few times in a row, or
-          // give up and release the lock so a later mount can retry.
-          if (confirmed >= 3 || tries >= 12) {
-            window.clearInterval(retry)
-            if (!applied) emotionRetryBound = false
-          }
-        }
-        const retry = window.setInterval(() => void attempt(), 500)
-        void attempt()
-      }
     },
     [t]
   )
@@ -321,7 +290,17 @@ export function Comments({
     const initTwikoo = async () => {
       try {
         setStatus('loading')
-        await loadTwikooScript()
+        // Warm the script and the emotion pack together, then arm the pack
+        // interceptor before Twikoo mounts and requests the pack itself.
+        const [, packReady] = await Promise.all([
+          loadTwikooScript(),
+          installEmotionPackInterceptor(EMOTION_CDN),
+        ])
+        if (import.meta.env.DEV && !packReady) {
+          console.warn(
+            '[comments] custom emotion pack unavailable; falling back to the default pack'
+          )
+        }
         const twikooApi = getTwikooApi()
         if (cancelled || !twikooApi) return
 
