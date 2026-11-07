@@ -12,6 +12,7 @@ import {
 import { ExternalLink, MousePointer2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/classNames'
+import { clamp01, easeOutCubic } from '@/lib/math'
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
 import markTravelRecord from '@content/travel/records/mark.json'
 import worldFootprintBaseSvg from '../../assets/travel/world-footprint-base.svg'
@@ -81,14 +82,6 @@ interface TravelJourneyRecord {
 interface TravelRecord {
   birthplace?: TravelLocationRecord
   journeys?: TravelJourneyRecord[]
-}
-
-function clamp01(value: number) {
-  return Math.min(Math.max(value, 0), 1)
-}
-
-function easeOutCubic(value: number) {
-  return 1 - Math.pow(1 - value, 3)
 }
 
 function getLocationKeys(location: TravelLocationRecord) {
@@ -517,7 +510,7 @@ const styles = {
   summaryPill:
     'inline-flex items-baseline gap-2.5 border-l border-white/10 pl-4 text-white first:border-l-0 first:pl-0',
   summaryPillValue:
-    "text-[1.15rem] font-semibold leading-none tabular-nums text-white/86 [font-family:'Tourney',sans-serif]",
+    "text-[1.15rem] font-semibold leading-none tabular-nums text-white/86 font-tourney",
   summaryPillLabel:
     'text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-white/40',
   ambientOrbit:

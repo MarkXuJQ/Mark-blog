@@ -42,8 +42,17 @@ export const HOME_RADAR_RING_START = RINGS_START
 
 const SIGNAL_HOVER_EXIT_DELAY_MS = 96
 
-export function clamp01(value: number) {
-  return Math.min(Math.max(value, 0), 1)
+import {
+  clamp01,
+  easeOutCubic,
+  getClockwiseAngleDelta,
+  normalizeAngle,
+} from '@/lib/math'
+export {
+  clamp01,
+  easeOutCubic,
+  getClockwiseAngleDelta,
+  normalizeAngle,
 }
 
 export function mix(from: number, to: number, progress: number) {
@@ -55,23 +64,10 @@ export function segmentProgress(value: number, start: number, end: number) {
   return clamp01((value - start) / (end - start))
 }
 
-export function easeOutCubic(value: number) {
-  return 1 - Math.pow(1 - value, 3)
-}
-
 export function easeOutBack(value: number) {
   const c1 = 1.70158
   const c3 = c1 + 1
   return 1 + c3 * Math.pow(value - 1, 3) + c1 * Math.pow(value - 1, 2)
-}
-
-export function normalizeAngle(angle: number) {
-  const normalized = angle % FULL_ROTATION_DEGREES
-  return normalized < 0 ? normalized + FULL_ROTATION_DEGREES : normalized
-}
-
-function getClockwiseAngleDelta(from: number, to: number) {
-  return normalizeAngle(to - from)
 }
 
 function getSweepNodeAngle(nodeAngle: number, sweepStartAngle: number) {
@@ -603,8 +599,6 @@ export function useHomeRadarScene({
   )
   const beamRotate = beamAngle + BEAM_HEAD_OFFSET
   const beamFocusAngle = normalizeAngle(beamAngle + BEAM_FOCUS_OFFSET)
-  const beamSweepStartAngle = normalizeAngle(BEAM_FOCUS_OFFSET)
-  const beamFocusSweepAngle = beamSweepStartAngle + sweepBeamAngle
 
   useEffect(() => {
     if (reduceMotion || paused || !beamLoopActive || !active) {
@@ -646,11 +640,9 @@ export function useHomeRadarScene({
     ambienceReveal,
     beamAngle,
     beamFocusAngle,
-    beamFocusSweepAngle,
     beamLoopActive,
     beamOpacity,
     beamRotate,
-    beamSweepStartAngle,
     explorationProgress,
     horizontalLineReveal,
     introReveal,

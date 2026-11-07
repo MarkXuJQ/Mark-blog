@@ -7,6 +7,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { CornerUpLeft, ExternalLink } from 'lucide-react'
+import { clamp } from '@/lib/math'
 
 interface LinkGuardProps {
   /**
@@ -24,10 +25,6 @@ type PopoverPosition = {
 const POPOVER_WIDTH = 360
 const POPOVER_GUTTER = 12
 const POPOVER_OFFSET = 10
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max)
-}
 
 function getPopoverPosition(anchor: HTMLElement): PopoverPosition {
   const rect = anchor.getBoundingClientRect()
