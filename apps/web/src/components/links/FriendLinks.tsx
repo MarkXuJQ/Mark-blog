@@ -6,6 +6,8 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from 'react'
 import { useTranslation } from 'react-i18next'
+import { WifiOff } from 'lucide-react'
+import { BiCommentDetail } from 'react-icons/bi'
 import { StaggeredList } from '@/components/ui/StaggeredList'
 import {
   Tooltip,
@@ -17,10 +19,12 @@ import { cn } from '@/lib/classNames'
 import {
   FRIEND_LINK_CATEGORY_ORDER,
   FRIEND_LINKS,
+  getFriendLinkByHref,
   getFriendLinkLabels,
   type FriendLink,
   type FriendLinkCategory,
 } from '@/lib/links/friendLinksData'
+import lostFriendsData from '@/data/lost-friends.json'
 
 interface FriendLinksProps {
   className?: string
@@ -127,14 +131,67 @@ function FriendLinkCard({
           showArrow
           className={styles.tooltip}
         >
-          <span className={styles.tooltipLayer}>
-            <span className={styles.tooltipTitle}>{link.name}</span>
-            <span className={styles.tooltipUrl}>{link.href}</span>
-          </span>
-          <span className={styles.tooltipDescription}>{link.description}</span>
+          <FriendLinkTooltipDetail
+            avatarSrc={link.faviconSrc}
+            name={link.name}
+            url={link.href}
+            description={link.description}
+            comment={link.comment}
+          />
         </TooltipContent>
       </Tooltip>
     </span>
+  )
+}
+
+function FriendLinkTooltipDetail({
+  avatarSrc,
+  name,
+  url,
+  description,
+  comment,
+}: {
+  avatarSrc?: string
+  name: string
+  url: string
+  description?: string
+  comment?: string
+}) {
+  const showPlaceholder = !avatarSrc
+  const displayUrl = url.replace(/^https?:\/\//, '').replace(/\/$/, '')
+
+  return (
+    <div className={styles.tooltipDetail}>
+      <div className={styles.tooltipAvatarShell}>
+        {showPlaceholder ? (
+          <span className={styles.tooltipAvatarPlaceholder}>
+            {name.charAt(0)}
+          </span>
+        ) : (
+          <img
+            src={avatarSrc}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            decoding="async"
+            className={styles.tooltipAvatar}
+          />
+        )}
+      </div>
+      <div className={styles.tooltipBody}>
+        <span className={styles.tooltipName}>{name}</span>
+        <span className={styles.tooltipUrl}>{displayUrl}</span>
+        {description ? (
+          <span className={styles.tooltipDescription}>{description}</span>
+        ) : null}
+        {comment ? (
+          <span className={styles.tooltipComment}>
+            <BiCommentDetail className={styles.tooltipCommentIcon} aria-hidden="true" />
+            <span className={styles.tooltipCommentText}>{comment}</span>
+          </span>
+        ) : null}
+      </div>
+    </div>
   )
 }
 
@@ -280,30 +337,28 @@ function FriendLinkGrid({
   useEffect(() => resetLens, [resetLens])
 
   return (
-    <TooltipProvider delayDuration={120} skipDelayDuration={80}>
-      <div
-        className={styles.gridField}
-        onPointerMove={handlePointerMove}
-        onPointerLeave={resetLens}
-        onPointerCancel={resetLens}
+    <div
+      className={styles.gridField}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={resetLens}
+      onPointerCancel={resetLens}
+    >
+      <StaggeredList
+        className={cn(simple ? styles.simpleGrid : styles.grid)}
+        startIndex={motionIndexOffset}
       >
-        <StaggeredList
-          className={cn(simple ? styles.simpleGrid : styles.grid)}
-          startIndex={motionIndexOffset}
-        >
-          {links.map((link) => (
-            <FriendLinkCard
-              key={link.id}
-              link={link}
-              simple={simple}
-              registerItem={registerItem}
-              onItemFocus={handleItemFocus}
-              onItemBlur={resetLens}
-            />
-          ))}
-        </StaggeredList>
-      </div>
-    </TooltipProvider>
+        {links.map((link) => (
+          <FriendLinkCard
+            key={link.id}
+            link={link}
+            simple={simple}
+            registerItem={registerItem}
+            onItemFocus={handleItemFocus}
+            onItemBlur={resetLens}
+          />
+        ))}
+      </StaggeredList>
+    </div>
   )
 }
 
@@ -388,18 +443,39 @@ const styles = {
   simpleSectionHeader: 'pb-1',
   simpleGrid:
     'grid grid-cols-[repeat(auto-fill,minmax(min(100%,9.75rem),1fr))] gap-x-3 gap-y-1.5',
-  tooltipLayer:
-    'block rounded-md bg-slate-50/90 px-2.5 py-2 ring-1 ring-slate-900/5 dark:bg-[#202328] dark:ring-white/5',
-  tooltipTitle:
-    'block truncate text-sm font-semibold text-slate-900 dark:text-slate-100',
-  tooltipUrl:
-    'mt-1 block break-all font-mono text-[11px] leading-4 text-slate-500 dark:text-slate-400',
+  tooltipDetail:
+    'flex items-start gap-3',
+  tooltipAvatarShell:
+    'relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-900/10 dark:bg-[#23262b] dark:ring-white/10',
+  tooltipAvatar:
+    'absolute inset-0 h-full w-full object-cover',
+  tooltipAvatarPlaceholder:
+    'absolute inset-0 flex h-full w-full items-center justify-center text-2xl font-semibold text-slate-400 dark:text-slate-500',
+  tooltipBody:
+    'flex min-w-0 flex-1 flex-col gap-1',
+  tooltipName:
+    'block text-[15px] font-semibold leading-5 text-slate-900 dark:text-slate-100',
   tooltipDescription:
-    'block px-1.5 pb-0.5 pt-2 text-xs leading-5 text-[var(--text-secondary)] dark:text-[var(--text-secondary)]',
+    'block text-xs leading-5 text-[var(--text-secondary)] dark:text-[var(--text-secondary)]',
+  tooltipComment:
+    'flex items-start gap-1.5 rounded-md bg-slate-100/80 px-3 py-1.5 text-xs leading-5 text-[var(--text-primary)] dark:bg-[#23262b]/70 dark:text-[var(--text-primary)]',
+  tooltipCommentIcon:
+    'mt-0.5 h-4 w-4 shrink-0 text-slate-900 dark:text-slate-100',
+  tooltipCommentText:
+    'min-w-0 flex-1',
+  tooltipUrl:
+    'block truncate font-mono text-[11px] leading-4 text-slate-400 dark:text-slate-500',
   tooltip:
-    'friend-link-tooltip max-w-[20rem] rounded-lg !border-slate-200/70 !bg-white/95 p-1.5 !text-[var(--text-primary)] !shadow-[0_18px_42px_-30px_rgba(15,23,42,0.45)] !ring-1 !ring-slate-900/5 dark:!border-0 dark:!bg-[#17191c] dark:!shadow-none dark:!ring-white/5',
+    'friend-link-tooltip max-w-[22rem] rounded-xl !border-slate-200/70 !bg-white/95 p-3 !text-[var(--text-primary)] !shadow-[0_18px_42px_-30px_rgba(15,23,42,0.45)] !ring-1 !ring-slate-900/5 dark:!border-0 dark:!bg-[#17191c] dark:!shadow-none dark:!ring-white/5',
   emptyState:
     'rounded-xl border border-slate-200/70 bg-white/80 px-4 py-5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur dark:border-0 dark:bg-[#17191c] dark:shadow-none',
+  archivedGrid: 'mt-1',
+  archivedCard:
+    'opacity-70 saturate-50 hover:opacity-100 hover:saturate-100',
+  archivedDot:
+    'mr-2 inline-block h-2 w-2 shrink-0 rounded-full bg-rose-400 shadow-[0_0_0_3px_rgba(244,63,94,0.18)]',
+  archivedName:
+    'text-slate-500 line-through decoration-slate-400/70 decoration-1 dark:text-slate-400',
 }
 
 export function FriendLinks({ className, simple = false }: FriendLinksProps) {
@@ -416,16 +492,173 @@ export function FriendLinks({ className, simple = false }: FriendLinksProps) {
   })
 
   return (
-    <div className={cn(simple ? 'space-y-9' : 'space-y-10', className)}>
-      {groupedLinks.map(({ category, links, motionIndexOffset }) => (
-        <FriendLinkSection
-          key={category}
-          category={category}
-          links={links}
-          simple={simple}
-          motionIndexOffset={motionIndexOffset}
+    <TooltipProvider delayDuration={120} skipDelayDuration={80}>
+      <div className={cn(simple ? 'space-y-9' : 'space-y-10', className)}>
+        {groupedLinks.map(({ category, links, motionIndexOffset }) => (
+          <FriendLinkSection
+            key={category}
+            category={category}
+            links={links}
+            simple={simple}
+            motionIndexOffset={motionIndexOffset}
+          />
+        ))}
+        <ArchivedFriendsSection simple={simple} />
+      </div>
+    </TooltipProvider>
+  )
+}
+
+interface ArchivedFriend {
+  id: string
+  category: string
+  name: string
+  url: string
+  description?: string
+  httpStatus?: number | null
+}
+
+function ArchivedFriendsSection({ simple = false }: { simple?: boolean }) {
+  const { i18n } = useTranslation()
+  const isZh = Boolean(i18n.language?.startsWith('zh'))
+  const labels = getFriendLinkLabels(isZh)
+  const archived =
+    lostFriendsData.archived as unknown as ArchivedFriend[]
+
+  return (
+    <section className={cn(simple ? 'space-y-3' : 'space-y-4')}>
+      <ArchivedSectionHeader
+        simple={simple}
+        labels={labels}
+        count={archived.length}
+      />
+      {labels.checkedAtNote ? (
+        <p
+          className={cn(
+            'text-xs text-slate-400 dark:text-slate-500',
+            simple ? 'px-0.5' : ''
+          )}
+        >
+          {labels.checkedAtNote}
+        </p>
+      ) : null}
+      {archived.length === 0 ? (
+        <p
+          className={cn(
+            'text-sm leading-6 text-slate-500 dark:text-slate-400',
+            simple ? 'py-2' : styles.emptyState
+          )}
+        >
+          {labels.archivedEmpty}
+        </p>
+      ) : (
+        <div
+          className={cn(
+            simple ? styles.simpleGrid : styles.grid,
+            styles.archivedGrid
+          )}
+        >
+          {archived.map((entry) => (
+            <ArchivedFriendCard key={entry.id} entry={entry} simple={simple} />
+          ))}
+        </div>
+      )}
+    </section>
+  )
+}
+
+function ArchivedSectionHeader({
+  simple,
+  labels,
+  count,
+}: {
+  simple: boolean
+  labels: ReturnType<typeof getFriendLinkLabels>
+  count: number
+}) {
+  return (
+    <div
+      className={cn(
+        'flex items-baseline justify-between gap-4',
+        simple ? styles.simpleSectionHeader : styles.sectionHeader
+      )}
+    >
+      <h2
+        className={cn(
+          'flex items-center gap-2 text-xl font-bold',
+          simple
+            ? 'text-[var(--text-primary)]'
+            : 'text-slate-900 dark:text-slate-100'
+        )}
+      >
+        <WifiOff
+          className={cn(
+            'h-5 w-5',
+            simple ? 'text-[var(--text-secondary)]' : 'text-slate-400 dark:text-slate-500'
+          )}
+          aria-hidden="true"
         />
-      ))}
+        {labels.archivedTitle}
+      </h2>
+      <span
+        className={cn(
+          'font-medium text-slate-400 dark:text-slate-500',
+          simple ? 'text-xs' : 'text-sm'
+        )}
+      >
+        {labels.archivedCount(count)}
+      </span>
     </div>
+  )
+}
+
+function ArchivedFriendCard({
+  entry,
+  simple,
+}: {
+  entry: ArchivedFriend
+  simple: boolean
+}) {
+  const { i18n } = useTranslation()
+  const labels = getFriendLinkLabels(Boolean(i18n.language?.startsWith('zh')))
+  const fullLink = getFriendLinkByHref(entry.url)
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <a
+          href={entry.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            'group flex min-w-0 items-center',
+            simple
+              ? cn(styles.simpleCard, styles.archivedCard)
+              : cn(styles.card, styles.archivedCard)
+          )}
+          aria-label={`${labels.openLabel}: ${entry.name} (${labels.archivedTitle})`}
+        >
+          <span className={styles.archivedDot} aria-hidden="true" />
+          <span className={cn(styles.linkName, styles.archivedName)}>
+            {entry.name}
+          </span>
+        </a>
+      </TooltipTrigger>
+      <TooltipContent
+        side="top"
+        align="center"
+        sideOffset={12}
+        showArrow
+        className={styles.tooltip}
+      >
+        <FriendLinkTooltipDetail
+          avatarSrc={fullLink?.faviconSrc}
+          name={entry.name}
+          url={entry.url}
+          description={entry.description}
+          comment={fullLink?.comment}
+        />
+      </TooltipContent>
+    </Tooltip>
   )
 }

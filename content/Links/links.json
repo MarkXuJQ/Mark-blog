@@ -3,178 +3,192 @@
     {
       "name": "阮一峰的网络日志",
       "url": "https://www.ruanyifeng.com/blog/",
-      "avatar": "ruanyifeng",
-      "description": "阮一峰老师的长期技术写作站点，记录编程、互联网、科技观察和每周分享。"
+      "avatar": "https://www.google.com/s2/favicons?domain=www.ruanyifeng.com&sz=64",
+      "comment": "阮一峰老师的长期技术写作站点，记录编程、互联网、科技观察和每周分享。"
     },
     {
       "name": "Eventuallymaking",
       "url": "https://eventuallymaking.io/",
-      "avatar": "eventuallymaking",
-      "description": "一位软件工程师的个人网站，分享工程实践、产品构建和创业相关的思考。"
+      "avatar": "https://www.google.com/s2/favicons?domain=eventuallymaking.io&sz=64",
+      "comment": "一位软件工程师的个人网站，分享工程实践、产品构建和创业相关的思考。"
     },
     {
       "name": "Pathos.page",
       "url": "https://pathos.page/",
-      "avatar": "pathos",
-      "description": "一位法哲学研究者的博客，记录学术写作、问题意识和社会观察。"
+      "avatar": "https://www.google.com/s2/favicons?domain=pathos.page&sz=64",
+      "comment": "一位法哲学研究者的博客，记录学术写作、问题意识和社会观察。"
     },
     {
       "name": "纸鹿摸鱼处",
       "url": "https://blog.zhilu.site/",
-      "avatar": "zhilu",
-      "description": "纸鹿至麓不知路，支炉制露不止漉。"
+      "avatar": "https://www.zhilu.site/api/avatar.png",
+      "description": "纸鹿至麓不知路，支炉制露不止漉。",
+      "comment": "本站最开始受启发的对象，可以在本站看到许多影子，文字成熟又锋利。"
     },
     {
       "name": "Innei",
       "url": "https://innei.in/",
-      "avatar": "innei",
-      "description": "Innei's personal blog on frontend and full-stack development — TypeScript, React, Next.js, AI engineering, indie hacking, travel and life."
+      "avatar": "https://www.google.com/s2/favicons?domain=innei.in&sz=64",
+      "description": "Innei's personal blog on frontend and full-stack development — TypeScript, React, Next.js, AI engineering, indie hacking, travel and life.",
+      "comment": "前端实现细节极讲究，文章内容也很亲切和直观，其主题和组件都值得拆开来学。"
     },
     {
       "name": "Victor Zhou",
       "url": "https://victorzhou.com/",
-      "avatar": "victorzhou",
-      "description": "Victor Zhou 的个人博客，分享 Web 开发、机器学习、Python、Gatsby 和安全等工程笔记。"
+      "avatar": "https://www.google.com/s2/favicons?domain=victorzhou.com&sz=64",
+      "comment": "Victor Zhou 的个人博客，分享 Web 开发、机器学习、Python、Gatsby 和安全等工程笔记。"
     },
     {
       "name": "Mayx的博客",
       "url": "https://mayx.eu.org/",
       "avatar": "https://mayx.eu.org/favicon.ico",
-      "description": "Mayx 的个人博客，记录文章与思考。"
+      "comment": "Mayx 的个人博客，记录文章与思考。涉猎极广，是我的学习对象！"
     },
     {
       "name": "dbushell.com",
       "url": "https://dbushell.com/",
-      "avatar": "dbushell",
-      "description": "David Bushell 的个人网站，内容涉及 Web 标准、前端工程、性能、可访问性和安全。同时还是个坚定的反AI主义者。"
+      "avatar": "https://www.google.com/s2/favicons?domain=dbushell.com&sz=64",
+      "comment": "David Bushell 的个人网站，内容涉及 Web 标准、前端工程、性能、可访问性和安全。同时还是个坚定的反AI主义者。"
     },
     {
       "name": "Armin Ronacher",
       "url": "https://lucumr.pocoo.org/",
-      "avatar": "lucumr",
-      "description": "Armin Ronacher 的长期个人博客，记录 Python、Flask、Rust、开源工程和软件设计思考。"
+      "avatar": "https://www.google.com/s2/favicons?domain=lucumr.pocoo.org&sz=64",
+      "comment": "Armin Ronacher 的长期个人博客，记录 Python、Flask、Rust、开源工程和软件设计思考。"
     },
     {
       "name": "Dan Luu",
       "url": "https://danluu.com/",
       "avatar": "https://danluu.com/favicon.png",
-      "description": "Dan Luu 的个人博客，长期记录软件工程、性能、计算机系统、技术文化与社会观察。"
+      "comment": "Dan Luu 的个人博客，长期记录软件工程、性能、计算机系统、技术文化与社会观察。好多文章都对我很有启发。"
     }
   ],
   "neighbors": [
     {
       "name": "Josh W. Comeau",
       "url": "https://www.joshwcomeau.com/",
-      "avatar": "joshwcomeau",
-      "description": "Josh W. Comeau 的前端教学网站，内容围绕 React、CSS、动画和交互体验展开。"
+      "avatar": "https://www.google.com/s2/favicons?domain=www.joshwcomeau.com&sz=64",
+      "comment": "Josh W. Comeau 的前端教学网站，内容围绕 React、CSS、动画和交互体验展开。"
     },
     {
       "name": "张洪Heo",
       "url": "https://blog.zhheo.com/",
-      "avatar": "zhheo",
-      "description": "张洪Heo 的个人博客，分享设计、前端开发、AI 应用和自研工具。"
+      "avatar": "https://www.google.com/s2/favicons?domain=blog.zhheo.com&sz=64",
+      "comment": "张洪Heo 的个人博客，分享设计、前端开发、AI 应用和自研工具。"
     },
     {
       "name": "1900.live",
       "url": "https://1900.live/",
-      "avatar": "nineteen-hundred",
-      "description": "1900 的个人博客，记录骑行、编程、观影、生活感想和健康观察。"
+      "avatar": "https://www.google.com/s2/favicons?domain=1900.live&sz=64",
+      "comment": "1900 的个人博客，记录骑行、编程、观影、生活感想和健康观察。"
     },
     {
       "name": "科学空间",
       "url": "https://spaces.ac.cn/",
-      "avatar": "spaces",
-      "description": "苏剑林维护的长期中文科学博客，内容横跨数学、自然科学、机器学习和生活随笔。"
+      "avatar": "https://www.google.com/s2/favicons?domain=spaces.ac.cn&sz=64",
+      "comment": "苏剑林维护的长期中文科学博客，内容横跨数学、自然科学、机器学习和生活随笔。"
     },
     {
       "name": "水拍石",
       "url": "https://www.leitao.cn/",
-      "avatar": "leitao",
-      "description": "雷涛的个人博客，长期记录经济、投资、阅读、摄影和生活随笔。"
+      "avatar": "https://www.leitao.cn/wp-content/uploads/2026/09/logo-s.svg",
+      "comment": "雷涛的个人博客，长期记录经济、投资、阅读、摄影和生活随笔。"
     },
     {
       "name": "Blurred code",
       "url": "https://www.blurredcode.com/",
-      "avatar": "blurredcode",
-      "description": "记录 Unreal Engine、Vulkan、图形渲染、移动端性能与底层工程问题的技术博客。"
+      "avatar": "https://www.google.com/s2/favicons?domain=www.blurredcode.com&sz=64",
+      "comment": "记录 Unreal Engine、Vulkan、图形渲染、移动端性能与底层工程问题的技术博客。"
     },
     {
       "name": "TT清沫uk",
       "url": "https://ttquk.github.io/",
-      "avatar": "ttquk",
-      "description": "TT清沫ukの博客"
+      "avatar": "https://ts1.tc.mm.bing.net/th/id/OIP-C.6WsD9caLSNQFhJOi77soRAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "description": "TT清沫ukの博客",
+      "comment": "独立小站，风格可爱。"
     },
     {
       "name": "哈喽！林墨白",
       "url": "https://blog.lmb.blue/",
-      "avatar": "lmb",
-      "description": "沉墨满纸，一笑若白。"
+      "avatar": "https://files.blog.lmb.blue/assets/img/logo/pink-black.png",
+      "description": "沉墨满纸，一笑若白。",
+      "comment": "文字很有诗意，安静温柔的小角落。"
     },
     {
       "name": "YUNYI BLOG",
       "url": "https://www.yunyitang.me/",
-      "avatar": "yunyitang",
-      "description": "这里是 Yunyi 的个人博客，基本上啥都写：开发心得分享，日常吐槽吹水，偶尔也会写点正经文字。"
+      "avatar": "https://www.yunyitang.me/img/favicon.png",
+      "description": "得闲饮茶～～～",
+      "comment": "什么都能聊，开发、日常、宇宙，随性又真诚。"
     },
     {
       "name": "Allen@冰轮韵",
       "url": "https://lunarithm.space/",
       "avatar": "https://lunarithm.space/favicon-32x32.png",
-      "description": "冰轮舞韵，代码凝魂。"
+      "description": "冰轮舞韵，代码凝魂。",
+      "comment": "站名和格言都很美，代码里藏着审美。"
     },
     {
       "name": "雾语",
       "url": "https://foglog.cn/",
       "avatar": "https://db.picspot.cn/foglog/favicon.ico",
-      "description": "迷雾轻语，雅意深藏"
+      "description": "迷雾轻语，雅意深藏",
+      "comment": "意境很足，风格简约大气。"
     },
     {
       "name": "时隐重工",
       "url": "https://shiyin.cafe/",
       "avatar": "https://shiyin.cafe/upload/Y10.svg",
-      "description": "兴趣使然的未来主义建造者"
+      "description": "兴趣使然的未来主义建造者",
+      "comment": "对未来主义挺有想法的建造者。"
     },
     {
       "name": "Oil® — 欧呦",
       "url": "https://www.oiloil.org/",
       "avatar": "https://www.oiloil.org/icon.png",
-      "description": "Oil 的个人作品、AI 工具实操、产品开发与开源项目记录。"
+      "comment": "Oil 的个人作品、AI 工具实操、产品开发与开源项目记录。"
     },
     {
       "name": "Catarium",
       "url": "https://eofs791.github.io",
       "avatar": "https://resource.catarium.me/avatar.ico",
-      "description": "见崎的猫箱"
+      "description": "见崎的猫箱",
+      "comment": "之前能访问，最近好像失联了，希望早点恢复。"
     },
     {
       "name": "手里有只毛毛虫",
       "url": "https://www.krjojo.com/",
       "avatar": "https://www.krjojo.com/krjojo.avif",
-      "description": "号角声起 - 等你启航"
+      "description": "号角声起 - 等你启航",
+      "comment": "朋友互助的风格，名字很有趣，网站内容也丰富全面。"
     },
     {
       "name": "Homulilly",
       "url": "https://homulilly.com",
       "avatar": "https://homulilly.com/images/avatar.jpg",
-      "description": "圆环之外，仍有未尽之愿。"
+      "description": "圆环之外，仍有未尽之愿。",
+      "comment": "风格很好看的个人网站，记录了开发的点滴和手游的评测，很有想法的一位站长哦！"
     },
     {
       "name": "Yesord",
       "url": "https://blog.yesord.top",
       "avatar": "https://s2.loli.net/2025/02/19/gX19mThYxyUDaZu.gif",
-      "description": "你相信光吗~~"
+      "description": "你相信光吗~~",
+      "comment": "乐天派的小站，相信光的小朋友。哈哈哈"
     },
     {
       "name": "冷汐的杂货铺",
       "url": "https://lengxiqwq.com",
       "avatar": "https://lengxiqwq.com/avatar-256.webp",
-      "description": "你好谢谢小笼包再见"
+      "description": "你好谢谢小笼包再见",
+      "comment": "轻松愉快，像逛博士的小店。"
     },
     {
       "name": "RAGNote",
       "url": "https://ragnote.top/",
-      "avatar": "https://ragnote.top/Avatar.png",
-      "description": "Life is code. I will debug it."
+      "avatar": "https://www.google.com/s2/favicons?domain=ragnote.top&sz=64",
+      "description": "Life is code. I will debug it.",
+      "comment": "网站的各种效果很帅，文章以笔记为主，也很全面。"
     }
   ]
 }
