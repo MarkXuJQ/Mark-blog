@@ -8,7 +8,7 @@ import { FriendLinks } from '@/components/links/FriendLinks'
 import { getFriendLinkLabels } from '@/lib/links/friendLinksData'
 import { Seo } from '@/app/seo/Seo'
 import { getSiteUrl, toAbsoluteUrl } from '@/lib/seo'
-import { useArticleCodeBlockEnhancements } from '@/hooks/useArticleCodeBlockEnhancements'
+import { useArticleCodeBlockEnhancements } from '@/hooks/article/useArticleCodeBlockEnhancements'
 import type { ArchiveOutletContext } from '@/layouts/ArchiveLayout'
 
 export function Links() {

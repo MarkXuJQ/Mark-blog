@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CalendarYearWheel } from './CalendarYearWheel'
 import { cn } from '@/lib/classNames'
+import { clamp } from '@/lib/math'
 
 interface CalendarDayCell {
   date: Date
@@ -28,10 +29,6 @@ interface CalendarLayout {
   weekdayLabelTextClassName: string
   weekGap: number
   weekGridWidth: number
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value))
 }
 
 function getMondayDayIndex(date: Date) {

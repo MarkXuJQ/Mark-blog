@@ -12,11 +12,11 @@ import {
   type Ref,
   useRef,
 } from 'react'
-import { usePrefersReducedMotion } from '@/components/ui/text-reveal-block-utils/use-prefers-reduced-motion'
+import { usePrefersReducedMotion } from '@/components/projects/text-reveal-block-utils/use-prefers-reduced-motion'
 import {
   observeWindowResize,
   waitForScrollerReady,
-} from '@/components/ui/text-reveal-block-utils/scroll-trigger-utils'
+} from '@/components/projects/text-reveal-block-utils/scroll-trigger-utils'
 
 gsap.registerPlugin(SplitText, ScrollTrigger)
 

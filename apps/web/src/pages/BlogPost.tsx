@@ -29,11 +29,11 @@ import {
   type JsonLd,
 } from '@/lib/seo'
 import { Card } from '@/components/ui/Card'
-import { useArticleCodeBlockEnhancements } from '@/hooks/useArticleCodeBlockEnhancements'
-import { useArticleImageLightbox } from '@/hooks/useArticleImageLightbox'
-import { useArticleProgressiveImages } from '@/hooks/useArticleProgressiveImages'
-import { useArticlePhotoScroll } from '@/hooks/useArticlePhotoScroll'
-import { useArticlePhotoRoutes } from '@/hooks/useArticlePhotoRoutes'
+import { useArticleCodeBlockEnhancements } from '@/hooks/article/useArticleCodeBlockEnhancements'
+import { useArticleImageLightbox } from '@/hooks/article/useArticleImageLightbox'
+import { useArticleProgressiveImages } from '@/hooks/article/useArticleProgressiveImages'
+import { useArticlePhotoScroll } from '@/hooks/article/useArticlePhotoScroll'
+import { useArticlePhotoRoutes } from '@/hooks/article/useArticlePhotoRoutes'
 import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
 import {
   getAdjacentPosts,
@@ -50,7 +50,7 @@ import { cn } from '@/lib/classNames'
 import { getImageUrl, getOptimizedImageUrl } from '@/lib/image'
 import type { BlogPostOutletContext } from '@/layouts/BlogPostLayout'
 import { PostSharedElement } from '@/components/transitions/PostSharedElement'
-import { usePostDetailTransition } from '@/hooks/usePostDetailTransition'
+import { usePostDetailTransition } from '@/hooks/article/usePostDetailTransition'
 import '@/assets/styles/article-blocks.css'
 
 export function BlogPost() {
@@ -244,12 +244,6 @@ export function BlogPost() {
     { name: t('nav.blog'), url: blogUrl },
     { name: post.title, url: postUrl },
   ])
-  const metaItemClass = 'inline-flex items-center gap-1.5 leading-none'
-  const hasDistinctUpdatedDate = Boolean(
-    post.updated && post.updated !== post.date
-  )
-  const updatedTimeMetaClass = cn(metaItemClass, 'hidden sm:inline-flex')
-  const readingTimeMetaClass = cn(metaItemClass, 'hidden sm:inline-flex')
   const handleBackToBlog = (event: MouseEvent<HTMLAnchorElement>) => {
     if (
       !cameFromBlogList ||
@@ -315,27 +309,12 @@ export function BlogPost() {
 
           <div className={styles.simpleReadingMeta}>
             {post.category ? <CategoryLabel category={post.category} /> : null}
-            <time dateTime={post.date} className={metaItemClass}>
-              <LuPencilLine className="h-4 w-4" aria-hidden="true" />
-              <span>{post.date}</span>
-            </time>
-
-            {hasDistinctUpdatedDate ? (
-              <time dateTime={post.updated} className={updatedTimeMetaClass}>
-                <LuHammer className="h-4 w-4" aria-hidden="true" />
-                <span>{post.updated}</span>
-              </time>
-            ) : null}
-
-            <span className={metaItemClass}>
-              <LuWholeWord className="h-4 w-4" aria-hidden="true" />
-              <span>{t('blog.wordCount', { count: words })}</span>
-            </span>
-
-            <span className={readingTimeMetaClass}>
-              <LuClock className="h-4 w-4" aria-hidden="true" />
-              <span>{t('blog.readingTime', { minutes: readingMinutes })}</span>
-            </span>
+            <PostMetaItems
+              date={post.date}
+              updated={post.updated}
+              words={words}
+              readingMinutes={readingMinutes}
+            />
           </div>
         </header>
 
@@ -469,35 +448,12 @@ export function BlogPost() {
                             className="drop-shadow-[0_2px_10px_rgba(15,23,42,0.68)]"
                           />
                         ) : null}
-                        <time dateTime={post.date} className={metaItemClass}>
-                          <LuPencilLine
-                            className="h-4 w-4"
-                            aria-hidden="true"
-                          />
-                          <span>{post.date}</span>
-                        </time>
-
-                        {hasDistinctUpdatedDate ? (
-                          <time
-                            dateTime={post.updated}
-                            className={updatedTimeMetaClass}
-                          >
-                            <LuHammer className="h-4 w-4" aria-hidden="true" />
-                            <span>{post.updated}</span>
-                          </time>
-                        ) : null}
-
-                        <span className={metaItemClass}>
-                          <LuWholeWord className="h-4 w-4" aria-hidden="true" />
-                          <span>{t('blog.wordCount', { count: words })}</span>
-                        </span>
-
-                        <span className={readingTimeMetaClass}>
-                          <LuClock className="h-4 w-4" aria-hidden="true" />
-                          <span>
-                            {t('blog.readingTime', { minutes: readingMinutes })}
-                          </span>
-                        </span>
+                        <PostMetaItems
+                          date={post.date}
+                          updated={post.updated}
+                          words={words}
+                          readingMinutes={readingMinutes}
+                        />
                       </div>
                     </PostSharedElement>
                   </div>
@@ -572,32 +528,12 @@ export function BlogPost() {
                     {post.category ? (
                       <CategoryLabel category={post.category} />
                     ) : null}
-                    <time dateTime={post.date} className={metaItemClass}>
-                      <LuPencilLine className="h-4 w-4" aria-hidden="true" />
-                      <span>{post.date}</span>
-                    </time>
-
-                    {hasDistinctUpdatedDate ? (
-                      <time
-                        dateTime={post.updated}
-                        className={updatedTimeMetaClass}
-                      >
-                        <LuHammer className="h-4 w-4" aria-hidden="true" />
-                        <span>{post.updated}</span>
-                      </time>
-                    ) : null}
-
-                    <span className={metaItemClass}>
-                      <LuWholeWord className="h-4 w-4" aria-hidden="true" />
-                      <span>{t('blog.wordCount', { count: words })}</span>
-                    </span>
-
-                    <span className={readingTimeMetaClass}>
-                      <LuClock className="h-4 w-4" aria-hidden="true" />
-                      <span>
-                        {t('blog.readingTime', { minutes: readingMinutes })}
-                      </span>
-                    </span>
+                    <PostMetaItems
+                      date={post.date}
+                      updated={post.updated}
+                      words={words}
+                      readingMinutes={readingMinutes}
+                    />
                   </div>
                 </PostSharedElement>
               </header>
@@ -627,6 +563,55 @@ export function BlogPost() {
         />
       </Card>
     </div>
+  )
+}
+
+/**
+ * The shared date / word-count / reading-time items used by every post meta
+ * header variant. Only the container and the optional {@link CategoryLabel}
+ * differ around it.
+ */
+function PostMetaItems({
+  date,
+  updated,
+  words,
+  readingMinutes,
+}: {
+  date: string
+  updated?: string
+  words: number
+  readingMinutes: number
+}) {
+  const { t } = useTranslation()
+  const metaItemClass = 'inline-flex items-center gap-1.5 leading-none'
+  const hasDistinctUpdatedDate = Boolean(updated && updated !== date)
+  const updatedTimeMetaClass = cn(metaItemClass, 'hidden sm:inline-flex')
+  const readingTimeMetaClass = cn(metaItemClass, 'hidden sm:inline-flex')
+
+  return (
+    <>
+      <time dateTime={date} className={metaItemClass}>
+        <LuPencilLine className="h-4 w-4" aria-hidden="true" />
+        <span>{date}</span>
+      </time>
+
+      {hasDistinctUpdatedDate ? (
+        <time dateTime={updated} className={updatedTimeMetaClass}>
+          <LuHammer className="h-4 w-4" aria-hidden="true" />
+          <span>{updated}</span>
+        </time>
+      ) : null}
+
+      <span className={metaItemClass}>
+        <LuWholeWord className="h-4 w-4" aria-hidden="true" />
+        <span>{t('blog.wordCount', { count: words })}</span>
+      </span>
+
+      <span className={readingTimeMetaClass}>
+        <LuClock className="h-4 w-4" aria-hidden="true" />
+        <span>{t('blog.readingTime', { minutes: readingMinutes })}</span>
+      </span>
+    </>
   )
 }
 

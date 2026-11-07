@@ -30,7 +30,7 @@ import {
 } from '@/lib/seo'
 import { Pagination } from '@/components/ui/Pagination'
 import { StaggeredList } from '@/components/ui/StaggeredList'
-import { useBlogPosts } from '@/hooks/useBlogPosts'
+import { useBlogPosts } from '@/hooks/blog/useBlogPosts'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
 import { PostSharedElement } from '@/components/transitions/PostSharedElement'

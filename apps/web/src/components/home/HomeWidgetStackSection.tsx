@@ -15,6 +15,7 @@ import {
 } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
+import { clamp01 } from '@/lib/math'
 import { TravelFootprintPlugin } from './TravelFootprintPlugin'
 
 const BACKDROP_REVEAL_END = 0
@@ -25,10 +26,6 @@ const WIDGET_SCENE_HEIGHT = '320svh'
 const CONTENT_SCROLL_START = 0.28
 const CONTENT_SCROLL_HOLD_END = 0.44
 const CONTENT_SCROLL_END = 0.96
-
-function clamp01(value: number) {
-  return Math.min(Math.max(value, 0), 1)
-}
 
 function approachValue(value: number, target: number, maxDelta: number) {
   if (value < target) return Math.min(target, value + maxDelta)

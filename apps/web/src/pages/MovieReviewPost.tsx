@@ -7,11 +7,11 @@ import { Card } from '@/components/ui/Card'
 import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
 import { getMovieReviewBySlug } from '@/lib/content/movieReviews'
 import { cn } from '@/lib/classNames'
-import { useArticleImageLightbox } from '@/hooks/useArticleImageLightbox'
-import { useArticleProgressiveImages } from '@/hooks/useArticleProgressiveImages'
+import { useArticleImageLightbox } from '@/hooks/article/useArticleImageLightbox'
+import { useArticleProgressiveImages } from '@/hooks/article/useArticleProgressiveImages'
 import { getImageUrl } from '@/lib/image'
 import { PostSharedElement } from '@/components/transitions/PostSharedElement'
-import { usePostDetailTransition } from '@/hooks/usePostDetailTransition'
+import { usePostDetailTransition } from '@/hooks/article/usePostDetailTransition'
 
 export function MovieReviewPost() {
   const { slug } = useParams()

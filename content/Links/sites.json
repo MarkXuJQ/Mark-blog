@@ -4,7 +4,6 @@
     "radarCategory": "personal-blog",
     "name": "阮一峰的网络日志",
     "href": "https://www.ruanyifeng.com/blog/",
-    "faviconKey": "ruanyifeng",
     "eyebrow": {
       "zh": "科技写作 / 编程观察",
       "en": "Tech essays / Programming notes"
@@ -12,14 +11,14 @@
     "description": {
       "zh": "长期更新的中文技术博客，围绕编程方法、工具趋势与科技周刊展开。",
       "en": "A long-running Chinese tech blog about programming practice, tools, and weekly observations on the web."
-    }
+    },
+    "favicon": "https://www.ruanyifeng.com/favicon.ico"
   },
   {
     "id": "eventuallymaking",
     "radarCategory": "personal-blog",
     "name": "Eventuallymaking",
     "href": "https://eventuallymaking.io/",
-    "faviconKey": "eventuallymaking",
     "eyebrow": {
       "zh": "软件工程 / 创业笔记",
       "en": "Software engineering / Startups"
@@ -27,14 +26,14 @@
     "description": {
       "zh": "一位资深软件工程师持续分享技术、产品和创业实践的个人站点。",
       "en": "A veteran software engineer sharing notes on technology, product building, and startups."
-    }
+    },
+    "favicon": "https://eventuallymaking.io/favicon.ico"
   },
   {
     "id": "joshwcomeau",
     "radarCategory": "personal-blog",
     "name": "Josh W. Comeau",
     "href": "https://www.joshwcomeau.com/",
-    "faviconKey": "joshwcomeau",
     "eyebrow": {
       "zh": "React / CSS / Animation",
       "en": "React / CSS / Animation"
@@ -42,14 +41,14 @@
     "description": {
       "zh": "面向开发者的友好教程站点，聚焦 React、CSS、动画与前端体验。",
       "en": "Friendly tutorials for developers, focused on React, CSS, animation, and front-end craft."
-    }
+    },
+    "favicon": "https://www.joshwcomeau.com/favicon.png"
   },
   {
     "id": "pathos",
     "radarCategory": "personal-blog",
     "name": "Pathos.page",
     "href": "https://pathos.page/",
-    "faviconKey": "pathos",
     "eyebrow": {
       "zh": "2750 words / 法哲学",
       "en": "2750 words / Legal philosophy"
@@ -57,14 +56,14 @@
     "description": {
       "zh": "一位法哲学研究者的博客，记录学术写作、问题意识与社会观察。",
       "en": "A blog by a legal philosophy researcher, documenting scholarship, writing, and social observation."
-    }
+    },
+    "favicon": "https://pathos.page/favicon.ico"
   },
   {
     "id": "messenger",
     "radarCategory": "interesting-site",
     "name": "Messenger",
     "href": "https://messenger.abeto.co/",
-    "faviconKey": "messenger",
     "eyebrow": {
       "zh": "独立网页游戏",
       "en": "Indie web game"
@@ -72,14 +71,14 @@
     "description": {
       "zh": "一款气质很强的太空投递小游戏，小小星球里也有人需要送货。",
       "en": "\"It's a small planet, but someone's gotta make the deliveries.\" A tiny space-delivery web game with attitude."
-    }
+    },
+    "favicon": "https://messenger.abeto.co/assets/favicon32-BC0QIL61.png"
   },
   {
     "id": "radiogarden",
     "radarCategory": "interesting-site",
     "name": "Radio Garden",
     "href": "https://radio.garden/visit/washington-dc/DIlWBUQt",
-    "faviconKey": "radiogarden",
     "eyebrow": {
       "zh": "Washington DC / Live radio",
       "en": "Washington DC / Live radio"
@@ -87,14 +86,14 @@
     "description": {
       "zh": "像旋转地球仪一样漫游全球电台，这个入口会直接落到 Washington DC 收听页。",
       "en": "Drops straight into the Washington DC listening view, a globe-like way to wander through live radio stations."
-    }
+    },
+    "favicon": "https://radio.garden/favicon.ico"
   },
   {
     "id": "tongliao",
     "radarCategory": "interesting-site",
     "name": "通辽宇宙知识库",
     "href": "https://www.tongliaouniverse.cn/",
-    "faviconKey": "tongliao",
     "eyebrow": {
       "zh": "小国梗 / 历史狠人",
       "en": "Microstates / History lore"
@@ -102,14 +101,14 @@
     "description": {
       "zh": "围绕奇葩小国、硬核历史人物与通辽宇宙梗文化展开的互动知识站。",
       "en": "An interactive knowledge base about eccentric microstates, hard-core historical figures, and Tongliao Universe lore."
-    }
+    },
+    "favicon": "https://www.tongliaouniverse.cn/images/favicon.ico?v=20260911"
   },
   {
     "id": "rleonardi",
     "radarCategory": "interesting-site",
     "name": "Robby Leonardi",
     "href": "http://www.rleonardi.com/",
-    "faviconKey": "rleonardi",
     "eyebrow": {
       "zh": "交互式简历 / 设计师作品集",
       "en": "Interactive resume / Design portfolio"
@@ -117,14 +116,14 @@
     "description": {
       "zh": "一位纽约自由职业者的个人站点，以交互式游戏简历和设计作品闻名。",
       "en": "A New York-based freelancer's personal site, famous for the award-winning interactive game-style resume and design portfolio."
-    }
+    },
+    "favicon": "https://www.rleonardi.com/favicon.ico"
   },
   {
     "id": "zhheo",
     "radarCategory": "personal-blog",
     "name": "张洪Heo",
     "href": "https://blog.zhheo.com/",
-    "faviconKey": "zhheo",
     "eyebrow": {
       "zh": "设计与科技 / 开源工具",
       "en": "Design & Tech / Open-source tools"
@@ -132,14 +131,14 @@
     "description": {
       "zh": "高产的技术博客，分享设计、前端开发、AI 应用与自研工具。",
       "en": "A prolific tech blog about design, front-end development, AI applications, and self-built online tools."
-    }
+    },
+    "favicon": "https://blog.zhheo.com/img/favicon4.0.webp"
   },
   {
     "id": "zhilu",
     "radarCategory": "personal-blog",
     "name": "纸鹿摸鱼处",
     "href": "https://blog.zhilu.site/",
-    "faviconKey": "zhilu",
     "eyebrow": {
       "zh": "前端技术 / 博客思考",
       "en": "Front-end tech / Blogging thoughts"
@@ -147,14 +146,14 @@
     "description": {
       "zh": "关注前端开发细节、排版、深色模式和互联网产品思考的技术博客。",
       "en": "A tech blog about front-end details, typography, dark mode, and reflections on internet products."
-    }
+    },
+    "favicon": "https://www.zhilu.site/api/avatar.png"
   },
   {
     "id": "dbushell",
     "radarCategory": "personal-blog",
     "name": "dbushell.com",
     "href": "https://dbushell.com/",
-    "faviconKey": "dbushell",
     "eyebrow": {
       "zh": "Web 标准 / 前端工程",
       "en": "Web standards / Front-end engineering"
@@ -162,14 +161,14 @@
     "description": {
       "zh": "前端开发者的个人博客，分享 Web 平台、性能、可访问性和安全思考。",
       "en": "A front-end developer's blog about the web platform, performance, accessibility, and security."
-    }
+    },
+    "favicon": "https://dbushell.com/favicon.ico"
   },
   {
     "id": "uselessweb",
     "radarCategory": "interesting-site",
     "name": "The Useless Web",
     "href": "https://theuselessweb.com/",
-    "faviconKey": "uselessweb",
     "eyebrow": {
       "zh": "随机网站 / 网络漫游",
       "en": "Random websites / Web wander"
@@ -177,14 +176,14 @@
     "description": {
       "zh": "一个纯粹的“无用”网站入口，每次点击都会把你带到随机、古怪但有趣的网站。",
       "en": "A pure portal to the useless web. Each click takes you to a random, quirky, and fascinating site."
-    }
+    },
+    "favicon": "https://theuselessweb.com/favicon.ico"
   },
   {
     "id": "geokash",
     "radarCategory": "interesting-site",
     "name": "GEOKASH",
     "href": "https://geokash.com/",
-    "faviconKey": "geokash",
     "eyebrow": {
       "zh": "创意档案 / 软硬件项目",
       "en": "Creative archive / Hardware & software"
@@ -192,14 +191,14 @@
     "description": {
       "zh": "一个无广告、无目的的创意探索空间，存档了 Kash 的软件、硬件和 3D 打印等个人项目。",
       "en": "An ad-free, purposeless space for creative exploration, archiving Kash's personal software, hardware, and 3D printing projects."
-    }
+    },
+    "favicon": "https://geokash.com/favicon.svg"
   },
   {
     "id": "nineteen-hundred",
     "radarCategory": "personal-blog",
     "name": "1900.live",
     "href": "https://1900.live/",
-    "faviconKey": "nineteen-hundred",
     "eyebrow": {
       "zh": "个人日志 / 生活杂记",
       "en": "Personal journal / Life notes"
@@ -207,14 +206,14 @@
     "description": {
       "zh": "记录骑行、编程、观影、生活感想与健康观察的个人博客。",
       "en": "A personal blog documenting cycling, programming, movies, life reflections, and health observations."
-    }
+    },
+    "favicon": "https://1900.live/favicon.svg"
   },
   {
     "id": "spaces",
     "radarCategory": "personal-blog",
     "name": "科学空间",
     "href": "https://spaces.ac.cn/",
-    "faviconKey": "spaces",
     "eyebrow": {
       "zh": "数学 / 自然科学 / 机器学习",
       "en": "Mathematics / Science / Machine learning"
@@ -222,14 +221,14 @@
     "description": {
       "zh": "苏剑林维护的长期中文科学博客，围绕数学、天文、理论物理、计算机与生活随笔展开。",
       "en": "A long-running Chinese science blog by BoJone, spanning mathematics, astronomy, theoretical physics, computing, and life notes."
-    }
+    },
+    "favicon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IuenkeWtpuepuumXtCI+CiAgPHJlY3Qgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIHJ4PSIyOCIgZmlsbD0iI2Y3ZjNlOCIgLz4KICA8Y2lyY2xlIGN4PSI2NCIgY3k9IjY0IiByPSI0MyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWYzYjYzIiBzdHJva2Utd2lkdGg9IjgiIC8+CiAgPHBhdGgKICAgIGQ9Ik0zMiA2N2M5LTE2IDIxLTI0IDM2LTI0IDEwIDAgMTkgNCAyOCAxMiIKICAgIGZpbGw9Im5vbmUiCiAgICBzdHJva2U9IiNkODkxMmYiCiAgICBzdHJva2Utd2lkdGg9IjciCiAgICBzdHJva2UtbGluZWNhcD0icm91bmQiCiAgLz4KICA8cGF0aAogICAgZD0iTTQwIDgxYzgtMTAgMTctMTUgMjgtMTUgOSAwIDE3IDMgMjUgMTAiCiAgICBmaWxsPSJub25lIgogICAgc3Ryb2tlPSIjMWYzYjYzIgogICAgc3Ryb2tlLXdpZHRoPSI3IgogICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogIC8+CiAgPGNpcmNsZSBjeD0iOTEiIGN5PSI0MiIgcj0iNiIgZmlsbD0iI2Q4OTEyZiIgLz4KPC9zdmc+Cg=="
   },
   {
     "id": "peter-oravec",
     "radarCategory": "interesting-site",
     "name": "Peter Oravec",
     "href": "https://peteroravec.com/",
-    "faviconKey": "peter-oravec",
     "eyebrow": {
       "zh": "前端作品集 / 交互动效",
       "en": "Front-end portfolio / Motion"
@@ -237,14 +236,14 @@
     "description": {
       "zh": "Peter Oravec 的个人作品站，像可探索的前端简历一样展示 JavaScript、Angular、Node.js 与交互动效作品。",
       "en": "Peter Oravec's portfolio site, an interactive front-end resume showcasing JavaScript, Angular, Node.js, and motion-heavy work."
-    }
+    },
+    "favicon": "https://peteroravec.com/assets/images/favicon/favicon-196x196.png"
   },
   {
     "id": "distill",
     "radarCategory": "interesting-site",
     "name": "Distill",
     "href": "https://distill.pub/",
-    "faviconKey": "distill",
     "eyebrow": {
       "zh": "机器学习 / 可视化文章",
       "en": "Machine learning / Visual essays"
@@ -252,14 +251,14 @@
     "description": {
       "zh": "以清晰可视化和长文解释机器学习概念的经典在线出版物。",
       "en": "A classic online publication explaining machine-learning ideas through careful visual essays."
-    }
+    },
+    "favicon": "https://distill.pub/favicon.ico"
   },
   {
     "id": "innei",
     "radarCategory": "personal-blog",
     "name": "Innei",
     "href": "https://innei.in/",
-    "faviconKey": "innei",
     "eyebrow": {
       "zh": "TypeScript / React / 全栈",
       "en": "TypeScript / React / Full-stack"
@@ -267,14 +266,14 @@
     "description": {
       "zh": "Innei 的个人博客，记录前端与全栈开发、TypeScript、React、Next.js、AI 工程、独立开发、旅行和生活。",
       "en": "Innei's personal blog on frontend and full-stack development, TypeScript, React, Next.js, AI engineering, indie hacking, travel, and life."
-    }
+    },
+    "favicon": "https://innei.in/favicon.ico"
   },
   {
     "id": "victorzhou",
     "radarCategory": "personal-blog",
     "name": "Victor Zhou",
     "href": "https://victorzhou.com/",
-    "faviconKey": "victorzhou",
     "eyebrow": {
       "zh": "Web 开发 / 机器学习",
       "en": "Web development / Machine learning"
@@ -282,14 +281,14 @@
     "description": {
       "zh": "Victor Zhou 的个人博客，分享 Web 开发、机器学习、Python、Gatsby 和安全等工程笔记。",
       "en": "Victor Zhou's blog about web development, machine learning, Python, Gatsby, security, and more."
-    }
+    },
+    "favicon": "https://victorzhou.com/favicon.ico"
   },
   {
     "id": "lucumr",
     "radarCategory": "personal-blog",
     "name": "Armin Ronacher",
     "href": "https://lucumr.pocoo.org/",
-    "faviconKey": "lucumr",
     "eyebrow": {
       "zh": "Python / 开源工程 / 软件设计",
       "en": "Python / Open source / Software design"
@@ -297,29 +296,14 @@
     "description": {
       "zh": "Armin Ronacher 的长期个人博客，记录 Python、Flask、Rust、开源工程和软件设计思考。",
       "en": "Armin Ronacher's long-running personal blog about Python, Flask, Rust, open-source engineering, and software design."
-    }
-  },
-  {
-    "id": "leitao",
-    "radarCategory": "personal-blog",
-    "name": "水拍石",
-    "href": "https://www.leitao.cn/",
-    "faviconKey": "leitao",
-    "eyebrow": {
-      "zh": "经济观察 / 投资与生活",
-      "en": "Economics / Investing / Life"
     },
-    "description": {
-      "zh": "雷涛的个人博客，长期记录经济、投资、阅读、摄影和生活随笔。",
-      "en": "Lei Tao's personal blog about economics, investing, reading, photography, and everyday life."
-    }
+    "favicon": "https://lucumr.pocoo.org/static/avatar-small.jpg"
   },
   {
     "id": "blurredcode",
     "radarCategory": "personal-blog",
     "name": "Blurred code",
     "href": "https://www.blurredcode.com/",
-    "faviconKey": "blurredcode",
     "eyebrow": {
       "zh": "Unreal Engine / Vulkan / 图形学",
       "en": "Unreal Engine / Vulkan / Graphics"
@@ -327,14 +311,14 @@
     "description": {
       "zh": "记录 Unreal Engine、Vulkan、图形渲染、移动端性能与底层工程问题的技术博客。",
       "en": "A technical blog about Unreal Engine, Vulkan, graphics rendering, mobile performance, and low-level engineering."
-    }
+    },
+    "favicon": "https://www.blurredcode.com/favicon.ico"
   },
   {
     "id": "ttquk",
     "radarCategory": "personal-blog",
     "name": "TT清沫uk",
     "href": "https://ttquk.github.io/",
-    "faviconKey": "ttquk",
     "eyebrow": {
       "zh": "Linux / Hexo / 网络安全",
       "en": "Linux / Hexo / Cybersecurity"
@@ -342,6 +326,7 @@
     "description": {
       "zh": "记录 Linux、Hexo、网络安全、读书和校园生活的个人博客。",
       "en": "A personal blog about Linux, Hexo, cybersecurity, reading, and school life."
-    }
+    },
+    "favicon": "https://ts1.tc.mm.bing.net/th/id/OIP-C.ifh8a4Z3Q7l8q5Cm1pnN5AHaHa?rs=1&pid=ImgDetMain&o=7&rm=3"
   }
 ]

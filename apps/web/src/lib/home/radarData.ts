@@ -1,56 +1,6 @@
-import radarConfig from '@content/Links/radar.json'
 import linkSites from '@content/Links/sites.json'
-import blurredcodeFavicon from '../../assets/home/radar/blurredcode.ico'
-import dbushellFavicon from '../../assets/home/radar/dbushell.png'
-import distillFavicon from '../../assets/home/radar/distill.png'
-import eventuallymakingFavicon from '../../assets/home/radar/eventuallymaking.png'
-import geokashFavicon from '../../assets/home/radar/geokash.png'
-import inneiFavicon from '../../assets/home/radar/innei.png'
-import joshwcomeauFavicon from '../../assets/home/radar/joshwcomeau.png'
-import leitaoFavicon from '../../assets/home/radar/leitao.png'
-import lucumrFavicon from '../../assets/home/radar/lucumr.png'
-import messengerFavicon from '../../assets/home/radar/messenger.png'
-import nineteenHundredFavicon from '../../assets/home/radar/nineteen-hundred.png'
-import ooowlFavicon from '../../assets/home/radar/ooowl.png'
-import pathosFavicon from '../../assets/home/radar/pathos.png'
-import peterOravecFavicon from '../../assets/home/radar/peter-oravec.png'
-import radiogardenFavicon from '../../assets/home/radar/radiogarden.png'
-import rleonardiFavicon from '../../assets/home/radar/rleonardi.png'
-import ruanyifengFavicon from '../../assets/home/radar/ruanyifeng.png'
-import spacesFavicon from '../../assets/home/radar/spaces.svg'
-import tongliaoFavicon from '../../assets/home/radar/tongliao.png'
-import ttqukFavicon from '../../assets/home/radar/ttquk.png'
-import uselesswebFavicon from '../../assets/home/radar/uselessweb.png'
-import victorzhouFavicon from '../../assets/home/radar/victorzhou.png'
-import zhheoFavicon from '../../assets/home/radar/zhheo.png'
-import zhiluFavicon from '../../assets/home/radar/zhilu.png'
-
-const RADAR_FAVICONS = {
-  blurredcode: blurredcodeFavicon,
-  dbushell: dbushellFavicon,
-  distill: distillFavicon,
-  eventuallymaking: eventuallymakingFavicon,
-  geokash: geokashFavicon,
-  innei: inneiFavicon,
-  joshwcomeau: joshwcomeauFavicon,
-  leitao: leitaoFavicon,
-  lucumr: lucumrFavicon,
-  messenger: messengerFavicon,
-  'nineteen-hundred': nineteenHundredFavicon,
-  ooowl: ooowlFavicon,
-  pathos: pathosFavicon,
-  'peter-oravec': peterOravecFavicon,
-  radiogarden: radiogardenFavicon,
-  rleonardi: rleonardiFavicon,
-  ruanyifeng: ruanyifengFavicon,
-  spaces: spacesFavicon,
-  tongliao: tongliaoFavicon,
-  ttquk: ttqukFavicon,
-  uselessweb: uselesswebFavicon,
-  victorzhou: victorzhouFavicon,
-  zhheo: zhheoFavicon,
-  zhilu: zhiluFavicon,
-} as const
+import friendLinks from '@content/Links/links.json'
+import lostFriendsData from '@/data/lost-friends.json'
 
 export type RadarNodeCategory = 'personal-blog' | 'interesting-site'
 
@@ -77,43 +27,35 @@ export interface RadarNode {
   dotScaleSteps?: number
 }
 
-interface LinkSiteContentItem {
+/** A site record as read from `sites.json`. */
+interface RadarSiteContentItem {
   id: string
-  radarCategory: RadarNodeCategory
+  radarCategory?: RadarNodeCategory
   name: string
   href: string
-  faviconKey: keyof typeof RADAR_FAVICONS
-  eyebrow: {
+  favicon: string
+  eyebrow?: {
     zh: string
     en: string
   }
-  description: {
+  description?: {
     zh: string
     en: string
   }
 }
 
-interface RadarNodeConfigItem {
-  id: string
-  cardAlignX: RadarNode['cardAlignX']
-  cardAlignY: RadarNode['cardAlignY']
-  color: string
-  dotScaleSteps?: number
-}
-
-interface RadarConfig {
-  nodes: RadarNodeConfigItem[]
-}
-
-interface RadarSiteContentItem extends Omit<
-  RadarNode,
-  'faviconSrc' | 'label' | 'category'
-> {
-  faviconKey: keyof typeof RADAR_FAVICONS
-  category: RadarNodeCategory
-  label: {
-    zh: string
-    en: string
+/** A friend-link record as read from `links.json` (radar fields optional). */
+interface FriendLinkContentItem {
+  name: string
+  url: string
+  avatar: string
+  comment?: string
+  description?: string
+  radarCategory?: RadarNodeCategory
+  radar?: {
+    radarCategory?: RadarNodeCategory
+    eyebrow?: { zh: string; en: string }
+    description?: { zh: string; en: string }
   }
 }
 
@@ -140,41 +82,121 @@ export const RADAR_CATEGORY_LABELS: Record<
   'interesting-site': { zh: '有意思的网站', en: 'Interesting sites' },
 }
 
-const LINK_SITE_BY_ID = new Map(
-  (linkSites as LinkSiteContentItem[]).map((site) => [site.id, site])
+/**
+ * Palette and layout auto-assigned to radar signals, indexed by their
+ * position in `sites.json`. Colors repeat in a loop so sites added later
+ * automatically pick up the next color and card alignment without needing
+ * a separate hand-maintained radar config file.
+ */
+const RADAR_PALETTE = ['#FF6F43', '#10A64B', '#7670E8', '#F4C433']
+const RADAR_CARD_ALIGNMENTS: {
+  cardAlignX: RadarNode['cardAlignX']
+  cardAlignY: RadarNode['cardAlignY']
+}[] = [
+  { cardAlignX: 'left', cardAlignY: 'top' },
+  { cardAlignX: 'right', cardAlignY: 'bottom' },
+  { cardAlignX: 'center', cardAlignY: 'top' },
+  { cardAlignX: 'right', cardAlignY: 'top' },
+  { cardAlignX: 'left', cardAlignY: 'bottom' },
+  { cardAlignX: 'center', cardAlignY: 'bottom' },
+]
+
+/**
+ * The radar is fed from two sources, merged and de-duplicated by URL:
+ * - `sites.json`: curated radar sites (has full category/eyebrow/description).
+ * - `links.json`: friend links, added to the radar too. Their category
+ *   defaults to `personal-blog` unless a `radarCategory` / `radar` field
+ *   says otherwise.
+ *
+ * Only sites with no href are dropped no-op; any site currently listed in
+ * `lost-friends.json` (unreachable at last build) is excluded from the
+ * radar so offline friends never show up.
+ */
+/** Normalize a URL for de-duplication / lost-friend comparison. */
+const normalizeKey = (url: string) =>
+  url.replace(/^https?:\/\//i, '').replace(/\/+$/, '').toLowerCase()
+
+const ARCHIVED_KEYS = new Set(
+  lostFriendsData.archived
+    .map((s) => s.url)
+    .filter(Boolean)
+    .map(normalizeKey)
 )
 
-export const RADAR_NODES: RadarNode[] = (radarConfig as RadarConfig).nodes
-  .map((nodeConfig): RadarSiteContentItem | null => {
-    const site = LINK_SITE_BY_ID.get(nodeConfig.id)
-    if (!site) return null
+const radarSites: RadarSiteContentItem[] = linkSites as RadarSiteContentItem[]
+
+const LINK_FRIEND_ITEMS = [
+  ...friendLinks.recommended,
+  ...friendLinks.neighbors,
+] as FriendLinkContentItem[]
+
+const MERGED: RadarSiteContentItem[] = [...radarSites] as RadarSiteContentItem[]
+const seen = new Map(radarSites.map((s) => [normalizeKey(s.href), s]))
+
+for (const link of LINK_FRIEND_ITEMS) {
+  const key = normalizeKey(link.url)
+  if (!key) continue
+
+  const radar = link.radar ?? {}
+
+  // A site that already exists in sites.json: the friend link's avatar was
+  // hand-verified by the author, so it takes precedence over the sites.json
+  // favicon (which may be stale or point to a URL that doesn't load in CN).
+  if (seen.has(key)) {
+    const existing = seen.get(key)!
+    existing.href = link.url
+    existing.favicon = link.avatar
+    if (link.radarCategory ?? radar.radarCategory) {
+      existing.radarCategory = link.radarCategory ?? radar.radarCategory
+    }
+    if (radar.eyebrow) existing.eyebrow = radar.eyebrow
+    if (radar.description) existing.description = radar.description
+    continue
+  }
+
+  const newNode: RadarSiteContentItem = {
+    id: key,
+    name: link.name,
+    href: link.url,
+    favicon: link.avatar,
+    radarCategory: link.radarCategory ?? radar.radarCategory,
+    eyebrow: radar.eyebrow,
+    description:
+      radar.description ??
+      (link.comment
+        ? { zh: link.comment, en: link.comment }
+        : undefined),
+  }
+  MERGED.push(newNode)
+  seen.set(key, newNode)
+}
+
+export const RADAR_NODES: RadarNode[] = MERGED.filter(
+  (site) => !ARCHIVED_KEYS.has(normalizeKey(site.href))
+)
+  .map((site, index) => {
+    const paletteColor = RADAR_PALETTE[index % RADAR_PALETTE.length]
+    const alignment =
+      RADAR_CARD_ALIGNMENTS[index % RADAR_CARD_ALIGNMENTS.length]
 
     return {
-      id: site.id,
-      category: site.radarCategory,
+      id: site.id ?? site.href,
+      category: site.radarCategory ?? 'personal-blog',
       href: site.href,
-      faviconKey: site.faviconKey,
+      faviconSrc: site.favicon,
       label: {
         zh: site.name,
         en: site.name,
       },
-      eyebrow: site.eyebrow,
-      description: site.description,
-      cardAlignX: nodeConfig.cardAlignX,
-      cardAlignY: nodeConfig.cardAlignY,
-      color: nodeConfig.color,
-      dotScaleSteps: nodeConfig.dotScaleSteps,
+      eyebrow: site.eyebrow ?? { zh: '', en: '' },
+      description: site.description ?? { zh: '', en: '' },
+      cardAlignX: alignment.cardAlignX,
+      cardAlignY: alignment.cardAlignY,
+      color: paletteColor,
     }
   })
-  .filter((site): site is RadarSiteContentItem => site != null)
-  .map(({ faviconKey, ...site }) => ({
-    ...site,
-    faviconSrc: RADAR_FAVICONS[faviconKey] ?? RADAR_FAVICONS.ruanyifeng,
-  }))
 
 export const RING_INSETS = ['8%', '18%', '30%', '42%', '54%']
-export const NODE_REVEAL_ANGLE_WINDOW = 18
-export const NODE_SCAN_GLOW_ANGLE_WINDOW = 26
 export const SIGNAL_DOT_SIZE_PX = 44
 export const SIGNAL_CARD_SIZE_PX = 212
 export const SIGNAL_DOT_SIZE_STEP_PX = 8

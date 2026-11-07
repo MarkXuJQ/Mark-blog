@@ -3,6 +3,7 @@ import { MessageCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Card } from '@/components/ui/Card'
+import { widgetCardClass } from '@/lib/styles'
 import type { BlogPostSummary } from '@/lib/content/posts'
 import { getAllPostSummaries } from '@/lib/content/postSummaries'
 import {
@@ -10,7 +11,7 @@ import {
   loadRecentComments,
 } from '@/lib/comments/recentCommentsCache'
 import type { TwikooRecentComment } from '@/lib/comments/twikooLoader'
-import { useSidebarItemLimit } from '@/hooks/useSidebarItemLimit'
+import { useSidebarItemLimit } from '@/hooks/blog/useSidebarItemLimit'
 
 const RECENT_COMMENTS_LIMIT = 5
 const DEFAULT_TWIKOO_ENV_ID = 'https://comments.markxu.icu/api/twikoo'
@@ -235,7 +236,7 @@ export function RecentCommentsWidget() {
 }
 
 const styles = {
-  card: 'border border-slate-200/70 p-6 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-all hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] dark:border-0 dark:shadow-none',
+  card: widgetCardClass,
   header:
     'mb-3 flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-slate-800',
   title: 'font-medium text-slate-800 dark:text-slate-100',

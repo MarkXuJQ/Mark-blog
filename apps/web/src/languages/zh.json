@@ -14,16 +14,9 @@
   },
   "timeline": {
     "items": "项",
-    "notes": "零碎修正",
     "websiteTab": "网页里程碑",
     "quickfixTab": "小修小补",
     "lifeTab": "人生记录",
-    "websiteTitle": "网站时间线",
-    "websiteDesc": "重要里程碑与功能版本汇总。",
-    "quickfixTitle": "Quick Fix",
-    "quickfixDesc": "小修小补与界面微调，按条目独立记录。",
-    "lifeTitle": "人生记录",
-    "lifeDesc": "个人成长与片段记录。",
     "progress": {
       "ariaLabel": "时间进度",
       "dayOfYear": "今年第几天",
@@ -39,8 +32,7 @@
     "noResults": "没有找到相关内容。",
     "resultsCount": "共 {{count}} 条结果",
     "sections": {
-      "posts": "文章",
-      "timeline": "时间线"
+      "posts": "文章"
     }
   },
   "codeBlock": {
@@ -53,10 +45,7 @@
     "collapse": "收起代码"
   },
   "home": {
-    "title": "欢迎来到<1/><0>Mark</0>的自留地",
-    "intro": "我会在这里放一些我的学习笔记、生活中遇到的人或事、一些个人的想法，和一些奇奇怪怪的作品。",
-    "readingTime": "阅读时间：{{minutes}} 分钟",
-    "github": "我的 GitHub"
+    "intro": "我会在这里放一些我的学习笔记、生活中遇到的人或事、一些个人的想法，和一些奇奇怪怪的作品。"
   },
   "travel": {
     "title": "去过的地方",
@@ -70,12 +59,8 @@
   "blog": {
     "title": "Mark Xu 的博客",
     "description": "这里收录了 Mark Xu 关于技术与生活的文章。",
-    "readMore": "阅读全文",
-    "publishedOn": "发布于",
     "updatedOn": "更新于",
     "back": "返回文章列表",
-    "prevPost": "上一篇",
-    "nextPost": "下一篇",
     "readingTime": "{{minutes}} 分钟",
     "wordCount": "{{count}}字",
     "readerMode": {
@@ -120,7 +105,6 @@
           "year": "年",
           "years": "年"
         },
-        "days": "天",
         "units": {
           "year": "年",
           "years": "年",
@@ -148,7 +132,6 @@
       "title": "相关文章"
     },
     "filter": {
-      "allTags": "全部标签",
       "allCategories": "全部文章"
     },
     "archive": {
@@ -176,7 +159,6 @@
     },
     "copyright": {
       "author": "本文作者",
-      "link": "本文链接",
       "license": "版权声明",
       "statement": "本博客所有文章除特别声明外，均采用 <0>{{license}}</0> 许可协议。转载请注明出处！"
     }
@@ -195,24 +177,13 @@
   },
   "travellings": {
     "title": "开往",
-    "description": "随机拜访另一个独立网站",
     "aria": "开往-友链接力"
   },
   "movies": {
     "description": "下面是我看过的电影，并简单做了个数据分析和统计，欢迎参观！",
     "stats": {
       "watchedCount": "观影总数",
-      "ratedCount": "已评分",
-      "overallScore": "百分制的总体评分",
-      "overallScoreHint": "基于已评分影片计算",
-      "ratingBreakdown": "打分分布",
-      "latestWatch": "最近观看"
-    },
-    "mode": {
-      "label": "数据模式",
-      "csv": "默认",
-      "tmdb": "增强",
-      "hint": "默认模式不依赖外网。"
+      "ratingBreakdown": "打分分布"
     },
     "layout": {
       "label": "布局",
@@ -238,24 +209,13 @@
       }
     },
     "tmdb": {
-      "notice": "TMDB 可能无法直连。",
-      "loading": "正在加载当前页 TMDB 数据…",
-      "noPoster": "暂无海报",
-      "releaseDate": "上映日期",
-      "errors": {
-        "missingConfig": "未配置 TMDB 服务端密钥，请在 apps/web/.env.local 或 Vercel 环境变量添加 TMDB_API_TOKEN 或 TMDB_API_KEY。",
-        "authFailed": "TMDB 鉴权失败，请检查 Token/Key 是否正确。",
-        "network": "TMDB 请求失败（可能是网络不可达）。"
-      }
+      "noPoster": "暂无海报"
     },
     "searchPlaceholder": "搜索片名、原名、平台或备注…",
     "filters": {
       "label": "筛选",
       "allMovies": "全部影片",
-      "withReviews": "有影评",
-      "allPlatforms": "全部平台",
-      "newestFirst": "最新观看优先",
-      "oldestFirst": "最早观看优先"
+      "withReviews": "有影评"
     },
     "empty": {
       "title": "没有可展示的观影数据",
@@ -263,8 +223,7 @@
     },
     "noResults": "没有符合当前筛选条件的电影。",
     "rating": {
-      "value": "{{rating}} 星",
-      "unrated": "未评分"
+      "value": "{{rating}} 星"
     },
     "watchDate": "观看日期",
     "actions": {
@@ -274,8 +233,7 @@
       "pageTitle": "影视影评",
       "backToMovies": "返回影视页",
       "notFoundTitle": "未找到影评",
-      "hasReviewBadge": "有影评",
-      "readReview": "查看影评"
+      "hasReviewBadge": "有影评"
     }
   },
   "games": {
@@ -287,12 +245,7 @@
       "grid": "格子"
     },
     "hero": {
-      "eyebrow": "Steam Library",
       "title": "{{name}} 的游戏库",
-      "subtitle": "可以在这里看到我都玩过什么，喜欢玩什么类型的游戏。",
-      "topGameLabel": "时长最高",
-      "topGameValue": "累计 {{hours}} 小时",
-      "topGameEmpty": "还没有可展示的游玩记录。",
       "updatedAt": "数据刷新时间：{{date}}"
     },
     "profile": {
@@ -301,14 +254,9 @@
     },
     "stats": {
       "totalGames": "游戏总数",
-      "totalGamesHint": "当前账号可读取的全部拥有游戏。",
       "totalHours": "累计时长",
-      "totalHoursHint": "按所有已拥有游戏的总游玩时长汇总。",
       "recentHours": "近两周活跃",
-      "recentHoursHint": "用于快速看最近有没有重新开坑。",
-      "totalAchievements": "已获得成就",
-      "playedGames": "已启动游戏",
-      "playedGamesHint": "还有 {{remaining}} 款还没真正开玩。"
+      "totalAchievements": "已获得成就"
     },
     "featured": {
       "title": "常玩游戏",
@@ -336,9 +284,7 @@
     "sort": {
       "playtime": "总时长优先",
       "recent": "近期活跃优先",
-      "achievements": "成就完成度优先",
-      "alphabetical": "按名称排序",
-      "leastPlayed": "最少时长优先"
+      "achievements": "成就完成度优先"
     },
     "actions": {
       "openStore": "打开 Steam 商店页"
@@ -361,18 +307,9 @@
   "projects": {
     "title": "实验室",
     "description": "偶尔会有一些奇怪的想法，借助AI或者自己来实现，看看效果如何。",
-    "layout": {
-      "label": "布局",
-      "list": "列表",
-      "grid": "格子"
-    },
     "source": "查看源码",
     "open": "打开界面",
     "showcaseTitle": "#MadebyMark",
-    "showcaseDescription": "把想法做成可以打开的网页。",
-    "showcaseHintScroll": "滚动",
-    "showcaseHintDrag": "拖拽",
-    "showcaseHintClick": "点击查看项目",
     "githubTitle": "实验室的数据",
     "githubDescription": "一段我 GitHub 的实时缩影：每天的提交化作一座小城市，随你滚动而慢慢立起来。",
     "moreOnGithub": "在 GitHub 上了解更多",
@@ -389,8 +326,6 @@
     "githubScroll1": "滚动",
     "githubScroll2": "2D",
     "githubScroll3": "3D",
-    "flip": "查看项目介绍",
-    "flipBack": "返回项目预览",
     "live": "在线试玩"
   },
   "about": {

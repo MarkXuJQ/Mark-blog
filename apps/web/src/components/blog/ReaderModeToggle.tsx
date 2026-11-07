@@ -8,6 +8,7 @@ import {
 } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/classNames'
+import { clamp } from '@/lib/math'
 
 interface ReaderModeToggleProps {
   simpleMode: boolean
@@ -911,10 +912,6 @@ function clampTop(value: number) {
   const min = TOP_MARGIN
   const max = Math.max(min, window.innerHeight - TAG_HEIGHT - BOTTOM_MARGIN)
   return clamp(value, min, max)
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max)
 }
 
 function sideFromX(value: number): DockSide {

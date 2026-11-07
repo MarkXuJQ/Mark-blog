@@ -14,6 +14,7 @@ import {
   type MotionValue,
 } from 'framer-motion'
 import { cn } from '@/lib/classNames'
+import { clamp } from '@/lib/math'
 import { useIsCoarsePointer } from '@/hooks/useIsCoarsePointer'
 import { getImageUrl } from '@/lib/image'
 
@@ -27,10 +28,6 @@ const AVATAR_WEBP_SRCSET = [
 ].join(', ')
 const AVATAR_SIZES =
   '(min-width: 1024px) 248px, (min-width: 640px) 228px, 208px'
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max)
-}
 
 const MAX_SENSOR_TILT = 18
 

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/classNames'
+import { getClockwiseAngleDelta } from '@/lib/math'
 import {
   easeOutBack,
   easeOutCubic,
@@ -13,7 +14,7 @@ import {
   mix,
   segmentProgress,
   useHomeRadarScene,
-} from '@/hooks/useHomeRadarScene'
+} from '@/hooks/home/useHomeRadarScene'
 import {
   getNodeDotSize,
   isLightHexColor,
@@ -53,15 +54,6 @@ const RADAR_DYNAMIC_SIGNAL_FADE_DISTANCE = 40
 const RADAR_DYNAMIC_SIGNAL_INNER_RADIUS = 22
 const RADAR_DYNAMIC_SIGNAL_OUTER_RADIUS = 43
 const RADAR_DYNAMIC_SIGNAL_MAX_COUNT = 5
-
-function normalizeRadarAngle(angle: number) {
-  const normalized = angle % 360
-  return normalized < 0 ? normalized + 360 : normalized
-}
-
-function getClockwiseRadarDelta(from: number, to: number) {
-  return normalizeRadarAngle(to - from)
-}
 
 function getNormallyBiasedSignalSpacing() {
   for (let attempt = 0; attempt < 8; attempt += 1) {
@@ -325,7 +317,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     }
 
     const previousAngle = previousBeamAngleRef.current
-    const angleDelta = getClockwiseRadarDelta(previousAngle, beamAngle)
+    const angleDelta = getClockwiseAngleDelta(previousAngle, beamAngle)
 
     previousBeamAngleRef.current = beamAngle
     totalBeamRotationRef.current += angleDelta
@@ -954,6 +946,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                           className={styles.signalIconImage}
                           loading="lazy"
                           decoding="async"
+                          referrerPolicy="no-referrer"
                           style={{ scale: faviconScale }}
                         />
                       </span>
@@ -1094,6 +1087,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                     className={styles.signalIconImage}
                     loading="lazy"
                     decoding="async"
+                    referrerPolicy="no-referrer"
                     style={{
                       scale: signalPortalState.expanded
                         ? 1.08
@@ -1229,6 +1223,7 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
                         alt=""
                         loading="lazy"
                         decoding="async"
+                        referrerPolicy="no-referrer"
                         className={styles.signalSourceIcon}
                       />
                     </span>
@@ -1266,7 +1261,7 @@ const styles = {
     'pointer-events-auto cursor-pointer transition-colors duration-200 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/45 dark:hover:text-white dark:focus-visible:ring-cyan-300/45',
   metaValue:
     'text-[1.08rem] font-semibold leading-none tracking-[0.02em] text-slate-900 dark:text-white/88',
-  metaValueNumeric: "[font-family:'Tourney',sans-serif] tabular-nums",
+  metaValueNumeric: "font-tourney tabular-nums",
   metaLabel:
     'text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-slate-500/78 dark:text-white/40',
   signalSourceList:
@@ -1275,7 +1270,7 @@ const styles = {
   signalSourceListTitle:
     'text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-slate-500/82 dark:text-white/44',
   signalSourceListCount:
-    "text-sm font-semibold tracking-[0.02em] text-slate-900 dark:text-white/88 [font-family:'Tourney',sans-serif] tabular-nums",
+    "text-sm font-semibold tracking-[0.02em] text-slate-900 dark:text-white/88 font-tourney tabular-nums",
   signalSourceTabs:
     'mb-2 grid grid-cols-2 gap-1 rounded-[18px] bg-slate-100/70 p-1 dark:bg-white/[0.045]',
   signalSourceTab:
@@ -1283,7 +1278,7 @@ const styles = {
   signalSourceTabActive:
     'bg-white text-slate-950 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.22)] dark:bg-white/12 dark:text-white',
   signalSourceTabCount:
-    "shrink-0 [font-family:'Tourney',sans-serif] text-[0.72rem] tabular-nums opacity-60",
+    "shrink-0 font-tourney text-[0.72rem] tabular-nums opacity-60",
   signalSourceListBody:
     'grid max-h-[min(18rem,45svh)] gap-1.5 overflow-y-auto overscroll-contain pr-1',
   signalSourceItem:

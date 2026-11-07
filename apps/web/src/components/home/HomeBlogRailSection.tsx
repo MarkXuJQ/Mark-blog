@@ -241,40 +241,40 @@ export function HomeBlogRailSection({
                 <p className="shrink-0 whitespace-nowrap text-right text-[0.54rem] leading-relaxed tracking-normal text-black/50 sm:text-xs sm:tracking-wide dark:text-white/50">
                   {locale === 'zh-CN' ? (
                     <>
-                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {allPosts.length}
                       </strong>{' '}
                       篇博客{' '}
-                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {formatWordCount(totalWordCount, locale)}
                       </strong>{' '}
                       字
                       <br />
-                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {lifeStats.postCount}
                       </strong>{' '}
                       篇随笔{' '}
-                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {lifeStats.photoCount}
                       </strong>{' '}
                       张照片
                     </>
                   ) : (
                     <>
-                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {allPosts.length}
                       </strong>{' '}
                       blog posts ·{' '}
-                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {formatWordCount(totalWordCount, locale)}
                       </strong>{' '}
                       words
                       <br />
-                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {lifeStats.postCount}
                       </strong>{' '}
                       life notes ·{' '}
-                      <strong className="font-semibold text-black/80 tabular-nums [font-family:'Tourney',sans-serif] text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {lifeStats.photoCount}
                       </strong>{' '}
                       photos
