@@ -646,8 +646,14 @@ html:not(.dark) .lab-page-shell {
 
 /* Keep the full-bleed lab sections on the same cream surface so nothing peeks
    through their borders/margins. The lab header is deliberately excluded: it
-   is transparent so the ASCII hero backdrop shows through beneath the wordmark. */
-html:not(.dark) .mark-lab-github-wrap,
+   is transparent so the ASCII hero backdrop shows through beneath the wordmark.
+
+   .mark-lab-github-wrap is left transparent in light mode (like dark mode):
+   it starts inside the first viewport, right under the wordmark, and an opaque
+   cream band here would cover the ASCII hero that still spans this area. The
+   page shell's cream background shows through behind it instead. Only
+   .mark-lab-webgl needs the explicit cream fill, since it sets its own opaque
+   --surface-0 (pure white in light mode) on line ~162. */
 html:not(.dark) .mark-lab-webgl {
   background: #fdf9f0;
 }
