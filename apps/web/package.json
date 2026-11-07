@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/generate-post-summaries.js && node scripts/generate-photo-route-summaries.js && vite",
-    "build": "node scripts/sync-vercel-post-redirects.js --check && node scripts/generate-steam-dashboard.js && node scripts/generate-post-summaries.js && node scripts/generate-photo-route-summaries.js && node scripts/generate-font-subsets.js && node scripts/generate-responsive-images.js && tsc -b && vite build && node scripts/generate-sitemap.js && node scripts/prerender.js && node scripts/generate-rss.js",
+    "build": "node scripts/sync-vercel-post-redirects.js --check && node scripts/generate-steam-dashboard.js && node scripts/generate-post-summaries.js && node scripts/generate-photo-route-summaries.js && node scripts/detect-lost-friends.js && node scripts/generate-font-subsets.js && node scripts/generate-responsive-images.js && tsc -b && vite build && node scripts/generate-sitemap.js && node scripts/prerender.js && node scripts/generate-rss.js",
     "generate:posts": "node scripts/generate-post-summaries.js",
     "generate:photo-routes": "node scripts/generate-photo-route-summaries.js",
     "generate:fonts": "node scripts/generate-font-subsets.js",
