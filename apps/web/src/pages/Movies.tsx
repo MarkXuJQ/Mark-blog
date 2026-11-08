@@ -7,6 +7,7 @@ import { MovieStatsPanel } from '@/components/movies/MovieStatsPanel'
 import { MoviesToolbar } from '@/components/movies/MoviesToolbar'
 import { WatchActivityCalendar } from '@/components/movies/WatchActivityCalendar'
 import { Seo } from '@/app/seo/Seo'
+import { cn } from '@/lib/classNames'
 import { RevealText } from '@/components/movies/reveal-text'
 import { useMovieCatalog } from '@/hooks/movies/useMovieCatalog'
 import { useTmdbEnrichment } from '@/hooks/movies/useTmdbEnrichment'
@@ -14,6 +15,7 @@ import {
   CINEMA_BACKGROUND_INTERVAL_MS,
   CINEMA_REVEAL_TEXT,
   CINEMA_STILL_IMAGES,
+  getCinemaStillObjectPosition,
   DOUBAN_PROFILE_URL,
   TMDB_PROFILE_URL,
 } from '@/lib/movies/movieConstants'
@@ -167,7 +169,10 @@ function MoviesHero({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1.25, ease: 'easeInOut' }}
-              className="absolute inset-0 h-full w-full object-cover object-center"
+              className={cn(
+                'absolute inset-0 h-full w-full object-cover',
+                getCinemaStillObjectPosition(backgroundImage)
+              )}
               loading="eager"
               decoding="async"
               draggable={false}
