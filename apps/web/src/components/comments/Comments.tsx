@@ -3,9 +3,12 @@ import { useTranslation } from 'react-i18next'
 import { LinkGuard } from './LinkGuard'
 import {
   getTwikooApi,
+  getTwikooEnvId,
   installEmotionPackInterceptor,
   loadTwikooScript,
+  TWIKOO_LOCALE_BASE_URL,
 } from '@/lib/comments/twikooLoader'
+import { decorateCommentAvatars } from '@/lib/comments/commentAvatar'
 import { cn } from '@/lib/classNames'
 
 // Declare Twikoo on window
@@ -64,9 +67,7 @@ export function Comments({
   const [commentCount, setCommentCount] = useState(0)
   const commentCountRef = useRef(0)
 
-  const TWIKOO_ENV_ID =
-    import.meta.env.VITE_TWIKOO_ENV_ID ||
-    'https://comments.markxu.icu/api/twikoo'
+  const TWIKOO_ENV_ID = getTwikooEnvId()
 
   const hasRenderedTwikooContent = (target: HTMLElement | null) => {
     if (!target) return false
@@ -110,14 +111,27 @@ export function Comments({
       }
 
       // --- remove refresh button (rarely needed) and preview/markdown hints ---
-      wrap
-        .querySelectorAll(
-          '.tk-refresh, .tk-preview, .tk-submit-action-icon.__markdown'
+      // Twikoo 2 moved the toolbar into `.tk-comments-actions` and renders the
+      // refresh control as the 2nd `.__comments` icon (search, refresh, admin).
+      const toolbarIcons = wrap.querySelectorAll<HTMLElement>(
+        '.tk-comments-actions > .tk-icon.__comments'
+      )
+      toolbarIcons[1]?.remove()
+      wrap.querySelectorAll('.tk-preview, .tk-submit-action-icon.__markdown').forEach((el) => {
+        el.parentElement?.removeChild(el)
+      })
+
+      // --- tag the dislike button so CSS can hide it ---
+      // Twikoo 2 renders these as <button> siblings; the order is
+      // [delete (admin only)], like, dislike, reply, so dislike is always the
+      // second-to-last control.
+      wrap.querySelectorAll<HTMLElement>('.tk-action').forEach((action) => {
+        const buttons = action.querySelectorAll<HTMLButtonElement>(
+          ':scope > button.tk-action-link'
         )
-        .forEach((el) => {
-          const parent = el.parentElement
-          parent?.removeChild(el)
-        })
+        if (buttons.length < 3) return
+        buttons[buttons.length - 2].dataset.tkDislike = 'true'
+      })
 
       // --- rotating fun placeholder for the comment box (every 10s) ---
       const textarea =
@@ -153,13 +167,13 @@ export function Comments({
 
       // --- normalize meta fields: short label + a consistent fill hint ---
       wrap
-        .querySelectorAll<HTMLElement>('.tk-meta-input .el-input')
+        .querySelectorAll<HTMLElement>('.tk-meta-input .tk-input--group')
         .forEach((input) => {
           const pre = input.querySelector<HTMLElement>(
-            '.el-input-group__prepend'
+            '.tk-input-group__prepend'
           )
           const inner =
-            input.querySelector<HTMLInputElement>('.el-input__inner')
+            input.querySelector<HTMLInputElement>('.tk-input__inner')
           if (!pre || !inner) return
           const label = pre.textContent?.trim() ?? ''
           // Keep the prepend labels short and identical in style (idempotent).
@@ -201,18 +215,13 @@ export function Comments({
         }
       }
       // Hide Twikoo's own "X 条评论" counter text (数字 + suffix) while keeping
-      // the sort dropdown and refresh button next to it on the right.
+      // the sort buttons and refresh button next to it on the right.
+      // Twikoo 2 renders both parts inside `.tk-comments-count`, and moved the
+      // controls into the sibling `.tk-comments-actions`.
       const tkCount = wrap.querySelector<HTMLElement>('.tk-comments-count')
       if (tkCount) {
-        const numSpan = tkCount.querySelector(':scope > span:first-child')
-        const suffixSpan = tkCount.querySelector(':scope > span:nth-child(2)')
-        if (numSpan) (numSpan as HTMLElement).style.display = 'none'
-        if (
-          suffixSpan &&
-          !suffixSpan.classList.contains('tk-comments-sort') &&
-          !suffixSpan.classList.contains('tk-icon')
-        ) {
-          ;(suffixSpan as HTMLElement).style.display = 'none'
+        for (const part of Array.from(tkCount.children)) {
+          if (part instanceof HTMLElement) part.style.display = 'none'
         }
       }
 
@@ -250,11 +259,19 @@ export function Comments({
   // whenever Twikoo (re)renders. Only active for the unified 'default' layout.
   const applyCustomizations = useCallback(
     (target: HTMLElement | null) => {
-      if (!target || variant !== 'default') return
-      // Guard against observer-triggered re-entry from our own DOM writes.
-      if (applyingCustomizations) return
+      if (!target) return
       const wrap = target.closest<HTMLElement>('.twikoo-wrap')
       if (!wrap) return
+
+      // Avatars are swapped for every variant: the compact layout hides them,
+      // but the same nodes can be reused when Twikoo re-renders.
+      void decorateCommentAvatars(wrap).catch((error) => {
+        console.error('Comment avatar decoration failed:', error)
+      })
+
+      if (variant !== 'default') return
+      // Guard against observer-triggered re-entry from our own DOM writes.
+      if (applyingCustomizations) return
       applyingCustomizations = true
       try {
         applyCustomizationsInner(wrap)
@@ -287,20 +304,15 @@ export function Comments({
       setStatus('ready')
     }
 
+    // Arm the emotion-pack interceptor immediately: it is synchronous now and
+    // fetches the pack in the background, so mounting Twikoo does not wait on
+    // that (large) JSON. The comment list itself never depends on it.
+    installEmotionPackInterceptor(EMOTION_CDN)
+
     const initTwikoo = async () => {
       try {
         setStatus('loading')
-        // Warm the script and the emotion pack together, then arm the pack
-        // interceptor before Twikoo mounts and requests the pack itself.
-        const [, packReady] = await Promise.all([
-          loadTwikooScript(),
-          installEmotionPackInterceptor(EMOTION_CDN),
-        ])
-        if (import.meta.env.DEV && !packReady) {
-          console.warn(
-            '[comments] custom emotion pack unavailable; falling back to the default pack'
-          )
-        }
+        await loadTwikooScript()
         const twikooApi = getTwikooApi()
         if (cancelled || !twikooApi) return
 
@@ -354,6 +366,10 @@ export function Comments({
           // Without this Twikoo falls back to navigator.language, which shows
           // English placeholders ("Required", "Optional") in a Chinese page.
           lang: currentLang.startsWith('en') ? 'en-us' : 'zh-cn',
+          // Twikoo 2 loads UI strings lazily from `<script dir>/locales/<lang>.js`.
+          // Pin it explicitly: the script is injected from JS, so `currentScript`
+          // inference is not always reliable once the loader has moved on.
+          localeBaseUrl: TWIKOO_LOCALE_BASE_URL,
           onCommentLoaded: () => {
             markReady()
             applyCustomizations(host)
@@ -376,9 +392,11 @@ export function Comments({
       }
     }
 
+    // Start as soon as the browser is idle instead of a fixed delay: the
+    // component only mounts when the reader is already near the comments.
     initTimer = window.setTimeout(() => {
       void initTwikoo()
-    }, 800)
+    }, 0)
 
     return () => {
       cancelled = true
@@ -556,7 +574,7 @@ export function Comments({
                 min-height 0.25s ease,
                 height 0.25s ease;
         }
-        .twikoo-wrap[data-variant="default"] .tk-input .el-input__count {
+        .twikoo-wrap[data-variant="default"] .tk-input .tk-input__count {
             display: none !important;
         }
         .twikoo-wrap[data-variant="default"] .tk-input textarea::-webkit-resizer {
@@ -591,11 +609,12 @@ export function Comments({
             gap: 0.9rem !important;
             margin: 0 0 0.4rem !important;
         }
-        .twikoo-wrap[data-variant="default"] .tk-meta-input .el-input {
+        .twikoo-wrap[data-variant="default"] .tk-meta-input .tk-input--group {
             flex: 1 1 0 !important;
             min-width: 7rem !important;
+            margin-left: 0 !important;
         }
-        .twikoo-wrap[data-variant="default"] .tk-meta-input .el-input__inner {
+        .twikoo-wrap[data-variant="default"] .tk-meta-input .tk-input__inner {
             border: 0 !important;
             border-bottom: 1px solid rgba(148, 163, 184, 0.25) !important;
             border-radius: 0 !important;
@@ -603,10 +622,10 @@ export function Comments({
             box-shadow: none !important;
             padding-left: 0.1rem !important;
         }
-        .dark .twikoo-wrap[data-variant="default"] .tk-meta-input .el-input__inner {
+        .dark .twikoo-wrap[data-variant="default"] .tk-meta-input .tk-input__inner {
             border-bottom-color: rgba(71, 85, 105, 0.5) !important;
         }
-        .twikoo-wrap[data-variant="default"] .tk-meta-input .el-input-group__prepend {
+        .twikoo-wrap[data-variant="default"] .tk-meta-input .tk-input-group__prepend {
             border: 0 !important;
             background: transparent !important;
             box-shadow: none !important;
@@ -614,47 +633,80 @@ export function Comments({
             color: rgba(100, 116, 139, 0.85) !important;
             font-size: 0.8rem !important;
         }
-        .dark .twikoo-wrap[data-variant="default"] .tk-meta-input .el-input-group__prepend {
+        .dark .twikoo-wrap[data-variant="default"] .tk-meta-input .tk-input-group__prepend {
             color: rgba(148, 163, 184, 0.8) !important;
         }
-        /* Actions row: right-aligned, NO top divider. */
+        /* Actions row: right-aligned, NO top divider. Twikoo 2 indents this row
+           by 3.5rem to clear the avatar column, which the merged composer here
+           does not need. */
         .twikoo-wrap[data-variant="default"] .tk-comments > .tk-submit .tk-row.actions {
             margin-top: 0.4rem !important;
+            margin-left: 0 !important;
+            margin-bottom: 0 !important;
             justify-content: flex-end !important;
             align-items: center !important;
+        }
+        /* Comment search box (new in Twikoo 2): keep it, but quiet. */
+        .twikoo-wrap[data-variant="default"] .tk-comments-search {
+            margin-bottom: 0.9rem !important;
+            gap: 0.4rem !important;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-comments-search .tk-input__inner {
+            height: 2.1rem !important;
+            font-size: 0.8rem !important;
+            border-radius: 0.55rem !important;
+            border-color: rgba(148, 163, 184, 0.25) !important;
+            background: rgba(148, 163, 184, 0.08) !important;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .tk-comments-search .tk-input__inner {
+            border-color: rgba(71, 85, 105, 0.45) !important;
+            background: rgba(71, 85, 105, 0.18) !important;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-comments-search .tk-button {
+            height: 2.1rem !important;
+            padding: 0 0.85rem !important;
+            border-radius: 0.55rem !important;
+            font-size: 0.8rem !important;
         }
         /* Comment list: separated by whitespace only (no divider bar). */
         .twikoo-wrap[data-variant="default"] .tk-comments-container {
             margin-top: 1.2rem !important;
         }
-        /* Site-styled sorting dropdown (最新评论/最早/最多点赞). */
-        .twikoo-wrap[data-variant="default"] .tk-sort-select {
-            font-size: 0.8rem !important;
-            padding: 0.3rem 0.65rem !important;
+        /* Site-styled sorting (最新/最早/热门). Twikoo 2 replaced the <select>
+           with a row of text buttons and moved them into .tk-comments-actions. */
+        .twikoo-wrap[data-variant="default"] .tk-comments-sort {
+            gap: 0.15rem !important;
+            padding: 0.18rem !important;
             border: 1px solid rgba(148, 163, 184, 0.25) !important;
             border-radius: 0.55rem !important;
             background: rgba(148, 163, 184, 0.08) !important;
-            cursor: pointer !important;
-            color: var(--text-primary, #334155) !important;
-            outline: none !important;
-            transition:
-                border-color 0.2s ease,
-                background 0.2s ease;
         }
-        .dark .twikoo-wrap[data-variant="default"] .tk-sort-select {
+        .dark .twikoo-wrap[data-variant="default"] .tk-comments-sort {
             border-color: rgba(71, 85, 105, 0.45) !important;
             background: rgba(71, 85, 105, 0.18) !important;
         }
-        .twikoo-wrap[data-variant="default"] .tk-sort-select:hover {
-            border-color: rgba(148, 163, 184, 0.5) !important;
+        .twikoo-wrap[data-variant="default"] .tk-sort-item {
+            padding: 0.28rem 0.6rem !important;
+            border-radius: 0.42rem !important;
+            font-size: 0.8rem !important;
+            font-weight: 500 !important;
+            color: rgba(100, 116, 139, 0.85) !important;
+            transition:
+                color 0.2s ease,
+                background 0.2s ease;
         }
-        .dark .twikoo-wrap[data-variant="default"] .tk-sort-select:hover {
-            border-color: rgba(100, 116, 139, 0.7) !important;
+        .dark .twikoo-wrap[data-variant="default"] .tk-sort-item {
+            color: rgba(148, 163, 184, 0.8) !important;
         }
-        .twikoo-wrap[data-variant="default"] .tk-sort-select:focus {
-            border-color: rgba(148, 163, 184, 0.55) !important;
+        .twikoo-wrap[data-variant="default"] .tk-sort-item:hover {
+            color: var(--text-primary, #334155) !important;
+            background: rgba(148, 163, 184, 0.14) !important;
         }
-        
+        .twikoo-wrap[data-variant="default"] .tk-sort-item.__active {
+            color: #ff5941 !important;
+            background: rgba(255, 89, 65, 0.12) !important;
+        }
+
         .dark .twikoo-wrap .tk-content {
             color: #cbd5e1;
         }
@@ -688,8 +740,8 @@ export function Comments({
             display: inline-block;
             vertical-align: -0.125em;
         }
-        /* Hide dislike — the 2nd action link (点赞, 点踩, 回复). */
-        [data-variant="default"] .tk-action a.tk-action-link:nth-of-type(2) {
+        /* Hide dislike — tagged in JS as the 2nd-to-last action button. */
+        .twikoo-wrap .tk-action > button.tk-action-link[data-tk-dislike='true'] {
             display: none !important;
         }
         .twikoo-wrap .tk-action-icon svg path,
@@ -713,6 +765,23 @@ export function Comments({
           border-radius: inherit !important;
           object-fit: cover !important;
         }
+        /* Generated avatars (boring-avatars) for visitors without a real one. */
+        .twikoo-wrap .tk-avatar img[data-boring-avatar-hidden='true'] {
+          display: none !important;
+        }
+        .twikoo-wrap .tk-avatar > svg[data-boring-avatar] {
+          display: block !important;
+          width: 100% !important;
+          height: 100% !important;
+        }
+        /* Hold the placeholder back until the "does this person have a real
+           avatar?" probe resolves, so a rebohash never flashes on screen. */
+        .twikoo-wrap .tk-avatar[data-avatar-state='pending'] > img {
+          opacity: 0 !important;
+        }
+        .twikoo-wrap .tk-avatar {
+          transition: opacity 0.2s ease;
+        }
 
         .twikoo-wrap[data-layout="stacked"] .tk-meta-input {
           display: flex !important;
@@ -720,7 +789,7 @@ export function Comments({
           align-items: stretch !important;
           gap: 0.5rem !important;
         }
-        .twikoo-wrap[data-layout="stacked"] .tk-meta-input .el-input,
+        .twikoo-wrap[data-layout="stacked"] .tk-meta-input .tk-input--group,
         .twikoo-wrap[data-layout="stacked"] .tk-meta-input input,
         .twikoo-wrap[data-layout="stacked"] .tk-input textarea {
           width: 100% !important;
@@ -785,12 +854,12 @@ export function Comments({
           display: block !important;
           margin: 0 0 0.55rem !important;
         }
-        .twikoo-wrap[data-variant="compact"] .tk-meta-input .el-input {
+        .twikoo-wrap[data-variant="compact"] .tk-meta-input .tk-input--group {
           width: 100% !important;
           max-width: 100% !important;
           margin: 0 !important;
         }
-        .twikoo-wrap[data-variant="compact"] .tk-meta-input .el-input:nth-child(n + 2) {
+        .twikoo-wrap[data-variant="compact"] .tk-meta-input .tk-input--group:nth-child(n + 2) {
           display: none !important;
         }
         .twikoo-wrap[data-variant="compact"] .tk-meta-input input,
@@ -831,7 +900,7 @@ export function Comments({
         .twikoo-wrap[data-variant="compact"] .tk-admin-config {
           display: none !important;
         }
-        .twikoo-wrap[data-variant="compact"] .el-button {
+        .twikoo-wrap[data-variant="compact"] .tk-button {
           min-height: 2.25rem !important;
           border: 0 !important;
           border-radius: 999px !important;
@@ -931,7 +1000,7 @@ export function Comments({
             flex-direction: column;
             align-items: stretch;
           }
-          .twikoo-wrap[data-layout="stacked"] .tk-row.actions .el-button,
+          .twikoo-wrap[data-layout="stacked"] .tk-row.actions .tk-button,
           .twikoo-wrap[data-layout="stacked"] .tk-row.actions a {
             width: 100% !important;
           }

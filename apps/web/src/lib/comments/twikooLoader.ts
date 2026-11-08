@@ -5,6 +5,11 @@ export interface TwikooApi {
     path?: string
     /** Twikoo UI language, e.g. 'zh-cn' | 'en-us'. */
     lang?: string
+    /**
+     * Base URL for Twikoo 2's lazily imported `locales/<lang>.js` shards.
+     * Defaults to the directory the bundle was loaded from.
+     */
+    localeBaseUrl?: string
     /** OwO emotion-pack JSON URL; replaces Twikoo's default pack. */
     EMOTION_CDN?: string
     onCommentLoaded?: () => void
@@ -36,9 +41,23 @@ declare global {
   }
 }
 
+/**
+ * Twikoo 2 ships its CSS inside the JS bundle and lazily imports the UI strings
+ * from `locales/<lang>.js` relative to the script URL, so the CDN path must keep
+ * the `dist/locales/` directory reachable. jsDelivr serves those shards with
+ * `Access-Control-Allow-Origin: *`, which the mirror does not for dynamic
+ * imports. Bump `TWIKOO_VERSION` together with the cloud function.
+ */
+const TWIKOO_VERSION = '2.0.17'
 const TWIKOO_SCRIPT_ID = 'twikoo-script'
-const TWIKOO_SCRIPT_SRC =
-  'https://registry.npmmirror.com/twikoo/1.7.0/files/dist/twikoo.min.js'
+const TWIKOO_SCRIPT_SRC = `https://cdn.jsdelivr.net/npm/twikoo@${TWIKOO_VERSION}/dist/twikoo.min.js`
+
+/**
+ * Directory Twikoo 2 resolves its lazily imported `locales/<lang>.js` shards
+ * against (`<base>/locales/zh-cn.js`).
+ */
+export const TWIKOO_LOCALE_BASE_URL =
+  'https://cdn.jsdelivr.net/npm/twikoo@' + TWIKOO_VERSION + '/dist'
 
 let twikooLoadPromise: Promise<void> | null = null
 
@@ -104,32 +123,78 @@ function validateEmotionPack(data: unknown): EmotionPack | null {
   return valid ? (data as EmotionPack) : null
 }
 
-let packXhrPatched = false
+let packFetchPatched = false
 
 /**
  * Deterministically swap Twikoo's emotion pack.
  *
- * Twikoo loads the pack with a raw XMLHttpRequest to `config.EMOTION_CDN` (or its
- * built-in default). Racing that by patching `config` and calling `initOwo()`
- * again is inherently flaky: Twikoo replaces the whole config object when its
- * asynchronous GET_CONFIG arrives, and mounted-order varies between loads.
+ * Twikoo fetches the pack from `config.EMOTION_CDN` (or its built-in default).
+ * Racing that by patching `config` and calling `initOwo()` again is inherently
+ * flaky: Twikoo replaces the whole config object when its asynchronous
+ * GET_CONFIG arrives, and mounted-order varies between loads.
  *
- * Instead we intercept the request at its source: any XHR for an OwO JSON gets
- * answered with our validated pack. That makes the result identical on every
- * load, regardless of config timing, and leaves the admin's own EMOTION_CDN
- * untouched (we only stand in when it is unset).
+ * Instead we intercept the request at its source: any request for an OwO JSON
+ * gets answered with our validated pack. That makes the result identical on
+ * every load, regardless of config timing, and leaves the admin's own
+ * EMOTION_CDN untouched (we only stand in when it is unset).
+ *
+ * The patch is installed synchronously and the pack is fetched in parallel: the
+ * comments themselves never wait for it, only Twikoo's own pack request does
+ * (and it falls back to the network if the pack could not be loaded).
+ *
+ * Twikoo 1.x used a raw XMLHttpRequest, 2.x switched to `fetch`; both are hooked
+ * so a cache holding either bundle keeps working.
  */
-export async function installEmotionPackInterceptor(
-  emotionCdn: string
-): Promise<boolean> {
-  if (typeof window === 'undefined' || packXhrPatched) return false
+export function installEmotionPackInterceptor(emotionCdn: string): boolean {
+  if (typeof window === 'undefined' || packFetchPatched) return false
 
-  const pack = await loadEmotionPack(emotionCdn)
-  // Without a valid pack the interceptor would only break the picker.
-  if (!pack) return false
+  packFetchPatched = true
+  // Resolves to the serialized pack, or null when it is unavailable.
+  const packPromise = loadEmotionPack(emotionCdn).then((pack) =>
+    pack ? JSON.stringify(pack) : null
+  )
 
-  packXhrPatched = true
-  const packJson = JSON.stringify(pack)
+  const isEmotionPackUrl = (url: string) => {
+    const isPackRequest =
+      /(?:^|\/)(?:owo|emotions?)(?:[\w.-]*)\.json(?:\?|$)/i.test(url) ||
+      /owo\.json/i.test(url)
+    // Only answer for Twikoo's default pack. If the site configured its own
+    // EMOTION_CDN, that URL is not the default one and is left alone.
+    const isDefaultPack =
+      /owo\.imaegoo\.com/i.test(url) || /\/emotions\/owo\.json/i.test(url)
+    return isPackRequest && isDefaultPack
+  }
+
+  const originalFetch = window.fetch
+  window.fetch = function (
+    this: Window,
+    input: RequestInfo | URL,
+    init?: RequestInit
+  ) {
+    const rawUrl =
+      typeof input === 'string'
+        ? input
+        : input instanceof URL
+          ? input.href
+          : input.url
+
+    if (isEmotionPackUrl(rawUrl)) {
+      // Serve our pack if we have it; otherwise let the request through.
+      return packPromise.then((packJson) =>
+        packJson
+          ? new Response(packJson, {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            })
+          : originalFetch.call(window, input, init)
+      )
+    }
+
+    return originalFetch.call(window, input, init)
+  } as typeof window.fetch
+
+  if (typeof XMLHttpRequest === 'undefined') return true
+
   const originalOpen = XMLHttpRequest.prototype.open
   const originalSend = XMLHttpRequest.prototype.send
 
@@ -151,29 +216,28 @@ export async function installEmotionPackInterceptor(
     ...args: unknown[]
   ) {
     const url = urlByXhr.get(this) ?? ''
-    const isPackRequest =
-      /(?:^|\/)(?:owo|emotions?)(?:[\w.-]*)\.json(?:\?|$)/i.test(url) ||
-      /owo\.json/i.test(url)
 
-    // Only answer for Twikoo's default pack. If the site configured its own
-    // EMOTION_CDN, that URL is not the default one and is left alone.
-    const isDefaultPack =
-      /owo\.imaegoo\.com/i.test(url) || /\/emotions\/owo\.json/i.test(url)
-
-    if (isPackRequest && isDefaultPack) {
-      // Serve our pack without touching the network.
+    if (isEmotionPackUrl(url)) {
       const xhr = this as XMLHttpRequest
-      for (const [key, value] of [
-        ['readyState', 4],
-        ['status', 200],
-        ['responseText', packJson],
-        ['response', packJson],
-      ] as const) {
-        Object.defineProperty(xhr, key, { value, configurable: true })
-      }
-      xhr.dispatchEvent(new Event('readystatechange'))
-      xhr.dispatchEvent(new Event('load'))
-      xhr.dispatchEvent(new Event('loadend'))
+      void packPromise.then((packJson) => {
+        // Without a pack, fall through to the real request.
+        if (!packJson) {
+          originalSend.apply(xhr, args as never)
+          return
+        }
+        // Serve our pack without touching the network.
+        for (const [key, value] of [
+          ['readyState', 4],
+          ['status', 200],
+          ['responseText', packJson],
+          ['response', packJson],
+        ] as const) {
+          Object.defineProperty(xhr, key, { value, configurable: true })
+        }
+        xhr.dispatchEvent(new Event('readystatechange'))
+        xhr.dispatchEvent(new Event('load'))
+        xhr.dispatchEvent(new Event('loadend'))
+      })
       return
     }
 
@@ -275,5 +339,37 @@ export function loadTwikooScript(): Promise<void> {
 export function preloadTwikooScript() {
   void loadTwikooScript().catch(() => {
     // Swallow preload failures and retry on actual mount.
+  })
+}
+
+/** Default backend used when `VITE_TWIKOO_ENV_ID` is not configured. */
+const TWIKOO_ENV_ID_FALLBACK = 'https://comments.markxu.icu/api/twikoo'
+
+/** Resolved Twikoo env id (a CloudBase id or a self-hosted function URL). */
+export function getTwikooEnvId(): string {
+  return import.meta.env.VITE_TWIKOO_ENV_ID || TWIKOO_ENV_ID_FALLBACK
+}
+
+let backendWarmedFor: string | null = null
+
+/**
+ * Poke the (usually serverless) Twikoo backend once the page is idle.
+ *
+ * A cold Twikoo function takes ~1.5-2s to answer the first `GET_CONFIG`; warming
+ * it while the reader is still up in the article means the real request lands on
+ * a hot instance and the comment list appears almost immediately.
+ */
+export function warmTwikooBackend(envId: string) {
+  if (typeof window === 'undefined') return
+  if (!/^https?:\/\//i.test(envId)) return // CloudBase ids cannot be prefetched
+  if (backendWarmedFor === envId) return
+  backendWarmedFor = envId
+
+  void fetch(envId, {
+    method: 'GET',
+    credentials: 'omit',
+    cache: 'no-store',
+  }).catch(() => {
+    // Warming is best-effort; a failure just means the first real call is cold.
   })
 }

@@ -26,6 +26,7 @@
     "@radix-ui/react-tooltip": "^1.2.9",
     "@vercel/analytics": "^1.6.1",
     "@vercel/speed-insights": "^2.0.0",
+    "boring-avatars": "^2.0.4",
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.6.0",
     "feed": "^5.2.1",

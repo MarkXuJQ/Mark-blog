@@ -11,6 +11,12 @@
       rel="stylesheet"
     />
     <link rel="dns-prefetch" href="//s0.wp.com" />
+    <!-- Comments: warm the CDN and the (serverless) Twikoo backend so the first
+         request after the reader scrolls down does not pay for DNS + TLS. -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://comments.markxu.icu" crossorigin />
+    <link rel="dns-prefetch" href="//comments.markxu.icu" />
     <title>Mark的自留地</title>
   </head>
   <body>
