@@ -7,7 +7,6 @@ import { MovieStatsPanel } from '@/components/movies/MovieStatsPanel'
 import { MoviesToolbar } from '@/components/movies/MoviesToolbar'
 import { WatchActivityCalendar } from '@/components/movies/WatchActivityCalendar'
 import { Seo } from '@/app/seo/Seo'
-import { cn } from '@/lib/classNames'
 import { RevealText } from '@/components/movies/reveal-text'
 import { useMovieCatalog } from '@/hooks/movies/useMovieCatalog'
 import { useTmdbEnrichment } from '@/hooks/movies/useTmdbEnrichment'
@@ -169,10 +168,10 @@ function MoviesHero({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1.25, ease: 'easeInOut' }}
-              className={cn(
-                'absolute inset-0 h-full w-full object-cover',
-                getCinemaStillObjectPosition(backgroundImage)
-              )}
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{
+                objectPosition: getCinemaStillObjectPosition(backgroundImage),
+              }}
               loading="eager"
               decoding="async"
               draggable={false}
