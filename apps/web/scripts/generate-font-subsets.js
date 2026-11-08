@@ -56,6 +56,14 @@ const macintoshSkeletalFontOutput = path.join(
   projectRoot,
   'src/assets/fonts/MacintoshSkeletal-Subset.woff2'
 )
+const chillRoundRegularFontOutput = path.join(
+  projectRoot,
+  'src/assets/fonts/ChillRoundF-Regular-Subset.woff2'
+)
+const chillRoundBoldFontOutput = path.join(
+  projectRoot,
+  'src/assets/fonts/ChillRoundF-Bold-Subset.woff2'
+)
 const requiredFontOutputs = [
   alibabaRegularFontOutput,
   alibabaMediumFontOutput,
@@ -64,6 +72,8 @@ const requiredFontOutputs = [
   nerdFontOutput,
   montserratFontOutput,
   macintoshSkeletalFontOutput,
+  chillRoundRegularFontOutput,
+  chillRoundBoldFontOutput,
 ]
 
 const chineseTextPath = path.join(generatedDir, 'font-chinese-chars.txt')
@@ -78,6 +88,7 @@ const macintoshSkeletalTextPath = path.join(
   generatedDir,
   'font-macintosh-skeletal-chars.txt'
 )
+const chillRoundTextPath = path.join(generatedDir, 'font-chillround-chars.txt')
 const fontSafelistPath = path.join(
   projectRoot,
   'src/assets/fonts/font-safelist.txt'
@@ -135,6 +146,18 @@ const macintoshSkeletalFontSource = resolveFontSource({
   roots: [path.join(projectRoot, 'src/assets/fonts/BBH_Bartle')],
   baseNames: ['MacintoshSkeletalFilled'],
 })
+// ChillRoundF (寒蝉全圆体) is used for site headings only, so it gets its own
+// title-scoped subset instead of the full body-text character set.
+const chillRoundRegularFontSource = resolveFontSource({
+  envVar: 'CHILLROUND_REGULAR_FONT_SOURCE',
+  roots: [path.join(projectRoot, 'src/assets/fonts/ChillRoundF_v3.200')],
+  baseNames: ['ChillRoundFRegular'],
+})
+const chillRoundBoldFontSource = resolveFontSource({
+  envVar: 'CHILLROUND_BOLD_FONT_SOURCE',
+  roots: [path.join(projectRoot, 'src/assets/fonts/ChillRoundF_v3.200')],
+  baseNames: ['ChillRoundFBold'],
+})
 
 if (
   nerdFontSource &&
@@ -170,9 +193,9 @@ const safeCodeExtras = [
 ].join('')
 
 const macintoshSkeletalText =
-  Array.from({ length: 95 }, (_, index) => String.fromCharCode(index + 32)).join(
-    ''
-  ) + '–—‘’…'
+  Array.from({ length: 95 }, (_, index) =>
+    String.fromCharCode(index + 32)
+  ).join('') + '–—‘’…'
 
 function collectTextFiles(dirPath, files = []) {
   if (!fs.existsSync(dirPath)) return files
@@ -341,6 +364,85 @@ function buildNerdFontText() {
 function buildMontserratText() {
   return uniqueGlyphText(
     readProjectText() + readFontSafelist() + safeCodeExtras
+  )
+}
+
+// ChillRoundF is applied to article titles, post titles in article lists and
+// in-article headings, so the glyph set is scoped to those instead of full
+// article bodies. That keeps the two weights at a reasonable transfer size.
+const chillRoundJsonFieldPattern =
+  /"(title|name|label|category|categories|tags?)"\s*:/
+
+function readContentTitleText() {
+  const files = collectTextFiles(path.join(repoRoot, 'content'))
+  let combined = ''
+
+  for (const filePath of files) {
+    if (!fs.existsSync(filePath)) continue
+    const rawText = fs.readFileSync(filePath, 'utf8')
+    const extension = path.extname(filePath).toLowerCase()
+
+    if (extension === '.md') {
+      const frontMatter = rawText.split(/^---$/m)[1]
+      if (frontMatter) combined += `${frontMatter}\n`
+      for (const line of rawText.split('\n')) {
+        if (/^#{1,6}\s/.test(line)) combined += `${line}\n`
+      }
+      continue
+    }
+
+    for (const line of rawText.split('\n')) {
+      if (chillRoundJsonFieldPattern.test(line)) combined += `${line}\n`
+    }
+  }
+
+  return combined
+}
+
+// Card meta labels (categories, filters) are localised strings that never
+// appear in content front matter or article headings.
+function readCategoryLabelText() {
+  const languagesDir = path.join(projectRoot, 'src/languages')
+  if (!fs.existsSync(languagesDir)) return ''
+
+  let combined = ''
+
+  for (const entry of fs.readdirSync(languagesDir)) {
+    if (!entry.endsWith('.json')) continue
+
+    let parsed
+    try {
+      parsed = JSON.parse(
+        fs.readFileSync(path.join(languagesDir, entry), 'utf8')
+      )
+    } catch {
+      continue
+    }
+
+    const blogLabels = parsed?.blog
+    for (const value of Object.values(blogLabels?.categories ?? {})) {
+      if (typeof value === 'string') combined += `${value}\n`
+    }
+    for (const key of ['allCategories', 'filter']) {
+      const value = blogLabels?.[key]
+      if (typeof value === 'string') combined += `${value}\n`
+    }
+    if (blogLabels?.filter && typeof blogLabels.filter === 'object') {
+      for (const value of Object.values(blogLabels.filter)) {
+        if (typeof value === 'string') combined += `${value}\n`
+      }
+    }
+  }
+
+  return combined
+}
+
+function buildChillRoundText() {
+  return uniqueGlyphText(
+    readContentTitleText() +
+      readCategoryLabelText() +
+      readFontSafelist() +
+      safeChineseExtras
   )
 }
 
@@ -626,6 +728,7 @@ async function main() {
   const pixelText = uniqueGlyphText(pixelFontText)
   const nerdFontText = buildNerdFontText()
   const montserratText = buildMontserratText()
+  const chillRoundText = buildChillRoundText()
 
   fs.writeFileSync(chineseTextPath, chineseText)
   fs.writeFileSync(alibabaSemiBoldTextPath, alibabaSemiBoldText)
@@ -633,6 +736,7 @@ async function main() {
   fs.writeFileSync(nerdFontTextPath, nerdFontText)
   fs.writeFileSync(montserratTextPath, montserratText)
   fs.writeFileSync(macintoshSkeletalTextPath, macintoshSkeletalText)
+  fs.writeFileSync(chillRoundTextPath, chillRoundText)
 
   const pyftsubsetPath = findPyftsubset()
   const fonttoolsPath = findFonttools()
@@ -689,6 +793,20 @@ async function main() {
     label: 'Macintosh Skeletal Filled',
   })
 
+  generateOrReuse(pyftsubsetPath, {
+    input: chillRoundRegularFontSource,
+    textFile: chillRoundTextPath,
+    output: chillRoundRegularFontOutput,
+    label: 'ChillRoundF Regular',
+  })
+
+  generateOrReuse(pyftsubsetPath, {
+    input: chillRoundBoldFontSource,
+    textFile: chillRoundTextPath,
+    output: chillRoundBoldFontOutput,
+    label: 'ChillRoundF Bold',
+  })
+
   logOutput(alibabaRegularFontOutput)
   logOutput(alibabaMediumFontOutput)
   logOutput(alibabaSemiBoldFontOutput)
@@ -696,6 +814,8 @@ async function main() {
   logOutput(nerdFontOutput)
   logOutput(montserratFontOutput)
   logOutput(macintoshSkeletalFontOutput)
+  logOutput(chillRoundRegularFontOutput)
+  logOutput(chillRoundBoldFontOutput)
 }
 
 main().catch((error) => {

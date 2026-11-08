@@ -86,6 +86,25 @@ i {
   overflow-wrap: break-word;
 }
 
+/* Article titles and in-article headings use the rounded heading face.
+   Scoped here so site chrome (nav, sidebar, page titles) keeps --font-heading. */
+[data-article-heading='true'],
+.article-rich .markdown-body :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-article-heading);
+}
+
+/* Post titles in article lists: same face, but never bold. */
+[data-article-list-title='true'] {
+  font-family: var(--font-article-heading);
+  font-weight: 400 !important;
+}
+
+/* Card meta rows (category, date, word count) follow the same face. */
+[data-post-meta='true'],
+[data-post-meta='true'] * {
+  font-family: var(--font-article-heading);
+}
+
 .article-rich.prose,
 .simple-reading.prose {
   --tw-prose-body: var(--article-text);

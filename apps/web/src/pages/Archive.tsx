@@ -114,7 +114,10 @@ export function Archive() {
                         <time dateTime={post.date} className={styles.postDate}>
                           {formatArchiveDate(post.date)}
                         </time>
-                        <h3 className={styles.postTitle}>
+                        <h3
+                          className={styles.postTitle}
+                          data-article-list-title="true"
+                        >
                           <Link
                             to={`/blog/${post.slug}`}
                             className={styles.postLink}
@@ -274,7 +277,11 @@ function SimpleArchive({
                   <time dateTime={post.date} className={styles.simplePostDate}>
                     {formatArchiveDate(post.date)}
                   </time>
-                  <Link to={`/blog/${post.slug}`} className={styles.simpleLink}>
+                  <Link
+                    to={`/blog/${post.slug}`}
+                    className={styles.simpleLink}
+                    data-article-list-title="true"
+                  >
                     {post.title}
                   </Link>
                 </article>
@@ -384,7 +391,7 @@ const styles = {
   postDate:
     'shrink-0 font-mono text-sm font-medium tabular-nums text-slate-400 dark:text-slate-500',
   postTitle:
-    'min-w-0 text-lg font-bold text-slate-900 transition-colors group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400',
+    'min-w-0 text-lg font-normal text-slate-900 transition-colors group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400',
   postLink: 'focus:outline-none',
   postTags:
     'relative z-10 mt-2 hidden shrink-0 flex-wrap gap-2 sm:mt-0 sm:flex',
@@ -413,5 +420,5 @@ const styles = {
     'grid grid-cols-[4.25rem_minmax(0,1fr)] gap-3 py-3 sm:grid-cols-[4.75rem_minmax(0,1fr)]',
   simplePostDate: 'pt-0.5 text-sm font-medium text-[var(--text-secondary)]',
   simpleLink:
-    'text-[1.05rem] font-semibold leading-7 text-[var(--text-primary)] transition-colors hover:text-[color-mix(in_srgb,var(--brand-400)_72%,var(--text-primary)_28%)]',
+    'text-[1.05rem] font-normal leading-7 text-[var(--text-primary)] transition-colors hover:text-[color-mix(in_srgb,var(--brand-400)_72%,var(--text-primary)_28%)]',
 }
