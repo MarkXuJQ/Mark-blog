@@ -14,6 +14,7 @@ import {
   CINEMA_BACKGROUND_INTERVAL_MS,
   CINEMA_REVEAL_TEXT,
   CINEMA_STILL_IMAGES,
+  getCinemaStillObjectPosition,
   DOUBAN_PROFILE_URL,
   TMDB_PROFILE_URL,
 } from '@/lib/movies/movieConstants'
@@ -167,7 +168,10 @@ function MoviesHero({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1.25, ease: 'easeInOut' }}
-              className="absolute inset-0 h-full w-full object-cover object-center"
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{
+                objectPosition: getCinemaStillObjectPosition(backgroundImage),
+              }}
               loading="eager"
               decoding="async"
               draggable={false}

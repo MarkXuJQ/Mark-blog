@@ -157,8 +157,8 @@ export function Blog() {
     return posts.slice(start, start + ITEMS_PER_PAGE)
   }, [posts, safeCurrentPage])
 
-  const [suppressListEnter, setSuppressListEnter] = useState(
-    () => Boolean(returnTransitionPostSlug)
+  const [suppressListEnter, setSuppressListEnter] = useState(() =>
+    Boolean(returnTransitionPostSlug)
   )
   const listStateRef = useRef({
     currentPage: safeCurrentPage,
@@ -550,7 +550,10 @@ function SimpleBlogPostItem({
             enabled={sharedTransitionEnabled}
             className="overflow-hidden rounded-xl"
           >
-            <h2 className="text-2xl leading-snug font-bold text-[var(--text-primary)] transition-colors group-hover:text-[color-mix(in_srgb,var(--brand-400)_72%,var(--text-primary)_28%)]">
+            <h2
+              className="text-2xl leading-snug font-normal text-[var(--text-primary)] transition-colors group-hover:text-[color-mix(in_srgb,var(--brand-400)_72%,var(--text-primary)_28%)]"
+              data-article-list-title="true"
+            >
               {post.title}
             </h2>
           </PostSharedElement>

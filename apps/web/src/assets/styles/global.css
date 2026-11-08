@@ -69,6 +69,8 @@
     0 1px 2px rgba(2, 6, 23, 0.05), 0 8px 24px rgba(2, 6, 23, 0.06);
   --font-heading:
     'Montserrat', 'Alibaba PuHuiTi 3', 'Songti SC', 'STSong', serif;
+  --font-article-heading:
+    'ChillRoundF', 'Montserrat', 'Alibaba PuHuiTi 3', 'PingFang SC', sans-serif;
   --font-hero-title:
     'JingNanBoBoHei', 'Alibaba PuHuiTi 3', 'PingFang SC', sans-serif;
   --font-code:
@@ -527,6 +529,23 @@ h3 {
   font-family: 'JingNanBoBoHei';
   src: url('../fonts/JingNanBoBoHei-Bold-Subset.woff2') format('woff2');
   font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ChillRoundF (寒蝉全圆体) — heading face. Subset to heading glyphs only. */
+@font-face {
+  font-family: 'ChillRoundF';
+  src: url('../fonts/ChillRoundF-Regular-Subset.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ChillRoundF';
+  src: url('../fonts/ChillRoundF-Bold-Subset.woff2') format('woff2');
+  font-weight: 500 900;
   font-style: normal;
   font-display: swap;
 }

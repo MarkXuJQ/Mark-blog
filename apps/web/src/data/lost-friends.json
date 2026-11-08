@@ -1,13 +1,69 @@
 {
   "archived": [
     {
+      "id": "https://www.ruanyifeng.com/blog/",
+      "category": "recommended",
+      "name": "阮一峰的网络日志",
+      "url": "https://www.ruanyifeng.com/blog/",
+      "description": "",
+      "httpStatus": null
+    },
+    {
+      "id": "https://eventuallymaking.io/",
+      "category": "recommended",
+      "name": "Eventuallymaking",
+      "url": "https://eventuallymaking.io/",
+      "description": "",
+      "httpStatus": null
+    },
+    {
+      "id": "https://pathos.page/",
+      "category": "recommended",
+      "name": "Pathos.page",
+      "url": "https://pathos.page/",
+      "description": "",
+      "httpStatus": null
+    },
+    {
+      "id": "https://innei.in/",
+      "category": "recommended",
+      "name": "Innei",
+      "url": "https://innei.in/",
+      "description": "Innei's personal blog on frontend and full-stack development — TypeScript, React, Next.js, AI engineering, indie hacking, travel and life.",
+      "httpStatus": null
+    },
+    {
+      "id": "https://blog.zhheo.com/",
+      "category": "neighbors",
+      "name": "张洪Heo",
+      "url": "https://blog.zhheo.com/",
+      "description": "",
+      "httpStatus": null
+    },
+    {
+      "id": "https://blog.lmb.blue/",
+      "category": "neighbors",
+      "name": "哈喽！林墨白",
+      "url": "https://blog.lmb.blue/",
+      "description": "沉墨满纸，一笑若白。",
+      "httpStatus": null
+    },
+    {
+      "id": "https://foglog.cn/",
+      "category": "neighbors",
+      "name": "雾语",
+      "url": "https://foglog.cn/",
+      "description": "迷雾轻语，雅意深藏",
+      "httpStatus": null
+    },
+    {
       "id": "https://eofs791.github.io",
       "category": "neighbors",
       "name": "Catarium",
       "url": "https://eofs791.github.io",
       "description": "见崎的猫箱",
-      "httpStatus": 404
+      "httpStatus": null
     }
   ],
-  "checkedAt": "2026-11-06T15:34:19.692Z"
+  "checkedAt": "2026-11-08T05:35:50.763Z"
 }

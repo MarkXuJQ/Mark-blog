@@ -14,3 +14,17 @@ export const CINEMA_STILL_IMAGES = [
   '/images/movies/cinema/midnight-in-paris.jpg',
   '/images/movies/cinema/avengers-endgame.jpg',
 ]
+
+// The hero band is much wider than 16:9, so each still is cropped vertically.
+// Stills whose subject sits off-center get their own vertical focus point
+// instead of the default center crop, which would cut through the figures.
+export const CINEMA_STILL_OBJECT_POSITIONS: Record<string, string> = {
+  // Keep the seated figure whole and leave the peaks visible above.
+  '/images/movies/cinema/walter-mitty.jpg': '50% 22%',
+  // The still is the Starry Night skyline, so lean low to keep the rooftops.
+  '/images/movies/cinema/midnight-in-paris.jpg': '50% 85%',
+}
+
+export function getCinemaStillObjectPosition(src: string) {
+  return CINEMA_STILL_OBJECT_POSITIONS[src] ?? '50% 50%'
+}

@@ -34,11 +34,13 @@ export function BlogPostCard({
   const coverImage = post.image ? getOptimizedImageUrl(post.image, 'card') : ''
   const shouldShowUpdatedDate =
     sortBy === 'updated' && Boolean(post.updated && post.updated !== post.date)
-  const displayDate = shouldShowUpdatedDate ? (post.updated ?? post.date) : post.date
+  const displayDate = shouldShowUpdatedDate
+    ? (post.updated ?? post.date)
+    : post.date
   const formattedDisplayDate = formatBlogListDate(displayDate)
   const DateIcon = shouldShowUpdatedDate ? LuHammer : LuPencilLine
   const titleClass = cn(
-    'mb-1.5 text-[1.375rem] font-medium leading-snug transition-colors',
+    'mb-1.5 text-[1.375rem] font-normal leading-snug transition-colors',
     'text-slate-900 group-hover:text-blue-500 dark:text-slate-100 dark:group-hover:text-blue-400'
   )
   const summaryClass =
@@ -63,13 +65,13 @@ export function BlogPostCard({
                 enabled={sharedTransitionEnabled}
                 className="overflow-hidden rounded-xl"
               >
-                <h2 className={titleClass}>{post.title}</h2>
+                <h2 className={titleClass} data-article-list-title="true">
+                  {post.title}
+                </h2>
               </PostSharedElement>
 
               {/* Summary */}
-              <p className={cn('mb-3 flex-1', summaryClass)}>
-                {post.summary}
-              </p>
+              <p className={cn('mb-3 flex-1', summaryClass)}>{post.summary}</p>
 
               {/* Meta info row: category + date + word count */}
               <PostSharedElement
@@ -79,7 +81,10 @@ export function BlogPostCard({
                 className="mt-auto overflow-hidden rounded-xl"
               >
                 <div className="flex items-center justify-between pt-1">
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-500 dark:text-slate-400">
+                  <div
+                    className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-500 dark:text-slate-400"
+                    data-post-meta="true"
+                  >
                     {post.category && (
                       <CategoryLabel
                         category={post.category}
@@ -145,7 +150,9 @@ export function BlogPostCard({
                 enabled={sharedTransitionEnabled && !isDesktopLayout}
                 className="overflow-hidden rounded-xl"
               >
-                <h2 className={titleClass}>{post.title}</h2>
+                <h2 className={titleClass} data-article-list-title="true">
+                  {post.title}
+                </h2>
               </PostSharedElement>
 
               <p className={cn('mb-2 flex-1 pb-2', summaryClass)}>
@@ -158,7 +165,7 @@ export function BlogPostCard({
                 enabled={sharedTransitionEnabled && !isDesktopLayout}
                 className="mt-auto overflow-hidden rounded-xl"
               >
-                <div className={metaClass}>
+                <div className={metaClass} data-post-meta="true">
                   {post.category && (
                     <CategoryLabel
                       category={post.category}
@@ -189,7 +196,9 @@ export function BlogPostCard({
                 enabled={sharedTransitionEnabled && isDesktopLayout}
                 className="overflow-hidden rounded-xl"
               >
-                <h2 className={titleClass}>{post.title}</h2>
+                <h2 className={titleClass} data-article-list-title="true">
+                  {post.title}
+                </h2>
               </PostSharedElement>
 
               <p className={cn('mb-2 flex-1 pb-2', summaryClass)}>
@@ -202,7 +211,7 @@ export function BlogPostCard({
                 enabled={sharedTransitionEnabled && isDesktopLayout}
                 className="mt-auto overflow-hidden rounded-xl"
               >
-                <div className={metaClass}>
+                <div className={metaClass} data-post-meta="true">
                   {post.category && (
                     <CategoryLabel
                       category={post.category}

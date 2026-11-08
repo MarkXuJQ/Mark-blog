@@ -49,7 +49,7 @@ export function Copyright() {
                 duration={2}
                 hold={1.5}
                 fade={0.4}
-                className="shrink-0 text-slate-500 dark:text-slate-300"
+                className="shrink-0 text-black dark:text-white"
               />
             </li>
             <li className="flex flex-col gap-1 sm:col-span-2 sm:flex-row sm:gap-2">
