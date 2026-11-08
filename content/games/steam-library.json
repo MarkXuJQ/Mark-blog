@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-03T08:19:01.644Z",
+  "generatedAt": "2026-11-08T05:35:37.396Z",
   "source": "webapi",
   "profile": {
     "steamId": "76561199085291248",
@@ -14,8 +14,8 @@
     "unplayedCount": 78,
     "totalMinutes": 171204,
     "totalRecentMinutes": 0,
-    "totalUnlockedAchievements": 1860,
-    "totalAvailableAchievements": 7241,
+    "totalUnlockedAchievements": 1917,
+    "totalAvailableAchievements": 7362,
     "featuredAppId": 2246340
   },
   "featured": [
@@ -87,7 +87,7 @@
       "reviewSummary": null,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1086940/48a2fcbda8565bb45025e98fd8ebde8a7203f6a0/header.jpg?t=1777363040",
       "shortDescription": "Baldur’s Gate 3 is a story-rich, party-based RPG set in the universe of Dungeons &amp; Dragons, where your choices shape a tale of fellowship and betrayal, survival and sacrifice, and the lure of absolute power.",
-      "releaseDate": "3 Aug, 2023",
+      "releaseDate": "Aug 3, 2023",
       "developers": [
         "Larian Studios"
       ],
@@ -112,9 +112,9 @@
         "totalCount": 78
       },
       "reviewSummary": null,
-      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/e8afc4252e3fee8ed2525ab2fd7675cca39aa38d/header_alt_assets_1.jpg?t=1790845156",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/4b5b1ba5061b8a992cc69ac58b4245434edb4296/header.jpg?t=1793900434",
       "shortDescription": "The Witcher 3: Wild Hunt — Remastered modernizes the acclaimed role-playing game with a range of upgrades and enhancements. Become monster slayer for hire Geralt of Rivia and journey across a dark fantasy open world in an epic quest to find your adopted daughter Ciri.",
-      "releaseDate": "18 May, 2015",
+      "releaseDate": "May 18, 2015",
       "developers": [
         "CD PROJEKT RED"
       ],
@@ -139,7 +139,7 @@
       "reviewSummary": null,
       "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/289070/header.jpg?t=1792718069",
       "shortDescription": "Expand your empire, advance your culture and go head-to-head against history’s greatest leaders. Will your civilization stand the test of time?",
-      "releaseDate": "Oct 20, 2016",
+      "releaseDate": "20 Oct, 2016",
       "developers": [
         "Firaxis Games",
         "Aspyr (Mac)",
@@ -164,7 +164,7 @@
         "totalCount": 93
       },
       "reviewSummary": null,
-      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1792778552",
+      "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/812140/header.jpg?t=1793886405",
       "shortDescription": "In this action-adventure game, set sail for Ancient Greece to alter its fate. Fight in visceral battles on land and sea, shape your destiny from outcast to legend, and uncover secrets of your past.",
       "releaseDate": "Oct 5, 2018",
       "developers": [
@@ -664,7 +664,10 @@
       "logoUrl": "",
       "storeUrl": "https://store.steampowered.com/app/588650",
       "communityUrl": "https://steamcommunity.com/app/588650",
-      "achievementStats": null,
+      "achievementStats": {
+        "unlockedCount": 57,
+        "totalCount": 121
+      },
       "nameZh": "死亡细胞"
     },
     {
