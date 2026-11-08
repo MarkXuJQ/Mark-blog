@@ -15,14 +15,10 @@ interface BlogRelatedPostsProps {
 export function BlogRelatedPosts({
   currentPost,
   posts,
-  maxItems = 5,
+  maxItems = 3,
 }: BlogRelatedPostsProps) {
   const { t } = useTranslation()
-  const visibleItemLimit = useSidebarItemLimit({
-    maxItems,
-    shortViewportItems: 2,
-    mediumViewportItems: 3,
-  })
+  const visibleItemLimit = useSidebarItemLimit({ maxItems })
   const recommendations = useMemo(() => {
     if (!currentPost?.category) return []
     const currentTags = new Set(
