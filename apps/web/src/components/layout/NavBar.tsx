@@ -295,7 +295,7 @@ const styles = {
   header:
     'relative mb-4 flex h-14 items-center justify-between rounded-full bg-white/80 px-4 py-3 shadow-sm backdrop-blur transition-colors duration-300 sm:px-6 dark:bg-[#17191c] dark:text-slate-100',
   logo: {
-    link: 'heading-brand flex items-center gap-2 text-lg font-semibold transition-opacity hover:opacity-80',
+    link: 'heading-brand font-brand flex items-center gap-2 text-lg font-semibold transition-opacity hover:opacity-80',
     img: 'h-8 w-8 rounded-sm',
   },
   desktop: {

@@ -191,7 +191,7 @@
 
 .mark-lab-webgl__header h2 {
   margin: 0;
-  font-family: var(--font-heading);
+  font-family: var(--font-brand);
   font-size: clamp(3rem, 9vw, 8rem);
   font-weight: 800;
   line-height: 0.9;

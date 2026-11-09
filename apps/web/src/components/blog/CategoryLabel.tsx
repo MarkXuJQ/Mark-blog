@@ -28,7 +28,7 @@ export function CategoryLabel({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 text-sm font-semibold',
+        'font-round inline-flex items-center gap-1.5 text-sm font-semibold',
         meta.textClassName,
         className,
         'leading-none'

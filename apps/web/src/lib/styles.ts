@@ -6,6 +6,9 @@
  * one-line change.
  */
 
-/** Standard padded "paper" card used by blog sidebar widgets. */
+/**
+ * Standard padded "paper" card used by blog sidebar widgets. Short labels,
+ * titles, counts and buttons inside use the site's rounded display face.
+ */
 export const widgetCardClass =
-  'border border-slate-200/70 p-6 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-all hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] dark:border-0 dark:shadow-none'
+  'font-round border border-slate-200/70 p-6 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-all hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] dark:border-0 dark:shadow-none'

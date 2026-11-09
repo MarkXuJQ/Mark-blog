@@ -159,7 +159,7 @@ const styles = {
   metrics: 'grid w-fit grid-cols-[repeat(3,5.5rem)] gap-x-1',
   metric: 'min-w-0',
   label:
-    'mb-1.5 block whitespace-nowrap text-[0.625rem] font-medium text-slate-500 dark:text-slate-500',
+    'font-round mb-1.5 block whitespace-nowrap text-[0.625rem] font-medium text-slate-500 dark:text-slate-500',
   value:
     'flex items-baseline whitespace-nowrap text-slate-900 dark:text-slate-100',
   integer:

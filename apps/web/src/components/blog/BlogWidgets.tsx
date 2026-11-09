@@ -77,7 +77,7 @@ function ProfileContent() {
             className={styles.avatar}
           />
         </div>
-        <h3 className={styles.profileName}>Mark Xu</h3>
+        <h3 className={cn(styles.profileName, 'font-brand')}>Mark Xu</h3>
         <button
           type="button"
           className={styles.profileSignatureButton}

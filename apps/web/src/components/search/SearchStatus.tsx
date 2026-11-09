@@ -13,7 +13,7 @@ export function SearchStatus({ query, count, onClear }: SearchStatusProps) {
   if (!query) return null
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="font-round flex items-center gap-2">
       <span className="text-sm text-slate-500 dark:text-slate-400">
         {t('blog.search.resultsFor')}:{' '}
         <span className="font-medium text-slate-900 dark:text-slate-100">

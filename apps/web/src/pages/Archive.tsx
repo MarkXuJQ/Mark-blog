@@ -353,8 +353,8 @@ function BackToBlogLink({ simple = false }: { simple?: boolean }) {
 }
 
 const styles = {
-  container: 'mx-auto w-full max-w-4xl space-y-8 px-0 py-8',
-  simpleContainer: 'mx-auto w-full max-w-4xl px-0 py-2',
+  container: 'font-round mx-auto w-full max-w-4xl space-y-8 px-0 py-8',
+  simpleContainer: 'font-round mx-auto w-full max-w-4xl px-0 py-2',
   header:
     'flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4 dark:border-slate-800',
   headerTitleGroup: 'flex min-w-0 items-center gap-3',

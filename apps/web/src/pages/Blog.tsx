@@ -342,7 +342,7 @@ export function Blog() {
                 placeholder={t('blog.sidebar.search.placeholder')}
                 query={searchQuery}
                 iconClassName="left-0 text-[var(--text-secondary)]"
-                className="rounded-none border-0 border-b border-[var(--border-color)] bg-transparent px-0 py-2 pl-7 text-[var(--text-primary)] shadow-none placeholder:text-[var(--text-secondary)] focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)] focus:ring-0 dark:border-[var(--border-color)] dark:bg-transparent dark:text-[var(--text-primary)] dark:placeholder:text-[var(--text-secondary)] dark:focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)]"
+                className="font-round rounded-none border-0 border-b border-[var(--border-color)] bg-transparent px-0 py-2 pl-7 text-[var(--text-primary)] shadow-none placeholder:text-[var(--text-secondary)] focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)] focus:ring-0 dark:border-[var(--border-color)] dark:bg-transparent dark:text-[var(--text-primary)] dark:placeholder:text-[var(--text-secondary)] dark:focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)]"
               />
               {layout === 'desktop' ? (
                 <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
@@ -478,7 +478,7 @@ function BlogHeaderTitle({
   const rssLabel = t('blog.rss.subscribe')
 
   return (
-    <h1 className="flex items-center gap-2 text-3xl leading-tight font-bold text-slate-900 dark:text-slate-100">
+    <h1 className="font-brand flex items-center gap-2 text-3xl leading-tight font-bold text-slate-900 dark:text-slate-100">
       <span>{title}</span>
       {layout === 'desktop' ? (
         <a
@@ -503,7 +503,7 @@ function SimpleBlogHeaderLinks() {
   return (
     <nav
       aria-label={i18n.language?.startsWith('zh') ? '博客入口' : 'Blog links'}
-      className="flex shrink-0 items-center gap-4 text-sm"
+      className="font-round flex shrink-0 items-center gap-4 text-sm"
     >
       <Link
         to="/archive"
