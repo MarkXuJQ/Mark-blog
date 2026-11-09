@@ -793,7 +793,7 @@ export function ReaderModeToggle({
           onClick={handleClick}
           style={{ opacity: labelOpacity }}
           className={cn(
-            'absolute top-0 flex h-full w-8 cursor-grab items-center justify-center bg-transparent px-1 py-2 text-xs font-semibold text-[var(--text-secondary)] transition-colors hover:bg-white/20 hover:text-[var(--text-primary)] active:cursor-grabbing',
+            'font-round absolute top-0 flex h-full w-8 cursor-grab items-center justify-center bg-transparent px-1 py-2 text-xs font-semibold text-[var(--text-secondary)] transition-colors hover:bg-white/20 hover:text-[var(--text-primary)] active:cursor-grabbing',
             '[text-orientation:mixed] [writing-mode:vertical-rl]',
             'focus:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--brand-400)_72%,transparent)]',
             SIDE_PRESENTATION[side].labelAnchor

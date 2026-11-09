@@ -51,6 +51,7 @@ function PaginationControls({
     <motion.nav
       layout
       className={cn(
+        'font-round',
         sticky
           ? 'fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-[75] flex h-8 w-fit max-w-[calc(100vw-2rem)] overflow-x-auto rounded-lg border border-slate-200/80 bg-white/92 shadow-[0_10px_30px_-12px_rgba(15,23,42,0.35)] backdrop-blur-md dark:border-[var(--border-color)] dark:bg-[color-mix(in_srgb,var(--surface-card)_92%,transparent)]'
           : 'scrollbar-hide flex h-8 w-fit max-w-full overflow-x-auto rounded-lg border border-slate-200/80 bg-white shadow-[0_10px_28px_-22px_rgba(15,23,42,0.38)] sm:h-9 dark:border-[var(--border-color)] dark:bg-[var(--surface-card)] dark:shadow-none',

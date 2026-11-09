@@ -324,10 +324,10 @@ const styles = {
     'mx-auto flex w-full max-w-[1400px] justify-center px-5 py-8 sm:px-6 focus:outline-none touch-pan-y select-none md:select-text',
   wrapper: 'w-full max-w-3xl space-y-6',
   header: 'flex items-center justify-between',
-  title: 'text-3xl font-bold text-slate-900 dark:text-slate-100',
+  title: 'font-round text-3xl font-bold text-slate-900 dark:text-slate-100',
   controlRow:
     'flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-6',
-  tabs: 'flex flex-wrap gap-6 text-sm',
+  tabs: 'font-round flex flex-wrap gap-6 text-sm',
   tab: 'relative pb-2 font-medium text-slate-500 transition-colors hover:text-slate-900 dark:hover:text-slate-100',
   tabActive: 'relative pb-2 font-semibold text-slate-900 dark:text-slate-100',
   tabUnderline:
@@ -348,12 +348,12 @@ const styles = {
   eventHeader: 'mb-4 cursor-pointer',
   eventMeta: 'flex items-center gap-2',
   eventDate:
-    'text-sm font-semibold text-[color-mix(in_srgb,var(--brand-600)_86%,var(--text-primary)_14%)] dark:text-[color-mix(in_srgb,var(--brand-400)_84%,var(--text-primary)_16%)]',
+    'font-round text-sm font-semibold text-[color-mix(in_srgb,var(--brand-600)_86%,var(--text-primary)_14%)] dark:text-[color-mix(in_srgb,var(--brand-400)_84%,var(--text-primary)_16%)]',
   itemCount:
-    'inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400',
+    'font-round inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400',
   expandIcon: 'ml-auto text-slate-400 transition-transform duration-200',
   eventTitle:
-    'mt-1 text-2xl font-medium text-slate-900 transition-colors hover:text-[color-mix(in_srgb,var(--brand-600)_82%,var(--text-primary)_18%)] dark:text-slate-100 dark:hover:text-[color-mix(in_srgb,var(--brand-400)_82%,var(--text-primary)_18%)]',
+    'font-round mt-1 text-2xl font-medium text-slate-900 transition-colors hover:text-[color-mix(in_srgb,var(--brand-600)_82%,var(--text-primary)_18%)] dark:text-slate-100 dark:hover:text-[color-mix(in_srgb,var(--brand-400)_82%,var(--text-primary)_18%)]',
   eventDescription: 'mt-2 text-slate-600 dark:text-slate-400',
 
   // Expanded Content
@@ -362,7 +362,7 @@ const styles = {
   category:
     'relative border-l border-dashed border-slate-300 pl-6 dark:border-slate-700',
   categoryTitle:
-    'mb-3 text-lg font-semibold text-slate-800 dark:text-slate-200',
+    'font-round mb-3 text-lg font-semibold text-slate-800 dark:text-slate-200',
   itemsList: 'space-y-3',
   item: 'relative flex items-start gap-4 text-sm',
   itemDate:

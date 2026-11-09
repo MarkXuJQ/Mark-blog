@@ -86,8 +86,8 @@ i {
   overflow-wrap: break-word;
 }
 
-/* Article titles and in-article headings use the rounded heading face.
-   Scoped here so site chrome (nav, sidebar, page titles) keeps --font-heading. */
+/* Article titles and in-article headings use the same rounded display face as
+   site chrome. Kept as explicit rules so article bodies stay on --font-body. */
 [data-article-heading='true'],
 .article-rich .markdown-body :is(h1, h2, h3, h4, h5, h6) {
   font-family: var(--font-article-heading);

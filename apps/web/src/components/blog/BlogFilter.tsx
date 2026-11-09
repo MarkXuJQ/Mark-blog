@@ -49,7 +49,7 @@ function CategoryMenuLabel({
   return (
     <span
       className={cn(
-        'inline-flex min-w-0 items-center gap-2.5 text-[0.95rem] font-medium transition-colors',
+        'font-round inline-flex min-w-0 items-center gap-2.5 text-[0.95rem] font-medium transition-colors',
         active
           ? cn('font-semibold', meta.textClassName)
           : 'text-slate-700 dark:text-slate-200',
@@ -99,7 +99,7 @@ function FilterTrigger({
   return (
     <DropdownTrigger
       className={cn(
-        'flex max-w-[48vw] min-w-0 cursor-pointer items-center gap-2 rounded-lg bg-white px-3 py-2 text-[0.95rem] font-medium text-slate-700 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition-[background-color,color,box-shadow] sm:max-w-none dark:shadow-none',
+        'font-round flex max-w-[48vw] min-w-0 cursor-pointer items-center gap-2 rounded-lg bg-white px-3 py-2 text-[0.95rem] font-medium text-slate-700 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition-[background-color,color,box-shadow] sm:max-w-none dark:shadow-none',
         'hover:bg-slate-50 hover:text-slate-900 hover:shadow-sm',
         'dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100',
         simple &&
@@ -181,7 +181,7 @@ function SimpleCategoryOption({
       aria-pressed={isActive}
       onClick={() => onSelectCategory(category ?? null)}
       className={cn(
-        'cursor-pointer border-b border-transparent pb-0.5 text-sm font-medium whitespace-nowrap text-[var(--text-secondary)] transition-colors',
+        'font-round cursor-pointer border-b border-transparent pb-0.5 text-sm font-medium whitespace-nowrap text-[var(--text-secondary)] transition-colors',
         'hover:text-[var(--text-primary)]',
         isActive &&
           'border-[color-mix(in_srgb,var(--brand-400)_78%,transparent)] text-[var(--text-primary)]'
@@ -214,7 +214,7 @@ function RichSortButton({
         onToggleSort()
       }}
       className={cn(
-        'hidden cursor-pointer items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition-[background-color,color,box-shadow] select-none active:scale-95 sm:flex dark:shadow-none',
+        'font-round hidden cursor-pointer items-center justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] transition-[background-color,color,box-shadow] select-none active:scale-95 sm:flex dark:shadow-none',
         'hover:bg-slate-50 hover:text-slate-900 hover:shadow-sm',
         'dark:bg-[#17191c] dark:text-slate-300 dark:hover:bg-[#23262c] dark:hover:text-slate-100'
       )}
@@ -270,7 +270,7 @@ export function BlogFilter({
 
   if (simple) {
     return (
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+      <div className="font-round flex flex-wrap items-center gap-x-5 gap-y-2">
         <SimpleCategoryOption
           selectedCategory={selectedCategory}
           onSelectCategory={onSelectCategory}
@@ -289,7 +289,7 @@ export function BlogFilter({
         {!hideSort && (
           <button
             onClick={onToggleSort}
-            className="hidden cursor-pointer items-center justify-center rounded-lg border border-transparent bg-transparent px-0 py-0 text-sm font-medium text-[var(--text-secondary)] transition-colors select-none hover:bg-transparent hover:text-[var(--text-primary)] active:scale-95 sm:flex dark:border-transparent dark:bg-transparent dark:hover:bg-transparent"
+            className="font-round hidden cursor-pointer items-center justify-center rounded-lg border border-transparent bg-transparent px-0 py-0 text-sm font-medium text-[var(--text-secondary)] transition-colors select-none hover:bg-transparent hover:text-[var(--text-primary)] active:scale-95 sm:flex dark:border-transparent dark:bg-transparent dark:hover:bg-transparent"
           >
             <motion.div
               layout
@@ -313,7 +313,7 @@ export function BlogFilter({
   }
 
   return (
-    <Dropdown className="flex items-center gap-3 sm:ml-auto sm:w-fit">
+    <Dropdown className="font-round flex items-center gap-3 sm:ml-auto sm:w-fit">
       {/* Filter Dropdown */}
       <FilterTrigger selectedCategory={selectedCategory} simple={simple} />
 

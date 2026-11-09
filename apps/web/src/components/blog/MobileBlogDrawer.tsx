@@ -197,7 +197,7 @@ export function MobileBlogDrawer({
                             className={styles.avatar}
                           />
                         </div>
-                        <h2 className={styles.profileName}>Mark Xu</h2>
+                        <h2 className={cn(styles.profileName, 'font-brand')}>Mark Xu</h2>
                         <p className={styles.profileSignature}>{signature}</p>
                       </div>
 
@@ -311,7 +311,7 @@ const styles = {
   backdrop:
     'fixed inset-0 z-[89] bg-slate-950/24 backdrop-blur-[2px] lg:hidden',
   drawer:
-    'fixed inset-y-0 left-0 z-[90] flex w-[min(72vw,300px)] min-w-[260px] flex-col overflow-hidden border-r border-slate-200 bg-white shadow-2xl lg:hidden dark:border-[var(--border-color)] dark:bg-[var(--surface-card)]',
+    'font-round fixed inset-y-0 left-0 z-[90] flex w-[min(72vw,300px)] min-w-[260px] flex-col overflow-hidden border-r border-slate-200 bg-white shadow-2xl lg:hidden dark:border-[var(--border-color)] dark:bg-[var(--surface-card)]',
   profile:
     'relative flex min-h-[208px] flex-col items-center overflow-hidden px-5 pt-8 pb-5 text-center',
   profileBackdrop:

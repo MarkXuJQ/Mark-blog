@@ -367,9 +367,11 @@ function buildMontserratText() {
   )
 }
 
-// ChillRoundF is applied to article titles, post titles in article lists and
-// in-article headings, so the glyph set is scoped to those instead of full
-// article bodies. That keeps the two weights at a reasonable transfer size.
+// ChillRoundF started out on article/list titles only. It is now also the site's
+// display face for page titles, timeline headings and short UI copy, so the
+// glyph set has to cover those strings too. Full article *bodies* stay out of
+// scope (that is what the Alibaba PuHuiTi subset is for), which keeps both
+// ChillRoundF weights small even with the extra UI coverage.
 const chillRoundJsonFieldPattern =
   /"(title|name|label|category|categories|tags?)"\s*:/
 
@@ -400,7 +402,8 @@ function readContentTitleText() {
 }
 
 // Card meta labels (categories, filters) are localised strings that never
-// appear in content front matter or article headings.
+// appear in content front matter or article headings. Kept as an explicit
+// baseline even though readUiText() below also scans the locale files.
 function readCategoryLabelText() {
   const languagesDir = path.join(projectRoot, 'src/languages')
   if (!fs.existsSync(languagesDir)) return ''
@@ -437,10 +440,26 @@ function readCategoryLabelText() {
   return combined
 }
 
+// Every short string that can land on the rounded display face: locale files
+// (nav / timeline / blog labels), hardcoded copy inside components, and the
+// timeline JSON data (quick-fix entries use a `content` key that the title
+// pattern above does not match). Without these the browser would mix
+// ChillRoundF with a fallback font inside a single word.
+function readUiText() {
+  const files = [
+    ...collectTextFiles(path.join(projectRoot, 'src')),
+    ...collectTextFiles(path.join(repoRoot, 'content', 'timeline')),
+    path.join(projectRoot, 'index.html'),
+  ]
+
+  return readTextFiles(files)
+}
+
 function buildChillRoundText() {
   return uniqueGlyphText(
     readContentTitleText() +
       readCategoryLabelText() +
+      readUiText() +
       readFontSafelist() +
       safeChineseExtras
   )
