@@ -13,7 +13,7 @@ export interface TwikooApi {
     /** OwO emotion-pack JSON URL; replaces Twikoo's default pack. */
     EMOTION_CDN?: string
     onCommentLoaded?: () => void
-  }) => void
+  }) => Promise<void> | void
   getCommentsCount: (options: {
     envId: string
     urls: string[]
@@ -245,6 +245,60 @@ export function installEmotionPackInterceptor(emotionCdn: string): boolean {
   } as typeof XMLHttpRequest.prototype.send
 
   return true
+}
+
+let prismThemeGuardInstalled = false
+
+/**
+ * Stop Twikoo's global Prism theme from restyling the host page.
+ *
+ * Twikoo 2 loads its code-highlight theme by appending a plain
+ * `<link rel="stylesheet" href=".../themes/prism[-theme].min.css">` into
+ * `#twikoo` / `.twikoo` / `<body>`. A stylesheet is global regardless of where
+ * its link lives, and every Prism theme uses unscoped selectors such as
+ * `pre[class*="language-"]`, `code[class*="language-"]` and `.token.*`.
+ * The result is that the comment widget silently recolors, pads and borders
+ * every other code block on the page.
+ *
+ * The site's own code frames and the comment code blocks now carry their own
+ * scoped token rules (article.css / Comments.tsx), so all we have to do is
+ * drop Twikoo's link whenever it appears. Twikoo re-appends it on each new
+ * highlight pass (it caches the detached link), hence the observer.
+ */
+export function installTwikooStyleGuard(): void {
+  if (typeof window === 'undefined' || prismThemeGuardInstalled) return
+  prismThemeGuardInstalled = true
+
+  const isTwikooPrismTheme = (node: Element): node is HTMLLinkElement =>
+    node instanceof HTMLLinkElement &&
+    node.relList.contains('stylesheet') &&
+    /\/themes\/prism(?:-[\w-]+)?\.min\.css/i.test(node.href)
+
+  const prune = (root: ParentNode) => {
+    if (root instanceof Element && isTwikooPrismTheme(root)) {
+      root.remove()
+      return
+    }
+    root.querySelectorAll<HTMLLinkElement>('link[rel~="stylesheet"]').forEach(
+      (link) => {
+        if (isTwikooPrismTheme(link)) link.remove()
+      }
+    )
+  }
+
+  prune(document)
+
+  const observer = new MutationObserver((records) => {
+    for (const record of records) {
+      for (const node of record.addedNodes) {
+        if (node instanceof Element) prune(node)
+      }
+    }
+  })
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  })
 }
 
 function waitForTwikooReady() {

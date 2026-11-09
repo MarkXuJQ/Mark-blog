@@ -925,6 +925,80 @@ i {
   text-shadow: none;
 }
 
+/* Prism token colours for the site's own code frames. These used to come from
+   Twikoo's globally injected Prism theme; keeping them scoped here means the
+   comment widget can no longer restyle article code blocks (and vice versa). */
+.md-code-frame .token.comment,
+.md-code-frame .token.prolog,
+.md-code-frame .token.doctype,
+.md-code-frame .token.cdata {
+  color: #8b98a5;
+}
+
+.md-code-frame .token.punctuation {
+  color: #c9d1d9;
+}
+
+.md-code-frame .token.namespace {
+  opacity: 0.75;
+}
+
+.md-code-frame .token.property,
+.md-code-frame .token.tag,
+.md-code-frame .token.constant,
+.md-code-frame .token.symbol,
+.md-code-frame .token.deleted {
+  color: #f2777a;
+}
+
+.md-code-frame .token.boolean,
+.md-code-frame .token.number {
+  color: #f99157;
+}
+
+.md-code-frame .token.selector,
+.md-code-frame .token.attr-name,
+.md-code-frame .token.string,
+.md-code-frame .token.char,
+.md-code-frame .token.builtin,
+.md-code-frame .token.inserted {
+  color: #99cc99;
+}
+
+.md-code-frame .token.operator,
+.md-code-frame .token.entity,
+.md-code-frame .token.url,
+.md-code-frame .language-css .token.string,
+.md-code-frame .style .token.string,
+.md-code-frame .token.variable {
+  color: #66cccc;
+}
+
+.md-code-frame .token.atrule,
+.md-code-frame .token.attr-value,
+.md-code-frame .token.keyword {
+  color: #cc99cc;
+}
+
+.md-code-frame .token.function,
+.md-code-frame .token.class-name {
+  color: #6699cc;
+}
+
+.md-code-frame .token.regex,
+.md-code-frame .token.important {
+  color: #f99157;
+}
+
+.md-code-frame .token.important,
+.md-code-frame .token.bold {
+  font-weight: 700;
+}
+
+.md-code-frame .token.italic {
+  font-style: italic;
+}
+
 .md-code-frame[data-wrap='true'] .md-code-body {
   overflow-x: hidden;
   overflow-y: hidden;
