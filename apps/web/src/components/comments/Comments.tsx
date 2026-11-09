@@ -166,15 +166,40 @@ export function Comments({
         if (isOwOOpen()) open()
       }
 
-      // --- refresh button / preview / markdown hints are hidden via CSS ---
+      // --- toolbar chrome is styled, never removed ---
       // These nodes belong to Twikoo's Vue app. Removing them from the DOM
       // breaks Vue's virtual-DOM bookkeeping: on the next re-render (sort,
       // refresh, search) Vue patches against a detached tree and throws
       // "Cannot read properties of null (reading 'insertBefore')", which
       // aborts the whole update — the comment list then keeps the old order
-      // (sorting appears dead) or is left empty. Hiding them with CSS keeps
-      // Vue's tree intact, so we only style, never mutate.
+      // (sorting appears dead) or is left empty. The refresh button and the
+      // preview button are both back; only the counter and the markdown hint
+      // are hidden, and only via CSS.
       // See the `.tk-comments-actions` rules in the component's <style> block.
+
+      // --- label the otherwise unlabelled toolbar icons ---
+      // Twikoo renders them as bare <span class="tk-icon __comments"> with an
+      // inline SVG, so match on the icon path rather than sibling order (the
+      // admin cog only exists once the crypt is entered). Setting attributes
+      // is safe: Vue patches class/style here, not `title` or `aria-label`.
+      const iconLabels: Array<[string, string]> = [
+        ['M416 208c0 45.9', t('comments.searchLabel', '搜索评论')],
+        ['M65.9 228.5C79.2 135.5', t('comments.refreshLabel', '刷新评论')],
+        ['M195.1 9.5c3-14.8', t('comments.adminLabel', '评论管理')],
+      ]
+      wrap
+        .querySelectorAll<HTMLElement>(
+          '.tk-comments-actions > .tk-icon.__comments'
+        )
+        .forEach((icon) => {
+          const path = icon.querySelector('svg path')?.getAttribute('d') ?? ''
+          const label = iconLabels.find(([prefix]) => path.startsWith(prefix))?.[1]
+          if (!label) return
+          if (icon.title !== label) icon.title = label
+          if (icon.getAttribute('aria-label') !== label) {
+            icon.setAttribute('aria-label', label)
+          }
+        })
 
       // --- tag the dislike button so CSS can hide it ---
       // Twikoo 2 renders these as <button> siblings; the order is
@@ -852,30 +877,85 @@ export function Comments({
         .twikoo-wrap[data-variant="default"] .tk-comments-container {
             margin-top: 1.2rem !important;
         }
-        /* ---- Hide Twikoo's own chrome with CSS, never by removing nodes. ----
-           The comment UI is a Vue app. Detaching its nodes from the DOM (the
-           refresh button, the preview/markdown hints, the "X 条评论" counter)
-           leaves Vue's virtual DOM pointing at a detached tree. On the next
-           re-render (sorting, refresh, search) Vue patches against that tree
-           and throws "Cannot read properties of null (reading 'insertBefore')",
-           which aborts the whole update: the list keeps the old order (so
+        /* ---- Hide the "X 条评论" counter with CSS, never by removing it. ----
+           The comment UI is a Vue app. Detaching nodes it owns (the refresh
+           button, the preview/markdown hints, the counter's children) leaves
+           Vue's virtual DOM pointing at a detached tree. On the next re-render
+           (sorting, refresh, search) Vue patches against that tree and throws
+           "Cannot read properties of null (reading 'insertBefore')", which
+           aborts the whole update: the list keeps the old order (so
            最新/最早/热门 appear to do nothing) and the list can end up empty.
-           Hiding the nodes with CSS keeps Vue's tree intact. */
+           Only the counter and the markdown hint are hidden, and only via CSS;
+           the refresh and preview controls stay visible and functional. */
         .twikoo-wrap .tk-comments-count {
             display: none !important;
         }
-        /* The toolbar holds [sort, search, refresh, admin]. The refresh
-           control is identified by its icon's SVG path (Twikoo renders the
-           icons as bare <span class="tk-icon __comments"> with no label), so
-           it can be hidden without relying on child positions, which shift
-           when the search box is open. */
-        .twikoo-wrap .tk-comments-actions > .tk-icon.__comments > svg > path[d^='M65.9 228.5C79.2 135.5'] {
-            display: none !important;
+        /* Toolbar layout: filter on the left, search + refresh (+ the admin cog
+           when unlocked) grouped together on the far right.
+           Twikoo renders .tk-comments-title as "justify-content: space-between"
+           with [counter, actions]. The counter is hidden above, so the actions
+           container would otherwise shrink to its content and sit on the left.
+           Growing it to the full row width and giving the sort group an auto
+           right margin pushes every icon after it to the right edge without
+           spreading the icons apart (so search and refresh stay adjacent). */
+        .twikoo-wrap[data-variant="default"] .tk-comments-actions {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            gap: 0.4rem !important;
+            /* Twikoo omits the sort group entirely on posts with no comments.
+               With no auto margin to consume the free space, right-aligning the
+               row itself keeps search/refresh at the far right in that case. */
+            justify-content: flex-end !important;
         }
-        .twikoo-wrap .tk-comments-actions > .tk-icon.__comments:has(
-            svg > path[d^='M65.9 228.5C79.2 135.5']
-        ) {
-            display: none !important;
+        .twikoo-wrap[data-variant="default"] .tk-comments-sort {
+            margin-right: auto !important;
+        }
+        /* Refresh is back. Style all three bare icons as small, quiet pills so
+           they match the 最新/最早/热门 filter group instead of Twikoo's
+           default 12px bright-blue glyphs. */
+        .twikoo-wrap[data-variant="default"] .tk-comments-actions > .tk-icon.__comments {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 1.85rem !important;
+            height: 1.85rem !important;
+            padding: 0 !important;
+            border: 1px solid rgba(148, 163, 184, 0.25) !important;
+            border-radius: 0.55rem !important;
+            background: rgba(148, 163, 184, 0.08) !important;
+            color: rgba(100, 116, 139, 0.85) !important;
+            line-height: 1 !important;
+            box-shadow: none !important;
+            transition:
+                color 0.2s ease,
+                background 0.2s ease,
+                border-color 0.2s ease !important;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-comments-actions > .tk-icon.__comments > .tk-icon,
+        .twikoo-wrap[data-variant="default"] .tk-comments-actions > .tk-icon.__comments > .tk-icon > svg {
+            display: block !important;
+            width: 0.9rem !important;
+            height: 0.9rem !important;
+        }
+        .twikoo-wrap[data-variant="default"] .tk-comments-actions > .tk-icon.__comments:hover {
+            color: var(--text-primary, #334155) !important;
+            background: rgba(148, 163, 184, 0.16) !important;
+        }
+        /* Twikoo marks the search icon __active while the search box is open. */
+        .twikoo-wrap[data-variant="default"] .tk-comments-actions > .tk-icon.__comments.__active {
+            color: #ff5941 !important;
+            border-color: rgba(255, 89, 65, 0.3) !important;
+            background: rgba(255, 89, 65, 0.12) !important;
+            box-shadow: none !important;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .tk-comments-actions > .tk-icon.__comments {
+            border-color: rgba(71, 85, 105, 0.45) !important;
+            background: rgba(71, 85, 105, 0.18) !important;
+            color: rgba(148, 163, 184, 0.9) !important;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .tk-comments-actions > .tk-icon.__comments:hover {
+            color: #e2e8f0 !important;
+            background: rgba(71, 85, 105, 0.32) !important;
         }
         /* Only the markdown hint icon is hidden; the preview BUTTON stays. */
         .twikoo-wrap .tk-submit-action-icon.__markdown {
