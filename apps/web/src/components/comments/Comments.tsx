@@ -201,6 +201,17 @@ export function Comments({
           }
         })
 
+      // --- label the emotion button like the toolbar icons ---
+      // Twikoo's OwO trigger is a bare <div class="OwO-logo"> holding an inline
+      // SVG. Attributes only: this element and its children belong to Vue.
+      const emotionLabel = t('comments.emotionLabel', '插入表情')
+      wrap.querySelectorAll<HTMLElement>('.OwO .OwO-logo').forEach((logo) => {
+        if (logo.title !== emotionLabel) logo.title = emotionLabel
+        if (logo.getAttribute('aria-label') !== emotionLabel) {
+          logo.setAttribute('aria-label', emotionLabel)
+        }
+      })
+
       // --- tag the dislike button so CSS can hide it ---
       // Twikoo 2 renders these as <button> siblings; the order is
       // [delete (admin only)], like, dislike, reply, so dislike is always the
@@ -438,6 +449,20 @@ export function Comments({
       )
     }
 
+    // The fallback re-init is only meant to rescue a failed FIRST mount. Once
+    // the list has rendered at least once, an empty list is just a
+    // sort/refresh/search re-fetch in flight. Re-initialising in that window
+    // rebuilds Twikoo from scratch and silently resets 最新/最早/热门 to 最新
+    // (especially easy to hit after using the emotion picker, whose extra
+    // interactions push the sort click right onto the 7s fallback deadline).
+    let hasRenderedList = false
+    const noteListPresent = () => {
+      if (!hasCommentList()) return false
+      hasRenderedList = true
+      markReady()
+      return true
+    }
+
     // Arm the emotion-pack interceptor immediately: it is synchronous now and
     // fetches the pack in the background, so mounting Twikoo does not wait on
     // that (large) JSON. The comment list itself never depends on it.
@@ -486,7 +511,7 @@ export function Comments({
         if (hasRenderedTwikooContent(host)) {
           // The list may already be there (e.g. a remount onto a cached
           // render); otherwise the observer below keeps checking.
-          if (hasCommentList()) markReady()
+          noteListPresent()
           applyCustomizationsRef.current(host)
           return
         }
@@ -501,7 +526,7 @@ export function Comments({
               if (cancelled || !hasRenderedTwikooContent(host)) return
               // Only drop the loading state once the list itself is there, so
               // the section never looks empty while the request is in flight.
-              if (hasCommentList()) markReady()
+              noteListPresent()
               applyCustomizationsRef.current(host)
             })
           }
@@ -516,7 +541,7 @@ export function Comments({
 
           pollTimer = window.setInterval(() => {
             if (hasRenderedTwikooContent(host)) {
-              if (hasCommentList()) markReady()
+              noteListPresent()
               applyCustomizationsRef.current(host)
             }
           }, 250)
@@ -538,7 +563,7 @@ export function Comments({
           localeBaseUrl: TWIKOO_LOCALE_BASE_URL,
           onCommentLoaded: () => {
             // Twikoo calls this once the list has been fetched and rendered.
-            markReady()
+            noteListPresent()
             applyCustomizationsRef.current(host)
             onCommentLoadedRef.current?.()
           },
@@ -556,7 +581,13 @@ export function Comments({
         // once instead of leaving an empty section on the very first visit.
         fallbackTimer = window.setTimeout(() => {
           if (cancelled) return
-          if (hasCommentList()) {
+          if (noteListPresent()) {
+            applyCustomizationsRef.current(host)
+            return
+          }
+          // A list has already been rendered once: this is a transient reload,
+          // so leave the widget alone and let Twikoo finish the request.
+          if (hasRenderedList) {
             markReady()
             applyCustomizationsRef.current(host)
             return
@@ -994,6 +1025,189 @@ export function Comments({
         .twikoo-wrap[data-variant="default"] .tk-sort-item.__active {
             color: #ff5941 !important;
             background: rgba(255, 89, 65, 0.12) !important;
+        }
+
+        /* ---- Emotion (OwO) picker -----------------------------------------
+           Twikoo ships a bare 20px smiley and a square, bordered white card.
+           Its built-in dark rules only match "night", "darkmode", "DarkMode"
+           and [data-theme="dark"]; this site toggles "dark" on <html>, so the
+           panel stayed white at night. All styling here is CSS-only — the
+           picker is Vue-owned, so no node is moved, removed or rewritten.
+           The panel is absolutely positioned against ".tk-row.actions" (its
+           nearest positioned ancestor), NOT against the trigger, so the
+           trigger must stay "position: static" and the width must be set
+           explicitly once "right: 0" is dropped. */
+        .twikoo-wrap[data-variant="default"] .OwO {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 1.85rem !important;
+            height: 1.85rem !important;
+            padding: 0 !important;
+            border: 1px solid rgba(148, 163, 184, 0.25) !important;
+            border-radius: 0.55rem !important;
+            background: rgba(148, 163, 184, 0.08) !important;
+            color: rgba(100, 116, 139, 0.85) !important;
+            cursor: pointer !important;
+            line-height: 1 !important;
+            transition:
+                color 0.2s ease,
+                background 0.2s ease,
+                border-color 0.2s ease !important;
+        }
+        .twikoo-wrap[data-variant="default"] .OwO .OwO-logo {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 0.95rem !important;
+            height: 0.95rem !important;
+        }
+        .twikoo-wrap[data-variant="default"] .OwO .OwO-logo svg {
+            display: block !important;
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+            vertical-align: middle !important;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .OwO {
+            border-color: rgba(71, 85, 105, 0.45) !important;
+            background: rgba(71, 85, 105, 0.18) !important;
+            color: rgba(148, 163, 184, 0.9) !important;
+        }
+        .twikoo-wrap[data-variant="default"] .OwO:hover {
+            color: var(--text-primary, #334155) !important;
+            background: rgba(148, 163, 184, 0.16) !important;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .OwO:hover {
+            color: #e2e8f0 !important;
+            background: rgba(71, 85, 105, 0.32) !important;
+        }
+        /* Keep the accent state last so it also wins while hovered. */
+        .twikoo-wrap[data-variant="default"] .OwO.OwO-open,
+        .dark .twikoo-wrap[data-variant="default"] .OwO.OwO-open {
+            color: #ff5941 !important;
+            border-color: rgba(255, 89, 65, 0.3) !important;
+            background: rgba(255, 89, 65, 0.12) !important;
+        }
+        .twikoo-wrap[data-variant="default"] .OwO .OwO-body {
+            top: calc(100% + 0.45rem) !important;
+            left: 0 !important;
+            right: auto !important;
+            width: min(500px, calc(100vw - 2.25rem)) !important;
+            max-width: none !important;
+            border: 1px solid rgba(148, 163, 184, 0.28) !important;
+            border-radius: 0.8rem !important;
+            background: #ffffff !important;
+            color: rgba(51, 65, 85, 0.92) !important;
+            box-shadow:
+                0 1.1rem 2.2rem -1rem rgba(15, 23, 42, 0.35),
+                0 0.2rem 0.7rem -0.3rem rgba(15, 23, 42, 0.2) !important;
+            /* The image hover preview floats above the card: never clip it. */
+            overflow: visible !important;
+        }
+        .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-items {
+            box-sizing: border-box !important;
+            padding: 0.5rem !important;
+            font-size: 0 !important;
+            scrollbar-width: thin !important;
+        }
+        .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-items .OwO-item {
+            margin: 0.1rem 0 !important;
+            padding: 0.38rem 0.55rem !important;
+            border-radius: 0.5rem !important;
+            color: inherit !important;
+            font-size: 0.78rem !important;
+            line-height: 1.5 !important;
+            box-shadow: none !important;
+            transition:
+                background-color 0.18s ease,
+                color 0.18s ease !important;
+        }
+        .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-items-emoji .OwO-item {
+            font-size: 1.15rem !important;
+            line-height: 1.45 !important;
+        }
+        .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-items .OwO-item:hover {
+            background: rgba(148, 163, 184, 0.16) !important;
+            color: var(--text-primary, #334155) !important;
+            box-shadow: none !important;
+        }
+        /* Category strip: rounded pills on a soft, horizontally scrollable bar. */
+        .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-bar {
+            box-sizing: border-box !important;
+            padding: 0.35rem 0.4rem !important;
+            border-top: 1px solid rgba(148, 163, 184, 0.2) !important;
+            border-radius: 0 0 0.8rem 0.8rem !important;
+            background: rgba(148, 163, 184, 0.06) !important;
+            overflow-x: auto !important;
+            scrollbar-width: none !important;
+        }
+        .twikoo-wrap[data-variant="default"] .OwO .OwO-bar::-webkit-scrollbar {
+            display: none !important;
+        }
+        .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-bar .OwO-packages {
+            white-space: nowrap !important;
+            font-size: 0 !important;
+        }
+        .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-bar .OwO-packages li {
+            margin: 0 0.12rem !important;
+            padding: 0 0.65rem !important;
+            border-radius: 0.45rem !important;
+            font-size: 0.78rem !important;
+            line-height: 1.9rem !important;
+            color: rgba(100, 116, 139, 0.9) !important;
+            transition:
+                color 0.18s ease,
+                background-color 0.18s ease !important;
+        }
+        .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-bar .OwO-packages li:hover {
+            background: rgba(148, 163, 184, 0.16) !important;
+            color: var(--text-primary, #334155) !important;
+        }
+        /* Match the full "li" chain above: otherwise the generic tab rule wins
+           on specificity and the active pill keeps its muted text colour. */
+        .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-bar .OwO-packages li.OwO-package-active,
+        .dark .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-bar .OwO-packages li.OwO-package-active {
+            background: rgba(255, 89, 65, 0.12) !important;
+            color: #ff5941 !important;
+            font-weight: 600 !important;
+        }
+        .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-bar .OwO-packages li.OwO-package-active:hover,
+        .dark .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-bar .OwO-packages li.OwO-package-active:hover {
+            background: rgba(255, 89, 65, 0.2) !important;
+            color: #ff5941 !important;
+        }
+        .twikoo-wrap[data-variant="default"] .OwO .tk-owo-preview-panel {
+            padding: 0.5rem !important;
+            border: 1px solid rgba(148, 163, 184, 0.28) !important;
+            border-radius: 0.65rem !important;
+            background: #ffffff !important;
+            box-shadow: 0 0.8rem 1.6rem -0.9rem rgba(15, 23, 42, 0.35) !important;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .OwO .OwO-body {
+            border-color: rgba(71, 85, 105, 0.55) !important;
+            background: #1b1e24 !important;
+            color: #cbd5e1 !important;
+            box-shadow:
+                0 1.1rem 2.2rem -1rem rgba(0, 0, 0, 0.7),
+                0 0.2rem 0.7rem -0.3rem rgba(0, 0, 0, 0.45) !important;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-bar {
+            border-top-color: rgba(71, 85, 105, 0.5) !important;
+            background: rgba(71, 85, 105, 0.12) !important;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-bar .OwO-packages li {
+            color: rgba(148, 163, 184, 0.9) !important;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-items .OwO-item:hover,
+        .dark .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-bar .OwO-packages li:hover {
+            background: rgba(71, 85, 105, 0.35) !important;
+            color: #e2e8f0 !important;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .OwO .tk-owo-preview-panel {
+            border-color: rgba(71, 85, 105, 0.55) !important;
+            background: #1b1e24 !important;
+            box-shadow: 0 0.8rem 1.6rem -0.9rem rgba(0, 0, 0, 0.7) !important;
         }
 
         .dark .twikoo-wrap .tk-content {
