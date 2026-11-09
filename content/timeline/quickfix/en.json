@@ -1,5 +1,12 @@
 [
   {
+    "id": "qf-20261109",
+    "date": "2026-11-09",
+    "content": [
+      "Upgraded the Twikoo comment system to 2.0.17, fixing several loading bugs and optimizing the responsive layout of the comment section"
+    ]
+  },
+  {
     "id": "qf-20261106",
     "date": "2026-11-06",
     "content": [

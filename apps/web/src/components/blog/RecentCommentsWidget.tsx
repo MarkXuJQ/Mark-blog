@@ -11,9 +11,14 @@ import {
   loadRecentComments,
 } from '@/lib/comments/recentCommentsCache'
 import type { TwikooRecentComment } from '@/lib/comments/twikooLoader'
-import { useSidebarItemLimit } from '@/hooks/blog/useSidebarItemLimit'
-
 const RECENT_COMMENTS_LIMIT = 5
+/**
+ * Twikoo 2's `getRecentComments` no longer honours the `urls` filter: it
+ * returns the newest comments across the whole site (blog, life, links,
+ * guestbook...). Asking for exactly 5 therefore yields only ~2 blog comments
+ * once we filter to post URLs. Fetch a wide window and trim to 5 afterwards.
+ */
+const RECENT_COMMENTS_FETCH_SIZE = 100
 const DEFAULT_TWIKOO_ENV_ID = 'https://comments.markxu.icu/api/twikoo'
 
 declare global {
@@ -88,7 +93,9 @@ function isValidCreated(value: number) {
 
 export function RecentCommentsWidget() {
   const { i18n, t } = useTranslation()
-  const visibleItemLimit = useSidebarItemLimit()
+  // This widget always shows the latest 5 comments (the sidebar limit hook
+  // used to cap it at 3-4 depending on viewport height).
+  const visibleItemLimit = RECENT_COMMENTS_LIMIT
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
   const twikooEnvId =
     import.meta.env.VITE_TWIKOO_ENV_ID || DEFAULT_TWIKOO_ENV_ID
@@ -106,7 +113,7 @@ export function RecentCommentsWidget() {
     () => ({
       envId: twikooEnvId,
       urls: postDirectory.commentPaths,
-      pageSize: RECENT_COMMENTS_LIMIT,
+      pageSize: RECENT_COMMENTS_FETCH_SIZE,
       includeReply: false,
     }),
     [postDirectory.commentPaths, twikooEnvId]
@@ -153,7 +160,10 @@ export function RecentCommentsWidget() {
   }, [recentCommentsQuery])
 
   const items = useMemo<RecentCommentItem[]>(() => {
-    return comments.flatMap((comment) => {
+    // Defensive: the backend already returns newest-first, but don't depend on
+    // it after client-side filtering to blog URLs.
+    const ordered = [...comments].sort((a, b) => b.created - a.created)
+    return ordered.flatMap((comment) => {
       const commentPath = normalizeCommentPath(comment.url)
       const entry = commentPath
         ? postDirectory.postsByPath.get(commentPath)
