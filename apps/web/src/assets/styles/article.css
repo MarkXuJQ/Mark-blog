@@ -604,13 +604,10 @@ i {
   }
 }
 
+/* No font override in simple reading mode: the article body just inherits the
+   document default (see the #main-content-scoped html[data-simple-reading]
+   rule in global.css). */
 .simple-reading .markdown-body {
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
   overflow-wrap: break-word;
 }
 
