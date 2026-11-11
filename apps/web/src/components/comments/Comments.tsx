@@ -51,6 +51,56 @@ function ensureComposerOutsideHandler() {
 }
 
 /**
+ * Twikoo opens the emotion panel downwards from the action row. For a composer
+ * near the bottom of the page (top-level or a reply box) that puts the lower
+ * half of the panel in the footer band / below the viewport. Flip it above the
+ * row whenever there is more room above than below. `applyCustomizations` runs
+ * from a 250 ms poll as well as the MutationObserver, so this also follows
+ * scrolling and resizing while the panel is open.
+ *
+ * Horizontal placement/sizing is pure CSS (see .OwO-body below): one rule for
+ * every device, anchored at the OUTERMOST comment area's left edge and sized
+ * to that area with a container query (100cqw). A cramped reply editor still
+ * gets the full-width picker. No viewport measurement and no mobile-only
+ * branch are needed.
+ *
+ * Attributes only: the panel and its Vue-owned children are never moved.
+ */
+function syncEmotionPanelPlacement(wrap: HTMLElement) {
+  // There can be several pickers (top-level composer + one per open reply
+  // editor), so tag each trigger individually instead of the wrapper.
+  wrap.querySelectorAll<HTMLElement>('.OwO').forEach((owo) => {
+    const panel = owo.querySelector<HTMLElement>('.OwO-body')
+    if (!panel) return
+    if (!owo.classList.contains('OwO-open')) {
+      if (owo.dataset.owoPlacement) delete owo.dataset.owoPlacement
+      return
+    }
+    // The panel is absolutely positioned against ".tk-row.actions", not the
+    // OwO trigger, so that row is the anchor we measure against.
+    const anchor = panel.offsetParent as HTMLElement | null
+    if (!anchor) return
+    const { top, bottom } = anchor.getBoundingClientRect()
+    const height = panel.offsetHeight || 240
+    const gap = 12
+    const spaceBelow = window.innerHeight - bottom
+    const fitsBelow = spaceBelow >= height + gap
+    const fitsAbove = top >= height + gap
+    const isFlipped = owo.dataset.owoPlacement === 'top'
+    // 48px of hysteresis keeps the panel from flickering while scrolling near
+    // the flip threshold.
+    const placement =
+      (!fitsBelow && fitsAbove) ||
+      (isFlipped && spaceBelow < height + gap + 48)
+        ? 'top'
+        : 'bottom'
+    if (owo.dataset.owoPlacement !== placement) {
+      owo.dataset.owoPlacement = placement
+    }
+  })
+}
+
+/**
  * Twikoo's UI is a Vue app. Replacing children or inner text of any node Vue
  * renders detaches its anchor/comment nodes; the next patch then throws
  * "Cannot read properties of null (reading 'insertBefore')" and the app stops
@@ -144,6 +194,9 @@ export function Comments({
   // a single, auditable try/finally.
   const applyCustomizationsInner = useCallback(
     (wrap: HTMLElement) => {
+      // --- keep the emotion picker clear of the footer / viewport bottom ---
+      syncEmotionPanelPlacement(wrap)
+
       // --- click-to-expand composer (JS-managed so emotion picker doesn't collapse it) ---
       // Only the top-level composer collapses; reply editors stay fully usable.
       const submit = wrap.querySelector<HTMLElement>(
@@ -707,6 +760,17 @@ export function Comments({
       </div>
 
       <style>{`
+        /* The outermost comment area is the width reference for every emotion
+           picker: 100cqw = this wrapper's content-box width. Twikoo anchors
+           ".OwO-body" to an inner ".tk-row.actions", which reply editors
+           indent by 3.5rem plus the avatar column, so 100% of that row is
+           much narrower on phones. A container query lets ONE CSS rule give
+           every picker (top-level OR reply) the full comment-area width on
+           every device. Layout-neutral here: it changes neither this box's
+           size nor Twikoo's fixed-position lightbox. */
+        .twikoo-wrap {
+            container-type: inline-size;
+        }
         .twikoo-wrap .tk-admin-container {
             z-index: 100;
         }
@@ -1036,7 +1100,9 @@ export function Comments({
            The panel is absolutely positioned against ".tk-row.actions" (its
            nearest positioned ancestor), NOT against the trigger, so the
            trigger must stay "position: static" and the width must be set
-           explicitly once "right: 0" is dropped. */
+           explicitly once "right: 0" is dropped. Horizontal sizing uses the
+           container query declared on ".twikoo-wrap" above, so the card spans
+           the whole comment area even when opened from an indented reply box. */
         .twikoo-wrap[data-variant="default"] .OwO {
             display: inline-flex !important;
             align-items: center !important;
@@ -1089,12 +1155,44 @@ export function Comments({
             border-color: rgba(255, 89, 65, 0.3) !important;
             background: rgba(255, 89, 65, 0.12) !important;
         }
+        /* Safety net for every variant (including "compact"): the panel must
+           never be wider than the OUTER comment area. Twikoo's own fixed pixel
+           width can otherwise push it past the viewport on small screens. */
+        .twikoo-wrap .OwO .OwO-body {
+            min-width: 0 !important;
+            max-width: 100% !important;
+            max-width: 100cqw !important;
+            box-sizing: border-box !important;
+        }
+        .twikoo-wrap .OwO .OwO-body .OwO-items,
+        .twikoo-wrap .OwO .OwO-body .OwO-bar {
+            max-width: 100% !important;
+        }
         .twikoo-wrap[data-variant="default"] .OwO .OwO-body {
             top: calc(100% + 0.45rem) !important;
-            left: 0 !important;
             right: auto !important;
-            width: min(500px, calc(100vw - 2.25rem)) !important;
-            max-width: none !important;
+            /* Fallbacks for engines without container-query units: keep the
+               old "fill this action row" behaviour instead of an invalid
+               value. (100vw was wrong here: the row is inset, so at 375px a
+               339px card starting at x=41 ended at x=380 and made the page
+               horizontally scrollable.) */
+            left: 0 !important;
+            width: min(500px, 100%) !important;
+            max-width: 100% !important;
+            /* One rule for every device, sized to the OUTERMOST comment area
+               rather than ".tk-row.actions". That row is inset for reply
+               editors (3.5rem margin + avatar column), and its right edge
+               lines up with the area's right edge, so
+                 rowLeft + rowWidth - areaWidth === areaLeft
+               — that is exactly calc(100% - 100cqw). The top-level composer
+               has an offset of 0; a reply editor on a 375px phone gets about
+               -104px, turning a cramped 189px card into the full 293px area.
+               500px keeps the desktop card from getting huge. */
+            left: calc(100% - 100cqw) !important;
+            width: min(500px, 100cqw) !important;
+            max-width: 100cqw !important;
+            min-width: 0 !important;
+            box-sizing: border-box !important;
             border: 1px solid rgba(148, 163, 184, 0.28) !important;
             border-radius: 0.8rem !important;
             background: #ffffff !important;
@@ -1104,6 +1202,13 @@ export function Comments({
                 0 0.2rem 0.7rem -0.3rem rgba(15, 23, 42, 0.2) !important;
             /* The image hover preview floats above the card: never clip it. */
             overflow: visible !important;
+        }
+        /* When the composer sits near the page bottom the downward panel would
+           land in the footer band / below the fold. JS tags that picker's
+           trigger and we flip the card above the action row instead. */
+        .twikoo-wrap[data-variant="default"] .OwO[data-owo-placement="top"] .OwO-body {
+            top: auto !important;
+            bottom: calc(100% + 0.45rem) !important;
         }
         .twikoo-wrap[data-variant="default"] .OwO .OwO-body .OwO-items {
             box-sizing: border-box !important;

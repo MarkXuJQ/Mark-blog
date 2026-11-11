@@ -208,6 +208,35 @@ h6 {
 .hero-title {
   font-family: var(--font-hero-title);
 }
+
+/* Simple ("最简") reading mode deliberately sets no fonts of its own, but ONLY
+   for the blog content column (main#main-content in the blog / archive / post
+   layouts). It is a reading preference for the article, not a site-wide theme:
+   the navbar brand, footer, reader-mode toggle and sidebars keep their normal
+   display faces. Every heading / brand / UI label inside the column falls back
+   to the document default (--font-body inherited from :root). Code / math faces
+   are left alone — they are functional, not decorative. */
+html[data-simple-reading] #main-content :where(
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .heading-brand,
+  .heading-display,
+  .font-round,
+  .font-brand,
+  .font-tourney,
+  .hero-title,
+  [data-article-heading='true'],
+  [data-article-list-title='true'],
+  [data-post-meta='true'],
+  [data-post-meta='true'] *
+) {
+  font-family: inherit !important;
+}
+
 .no-heading-letter-spacing {
   letter-spacing: normal !important;
 }

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { FileText, Layers, X } from 'lucide-react'
-import { BiSidebar } from 'react-icons/bi'
+import { FiSidebar } from 'react-icons/fi'
 import { RiLinksLine, RiSubwayFill } from 'react-icons/ri'
 import { cn } from '@/lib/classNames'
 import { getImageUrl } from '@/lib/image'
@@ -137,7 +137,12 @@ export function MobileBlogDrawer({
                   data-mobile-blog-drawer-trigger="true"
                   aria-label={isZh ? '打开博客侧栏' : 'Open blog drawer'}
                 >
-                  <BiSidebar size={22} className="h-5 w-5" aria-hidden="true" />
+                  <FiSidebar
+                    size={20}
+                    strokeWidth={1.6}
+                    className="h-5 w-5"
+                    aria-hidden="true"
+                  />
                 </button>
               ) : null}
 

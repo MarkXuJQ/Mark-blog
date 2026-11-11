@@ -342,7 +342,7 @@ export function Blog() {
                 placeholder={t('blog.sidebar.search.placeholder')}
                 query={searchQuery}
                 iconClassName="left-0 text-[var(--text-secondary)]"
-                className="font-round rounded-none border-0 border-b border-[var(--border-color)] bg-transparent px-0 py-2 pl-7 text-[var(--text-primary)] shadow-none placeholder:text-[var(--text-secondary)] focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)] focus:ring-0 dark:border-[var(--border-color)] dark:bg-transparent dark:text-[var(--text-primary)] dark:placeholder:text-[var(--text-secondary)] dark:focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)]"
+                className="rounded-none border-0 border-b border-[var(--border-color)] bg-transparent px-0 py-2 pl-7 text-[var(--text-primary)] shadow-none placeholder:text-[var(--text-secondary)] focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)] focus:ring-0 dark:border-[var(--border-color)] dark:bg-transparent dark:text-[var(--text-primary)] dark:placeholder:text-[var(--text-secondary)] dark:focus:border-[color-mix(in_srgb,var(--brand-400)_72%,transparent)]"
               />
               {layout === 'desktop' ? (
                 <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
@@ -503,7 +503,7 @@ function SimpleBlogHeaderLinks() {
   return (
     <nav
       aria-label={i18n.language?.startsWith('zh') ? '博客入口' : 'Blog links'}
-      className="font-round flex shrink-0 items-center gap-4 text-sm"
+      className="flex shrink-0 items-center gap-4 text-sm"
     >
       <Link
         to="/archive"

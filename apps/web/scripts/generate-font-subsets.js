@@ -511,6 +511,8 @@ function findPyftsubset() {
     nerdFontSource,
     montserratFontSource,
     macintoshSkeletalFontSource,
+    chillRoundRegularFontSource,
+    chillRoundBoldFontSource,
   ].find(Boolean)
   const candidates = [
     process.env.PYFTSUBSET,

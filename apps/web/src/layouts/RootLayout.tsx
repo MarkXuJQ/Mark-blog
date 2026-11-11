@@ -252,9 +252,13 @@ export function RootLayout() {
           </FloatingControlsContext.Provider>
         </div>
 
-        {/* Footer Container - Pushed to bottom naturally */}
+        {/* Footer Container - Pushed to bottom naturally.
+            Keep this BELOW the content column (z-20): comment popovers such as
+            Twikoo's emotion picker overflow the content downwards. When both
+            columns shared z-20 the later sibling (footer) painted over the
+            picker and swallowed every click in the overlap. */}
         {!isHome && !isOverlayOpen && !isTransitionActive && !isSearchOpen && (
-          <div className="relative z-20 mx-auto mt-auto w-full max-w-3xl px-4 pt-8 pb-8">
+          <div className="relative z-0 mx-auto mt-auto w-full max-w-3xl px-4 pt-8 pb-8">
             <Footer />
           </div>
         )}
