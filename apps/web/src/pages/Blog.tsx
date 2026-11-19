@@ -22,6 +22,7 @@ import { BlogPostCard } from '@/components/blog/BlogPostCard'
 import { SearchStatus } from '@/components/search/SearchStatus'
 import { SearchTriggerInput } from '@/components/search/SearchTriggerInput'
 import { Seo } from '@/app/seo/Seo'
+import { preloadCurrentRoute } from '@/App'
 import {
   buildBreadcrumbSchema,
   getSiteUrl,
@@ -43,10 +44,25 @@ import {
   writeBlogViewState,
 } from '@/lib/blog/blogNavigation'
 import type { BlogListOutletContext } from '@/layouts/BlogListLayout'
-import { getPostDetailPath, type BlogPostSummary } from '@/lib/content/posts'
+import { getPostDetailPath } from '@/lib/content/postSummaries'
+import type { BlogPostSummary } from '@/lib/content/posts'
 
 const ITEMS_PER_PAGE = 10
+const POST_ROUTE_READY_TIMEOUT_MS = 1500
 type BlogLayout = 'mobile' | 'desktop'
+
+async function waitForPostRoute(path: string) {
+  let timeoutId = 0
+  const timeout = new Promise<void>((resolve) => {
+    timeoutId = window.setTimeout(resolve, POST_ROUTE_READY_TIMEOUT_MS)
+  })
+
+  try {
+    await Promise.race([preloadCurrentRoute(path).catch(() => undefined), timeout])
+  } finally {
+    window.clearTimeout(timeoutId)
+  }
+}
 
 export function Blog() {
   const { t, i18n } = useTranslation()
@@ -63,6 +79,9 @@ export function Blog() {
   const [transitionPostSlug, setTransitionPostSlug] = useState(
     () => navigationState?.transitionPostSlug
   )
+  const [openingPostSlug, setOpeningPostSlug] = useState<string | null>(null)
+  const pendingOpenRequestRef = useRef(0)
+  const openingStatusTimerRef = useRef(0)
   const sharedTransitionEnabled = prefersReducedMotion !== true
   const layout: BlogLayout = isDesktopLayout ? 'desktop' : 'mobile'
   const routeSearchQuery = useMemo(
@@ -217,6 +236,15 @@ export function Blog() {
     return nextState
   }, [i18n.language])
 
+  const preloadPost = useCallback((post: BlogPostSummary) => {
+    void preloadCurrentRoute(getPostDetailPath(post)).catch(() => undefined)
+  }, [])
+
+  useEffect(() => () => {
+    pendingOpenRequestRef.current += 1
+    window.clearTimeout(openingStatusTimerRef.current)
+  }, [])
+
   const handleOpenPost = useCallback(
     (post: BlogPostSummary, event: MouseEvent<HTMLAnchorElement>) => {
       if (
@@ -230,21 +258,36 @@ export function Blog() {
       }
 
       event.preventDefault()
-      const viewState = saveViewState()
-      flushSync(() => {
-        setTransitionPostSlug(post.slug)
-      })
+      const requestId = ++pendingOpenRequestRef.current
+      const path = getPostDetailPath(post)
+      window.clearTimeout(openingStatusTimerRef.current)
+      openingStatusTimerRef.current = window.setTimeout(() => {
+        if (pendingOpenRequestRef.current === requestId) {
+          setOpeningPostSlug(post.slug)
+        }
+      }, 120)
 
-      // Give the source frames one paint to mount and measure at the card's
-      // current scroll position before the route replaces the list.
-      window.requestAnimationFrame(() => {
-        navigate(getPostDetailPath(post), {
-          state: {
-            fromBlogList: true,
-            returnTo: `${location.pathname}${location.search}`,
-            transitionPostSlug: post.slug,
-            viewState,
-          },
+      void waitForPostRoute(path).then(() => {
+        if (pendingOpenRequestRef.current !== requestId) return
+        window.clearTimeout(openingStatusTimerRef.current)
+        const viewState = saveViewState()
+        flushSync(() => {
+          setOpeningPostSlug(null)
+          setTransitionPostSlug(post.slug)
+        })
+
+        // Let the source frame mount at its current scroll position before
+        // the target replaces the list.
+        window.requestAnimationFrame(() => {
+          if (pendingOpenRequestRef.current !== requestId) return
+          navigate(path, {
+            state: {
+              fromBlogList: true,
+              returnTo: `${location.pathname}${location.search}`,
+              transitionPostSlug: post.slug,
+              viewState,
+            },
+          })
         })
       })
     },
@@ -296,6 +339,17 @@ export function Blog() {
         }
         jsonLd={[collectionPageSchema, breadcrumbSchema]}
       />
+      {openingPostSlug ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className="pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center px-4"
+        >
+          <span className="border border-[var(--border-color)] bg-[var(--page-background)] px-3 py-2 text-sm text-[var(--text-primary)] shadow-sm">
+            {t('blog.openingPost')}
+          </span>
+        </div>
+      ) : null}
       <div
         className={cn(
           'mb-8 flex',
@@ -429,6 +483,7 @@ export function Blog() {
                         : undefined
                     }
                     onOpenPost={(event) => handleOpenPost(post, event)}
+                    onPrefetch={() => preloadPost(post)}
                     sharedTransitionEnabled={isSharedTransitionPost}
                   />
                 ) : (
@@ -442,6 +497,7 @@ export function Blog() {
                         : undefined
                     }
                     onOpenPost={(event) => handleOpenPost(post, event)}
+                    onPrefetch={() => preloadPost(post)}
                     sharedTransitionEnabled={isSharedTransitionPost}
                     isDesktopLayout={isDesktopLayout}
                   />
@@ -526,12 +582,14 @@ function SimpleBlogPostItem({
   className,
   style,
   onOpenPost,
+  onPrefetch,
   sharedTransitionEnabled,
 }: {
   post: BlogPostSummary
   className?: string
   style?: CSSProperties
   onOpenPost?: (event: MouseEvent<HTMLAnchorElement>) => void
+  onPrefetch?: () => void
   sharedTransitionEnabled: boolean
 }) {
   const detailPath = getPostDetailPath(post)
@@ -541,6 +599,9 @@ function SimpleBlogPostItem({
       <Link
         to={detailPath}
         onClick={onOpenPost}
+        onPointerEnter={onPrefetch}
+        onFocus={onPrefetch}
+        onTouchStart={onPrefetch}
         className="group block min-w-0"
       >
         <div className="min-w-0">

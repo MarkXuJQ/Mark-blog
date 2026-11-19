@@ -12,10 +12,15 @@ export function createPreloadableComponent<Props extends object>(
   let loadingPromise: Promise<ComponentType<Props>> | null = null
 
   const load = () => {
-    loadingPromise ??= loader().then((component) => {
-      loadedComponent = component
-      return component
-    })
+    loadingPromise ??= loader()
+      .then((component) => {
+        loadedComponent = component
+        return component
+      })
+      .catch((error: unknown) => {
+        loadingPromise = null
+        throw error
+      })
 
     return loadingPromise
   }

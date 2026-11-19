@@ -65,6 +65,7 @@
   "blog": {
     "title": "Mark Xu 的博客",
     "description": "这里收录了 Mark Xu 关于技术与生活的文章。",
+    "openingPost": "正在打开文章…",
     "updatedOn": "更新于",
     "back": "返回文章列表",
     "readingTime": "{{minutes}} 分钟",

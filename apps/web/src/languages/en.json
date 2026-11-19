@@ -65,6 +65,7 @@
   "blog": {
     "title": "Mark Xu's Blog",
     "description": "A collection of notes on technology, life, and projects from Mark Xu.",
+    "openingPost": "Opening article…",
     "updatedOn": "Updated",
     "back": "Back to Blog",
     "readingTime": "{{minutes}} min",
