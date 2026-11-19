@@ -5,11 +5,6 @@
 @import './lab.css';
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Numeric display font used for stat readouts across the site. */
-@utility font-tourney {
-  font-family: 'Tourney', sans-serif;
-}
-
 @keyframes reach-out-wiggle {
   0%,
   100% {
@@ -227,7 +222,6 @@ html[data-simple-reading] #main-content :where(
   .heading-display,
   .font-round,
   .font-brand,
-  .font-tourney,
   .hero-title,
   [data-article-heading='true'],
   [data-article-list-title='true'],
