@@ -271,6 +271,10 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     : null
 
   const [dynamicSignals, setDynamicSignals] = useState<DynamicRadarSignal[]>([])
+  const [readyFaviconIds, setReadyFaviconIds] = useState<Set<string>>(
+    () => new Set()
+  )
+  const faviconPreloadStartedRef = useRef(false)
   const previousBeamAngleRef = useRef(beamAngle)
   const totalBeamRotationRef = useRef(beamAngle)
   const nextSignalRotationRef = useRef(
@@ -300,6 +304,44 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
 
     return () => observer.disconnect()
   }, [sectionRef])
+
+  useEffect(() => {
+    if (!isRadarSceneActive || faviconPreloadStartedRef.current) return
+
+    faviconPreloadStartedRef.current = true
+    let cancelled = false
+
+    RADAR_NODES.forEach((node) => {
+      if (!node.faviconSrc) return
+
+      const image = new Image()
+      image.decoding = 'async'
+      image.fetchPriority = 'low'
+      image.onload = () => {
+        const markReady = () => {
+          if (cancelled) return
+          setReadyFaviconIds((current) => {
+            if (current.has(node.id)) return current
+            const next = new Set(current)
+            next.add(node.id)
+            return next
+          })
+        }
+
+        if (typeof image.decode === 'function') {
+          void image.decode().then(markReady).catch(() => undefined)
+        } else {
+          markReady()
+        }
+      }
+      image.src = node.faviconSrc
+    })
+
+    return () => {
+      cancelled = true
+      faviconPreloadStartedRef.current = false
+    }
+  }, [isRadarSceneActive])
 
   useEffect(() => {
     if (beamOpacity <= 0.02) {
@@ -344,21 +386,25 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
         ...liveSignals.map((signal) => signal.node.id),
         ...nextSignals.map((signal) => signal.node.id),
       ])
-      let node =
-        RADAR_NODES[nextSignalNodeIndexRef.current % RADAR_NODES.length]
+      let node: RadarNode | undefined
 
       for (let offset = 0; offset < RADAR_NODES.length; offset += 1) {
         const candidateIndex =
           (nextSignalNodeIndexRef.current + offset) % RADAR_NODES.length
         const candidate = RADAR_NODES[candidateIndex]
 
-        if (!occupiedNodeIds.has(candidate.id)) {
+        if (
+          readyFaviconIds.has(candidate.id) &&
+          !occupiedNodeIds.has(candidate.id)
+        ) {
           node = candidate
           nextSignalNodeIndexRef.current =
             (candidateIndex + 1) % RADAR_NODES.length
           break
         }
       }
+
+      if (!node) break
 
       const { left, top } = getSignalPositionOnBeam(targetAngle)
 
@@ -395,7 +441,14 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
         Math.max(0, combined.length - RADAR_DYNAMIC_SIGNAL_MAX_COUNT)
       )
     })
-  }, [beamAngle, beamFocusAngle, beamOpacity, dynamicSignals, isRadarPaused])
+  }, [
+    beamAngle,
+    beamFocusAngle,
+    beamOpacity,
+    dynamicSignals,
+    isRadarPaused,
+    readyFaviconIds,
+  ])
 
   const measureSignalPortalLayout = (node: RadarNode) => {
     const triggerRect = signalNodeRefs.current[node.id]?.getBoundingClientRect()
