@@ -4,7 +4,8 @@ import { LuHammer, LuPencilLine, LuWholeWord } from 'react-icons/lu'
 import { Card } from '@/components/ui/Card'
 import { cn } from '@/lib/classNames'
 import { getOptimizedImageUrl } from '@/lib/image'
-import { getPostDetailPath, type BlogPostSummary } from '@/lib/content/posts'
+import { getPostDetailPath } from '@/lib/content/postSummaries'
+import type { BlogPostSummary } from '@/lib/content/posts'
 import { PostSharedElement } from '@/components/transitions/PostSharedElement'
 import { CategoryLabel } from './CategoryLabel'
 import type { CSSProperties, MouseEvent } from 'react'
@@ -15,6 +16,7 @@ interface BlogPostCardProps {
   style?: CSSProperties
   sortBy?: 'date' | 'updated'
   onOpenPost?: (event: MouseEvent<HTMLAnchorElement>) => void
+  onPrefetch?: () => void
   sharedTransitionEnabled?: boolean
   isDesktopLayout: boolean
 }
@@ -25,6 +27,7 @@ export function BlogPostCard({
   style,
   sortBy = 'date',
   onOpenPost,
+  onPrefetch,
   sharedTransitionEnabled = false,
   isDesktopLayout,
 }: BlogPostCardProps) {
@@ -55,7 +58,14 @@ export function BlogPostCard({
   if (!coverImage) {
     return (
       <div className={className} style={style}>
-        <Link to={detailPath} onClick={onOpenPost} className="block">
+        <Link
+          to={detailPath}
+          onClick={onOpenPost}
+          onPointerEnter={onPrefetch}
+          onFocus={onPrefetch}
+          onTouchStart={onPrefetch}
+          className="block"
+        >
           <Card className="group block border border-slate-200/70 p-3.5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-transform hover:-translate-y-1 hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] sm:p-4 dark:border-0 dark:shadow-none">
             <article className="flex flex-col">
               {/* Title */}
@@ -113,7 +123,14 @@ export function BlogPostCard({
   // Layout B: cover image present, split card (image + text).
   return (
     <div className={className} style={style}>
-      <Link to={detailPath} onClick={onOpenPost} className="block">
+      <Link
+        to={detailPath}
+        onClick={onOpenPost}
+        onPointerEnter={onPrefetch}
+        onFocus={onPrefetch}
+        onTouchStart={onPrefetch}
+        className="block"
+      >
         <Card className="group block overflow-hidden border border-slate-200/70 p-0 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-transform hover:-translate-y-1 hover:shadow-[0_24px_56px_-34px_rgba(15,23,42,0.5)] sm:p-0 dark:border-0 dark:shadow-none">
           {/* Mobile template */}
           <article className="flex min-h-[210px] flex-col sm:hidden">

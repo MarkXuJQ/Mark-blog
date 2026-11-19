@@ -510,7 +510,7 @@ const styles = {
   summaryPill:
     'inline-flex items-baseline gap-2.5 border-l border-white/10 pl-4 text-white first:border-l-0 first:pl-0',
   summaryPillValue:
-    "text-[1.15rem] font-semibold leading-none tabular-nums text-white/86 font-tourney",
+    'font-round text-[1.15rem] font-semibold leading-none tabular-nums text-white/86',
   summaryPillLabel:
     'text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-white/40',
   ambientOrbit:

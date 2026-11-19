@@ -4,11 +4,15 @@ import useEmblaCarousel from 'embla-carousel-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { getAllPostSummaries } from '@/lib/content/postSummaries'
-import { getAllPosts } from '@/lib/content/posts'
 import { getOptimizedImageUrl } from '@/lib/image'
-import { CategoryLabel } from '@/components/blog/CategoryLabel'
-import type { BlogPostSummary } from '@/lib/content/posts'
 import { getLifeProvince } from '@/lib/life/provinces'
+import siteContent from '@content/home/site-content.json'
+
+interface SiteContentEntry {
+  href: string
+  title: string
+  image: string
+}
 
 type LifeRailPost = {
   id: string
@@ -49,6 +53,12 @@ const RAIL_INTERVAL = 4500
 // (14 slides at the desktop card width cover screens up to ~5K wide).
 const LOOP_MIN_SLIDES = 14
 
+function matchesCurrentLanguage(href: string, locale: string) {
+  const languageSuffix = href.match(/-(cn|en)(?:[?#].*)?$/)?.[1]
+  if (!languageSuffix) return true
+  return locale === 'zh-CN' ? languageSuffix === 'cn' : languageSuffix === 'en'
+}
+
 function buildLoopSlides<T>(slides: T[]): T[] {
   if (slides.length === 0) return slides
   const copies = Math.ceil(LOOP_MIN_SLIDES / slides.length)
@@ -56,28 +66,6 @@ function buildLoopSlides<T>(slides: T[]): T[] {
   return Array.from({ length: copies }, () => slides).flat()
 }
 type EmblaApi = NonNullable<ReturnType<typeof useEmblaCarousel>[1]>
-const railImageCache = new Map<string, string>()
-const railImagePreloadCache = new Map<string, Promise<void>>()
-
-function preloadRailImage(src: string) {
-  const existing = railImagePreloadCache.get(src)
-  if (existing) return existing
-  const promise = new Promise<void>((resolve) => {
-    const image = new Image()
-    image.decoding = 'async'
-    image.onload = () => resolve()
-    image.onerror = () => resolve()
-    image.src = src
-  })
-  railImagePreloadCache.set(src, promise)
-  return promise
-}
-
-function getFirstContentImage(content?: string): string | undefined {
-  if (!content) return undefined
-  const match = content.match(/<img[^>]+src=["']([^"']+)["']/i)
-  return match?.[1]
-}
 export function HomeBlogRailSection({
   avatarSrc,
   sectionScale,
@@ -107,21 +95,7 @@ export function HomeBlogRailSection({
   }, [shouldReduceMotion])
 
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
-  const allPosts = useMemo(() => {
-    const summaries = getAllPostSummaries(i18n.language)
-    const fullPosts = getAllPosts(i18n.language)
-    const contentImages = new Map(
-      fullPosts.map((post) => [post.slug, getFirstContentImage(post.content)])
-    )
-    return summaries.map((post) => {
-      const image =
-        railImageCache.get(post.slug) ||
-        post.image ||
-        contentImages.get(post.slug)
-      if (image) railImageCache.set(post.slug, image)
-      return image ? { ...post, image } : post
-    })
-  }, [i18n.language])
+  const allPosts = useMemo(() => getAllPostSummaries(i18n.language), [i18n.language])
   const lifePosts = useMemo<LifeRailPost[]>(
     () =>
       Object.values(lifeFiles)
@@ -166,13 +140,13 @@ export function HomeBlogRailSection({
       return `${(count / 1000).toFixed(1).replace(/\.0$/, '')}k`
     return count.toLocaleString('en-US')
   }
-  const posts = useMemo(() => {
-    const selectedPosts = allPosts.filter((post) => post.selected)
-    return (selectedPosts.length > 0 ? selectedPosts : allPosts).slice(
-      0,
-      BLOG_POST_LIMIT
-    )
-  }, [allPosts])
+  const posts = useMemo(
+    () =>
+      (siteContent as SiteContentEntry[])
+        .filter((entry) => matchesCurrentLanguage(entry.href, locale))
+        .slice(0, BLOG_POST_LIMIT),
+    [locale]
+  )
   // When reduced motion is requested the rail doesn't auto-advance and looping
   // is disabled, so keep the slides unique in that case.
   const blogSlides = useMemo(
@@ -183,15 +157,6 @@ export function HomeBlogRailSection({
     () => (shouldReduceMotion ? lifePosts : buildLoopSlides(lifePosts)),
     [lifePosts, shouldReduceMotion]
   )
-  useEffect(() => {
-    const urls = [...posts, ...lifePosts]
-      .map((post) => post.image)
-      .filter((image): image is string => Boolean(image))
-      .map((image) => getOptimizedImageUrl(image, 'card'))
-    urls.forEach((url) => {
-      void preloadRailImage(url)
-    })
-  }, [posts, lifePosts])
   if (posts.length === 0) return null
 
   return (
@@ -241,40 +206,40 @@ export function HomeBlogRailSection({
                 <p className="shrink-0 whitespace-nowrap text-right text-[0.54rem] leading-relaxed tracking-normal text-black/50 sm:text-xs sm:tracking-wide dark:text-white/50">
                   {locale === 'zh-CN' ? (
                     <>
-                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-round font-semibold text-black/80 tabular-nums text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {allPosts.length}
                       </strong>{' '}
                       篇博客{' '}
-                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-round font-semibold text-black/80 tabular-nums text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {formatWordCount(totalWordCount, locale)}
                       </strong>{' '}
                       字
                       <br />
-                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-round font-semibold text-black/80 tabular-nums text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {lifeStats.postCount}
                       </strong>{' '}
                       篇随笔{' '}
-                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-round font-semibold text-black/80 tabular-nums text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {lifeStats.photoCount}
                       </strong>{' '}
                       张照片
                     </>
                   ) : (
                     <>
-                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-round font-semibold text-black/80 tabular-nums text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {allPosts.length}
                       </strong>{' '}
                       blog posts ·{' '}
-                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-round font-semibold text-black/80 tabular-nums text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {formatWordCount(totalWordCount, locale)}
                       </strong>{' '}
                       words
                       <br />
-                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-round font-semibold text-black/80 tabular-nums text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {lifeStats.postCount}
                       </strong>{' '}
                       life notes ·{' '}
-                      <strong className="font-semibold text-black/80 tabular-nums font-tourney text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
+                      <strong className="font-round font-semibold text-black/80 tabular-nums text-[1.05rem] leading-none dark:text-white/80 sm:text-xl">
                         {lifeStats.photoCount}
                       </strong>{' '}
                       photos
@@ -342,7 +307,7 @@ function BlogRailRow({
   railApisRef,
   railKey,
 }: {
-  posts: Array<BlogPostSummary | LifeRailPost>
+  posts: Array<SiteContentEntry | LifeRailPost>
   reverse: boolean
   shouldReduceMotion: boolean
   railApisRef: React.MutableRefObject<{
@@ -389,11 +354,11 @@ function BlogRailRow({
       <div className="flex touch-pan-y">
         {posts.map((post, index) => (
           <div
-            key={`${'slug' in post ? post.slug : post.id}-${index}`}
+            key={`${'href' in post ? post.href : post.id}-${index}`}
             dir="ltr"
             className={`min-w-0 shrink-0 basis-[min(78vw,calc(100vw_-_2rem))] sm:basis-[22rem] lg:basis-[26rem] ${reverse ? 'ml-3 sm:ml-4 lg:ml-5' : 'mr-3 sm:mr-4 lg:mr-5'}`}
           >
-            <BlogRailItem post={post} />
+            <BlogRailItem post={post} index={index} />
           </div>
         ))}
       </div>
@@ -403,12 +368,14 @@ function BlogRailRow({
 
 function BlogRailItem({
   post,
+  index,
 }: {
-  post: BlogPostSummary | LifeRailPost
+  post: SiteContentEntry | LifeRailPost
+  index: number
 }) {
   return (
     <Link
-      to={'slug' in post ? `/blog/${post.slug}` : '/life'}
+      to={'href' in post ? post.href : '/life'}
       className="group relative flex h-44 w-full items-end overflow-hidden rounded-2xl border border-slate-200/70 bg-slate-950 px-5 py-5 text-white shadow-[0_20px_55px_-36px_rgba(15,23,42,0.8)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_26px_65px_-36px_rgba(15,23,42,0.9)] sm:h-48 sm:px-6 dark:border-white/10"
     >
       <div aria-hidden="true" className="absolute inset-0 bg-slate-800" />
@@ -418,8 +385,8 @@ function BlogRailItem({
           data-original-src={post.image}
           alt=""
           aria-hidden="true"
-          loading="eager"
-          fetchPriority="high"
+          loading={index === 0 ? 'eager' : 'lazy'}
+          fetchPriority={index === 0 ? 'high' : 'low'}
           decoding="async"
           referrerPolicy="no-referrer"
           onError={(event) => {
@@ -442,13 +409,7 @@ function BlogRailItem({
         <h2 className="truncate text-[1.05rem] leading-tight text-white sm:text-[1.2rem]">
           {post.title}
         </h2>
-        {'category' in post && post.category ? (
-          <CategoryLabel
-            category={post.category}
-            className="mt-2 text-[0.62rem] tracking-[0.16em] text-white/70 uppercase"
-            iconClassName="h-3 w-3"
-          />
-        ) : 'city' in post ? (
+        {'city' in post ? (
           <div className="mt-2 flex items-center gap-2 text-[0.62rem] tracking-[0.12em] text-white/70">
             <time dateTime={post.date}>{post.date}</time>
             <span aria-hidden="true">·</span>

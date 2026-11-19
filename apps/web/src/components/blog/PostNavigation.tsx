@@ -1,11 +1,11 @@
 import type { MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import type { BlogPost } from '@/lib/content/posts'
+import type { BlogPostSummary } from '@/lib/content/posts'
 
 interface PostNavigationProps {
-  prev?: BlogPost
-  next?: BlogPost
+  prev?: BlogPostSummary
+  next?: BlogPostSummary
 }
 
 type Direction = 'prev' | 'next'
@@ -34,7 +34,7 @@ function NavigationCard({
   post,
   direction,
 }: {
-  post: BlogPost
+  post: BlogPostSummary
   direction: Direction
 }) {
   const isPrev = direction === 'prev'

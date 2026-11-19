@@ -8,7 +8,6 @@ import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
 import { getMovieReviewBySlug } from '@/lib/content/movieReviews'
 import { cn } from '@/lib/classNames'
 import { useArticleImageLightbox } from '@/hooks/article/useArticleImageLightbox'
-import { useArticleProgressiveImages } from '@/hooks/article/useArticleProgressiveImages'
 import { getImageUrl } from '@/lib/image'
 import { PostSharedElement } from '@/components/transitions/PostSharedElement'
 import { usePostDetailTransition } from '@/hooks/article/usePostDetailTransition'
@@ -28,7 +27,6 @@ export function MovieReviewPost() {
     return decorateArticleContent(review.content, i18n.language)
   }, [i18n.language, review])
   const contentRef = useArticleImageLightbox([contentHtml])
-  useArticleProgressiveImages(contentRef, [contentHtml])
 
   if (!review) {
     return (

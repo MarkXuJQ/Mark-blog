@@ -271,6 +271,10 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
     : null
 
   const [dynamicSignals, setDynamicSignals] = useState<DynamicRadarSignal[]>([])
+  const [readyFaviconIds, setReadyFaviconIds] = useState<Set<string>>(
+    () => new Set()
+  )
+  const faviconPreloadStartedRef = useRef(false)
   const previousBeamAngleRef = useRef(beamAngle)
   const totalBeamRotationRef = useRef(beamAngle)
   const nextSignalRotationRef = useRef(
@@ -300,6 +304,44 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
 
     return () => observer.disconnect()
   }, [sectionRef])
+
+  useEffect(() => {
+    if (!isRadarSceneActive || faviconPreloadStartedRef.current) return
+
+    faviconPreloadStartedRef.current = true
+    let cancelled = false
+
+    RADAR_NODES.forEach((node) => {
+      if (!node.faviconSrc) return
+
+      const image = new Image()
+      image.decoding = 'async'
+      image.fetchPriority = 'low'
+      image.onload = () => {
+        const markReady = () => {
+          if (cancelled) return
+          setReadyFaviconIds((current) => {
+            if (current.has(node.id)) return current
+            const next = new Set(current)
+            next.add(node.id)
+            return next
+          })
+        }
+
+        if (typeof image.decode === 'function') {
+          void image.decode().then(markReady).catch(() => undefined)
+        } else {
+          markReady()
+        }
+      }
+      image.src = node.faviconSrc
+    })
+
+    return () => {
+      cancelled = true
+      faviconPreloadStartedRef.current = false
+    }
+  }, [isRadarSceneActive])
 
   useEffect(() => {
     if (beamOpacity <= 0.02) {
@@ -344,21 +386,25 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
         ...liveSignals.map((signal) => signal.node.id),
         ...nextSignals.map((signal) => signal.node.id),
       ])
-      let node =
-        RADAR_NODES[nextSignalNodeIndexRef.current % RADAR_NODES.length]
+      let node: RadarNode | undefined
 
       for (let offset = 0; offset < RADAR_NODES.length; offset += 1) {
         const candidateIndex =
           (nextSignalNodeIndexRef.current + offset) % RADAR_NODES.length
         const candidate = RADAR_NODES[candidateIndex]
 
-        if (!occupiedNodeIds.has(candidate.id)) {
+        if (
+          readyFaviconIds.has(candidate.id) &&
+          !occupiedNodeIds.has(candidate.id)
+        ) {
           node = candidate
           nextSignalNodeIndexRef.current =
             (candidateIndex + 1) % RADAR_NODES.length
           break
         }
       }
+
+      if (!node) break
 
       const { left, top } = getSignalPositionOnBeam(targetAngle)
 
@@ -395,7 +441,14 @@ export function HomeRadarSection({ avatarSrc }: HomeRadarSectionProps) {
         Math.max(0, combined.length - RADAR_DYNAMIC_SIGNAL_MAX_COUNT)
       )
     })
-  }, [beamAngle, beamFocusAngle, beamOpacity, dynamicSignals, isRadarPaused])
+  }, [
+    beamAngle,
+    beamFocusAngle,
+    beamOpacity,
+    dynamicSignals,
+    isRadarPaused,
+    readyFaviconIds,
+  ])
 
   const measureSignalPortalLayout = (node: RadarNode) => {
     const triggerRect = signalNodeRefs.current[node.id]?.getBoundingClientRect()
@@ -1261,7 +1314,7 @@ const styles = {
     'pointer-events-auto cursor-pointer transition-colors duration-200 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/45 dark:hover:text-white dark:focus-visible:ring-cyan-300/45',
   metaValue:
     'text-[1.08rem] font-semibold leading-none tracking-[0.02em] text-slate-900 dark:text-white/88',
-  metaValueNumeric: "font-tourney tabular-nums",
+  metaValueNumeric: 'font-round tabular-nums',
   metaLabel:
     'text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-slate-500/78 dark:text-white/40',
   signalSourceList:
@@ -1270,7 +1323,7 @@ const styles = {
   signalSourceListTitle:
     'text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-slate-500/82 dark:text-white/44',
   signalSourceListCount:
-    "text-sm font-semibold tracking-[0.02em] text-slate-900 dark:text-white/88 font-tourney tabular-nums",
+    'font-round text-sm font-semibold tracking-[0.02em] text-slate-900 dark:text-white/88 tabular-nums',
   signalSourceTabs:
     'mb-2 grid grid-cols-2 gap-1 rounded-[18px] bg-slate-100/70 p-1 dark:bg-white/[0.045]',
   signalSourceTab:
@@ -1278,7 +1331,7 @@ const styles = {
   signalSourceTabActive:
     'bg-white text-slate-950 shadow-[0_10px_24px_-20px_rgba(15,23,42,0.22)] dark:bg-white/12 dark:text-white',
   signalSourceTabCount:
-    "shrink-0 font-tourney text-[0.72rem] tabular-nums opacity-60",
+    'font-round shrink-0 text-[0.72rem] tabular-nums opacity-60',
   signalSourceListBody:
     'grid max-h-[min(18rem,45svh)] gap-1.5 overflow-y-auto overscroll-contain pr-1',
   signalSourceItem:

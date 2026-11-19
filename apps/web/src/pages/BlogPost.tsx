@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useState, type MouseEvent } from 'react'
+import { memo, use, useEffect, useMemo, type MouseEvent } from 'react'
 import {
   useParams,
   Link,
@@ -29,19 +29,18 @@ import {
   type JsonLd,
 } from '@/lib/seo'
 import { Card } from '@/components/ui/Card'
+import {
+  getAdjacentPostSummaries,
+  getPostDetailPath,
+  getPostSummaryMatch,
+  getSharedPostCommentPath,
+} from '@/lib/content/postSummaries'
+import { getPostContent } from '@/lib/content/postContent'
 import { useArticleCodeBlockEnhancements } from '@/hooks/article/useArticleCodeBlockEnhancements'
 import { useArticleImageLightbox } from '@/hooks/article/useArticleImageLightbox'
-import { useArticleProgressiveImages } from '@/hooks/article/useArticleProgressiveImages'
 import { useArticlePhotoScroll } from '@/hooks/article/useArticlePhotoScroll'
 import { useArticlePhotoRoutes } from '@/hooks/article/useArticlePhotoRoutes'
 import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
-import {
-  getAdjacentPosts,
-  getPostBySlug,
-  getPostDetailPath,
-  getPostLanguageBySlug,
-  getSharedPostCommentPath,
-} from '@/lib/content/posts'
 import {
   countWords,
   estimateReadingTimeFromWordCount,
@@ -60,18 +59,24 @@ export function BlogPost() {
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
-  const post = slug ? getPostBySlug(slug, i18n.language) : undefined
+  const postMatch = slug
+    ? getPostSummaryMatch(slug, i18n.language)
+    : undefined
+  const postLanguage = postMatch?.language ?? i18n.language
+  const postPromise =
+    slug && !postMatch?.summary.movieSubjectId
+      ? getPostContent(slug, postLanguage)
+      : null
+  const post = postPromise ? use(postPromise) : undefined
   const { navigationState, isSharedTransitionEnabled } =
     usePostDetailTransition(post?.slug ?? slug)
   const cameFromBlogList = Boolean(navigationState.fromBlogList)
   const transitionPostSlug = navigationState.transitionPostSlug
   const returnTo = navigationState.returnTo
   const viewState = navigationState.viewState
-  const articleLanguage = slug
-    ? (getPostLanguageBySlug(slug, i18n.language) ?? i18n.language)
-    : i18n.language
+  const articleLanguage = postLanguage
   const adjacentPosts = slug
-    ? getAdjacentPosts(slug, i18n.language)
+    ? getAdjacentPostSummaries(slug, i18n.language)
     : { prev: undefined, next: undefined }
 
   const contentHtml = useMemo(() => {
@@ -89,7 +94,6 @@ export function BlogPost() {
   }, [hasMath])
 
   const contentRef = useArticleImageLightbox([contentHtml, simpleMode])
-  useArticleProgressiveImages(contentRef, [contentHtml, simpleMode])
   useArticleCodeBlockEnhancements(
     contentRef,
     {
@@ -161,9 +165,13 @@ export function BlogPost() {
     })
   }, [hasHighlightQuery, slug])
 
-  if (post?.movieSubjectId) {
+  if (postMatch?.summary.movieSubjectId) {
     return (
-      <Navigate to={getPostDetailPath(post)} replace state={location.state} />
+      <Navigate
+        to={getPostDetailPath(postMatch.summary)}
+        replace
+        state={location.state}
+      />
     )
   }
 
@@ -188,9 +196,6 @@ export function BlogPost() {
   const originalCoverImage = post.image ? getImageUrl(post.image) : ''
   const coverImage = originalCoverImage
     ? getOptimizedImageUrl(originalCoverImage, 'cover')
-    : ''
-  const coverThumbnail = originalCoverImage
-    ? getOptimizedImageUrl(originalCoverImage, 'thumbnail')
     : ''
   const hasCoverImage = Boolean(coverImage)
   const siteUrl = getSiteUrl()
@@ -320,11 +325,13 @@ export function BlogPost() {
 
         {hasCoverImage ? (
           <div className={styles.simpleReadingCover}>
-            <ProgressiveCoverImage
-              placeholderSrc={coverThumbnail}
-              highSrc={coverImage}
+            <img
+              src={coverImage}
               alt={post.title}
               data-original-src={originalCoverImage}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
               referrerPolicy="no-referrer"
               className={styles.simpleReadingCoverImage}
             />
@@ -378,11 +385,13 @@ export function BlogPost() {
                 enabled={isSharedTransitionEnabled}
                 className="absolute inset-0 overflow-hidden rounded-none"
               >
-                <ProgressiveCoverImage
-                  placeholderSrc={coverThumbnail}
-                  highSrc={coverImage}
+                <img
+                  src={coverImage}
                   alt={post.title}
                   data-original-src={originalCoverImage}
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
                   referrerPolicy="no-referrer"
                   className="h-full w-full object-cover object-center"
                 />
@@ -631,59 +640,6 @@ const MarkdownContent = memo(function MarkdownContent({
     />
   )
 })
-
-function ProgressiveCoverImage({
-  placeholderSrc,
-  highSrc,
-  alt,
-  ...props
-}: React.ComponentProps<'img'> & {
-  placeholderSrc: string
-  highSrc: string
-}) {
-  const [src, setSrc] = useState(placeholderSrc || highSrc)
-
-  useEffect(() => {
-    let cancelled = false
-    setSrc(placeholderSrc || highSrc)
-
-    if (!highSrc || highSrc === placeholderSrc) return
-
-    const request = new Image()
-    request.decoding = 'async'
-    request.fetchPriority = 'high'
-    request.onload = () => {
-      const commit = () => {
-        if (!cancelled) setSrc(highSrc)
-      }
-
-      if (typeof request.decode === 'function') {
-        void request
-          .decode()
-          .catch(() => undefined)
-          .then(commit)
-      } else {
-        commit()
-      }
-    }
-    request.src = highSrc
-
-    return () => {
-      cancelled = true
-    }
-  }, [highSrc, placeholderSrc])
-
-  return (
-    <img
-      {...props}
-      alt={alt}
-      src={src}
-      loading="eager"
-      decoding="async"
-      fetchPriority="high"
-    />
-  )
-}
 
 const styles = {
   postCard:

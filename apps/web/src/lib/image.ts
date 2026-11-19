@@ -126,18 +126,12 @@ export function rewriteHtmlImageSrc(html: string): string {
     const isHdr = img.hasAttribute('data-hdr')
     const displaySrc = isHdr
       ? original
-      : getOptimizedImageUrl(original, 'thumbnail')
-    const progressiveSrc = isHdr
-      ? ''
       : getOptimizedImageUrl(original, 'content')
     img.setAttribute('src', displaySrc)
     img.setAttribute('data-original-src', original)
     if (isHdr) {
       img.setAttribute('data-hdr-image', 'true')
       img.classList.add('hdr-image')
-    } else if (progressiveSrc !== displaySrc) {
-      img.setAttribute('data-progressive-src', progressiveSrc)
-      img.classList.add('article-progressive-image')
     }
     img.setAttribute('loading', index === 0 ? 'eager' : 'lazy')
     img.setAttribute('fetchpriority', index === 0 ? 'high' : 'low')

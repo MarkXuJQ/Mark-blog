@@ -1,5 +1,17 @@
 [
   {
+    "id": "qf-20261119",
+    "date": "2026-11-19",
+    "content": [
+      "Article content now loads on demand; hovering, focusing, or touching a post card preloads it for smoother shared transitions",
+      "The lightbox now starts with optimized images and lets readers request the original or retry a failed load, reducing unnecessary full-size image requests",
+      "Homepage Site Content recommendations now come from a dedicated list with separate Chinese and English titles, links, and covers",
+      "Homepage radar signals now appear only after their favicons finish loading, avoiding missing or flashing icons",
+      "Unified number and interface typography across the site, including the homepage, radar, and timeline, with ChillRoundF",
+      "Simplified article image loading to use content-size images directly and added a preconnect to the image host"
+    ]
+  },
+  {
     "id": "qf-20261109",
     "date": "2026-11-09",
     "content": [
