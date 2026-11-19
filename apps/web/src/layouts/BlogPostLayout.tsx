@@ -6,8 +6,10 @@ import { BlogTocCard, BlogTocDrawer } from '@/components/blog/BlogTocCard'
 import { LeftSidebarWidget } from '@/components/blog/BlogWidgets'
 import { ReaderModeToggle } from '@/components/blog/ReaderModeToggle'
 import { useArticleToc } from '@/hooks/article/useArticleToc'
-import { getAllPostSummaries } from '@/lib/content/postSummaries'
-import { getPostBySlug, getPostLanguageBySlug } from '@/lib/content/posts'
+import {
+  getAllPostSummaries,
+  getPostSummaryMatch,
+} from '@/lib/content/postSummaries'
 import { cn } from '@/lib/classNames'
 
 export type BlogPostOutletContext = {
@@ -36,14 +38,13 @@ export function BlogPostLayout() {
       refreshKey: simpleMode,
     }
   )
-  const postLanguage = slug
-    ? (getPostLanguageBySlug(slug, i18n.language) ??
-      resolvePostLanguage(slug, i18n.language))
-    : resolvePostLanguage(slug, i18n.language)
+  const postMatch = slug
+    ? getPostSummaryMatch(slug, i18n.language)
+    : undefined
+  const postLanguage =
+    postMatch?.language ?? resolvePostLanguage(slug, i18n.language)
   const posts = getAllPostSummaries(postLanguage)
-  const currentPost = slug
-    ? (getPostBySlug(slug, postLanguage, { fallback: false }) ?? null)
-    : null
+  const currentPost = postMatch?.summary ?? null
   const outletContext = useMemo(
     () => ({ simpleMode }) satisfies BlogPostOutletContext,
     [simpleMode]

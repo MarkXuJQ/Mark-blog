@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useState, type MouseEvent } from 'react'
+import { memo, use, useEffect, useMemo, useState, type MouseEvent } from 'react'
 import {
   useParams,
   Link,
@@ -29,19 +29,19 @@ import {
   type JsonLd,
 } from '@/lib/seo'
 import { Card } from '@/components/ui/Card'
+import {
+  getAdjacentPostSummaries,
+  getPostDetailPath,
+  getPostSummaryMatch,
+  getSharedPostCommentPath,
+} from '@/lib/content/postSummaries'
+import { getPostContent } from '@/lib/content/postContent'
 import { useArticleCodeBlockEnhancements } from '@/hooks/article/useArticleCodeBlockEnhancements'
 import { useArticleImageLightbox } from '@/hooks/article/useArticleImageLightbox'
 import { useArticleProgressiveImages } from '@/hooks/article/useArticleProgressiveImages'
 import { useArticlePhotoScroll } from '@/hooks/article/useArticlePhotoScroll'
 import { useArticlePhotoRoutes } from '@/hooks/article/useArticlePhotoRoutes'
 import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
-import {
-  getAdjacentPosts,
-  getPostBySlug,
-  getPostDetailPath,
-  getPostLanguageBySlug,
-  getSharedPostCommentPath,
-} from '@/lib/content/posts'
 import {
   countWords,
   estimateReadingTimeFromWordCount,
@@ -60,18 +60,24 @@ export function BlogPost() {
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
-  const post = slug ? getPostBySlug(slug, i18n.language) : undefined
+  const postMatch = slug
+    ? getPostSummaryMatch(slug, i18n.language)
+    : undefined
+  const postLanguage = postMatch?.language ?? i18n.language
+  const postPromise =
+    slug && !postMatch?.summary.movieSubjectId
+      ? getPostContent(slug, postLanguage)
+      : null
+  const post = postPromise ? use(postPromise) : undefined
   const { navigationState, isSharedTransitionEnabled } =
     usePostDetailTransition(post?.slug ?? slug)
   const cameFromBlogList = Boolean(navigationState.fromBlogList)
   const transitionPostSlug = navigationState.transitionPostSlug
   const returnTo = navigationState.returnTo
   const viewState = navigationState.viewState
-  const articleLanguage = slug
-    ? (getPostLanguageBySlug(slug, i18n.language) ?? i18n.language)
-    : i18n.language
+  const articleLanguage = postLanguage
   const adjacentPosts = slug
-    ? getAdjacentPosts(slug, i18n.language)
+    ? getAdjacentPostSummaries(slug, i18n.language)
     : { prev: undefined, next: undefined }
 
   const contentHtml = useMemo(() => {
@@ -161,9 +167,13 @@ export function BlogPost() {
     })
   }, [hasHighlightQuery, slug])
 
-  if (post?.movieSubjectId) {
+  if (postMatch?.summary.movieSubjectId) {
     return (
-      <Navigate to={getPostDetailPath(post)} replace state={location.state} />
+      <Navigate
+        to={getPostDetailPath(postMatch.summary)}
+        replace
+        state={location.state}
+      />
     )
   }
 

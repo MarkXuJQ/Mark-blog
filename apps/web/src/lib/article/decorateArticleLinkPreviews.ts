@@ -1,7 +1,7 @@
 import { getSiteUrl } from '@/lib/seo'
 import { getImageUrl } from '@/lib/image'
 import { getMovieReviewBySlug } from '@/lib/content/movieReviews'
-import { getPostBySlug } from '@/lib/content/posts'
+import { getPostSummaryMatch } from '@/lib/content/postSummaries'
 
 function normalizePathname(pathname: string) {
   const normalized = pathname.replace(/\/+$/, '')
@@ -50,7 +50,7 @@ export function decorateArticleLinkPreviews(html: string, language?: string) {
         return
       }
 
-      const post = getPostBySlug(slug, language)
+      const post = getPostSummaryMatch(slug, language)?.summary
       if (!post) {
         return
       }

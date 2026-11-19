@@ -75,6 +75,7 @@ function buildPostSummaries() {
     return {
       id: slug,
       slug,
+      sourceSlug: path.basename(filePath, '.md'),
       language: resolveLanguageFromPath(filePath),
       title: String(data.title || slug),
       date: String(data.date || ''),
@@ -82,6 +83,7 @@ function buildPostSummaries() {
       summary: String(data.summary || ''),
       wordCount: countWords(content),
       image: normalizeOptionalString(data.image),
+      aliases: normalizeOptionalStringArray(data.aliases),
       tags: normalizeOptionalStringArray(data.tags),
       category: normalizeOptionalString(data.category),
     }

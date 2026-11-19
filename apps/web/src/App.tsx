@@ -5,6 +5,7 @@ import { HomeLayout } from './layouts/HomeLayout'
 import { DeferredVercelInsights } from './app/analytics/DeferredVercelInsights'
 import { createPreloadableComponent } from './app/routing/createPreloadableComponent'
 import { normalizePathname } from './app/routing/normalizePathname'
+import i18n from './i18n'
 
 const LightboxProvider = createPreloadableComponent(() =>
   import('./components/ui/Lightbox').then((module) => module.LightboxProvider)
@@ -91,7 +92,16 @@ export async function preloadCurrentRoute(pathname: string) {
     return [NotFound]
   })()
 
-  await Promise.all(routeComponents.map((component) => component.preload()))
+  const preloadTasks = routeComponents.map((component) => component.preload())
+  if (normalizedPathname.startsWith('/blog/')) {
+    const slug = decodeURIComponent(normalizedPathname.slice('/blog/'.length))
+    preloadTasks.push(
+      import('./lib/content/postContent').then(({ preloadPostContent }) =>
+        preloadPostContent(slug, i18n.language)
+      )
+    )
+  }
+  await Promise.all(preloadTasks)
 }
 
 function RouteLoading() {
