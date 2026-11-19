@@ -44,6 +44,12 @@
     "expand": "Expand Code",
     "collapse": "Collapse Code"
   },
+  "lightbox": {
+    "viewOriginal": "View original",
+    "loadingOriginal": "Loading original…",
+    "originalFailed": "Couldn't load original",
+    "retryOriginal": "Retry original"
+  },
   "home": {
     "intro": " I'll update my tech notes📒, life bits, and small projects growing in public."
   },

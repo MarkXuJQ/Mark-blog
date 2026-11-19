@@ -44,6 +44,12 @@
     "expand": "展开代码",
     "collapse": "收起代码"
   },
+  "lightbox": {
+    "viewOriginal": "查看原图",
+    "loadingOriginal": "正在加载原图…",
+    "originalFailed": "原图加载失败",
+    "retryOriginal": "重试加载原图"
+  },
   "home": {
     "intro": "我会在这里放一些我的学习笔记、生活中遇到的人或事、一些个人的想法，和一些奇奇怪怪的作品。"
   },

@@ -7,7 +7,7 @@ export interface LightboxSlide {
   hdr?: boolean
   /** Keep an already optimized source instead of unwrapping it to the original. */
   optimized?: boolean
-  /** Internal original source used when a deferred HDR slide becomes current. */
+  /** Original source requested only when the viewer asks for it. */
   originalSrc?: string
 }
 
