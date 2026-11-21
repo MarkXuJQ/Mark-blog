@@ -14,7 +14,11 @@ import {
   MapPin,
 } from 'lucide-react'
 import { DeferredComments } from '@/components/comments/DeferredComments'
-import { getTwikooApi, loadTwikooScript } from '@/lib/comments/twikooLoader'
+import {
+  getTwikooApi,
+  getTwikooEnvId,
+  loadTwikooScript,
+} from '@/lib/comments/twikooLoader'
 import { Seo } from '@/app/seo/Seo'
 import {
   Dropdown,
@@ -121,9 +125,7 @@ export function Life() {
   const { openLightbox } = useLightbox()
   const isMobileDetail = useMediaQuery('(max-width: 767px)')
   const prefersReducedMotion = usePrefersReducedMotion()
-  const twikooEnvId =
-    import.meta.env.VITE_TWIKOO_ENV_ID ||
-    'https://comments.markxu.icu/api/twikoo'
+  const twikooEnvId = getTwikooEnvId()
 
   const posts = useMemo(() => {
     const merged = Object.values(lifeYearFiles).flatMap(

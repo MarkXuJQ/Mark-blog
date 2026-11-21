@@ -10,7 +10,10 @@ import {
   getCachedRecentComments,
   loadRecentComments,
 } from '@/lib/comments/recentCommentsCache'
-import type { TwikooRecentComment } from '@/lib/comments/twikooLoader'
+import {
+  getTwikooEnvId,
+  type TwikooRecentComment,
+} from '@/lib/comments/twikooLoader'
 const RECENT_COMMENTS_LIMIT = 5
 /**
  * Twikoo 2's `getRecentComments` no longer honours the `urls` filter: it
@@ -19,7 +22,6 @@ const RECENT_COMMENTS_LIMIT = 5
  * once we filter to post URLs. Fetch a wide window and trim to 5 afterwards.
  */
 const RECENT_COMMENTS_FETCH_SIZE = 100
-const DEFAULT_TWIKOO_ENV_ID = 'https://comments.markxu.icu/api/twikoo'
 
 declare global {
   interface Window {
@@ -97,8 +99,7 @@ export function RecentCommentsWidget() {
   // used to cap it at 3-4 depending on viewport height).
   const visibleItemLimit = RECENT_COMMENTS_LIMIT
   const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US'
-  const twikooEnvId =
-    import.meta.env.VITE_TWIKOO_ENV_ID || DEFAULT_TWIKOO_ENV_ID
+  const twikooEnvId = getTwikooEnvId()
   const postDirectory = useMemo(() => buildPostDirectory(locale), [locale])
   const dateFormatter = useMemo(
     () =>

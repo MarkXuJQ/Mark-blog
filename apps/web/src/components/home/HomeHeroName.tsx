@@ -10,6 +10,7 @@ import { motion, useAnimationControls, type Transition } from 'framer-motion'
 import { VerticalCutReveal } from '@/components/home/vertical-cut-reveal'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
+import { HERO_TITLE_REVEAL_TRANSITION } from '@/lib/transitions/sharedTransitions'
 
 const CLICK_WINDOW_MS = 800
 const UNLOCK_CLICKS = 7
@@ -21,8 +22,8 @@ const PULSE_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 const HOVER_SPRING: Transition = {
   type: 'spring',
-  stiffness: 320,
-  damping: 22,
+  stiffness: 265,
+  damping: 20,
   mass: 0.6,
 }
 
@@ -47,12 +48,6 @@ interface HomeHeroNameProps {
   prefersReducedMotion: boolean
   onUnlock: () => void
 }
-
-const HERO_TITLE_REVEAL_TRANSITION = {
-  type: 'spring',
-  stiffness: 200,
-  damping: 21,
-} as const
 
 function createSparks(
   burstId: number,

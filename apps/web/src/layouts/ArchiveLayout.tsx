@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LeftSidebarWidget, StatsWidget } from '@/components/blog/BlogWidgets'
 import { MobileBlogDrawer } from '@/components/blog/MobileBlogDrawer'
@@ -7,47 +7,22 @@ import { ReaderModeToggle } from '@/components/blog/ReaderModeToggle'
 import { normalizePathname } from '@/app/routing/normalizePathname'
 import { getAllPostSummaries } from '@/lib/content/postSummaries'
 import { cn } from '@/lib/classNames'
+import { useReaderMode } from '@/hooks/useReaderMode'
 
 export type ArchiveOutletContext = {
   simpleMode: boolean
 }
-
-const READER_MODE_STORAGE_KEY = 'blog-reader-mode'
 
 export function ArchiveLayout() {
   const { i18n } = useTranslation()
   const { pathname } = useLocation()
   const posts = getAllPostSummaries(i18n.language)
   const isLinksPage = normalizePathname(pathname) === '/links'
-  const [isMounted, setIsMounted] = useState(false)
-  const [simpleMode, setSimpleMode] = useState(false)
+  const { isMounted, simpleMode, setSimpleMode } = useReaderMode()
   const outletContext = useMemo(
     () => ({ simpleMode }) satisfies ArchiveOutletContext,
     [simpleMode]
   )
-
-  useEffect(() => {
-    if (window.__PRERENDER__) return
-
-    setSimpleMode(
-      window.localStorage.getItem(READER_MODE_STORAGE_KEY) === 'simple'
-    )
-    setIsMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isMounted) return
-
-    document.documentElement.toggleAttribute('data-simple-reading', simpleMode)
-    window.localStorage.setItem(
-      READER_MODE_STORAGE_KEY,
-      simpleMode ? 'simple' : 'rich'
-    )
-
-    return () => {
-      document.documentElement.removeAttribute('data-simple-reading')
-    }
-  }, [isMounted, simpleMode])
 
   return (
     <div className={styles.container}>

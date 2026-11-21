@@ -2,7 +2,6 @@
 @plugin "@tailwindcss/typography";
 
 @import './article.css';
-@import './lab.css';
 @custom-variant dark (&:where(.dark, .dark *));
 
 @keyframes reach-out-wiggle {

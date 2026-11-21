@@ -9,6 +9,7 @@
     "summary": "今天晚上看完了 3Blue1Brown 的《投身数学，从未有过比现在更好的时候》的视频，有些感触，简单记录下。",
     "wordCount": 971,
     "image": "https://img.markxu.icu/imge1ca44fe-e495-4e4f-951f-46ea158d947b.png",
+    "imageOverlay": true,
     "aliases": [
       "future-of-liberal-arts-and-engineering"
     ],
@@ -29,6 +30,7 @@
     "summary": "[AI-translated] Tonight I finished watching 3Blue1Brown's video “There Has Never Been a Better Time to Devote Yourself to Mathematics,” and it stirred up some feelings that I record briefly here.",
     "wordCount": 696,
     "image": "https://img.markxu.icu/imge1ca44fe-e495-4e4f-951f-46ea158d947b.png",
+    "imageOverlay": true,
     "aliases": [
       "future-of-liberal-arts-and-engineering"
     ],
@@ -85,6 +87,7 @@
     "summary": "接着上一篇的内容继续，重点放在现在为什么不用www了，以及我们目前主要的操作是什么。",
     "wordCount": 1739,
     "image": "https://img.markxu.icu/img20261001152633367.png",
+    "imageOverlay": true,
     "aliases": [
       "why-does-some-website-has-www-2"
     ],
@@ -106,6 +109,7 @@
     "summary": "[AI-translated] Picking up where the previous post left off, this one focuses on why we no longer use www today, and on how we actually handle it now.",
     "wordCount": 1256,
     "image": "https://img.markxu.icu/img20261001152633367.png",
+    "imageOverlay": true,
     "aliases": [
       "why-does-some-website-has-www-2"
     ],
@@ -126,6 +130,7 @@
     "summary": "一直以为地址栏里的 www 只是被浏览器藏起来了，随着深入了解，发现其实这连着早期互联网的服务分工、DNS 的限制，以及今天网站部署方式的变化。",
     "wordCount": 2264,
     "image": "https://img.markxu.icu/img20260926225709745.png",
+    "imageOverlay": true,
     "aliases": [
       "why-does-some-website-has-www-1"
     ],
@@ -146,6 +151,7 @@
     "summary": "[AI-translated] I always assumed the www in the address bar was just something the browser hid from us. The more I looked into it, the more I found that it connects to the division of services on the early Internet, the constraints of DNS, and the way websites are deployed today.",
     "wordCount": 1625,
     "image": "https://img.markxu.icu/img20260926225709745.png",
+    "imageOverlay": true,
     "aliases": [
       "why-does-some-website-has-www-1"
     ],
@@ -167,6 +173,7 @@
     "summary": "偶然看到的一个手势识别库的更新消息，让我来了灵感，于是做了一个简易的音游 Demo。",
     "wordCount": 4069,
     "image": "/images/fingerblock-preview.png",
+    "imageOverlay": true,
     "aliases": [
       "FingerBlock-A-game-Demo-by-AI"
     ],
@@ -188,6 +195,7 @@
     "summary": "[AI-translated] A chance update notice from a hand-tracking library gave me the idea, and a day and a half later I had a simple rhythm game demo.",
     "wordCount": 2903,
     "image": "/images/fingerblock-preview.png",
+    "imageOverlay": true,
     "aliases": [
       "FingerBlock-A-game-Demo-by-AI"
     ],
@@ -209,6 +217,7 @@
     "summary": "记录了我的个人网站的 RSS 订阅的发展过程：能用->美化->突然失效->解决问题。",
     "wordCount": 2266,
     "image": "https://img.markxu.icu/img16cadbcd5c793.png",
+    "imageOverlay": true,
     "aliases": [
       "rss-feed-beautification"
     ],
@@ -230,6 +239,7 @@
     "summary": "[AI-translated] A record of how the RSS feed on my personal site evolved: working, beautified, suddenly broken, and finally fixed.",
     "wordCount": 1597,
     "image": "https://img.markxu.icu/img16cadbcd5c793.png",
+    "imageOverlay": true,
     "aliases": [
       "rss-feed-beautification"
     ],
@@ -252,6 +262,7 @@
     "summary": "我一直不看好人形机器人会成为下一代通用生产力。我想把现在的判断留个档：如果以后被打脸，也能回头看看行业究竟克服了哪些我不看好的问题。",
     "wordCount": 5999,
     "image": "https://img.markxu.icu/img20260915182504981.png",
+    "imageOverlay": true,
     "aliases": [
       "why-im-not-bullish-on-humanoid-robots"
     ],
@@ -273,6 +284,7 @@
     "summary": "[AI-translated] I have never been bullish on humanoid robots becoming the next generation of general-purpose productivity. I want to put my current judgment on the record: if I end up being proven wrong, I will at least be able to look back and see exactly which of my concerns the industry managed to overcome.",
     "wordCount": 3937,
     "image": "https://img.markxu.icu/img20260915182504981.png",
+    "imageOverlay": true,
     "aliases": [
       "why-im-not-bullish-on-humanoid-robots"
     ],
@@ -331,6 +343,7 @@
     "summary": "只是看到有人说不错就来看了，完全没有任何期待，主演是谁也不知道，以为欢迎来到龙餐厅是成龙演的喜剧呢。但是电影开头看到沈腾老师也很惊喜。",
     "wordCount": 1010,
     "image": "https://image.tmdb.org/t/p/original/zr7om0GOLOcLo7SXMmNEG5rz6de.jpg",
+    "imageOverlay": true,
     "movieSubjectId": "35811064",
     "tags": [
       "Movies",
@@ -791,7 +804,7 @@
     "date": "2026-05-11",
     "updated": "2026-11-08",
     "summary": "一直有搜集各种有趣的信息源的习惯，想要把我印象中高质量，经常更新且好玩好读的几个信息源记录下，留给未来的自己，也分享给大家。",
-    "wordCount": 1805,
+    "wordCount": 1846,
     "image": "https://img.markxu.icu/img06bdb9ed7cc5e8.png",
     "aliases": [
       "university-info-drawers"
@@ -878,6 +891,7 @@
     "summary": "最近在 GitHub 上看到了一个项目：voice-input-src。一个为mac写的语音输入软件。震惊的是打开仓库你会发现只有一段写给AI的Prompt。",
     "wordCount": 1930,
     "image": "https://img.markxu.icu/imgvoiceinput.jpeg",
+    "imageOverlay": true,
     "aliases": [
       "prompt-only-open-source"
     ],

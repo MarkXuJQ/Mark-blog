@@ -1,32 +1,7 @@
-import { useEffect, useState, type RefObject } from 'react'
+import { useEffect, type RefObject } from 'react'
 import { useLenis } from 'lenis/react'
+import { useIsDarkMode } from '@/hooks/useIsDarkMode'
 import { requestPageTransition } from '@/lib/transitions/pageTransitionBus'
-
-function getInitialIsDarkMode() {
-  if (typeof document === 'undefined') return false
-  return document.documentElement.classList.contains('dark')
-}
-
-function useIsDarkMode() {
-  const [isDarkMode, setIsDarkMode] = useState(getInitialIsDarkMode)
-
-  useEffect(() => {
-    if (typeof document === 'undefined') return
-
-    const root = document.documentElement
-    const syncTheme = () => {
-      setIsDarkMode(root.classList.contains('dark'))
-    }
-
-    syncTheme()
-    const observer = new MutationObserver(syncTheme)
-    observer.observe(root, { attributes: true, attributeFilter: ['class'] })
-
-    return () => observer.disconnect()
-  }, [])
-
-  return isDarkMode
-}
 
 function useLenisPageResize(pageRef: RefObject<HTMLDivElement | null>) {
   const lenis = useLenis()

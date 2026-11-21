@@ -34,6 +34,10 @@ import { StaggeredList } from '@/components/ui/StaggeredList'
 import { useBlogPosts } from '@/hooks/blog/useBlogPosts'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
+import {
+  getAtomFeedUrl,
+  getFeedBasePath,
+} from '@/lib/links/socialLinks'
 import { PostSharedElement } from '@/components/transitions/PostSharedElement'
 import { POST_SHARED_TRANSITION_SETTLE_MS } from '@/lib/transitions/postSharedTransition'
 import {
@@ -332,11 +336,7 @@ export function Blog() {
       <Seo
         title={pageTitle}
         noindex={Boolean(searchQuery)}
-        feedUrl={
-          i18n.language?.startsWith('zh')
-            ? '/feeds/zh/atom.xml'
-            : '/feeds/en/atom.xml'
-        }
+        feedUrl={getAtomFeedUrl(i18n.language)}
         jsonLd={[collectionPageSchema, breadcrumbSchema]}
       />
       {openingPostSlug ? (
@@ -530,7 +530,7 @@ function BlogHeaderTitle({
   title: string
 }) {
   const { t, i18n } = useTranslation()
-  const feedPath = i18n.language?.startsWith('zh') ? '/feeds/zh/' : '/feeds/en/'
+  const feedPath = getFeedBasePath(i18n.language)
   const rssLabel = t('blog.rss.subscribe')
 
   return (

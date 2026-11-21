@@ -8,8 +8,50 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const PUBLIC_DIR = path.resolve(__dirname, '../public')
 const PUBLIC_IMAGES_DIR = path.resolve(__dirname, '../public/images')
+const PROJECTS_CONTENT_FILE = path.resolve(
+  __dirname,
+  '../../../content/projects/projects.json'
+)
 const SKIP_IMAGE_GENERATION_ENV = 'SKIP_RESPONSIVE_IMAGE_GENERATION'
 const FORCE_IMAGE_GENERATION_ENV = 'FORCE_RESPONSIVE_IMAGE_GENERATION'
+const PREVIEW_AVIF_QUALITY = 52
+
+// Project preview variants are declared by the `avifSrcSet` in projects.json,
+// so the generated files and the browser-facing srcSet can never drift apart.
+function collectProjectPreviewImages() {
+  const content = JSON.parse(fs.readFileSync(PROJECTS_CONTENT_FILE, 'utf8'))
+  const previews = new Map()
+
+  for (const section of content.sections ?? []) {
+    for (const project of section.projects ?? []) {
+      const preview = project.preview
+      if (!preview?.avifSrcSet || !preview.src?.endsWith('.png')) continue
+
+      const name = path.basename(preview.src, '.png')
+      const widths = preview.avifSrcSet
+        .split(',')
+        .map((entry) => entry.trim().match(/^(\S+)\s+(\d+)w$/))
+        .filter(
+          (match) => match && /-\d+\.avif$/.test(match[1])
+        )
+        .map((match) => Number(match[2]))
+        .filter((width) => Number.isFinite(width) && width > 0)
+
+      if (widths.length) {
+        previews.set(name, [...new Set(widths)].sort((a, b) => a - b))
+      }
+    }
+  }
+
+  return [...previews].map(([name, widths]) => ({
+    directory: PUBLIC_IMAGES_DIR,
+    input: `${name}.png`,
+    outputBase: name,
+    widths,
+    formats: ['avif'],
+    avifQuality: PREVIEW_AVIF_QUALITY,
+  }))
+}
 
 const RESPONSIVE_IMAGES = [
   {
@@ -34,6 +76,26 @@ const RESPONSIVE_IMAGES = [
   },
   {
     directory: PUBLIC_IMAGES_DIR,
+    input: 'day.png',
+    outputBase: 'day-blur',
+    widths: [1024],
+    formats: ['avif', 'webp'],
+    avifQuality: 40,
+    webpQuality: 68,
+    blur: 8,
+  },
+  {
+    directory: PUBLIC_IMAGES_DIR,
+    input: 'night.png',
+    outputBase: 'night-blur',
+    widths: [1024],
+    formats: ['avif', 'webp'],
+    avifQuality: 40,
+    webpQuality: 68,
+    blur: 8,
+  },
+  {
+    directory: PUBLIC_IMAGES_DIR,
     input: 'IMG_1766.JPG',
     outputBase: 'avatar',
     widths: [96, 256, 384],
@@ -41,6 +103,7 @@ const RESPONSIVE_IMAGES = [
     avifQuality: 52,
     webpQuality: 78,
   },
+  ...collectProjectPreviewImages(),
   {
     directory: PUBLIC_DIR,
     input: 'favicon.png',
@@ -87,6 +150,10 @@ async function generateVariant(sourcePath, targetPath, width, format, image) {
     width,
     withoutEnlargement: true,
   })
+
+  if (image.blur !== undefined) {
+    transformer = transformer.blur(image.blur)
+  }
 
   if (format === 'avif') {
     transformer = transformer.avif({

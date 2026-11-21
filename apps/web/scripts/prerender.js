@@ -6,7 +6,11 @@ import { createRequire } from 'node:module'
 import matter from 'gray-matter'
 import puppeteer from 'puppeteer'
 import { spawn } from 'node:child_process'
-import { collectMarkdownFiles, collectPostMarkdownFiles } from './post-files.js'
+import {
+  collectMarkdownFiles,
+  collectPostMarkdownFiles,
+  resolvePostSlug,
+} from './post-files.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -43,15 +47,6 @@ function getPrerenderConcurrency() {
   }
 
   return Math.min(requestedConcurrency, MAX_PRERENDER_CONCURRENCY)
-}
-
-function resolvePostSlug(filePath) {
-  const fileSlug = path.basename(filePath, '.md')
-  const content = fs.readFileSync(filePath, 'utf-8')
-  const { data } = matter(content)
-  return typeof data.slug === 'string' && data.slug.trim()
-    ? data.slug.trim()
-    : fileSlug
 }
 
 // Utility to verify dist exists
@@ -117,7 +112,8 @@ function getRoutes() {
   if (fs.existsSync(POSTS_DIR)) {
     const files = collectPostMarkdownFiles(POSTS_DIR)
     files.forEach((filePath) => {
-      routes.push(`/blog/${resolvePostSlug(filePath)}`)
+      const { data } = matter(fs.readFileSync(filePath, 'utf-8'))
+      routes.push(`/blog/${resolvePostSlug(filePath, data)}`)
     })
   }
 

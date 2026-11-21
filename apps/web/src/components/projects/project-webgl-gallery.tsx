@@ -17,16 +17,20 @@ export type ProjectWebglLink = {
   icon: IconType
 }
 
+export type ProjectPreview = {
+  src: string
+  avifSrc?: string
+  avifSrcSet?: string
+  objectFit?: 'cover' | 'contain'
+}
+
+export type ProjectWebglPreview = ProjectPreview & { alt: string }
+
 export type ProjectWebglItem = {
   id: string
   title: string
   description: string
-  preview?: {
-    src: string
-    avifSrc?: string
-    objectFit?: 'cover' | 'contain'
-    alt: string
-  }
+  preview?: ProjectWebglPreview
   links: ProjectWebglLink[]
   theme?: string
 }
@@ -38,6 +42,42 @@ type ProjectWebglGalleryProps = {
   openLabel: string
   closeLabel?: string
   className?: string
+}
+
+function ProjectPreviewPicture({
+  preview,
+  sizes,
+  loading,
+  className,
+  fitClass,
+  draggable = false,
+}: {
+  preview: ProjectWebglPreview
+  sizes: string
+  loading: 'lazy' | 'eager'
+  className?: string
+  fitClass?: string
+  draggable?: boolean
+}) {
+  return (
+    <picture>
+      {preview.avifSrc ? (
+        <source
+          srcSet={preview.avifSrcSet ?? preview.avifSrc}
+          type="image/avif"
+        />
+      ) : null}
+      <img
+        src={preview.src}
+        alt={preview.alt}
+        loading={loading}
+        decoding="async"
+        sizes={sizes}
+        draggable={draggable}
+        className={cn(className, fitClass)}
+      />
+    </picture>
+  )
 }
 
 // Fan look: a directional perspective rail. Unlike a symmetric fan (where the
@@ -75,7 +115,7 @@ function themeColorFor(id: string): string {
 }
 
 // Movement: the fan is driven chiefly by page scroll (the pinned track) with a
-// 1:1 drag on top. Both write to a shared `target` travel value that eases.
+// 1:1 drag on top.
 // `SCROLL_RANGE` sets how far the fan travels across the full sticky track;
 // a smaller value makes the same page scroll advance the list more gently
 // (slower relative to scrolling) instead of whipping past.
@@ -94,14 +134,8 @@ const HOVER_DIM = 0.45 // fixed opacity for every non-selected card (binary)
 // smooth, deliberate rise.
 const HOVER_LIFT_RATE = 0.09 // exponential approach rate (larger = quicker lift)
 
-// ---- Damped travel (slower, elegant glide) ----
-// The fan position is a strongly-damped spring chasing the interaction target.
-// It accelerates toward the target then decelerates smoothly to a stop — a
-// single, imperceptible approach with no visible side-to-side jello. Inertia is
-// shown by a subtle card tilt driven by velocity (see TILT_* below) instead of
-// the strip visibly bouncing.
-const SPRING_STIFFNESS = 0.045 // per-frame pull toward target (lower = slower glide)
-const SPRING_DAMPING = 0.9 // velocity retention — high → settles without oscillation
+const SPRING_STIFFNESS = 0.045 // pull-out animation only
+const SPRING_DAMPING = 0.9
 
 // ---- Inertia cue: velocity-driven tilt ----
 // As the fan moves, cards cant horizontally (rotateY) a little, conveying
@@ -159,7 +193,7 @@ export function ProjectWebglGallery({
   const railRef = useRef<HTMLDivElement>(null)
   // Scroll-coupled track: as the pinned section scrolls through the page,
   // `progress` (0→1 over the 280vh track) advances the fan through the project
-  // list. It re-anchors the base position; drag adds a free offset on top.
+  // list. Drag adds a free offset on top.
   const { ref: sectionRef, progress } = useSectionScrollProgress<HTMLElement>()
   const progressRef = useRef(0)
   progressRef.current = progress
@@ -170,14 +204,9 @@ export function ProjectWebglGallery({
   const STEP = viewportWidth < 640 ? 120 : viewportWidth < 1024 ? 200 : 270
 
   // ---- Shared travel value ----
-  // Horizontal position of the fan, eased toward `target`. The target is the
-  // scroll base (page scroll through the pinned stage) plus any drag offset,
-  // so scrolling the page carries the list forward while a drag freely nudges
-  // it on top. Keeping the eased `travel` separate from the target gives a
-  // smooth glide after each change.
+  // Page scroll and drag both map directly to the fan position.
   const scrollBaseRef = useRef(0) // progress * SCROLL_RANGE
   const dragOffsetRef = useRef(0) // free offset the user drags/wheels
-  const targetRef = useRef(0)
   const travelRef = useRef(0)
   const [pos, setPos] = useState(0)
 
@@ -229,57 +258,39 @@ export function ProjectWebglGallery({
   const pullAmtVelRef = useRef(0)
   const [pullAmt, setPullAmt] = useState(0)
 
-  // ---- Springy travel: glide travel toward the interaction target ----
-  // While the user is actively dragging we bypass the easing entirely so the
-  // fan tracks the cursor 1:1 with zero lag (跟手). Between interactions the
-  // travel is a damped spring chasing `target`: it accelerates toward the new
-  // target, may overshoot once, then settles — giving scroll / release nudges
-  // a physical curve, inertia and a gentle stop. Drag velocity is tracked so a
-  // fast flick can be handed off to the spring on release.
+  // Keep scroll and pointer movement in the same frame as the fan position.
   const draggingRef = useRef(false)
   const travelVelRef = useRef(0) // px/frame along the fan
   useEffect(() => {
-    if (reduced || !total) return
+    const section = sectionRef.current
+    if (reduced || !total || !section) return
     let raf = 0
-    const tick = () => {
-      // Recompute the target each frame: the page-scroll base (progress over
-      // the pinned track) plus any free offset the user has dragged. This is
-      // how scrolling the page carries the list forward while a drag rides on
-      // top. `reduced`/inactive fall through below.
-      scrollBaseRef.current = (reduced ? 0 : progressRef.current) * SCROLL_RANGE
-      targetRef.current = scrollBaseRef.current + dragOffsetRef.current
-      if (draggingRef.current) {
-        // Direct follow: no easing, no lag, position locked to the cursor.
-        travelRef.current = targetRef.current
-        setPos(travelRef.current)
-      } else {
-        const current = travelRef.current
-        const target = targetRef.current
-        // Critically-damped spring: accelerate toward the target, then clamp so
-        // it can never slide past and wobble back — the fan approaches in one
-        // smooth, horizontal pass instead of jello-ing either way.
-        travelVelRef.current =
-          travelVelRef.current * SPRING_DAMPING +
-          (target - current) * SPRING_STIFFNESS
-        let next = current + travelVelRef.current
-        let overshot = false
-        if ((target - current) * (next - target) > 0) {
-          next = target // clamp on first arrival — never pass the target
-          overshot = true
-        }
-        travelRef.current = next
-        // On arrival (clamped or essentially there), kill residual velocity so
-        // the fan stays put instead of bounding off the target repeatedly.
-        if (overshot || (Math.abs(target - next) < 0.001 && Math.abs(travelVelRef.current) < 0.001)) {
-          travelRef.current = target
-          travelVelRef.current = 0
-        }
-        setPos(travelRef.current)
+    let isInViewport = typeof IntersectionObserver === 'undefined'
+
+    const cancelTick = () => {
+      if (raf) {
+        cancelAnimationFrame(raf)
+        raf = 0
       }
-      // Hover lift: the hovered card (and neighbours) rise and fall with a smooth,
-// monotonic exponential — accelerating at first, then easing into place with
-// zero overshoot. No vertical jello; the lively inertia cue is the horizontal
-// tilt from velocity.
+    }
+
+    const scheduleTick = () => {
+      if (!isInViewport || document.hidden || raf) return
+      raf = requestAnimationFrame(tick)
+    }
+
+    const tick = () => {
+      raf = 0
+      if (!isInViewport || document.hidden) return
+      // Scroll and drag share the same position, with no trailing travel value.
+      scrollBaseRef.current = (reduced ? 0 : progressRef.current) * SCROLL_RANGE
+      const next = scrollBaseRef.current + dragOffsetRef.current
+      travelVelRef.current = next - travelRef.current
+      if (next !== travelRef.current) {
+        travelRef.current = next
+        setPos(next)
+      }
+      // Hover lift approaches its target without overshooting.
       {
         const targetAmt = hoveredRelRef.current !== null ? 1 : 0
         const a = hoverAmtRef.current
@@ -288,7 +299,7 @@ export function ProjectWebglGallery({
         } else {
           hoverAmtRef.current = a + (targetAmt - a) * HOVER_LIFT_RATE
         }
-        setHoverAmt(hoverAmtRef.current)
+        if (hoverAmtRef.current !== a) setHoverAmt(hoverAmtRef.current)
       }
       // Pull-out spring: chase 1 while a card is being pulled out, else 0.
       {
@@ -311,10 +322,9 @@ export function ProjectWebglGallery({
         } else {
           pullAmtRef.current = na
         }
-        setPullAmt(pullAmtRef.current)
+        if (pullAmtRef.current !== a) setPullAmt(pullAmtRef.current)
       }
-      // Inertia tilt: chase the velocity-derived target, clamped, with its own
-      // gentle spring. Velocity from the current glide (or the live drag).
+      // Inertia tilt follows the current scroll or drag velocity.
       {
         const vel = draggingRef.current ? dragVelRef.current : travelVelRef.current
         const target = Math.max(-TILT_MAX, Math.min(TILT_MAX, vel * TILT_FACTOR))
@@ -329,12 +339,32 @@ export function ProjectWebglGallery({
         } else {
           tiltRef.current = na
         }
-        setTilt(tiltRef.current)
+        if (tiltRef.current !== a) setTilt(tiltRef.current)
       }
-      raf = requestAnimationFrame(tick)
+      scheduleTick()
     }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
+
+    const observer = typeof IntersectionObserver === 'undefined'
+      ? null
+      : new IntersectionObserver(([entry]) => {
+          isInViewport = Boolean(entry?.isIntersecting)
+          if (isInViewport) scheduleTick()
+          else cancelTick()
+        }, { threshold: 0 })
+    observer?.observe(section)
+
+    const onVisibilityChange = () => {
+      if (document.hidden) cancelTick()
+      else scheduleTick()
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    scheduleTick()
+
+    return () => {
+      observer?.disconnect()
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+      cancelTick()
+    }
   }, [reduced, total])
 
   // 1:1 drag with a locked pivot. Page scroll (the sticky track) drives the
@@ -430,7 +460,12 @@ export function ProjectWebglGallery({
     // only open when the pointer barely moved from where it landed.
     if (!wasDrag && isTapLike(event, drag)) {
       const hit = findCardAtPoint(endX, endY)
-      if (hit) openProject(hit.item)
+      if (hit) {
+        const trigger = railRef.current?.querySelector<HTMLButtonElement>(
+          `button[data-rel="${hit.rel}"]`
+        )
+        openProject(hit.item, trigger ?? undefined)
+      }
     }
   }
 
@@ -527,6 +562,8 @@ export function ProjectWebglGallery({
     setHoveredRel(rel)
   }
   const [selected, setSelected] = useState<ProjectWebglItem | null>(null)
+  const modalRef = useRef<HTMLDivElement>(null)
+  const lastFocusedRef = useRef<HTMLElement | null>(null)
   // The slot being "pulled out" toward the viewer. While set we keep its card
   // growing and rising out of the fan for a beat, then swap in the modal.
   const [pullingRel, setPullingRel] = useState<number | null>(null)
@@ -536,8 +573,17 @@ export function ProjectWebglGallery({
     setPullingRel(rel)
   }
 
-  const openProject = (item: ProjectWebglItem) => {
+  const openProject = (item: ProjectWebglItem, trigger?: HTMLElement) => {
     if (dragRef.current?.moved) return
+    if (trigger) {
+      lastFocusedRef.current = trigger
+    } else if (
+      !lastFocusedRef.current &&
+      document.activeElement instanceof HTMLElement &&
+      document.activeElement !== document.body
+    ) {
+      lastFocusedRef.current = document.activeElement
+    }
     hoveredRelRef.current = null
     setHoveredRel(null)
     pullAmtVelRef.current = 0
@@ -558,12 +604,51 @@ export function ProjectWebglGallery({
   useEffect(() => () => closeProject(), [closeProject])
 
   useEffect(() => {
+    if (!selected) {
+      const lastFocused = lastFocusedRef.current
+      if (lastFocused?.isConnected) lastFocused.focus()
+      lastFocusedRef.current = null
+      return
+    }
+
+    const focusModal = () => modalRef.current?.focus()
+    const frame = requestAnimationFrame(focusModal)
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') closeProject()
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        closeProject()
+        return
+      }
+      if (event.key !== 'Tab') return
+
+      const dialog = modalRef.current
+      if (!dialog) return
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      )
+      if (!focusable.length) {
+        event.preventDefault()
+        dialog.focus()
+        return
+      }
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
     }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [closeProject])
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [closeProject, selected])
 
   if (!total) return null
 
@@ -740,29 +825,21 @@ export function ProjectWebglGallery({
                     const dy = e.clientY - ts.y
                     if (dx * dx + dy * dy > TOUCH_TAP_RADIUS * TOUCH_TAP_RADIUS) return
                   }
-                  openProject(item)
+                  openProject(item, e.currentTarget)
                 }}
               >
                 <span className="mark-lab-webgl__card-face">
                   {item.preview ? (
-                    <picture>
-                      {item.preview.avifSrc ? (
-                        <source
-                          srcSet={item.preview.avifSrc}
-                          type="image/avif"
-                        />
-                      ) : null}
-                      <img
-                        src={item.preview.src}
-                        alt={item.preview.alt}
-                        draggable={false}
-                        className={
-                          item.preview.objectFit === 'contain'
-                            ? 'object-contain'
-                            : 'object-cover'
-                        }
-                      />
-                    </picture>
+                    <ProjectPreviewPicture
+                      preview={item.preview}
+                      sizes="(max-width: 640px) 82vw, (max-width: 1024px) 40vw, 550px"
+                      loading="lazy"
+                      fitClass={
+                        item.preview.objectFit === 'contain'
+                          ? 'object-contain'
+                          : 'object-cover'
+                      }
+                    />
                   ) : (
                     <span
                       aria-hidden="true"
@@ -792,6 +869,7 @@ export function ProjectWebglGallery({
           />
           <div
             className="mark-lab-webgl__modal-dialog"
+            ref={modalRef}
             role="dialog"
             aria-modal="true"
             aria-label={selected.title}
@@ -801,15 +879,11 @@ export function ProjectWebglGallery({
           >
             {selected.preview ? (
               <div className="mark-lab-webgl__modal-preview">
-                <picture>
-                  {selected.preview.avifSrc ? (
-                    <source srcSet={selected.preview.avifSrc} />
-                  ) : null}
-                  <img
-                    src={selected.preview.src}
-                    alt={selected.preview.alt}
-                  />
-                </picture>
+                <ProjectPreviewPicture
+                  preview={selected.preview}
+                  sizes="(max-width: 640px) 92vw, min(72rem, 90vw)"
+                  loading="eager"
+                />
               </div>
             ) : null}
 

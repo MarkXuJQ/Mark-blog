@@ -7,7 +7,11 @@ import {
   countWords,
   normalizeCountableText,
 } from '../src/lib/content/readingTime.js'
-import { collectMarkdownFiles, collectPostMarkdownFiles } from './post-files.js'
+import {
+  collectMarkdownFiles,
+  collectPostMarkdownFiles,
+  resolvePostSlug,
+} from './post-files.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -36,11 +40,6 @@ function normalizeOptionalStringArray(value) {
         .map((item) => (typeof item === 'string' ? item.trim() : ''))
         .filter((item) => item.length > 0)
     : undefined
-}
-
-function resolvePostSlug(filePath, data) {
-  const fileSlug = path.basename(filePath, '.md')
-  return normalizeOptionalString(data.slug) || fileSlug
 }
 
 function buildSummary(content) {
@@ -83,6 +82,7 @@ function buildPostSummaries() {
       summary: String(data.summary || ''),
       wordCount: countWords(content),
       image: normalizeOptionalString(data.image),
+      ...(data.imageOverlay === true ? { imageOverlay: true } : {}),
       aliases: normalizeOptionalStringArray(data.aliases),
       tags: normalizeOptionalStringArray(data.tags),
       category: normalizeOptionalString(data.category),
@@ -117,6 +117,7 @@ function buildPostSummaries() {
               normalizeOptionalString(data.summary) || buildSummary(content),
             wordCount: countWords(content),
             image: normalizeOptionalString(data.image),
+            ...(data.imageOverlay === true ? { imageOverlay: true } : {}),
             movieSubjectId: String(data.movieSubjectId),
             tags: normalizeOptionalStringArray(data.tags),
             category: 'Experience',

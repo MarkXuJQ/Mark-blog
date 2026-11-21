@@ -1,3 +1,5 @@
+import { createResponseCache } from '../server/responseCache.js'
+import { createJsonResponder } from './http.js'
 import {
   fetchGithubStats,
   getGithubConfig,
@@ -5,59 +7,17 @@ import {
   GithubHttpError,
 } from '../server/github-stats.js'
 
-const responseCache = new Map()
-const inflightRequests = new Map()
 const LIVE_CACHE_TTL_MS = 1000 * 60 * 15
 const FALLBACK_CACHE_TTL_MS = 1000 * 60 * 60 * 6
+const responseCache = createResponseCache()
 
-function json(res, status, body) {
-  res.statusCode = status
-  res.setHeader('Content-Type', 'application/json; charset=utf-8')
-  res.setHeader('Cache-Control', 'public, max-age=300, must-revalidate')
-  res.setHeader(
-    'CDN-Cache-Control',
-    'public, s-maxage=1800, stale-while-revalidate=1800'
-  )
-  res.setHeader(
-    'Vercel-CDN-Cache-Control',
-    'public, s-maxage=1800, stale-while-revalidate=1800'
-  )
-  res.end(JSON.stringify(body))
-}
-
-function getCachedValue(key) {
-  const entry = responseCache.get(key)
-  if (!entry) return { hit: false }
-
-  if (entry.expiresAt > Date.now()) {
-    return { hit: true, value: entry.value }
-  }
-
-  responseCache.delete(key)
-  return { hit: false }
-}
-
-async function getOrCreateCachedValue({ key, ttlMs, fetcher }) {
-  const cached = getCachedValue(key)
-  if (cached.hit) return cached.value
-
-  const inflight = inflightRequests.get(key)
-  if (inflight) return inflight
-
-  const promise = fetcher()
-    .then((value) => {
-      responseCache.set(key, { value, expiresAt: Date.now() + ttlMs })
-      inflightRequests.delete(key)
-      return value
-    })
-    .catch((error) => {
-      inflightRequests.delete(key)
-      throw error
-    })
-
-  inflightRequests.set(key, promise)
-  return promise
-}
+const cdnCacheControl =
+  'public, s-maxage=1800, stale-while-revalidate=1800'
+const json = createJsonResponder({
+  cacheControl: 'public, max-age=300, must-revalidate',
+  cdnCacheControl,
+  vercelCacheControl: cdnCacheControl,
+})
 
 async function resolveStatsPayload() {
   const config = getGithubConfig()
@@ -65,15 +25,15 @@ async function resolveStatsPayload() {
   // Without a token we return demo data — a real user should set GITHUB_TOKEN.
   if (!config.token) {
     const cacheKey = `${config.username}:demo`
-    return getOrCreateCachedValue({
-      cacheKey,
+    return responseCache.getOrCreate({
+      key: cacheKey,
       ttlMs: FALLBACK_CACHE_TTL_MS,
       fetcher: () => fetchGithubStats(config),
     })
   }
 
-  return getOrCreateCachedValue({
-    cacheKey: `${config.username}:live`,
+  return responseCache.getOrCreate({
+    key: `${config.username}:live`,
     ttlMs: LIVE_CACHE_TTL_MS,
     fetcher: () => fetchGithubStats(config),
   })

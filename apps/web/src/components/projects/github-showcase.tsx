@@ -387,7 +387,7 @@ export function GithubShowcase({
                   </div>
 
                   <div className="gh-repos">
-                    <h3>{strings.topReposLabel}</h3>
+                    <h2>{strings.topReposLabel}</h2>
                     {visibleRepos.length ? (
                       <ul className="gh-repos__grid">
                         {visibleRepos.map((repo) => (

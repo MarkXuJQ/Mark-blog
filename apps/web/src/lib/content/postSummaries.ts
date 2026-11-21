@@ -1,13 +1,8 @@
 import rawPostSummaries from '../../data/post-summaries.json'
 import type { BlogPostSummary } from '@/lib/content/posts'
-
-type PostLanguage = 'zh' | 'en'
+import { resolveLanguage, type PostLanguage } from './language'
 type LocalizedBlogPostSummary = BlogPostSummary & {
   language: PostLanguage
-}
-
-function resolveLanguage(language?: string): PostLanguage {
-  return language?.toLowerCase().startsWith('zh') ? 'zh' : 'en'
 }
 
 type PostSummaryCache = Record<PostLanguage, BlogPostSummary[] | null>
