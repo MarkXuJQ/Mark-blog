@@ -102,6 +102,7 @@ const RESPONSIVE_IMAGES = [
     formats: ['avif', 'webp'],
     avifQuality: 52,
     webpQuality: 78,
+    excludedVariants: [{ width: 96, format: 'avif' }],
   },
   ...collectProjectPreviewImages(),
   {
@@ -198,6 +199,14 @@ async function generateResponsiveImages() {
 
     for (const width of widths) {
       for (const format of image.formats) {
+        if (
+          image.excludedVariants?.some(
+            (variant) => variant.width === width && variant.format === format
+          )
+        ) {
+          continue
+        }
+
         const targetPath = outputPath(
           image.directory,
           image.outputBase,
