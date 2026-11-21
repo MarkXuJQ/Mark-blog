@@ -23,7 +23,8 @@
           },
           "preview": {
             "src": "/images/mark-blog-preview.png",
-            "avifSrc": "/images/mark-blog-preview.avif"
+            "avifSrc": "/images/mark-blog-preview.avif",
+            "avifSrcSet": "/images/mark-blog-preview-480.avif 480w, /images/mark-blog-preview-768.avif 768w, /images/mark-blog-preview-1024.avif 1024w, /images/mark-blog-preview.avif 1440w"
           },
           "links": [
             {
@@ -49,7 +50,8 @@
           },
           "preview": {
             "src": "/images/hello-markxu-preview.png",
-            "avifSrc": "/images/hello-markxu-preview.avif"
+            "avifSrc": "/images/hello-markxu-preview.avif",
+            "avifSrcSet": "/images/hello-markxu-preview-480.avif 480w, /images/hello-markxu-preview-768.avif 768w, /images/hello-markxu-preview-1024.avif 1024w, /images/hello-markxu-preview.avif 1280w"
           },
           "links": [
             {
@@ -80,7 +82,8 @@
           },
           "preview": {
             "src": "/images/traveltracker-preview.png",
-            "avifSrc": "/images/traveltracker-preview.avif"
+            "avifSrc": "/images/traveltracker-preview.avif",
+            "avifSrcSet": "/images/traveltracker-preview-480.avif 480w, /images/traveltracker-preview-768.avif 768w, /images/traveltracker-preview-1024.avif 1024w, /images/traveltracker-preview.avif 1440w"
           },
           "links": [
             {
@@ -111,7 +114,8 @@
           },
           "preview": {
             "src": "/images/fingerblock-preview.png",
-            "avifSrc": "/images/fingerblock-preview.avif"
+            "avifSrc": "/images/fingerblock-preview.avif",
+            "avifSrcSet": "/images/fingerblock-preview-480.avif 480w, /images/fingerblock-preview-768.avif 768w, /images/fingerblock-preview-1024.avif 1024w, /images/fingerblock-preview.avif 1280w"
           },
           "links": [
             {
@@ -144,6 +148,7 @@
           "preview": {
             "src": "/images/yearprogress-preview.png",
             "avifSrc": "/images/yearprogress-preview.avif",
+            "avifSrcSet": "/images/yearprogress-preview-480.avif 480w, /images/yearprogress-preview-768.avif 768w, /images/yearprogress-preview.avif 1024w",
             "objectFit": "contain"
           },
           "links": [

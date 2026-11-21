@@ -806,7 +806,7 @@ html:not(.dark) .mark-lab-webgl {
 .gh-card small {
   display: block;
   margin-top: 0.3rem;
-  color: var(--text-disabled);
+  color: var(--text-secondary);
   font-size: 0.68rem;
 }
 
@@ -815,7 +815,7 @@ html:not(.dark) .mark-lab-webgl {
                           the "热门仓库" subtitle */
 }
 
-.gh-repos h3 {
+.gh-repos h2 {
   margin: 0 0 0.7rem;
   font-size: 0.95rem;
 }

@@ -9,9 +9,14 @@ import { Seo } from '@/app/seo/Seo'
 import { GradientASCII } from '@/components/projects/gradient-ascii'
 import { GithubShowcase } from '@/components/projects/github-showcase'
 import { ProjectWebglGallery } from '@/components/projects/project-webgl-gallery'
+import type {
+  ProjectPreview,
+  ProjectWebglPreview,
+} from '@/components/projects/project-webgl-gallery'
 import { TextRevealBlock } from '@/components/projects/text-reveal-block'
 import { useGithubStats } from '@/hooks/projects/useGithubStats'
 import { useIsDarkMode } from '@/hooks/useIsDarkMode'
+import '@/assets/styles/lab.css'
 
 type ProjectLocale = { zh: string; en: string }
 type ProjectLinkType = 'game' | 'github' | 'computer'
@@ -27,11 +32,7 @@ type RawProject = {
   title: ProjectLocale
   description: ProjectLocale
   alt: ProjectLocale
-  preview?: {
-    src: string
-    avifSrc?: string
-    objectFit?: 'cover' | 'contain'
-  }
+  preview?: ProjectPreview
   links: RawProjectLink[]
 }
 type RawProjectSection = {
@@ -49,7 +50,7 @@ type ProjectCardData = {
   id: string
   title: string
   description: string
-  preview?: RawProject['preview'] & { alt: string }
+  preview?: ProjectWebglPreview
   links: ProjectLink[]
 }
 
