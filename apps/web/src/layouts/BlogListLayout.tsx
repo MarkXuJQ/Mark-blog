@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LeftSidebarWidget, StatsWidget } from '@/components/blog/BlogWidgets'
 import { RecentCommentsWidget } from '@/components/blog/RecentCommentsWidget'
@@ -7,42 +7,20 @@ import { MobileBlogDrawer } from '@/components/blog/MobileBlogDrawer'
 import { ReaderModeToggle } from '@/components/blog/ReaderModeToggle'
 import { getAllPostSummaries } from '@/lib/content/postSummaries'
 import { cn } from '@/lib/classNames'
+import { useReaderMode } from '@/hooks/useReaderMode'
 
 export type BlogListOutletContext = {
   simpleMode: boolean
 }
 
-const READER_MODE_STORAGE_KEY = 'blog-reader-mode'
-
 export function BlogListLayout() {
   const { i18n } = useTranslation()
   const posts = getAllPostSummaries(i18n.language)
-  const [isMounted, setIsMounted] = useState(false)
-  const [simpleMode, setSimpleMode] = useState(() => {
-    if (typeof window === 'undefined') return false
-    return window.localStorage.getItem(READER_MODE_STORAGE_KEY) === 'simple'
-  })
+  const { isMounted, simpleMode, setSimpleMode } = useReaderMode()
   const outletContext = useMemo(
     () => ({ simpleMode }) satisfies BlogListOutletContext,
     [simpleMode]
   )
-
-  useEffect(() => {
-    if (window.__PRERENDER__) return
-    setIsMounted(true)
-  }, [])
-
-  useEffect(() => {
-    document.documentElement.toggleAttribute('data-simple-reading', simpleMode)
-    window.localStorage.setItem(
-      READER_MODE_STORAGE_KEY,
-      simpleMode ? 'simple' : 'rich'
-    )
-
-    return () => {
-      document.documentElement.removeAttribute('data-simple-reading')
-    }
-  }, [simpleMode])
 
   return (
     <div className={styles.container}>

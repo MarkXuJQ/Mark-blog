@@ -6,6 +6,7 @@ import { BlogTocCard, BlogTocDrawer } from '@/components/blog/BlogTocCard'
 import { LeftSidebarWidget } from '@/components/blog/BlogWidgets'
 import { ReaderModeToggle } from '@/components/blog/ReaderModeToggle'
 import { useArticleToc } from '@/hooks/article/useArticleToc'
+import { useReaderMode } from '@/hooks/useReaderMode'
 import {
   getAllPostSummaries,
   getPostSummaryMatch,
@@ -16,18 +17,12 @@ export type BlogPostOutletContext = {
   simpleMode: boolean
 }
 
-const READER_MODE_STORAGE_KEY = 'blog-reader-mode'
-
 export function BlogPostLayout() {
   const { t, i18n } = useTranslation()
   const { pathname, hash } = useLocation()
   const { slug } = useParams()
   const [isMobileTocOpen, setIsMobileTocOpen] = useState(false)
-  const [isMounted, setIsMounted] = useState(false)
-  const [simpleMode, setSimpleMode] = useState(() => {
-    if (typeof window === 'undefined') return false
-    return window.localStorage.getItem(READER_MODE_STORAGE_KEY) === 'simple'
-  })
+  const { isMounted, simpleMode, setSimpleMode } = useReaderMode()
 
   const mainRef = useRef<HTMLElement | null>(null)
   const { toc, activeId } = useArticleToc(
@@ -55,11 +50,6 @@ export function BlogPostLayout() {
   }, [pathname, hash])
 
   useEffect(() => {
-    if (window.__PRERENDER__) return
-    setIsMounted(true)
-  }, [])
-
-  useEffect(() => {
     if (!isMobileTocOpen) return
 
     window.dispatchEvent(
@@ -71,18 +61,6 @@ export function BlogPostLayout() {
       )
     }
   }, [isMobileTocOpen])
-
-  useEffect(() => {
-    document.documentElement.toggleAttribute('data-simple-reading', simpleMode)
-    window.localStorage.setItem(
-      READER_MODE_STORAGE_KEY,
-      simpleMode ? 'simple' : 'rich'
-    )
-
-    return () => {
-      document.documentElement.removeAttribute('data-simple-reading')
-    }
-  }, [simpleMode])
 
   return (
     <div className={styles.container}>
