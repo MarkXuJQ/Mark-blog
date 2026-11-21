@@ -5,6 +5,7 @@ import { TextRotate } from '@/components/home/text-rotate'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/classNames'
 import { getImageUrl } from '@/lib/image'
+import { HERO_TITLE_REVEAL_TRANSITION } from '@/lib/transitions/sharedTransitions'
 import { HomeHeroAvatarScene } from './HomeHeroAvatarScene'
 import { HomeHeroName } from './HomeHeroName'
 
@@ -35,37 +36,15 @@ interface ResponsiveBackgroundSources {
 type ThemeVariant = 'day' | 'night'
 
 const DAY_SOURCES: ResponsiveBackgroundSources = {
-  avif: [
-    `${getImageUrl('/images/day-640.avif')} 640w`,
-    `${getImageUrl('/images/day-960.avif')} 960w`,
-    `${getImageUrl('/images/day-1280.avif')} 1280w`,
-    `${getImageUrl('/images/day-1600.avif')} 1600w`,
-    `${getImageUrl('/images/day-1633.avif')} 1633w`,
-  ].join(', '),
-  webp: [
-    `${getImageUrl('/images/day-640.webp')} 640w`,
-    `${getImageUrl('/images/day-960.webp')} 960w`,
-    `${getImageUrl('/images/day-1280.webp')} 1280w`,
-    `${getImageUrl('/images/day-1600.webp')} 1600w`,
-    `${getImageUrl('/images/day-1633.webp')} 1633w`,
-  ].join(', '),
-  fallback: '/images/day.png',
+  avif: getImageUrl('/images/day-blur-1024.avif'),
+  webp: getImageUrl('/images/day-blur-1024.webp'),
+  fallback: '/images/day-blur-1024.webp',
 }
 
 const NIGHT_SOURCES: ResponsiveBackgroundSources = {
-  avif: [
-    `${getImageUrl('/images/night-640.avif')} 640w`,
-    `${getImageUrl('/images/night-960.avif')} 960w`,
-    `${getImageUrl('/images/night-1280.avif')} 1280w`,
-    `${getImageUrl('/images/night-1392.avif')} 1392w`,
-  ].join(', '),
-  webp: [
-    `${getImageUrl('/images/night-640.webp')} 640w`,
-    `${getImageUrl('/images/night-960.webp')} 960w`,
-    `${getImageUrl('/images/night-1280.webp')} 1280w`,
-    `${getImageUrl('/images/night-1392.webp')} 1392w`,
-  ].join(', '),
-  fallback: '/images/night.png',
+  avif: getImageUrl('/images/night-blur-1024.avif'),
+  webp: getImageUrl('/images/night-blur-1024.webp'),
+  fallback: '/images/night-blur-1024.webp',
 }
 
 const HOME_BACKGROUND_SOURCES: Record<
@@ -100,16 +79,10 @@ function HomeHeroBackground({ isDarkMode }: { isDarkMode: boolean }) {
   )
 }
 
-const HERO_TITLE_REVEAL_TRANSITION = {
-  type: 'spring',
-  stiffness: 200,
-  damping: 21,
-} as const
-
 const HERO_COPY_REVEAL_TRANSITION = {
   type: 'spring',
-  stiffness: 210,
-  damping: 26,
+  stiffness: 175,
+  damping: 24,
 } as const
 
 export function HomeHeroSection({
@@ -276,8 +249,8 @@ export function HomeHeroSection({
                           exit={{ y: '-105%', opacity: 0 }}
                           transition={{
                             type: 'spring',
-                            damping: 24,
-                            stiffness: 360,
+                            damping: 22,
+                            stiffness: 300,
                             mass: 0.65,
                           }}
                           layoutTransition={{
@@ -349,7 +322,7 @@ const styles = {
   heroSection:
     'relative h-[100vh] w-full overflow-hidden bg-[var(--page-background)] transition-colors duration-300',
   heroMedia: 'absolute inset-0',
-  heroImage: 'h-full w-full object-cover blur-[10px] scale-[1.08]',
+  heroImage: 'h-full w-full object-cover scale-[1.08]',
   heroImageDay: 'brightness-[1.02] saturate-[1.01]',
   heroImageNight: 'brightness-[0.84] saturate-[1.04]',
   heroFrame: 'pointer-events-none absolute inset-0 ring-1 ring-inset',
