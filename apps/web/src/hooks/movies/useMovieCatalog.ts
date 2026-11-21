@@ -7,6 +7,7 @@ import {
   calculateMovieColumns,
   LIST_ITEMS_PER_PAGE,
   ROWS_PER_PAGE,
+  SHELF_ITEMS_PER_PAGE,
   toDateKey,
 } from '@/lib/movies/movieUtils'
 import type {
@@ -16,10 +17,13 @@ import type {
 } from '@/lib/movies/movieTypes'
 
 const movieOverrides = movieOverridesRaw as Record<string, MovieOverride>
+const BETA_SHELF_STORAGE_KEY = 'movie-shelf-beta'
 
 export function useMovieCatalog() {
   const [keyword, setKeyword] = useState('')
   const [cardLayout, setCardLayout] = useState<CardLayout>('grid')
+  const [betaEnabled, setBetaEnabled] = useState(false)
+  const [betaHydrated, setBetaHydrated] = useState(false)
   const [movieFilter, setMovieFilter] = useState<MovieFilter>('all')
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null)
@@ -31,6 +35,24 @@ export function useMovieCatalog() {
     cardLayout: CardLayout
     currentPage: number
   } | null>(null)
+
+  const activeLayout: CardLayout = betaEnabled ? 'shelf' : cardLayout
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.__PRERENDER__) return
+    setBetaEnabled(window.localStorage.getItem(BETA_SHELF_STORAGE_KEY) === 'true')
+    setBetaHydrated(true)
+  }, [])
+
+  useEffect(() => {
+    if (!betaHydrated || typeof window === 'undefined' || window.__PRERENDER__) {
+      return
+    }
+    window.localStorage.setItem(
+      BETA_SHELF_STORAGE_KEY,
+      betaEnabled ? 'true' : 'false'
+    )
+  }, [betaEnabled, betaHydrated])
 
   const movieItems = useMemo(
     () => buildCsvMovies(movieCsvRaw, movieOverrides),
@@ -64,7 +86,11 @@ export function useMovieCatalog() {
   }, [keyword, movieFilter, movieItems, selectedDateKey, selectedRating])
 
   const itemsPerPage =
-    cardLayout === 'list' ? LIST_ITEMS_PER_PAGE : columns * ROWS_PER_PAGE
+    activeLayout === 'shelf'
+      ? SHELF_ITEMS_PER_PAGE
+      : activeLayout === 'list'
+        ? LIST_ITEMS_PER_PAGE
+        : columns * ROWS_PER_PAGE
   const totalPages = Math.max(
     1,
     Math.ceil(filteredMovies.length / itemsPerPage)
@@ -127,6 +153,9 @@ export function useMovieCatalog() {
     setKeyword,
     cardLayout,
     setCardLayout,
+    activeLayout,
+    betaEnabled,
+    setBetaEnabled,
     movieFilter,
     setMovieFilter,
     selectedRating,

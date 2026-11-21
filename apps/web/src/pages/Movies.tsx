@@ -103,13 +103,18 @@ export function Movies() {
                 catalog.setCardLayout(layout)
                 catalog.setCurrentPage(1)
               }}
+              betaEnabled={catalog.betaEnabled}
+              onBetaEnabledChange={(enabled) => {
+                catalog.setBetaEnabled(enabled)
+                catalog.setCurrentPage(1)
+              }}
             />
             <MovieResults
               movieCount={catalog.movieItems.length}
               filteredCount={catalog.filteredMovies.length}
               pageMovies={catalog.pageMovies}
               tmdbMap={tmdbMap}
-              cardLayout={catalog.cardLayout}
+              cardLayout={catalog.activeLayout}
               columns={catalog.columns}
               locale={locale}
               currentPage={catalog.currentPage}

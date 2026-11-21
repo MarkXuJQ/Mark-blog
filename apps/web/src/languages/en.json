@@ -197,6 +197,25 @@
       "list": "List",
       "grid": "Grid"
     },
+  "beta": {
+    "label": "Shelf Beta",
+    "description": "Switch to the 3D shelf, showing only movies with a poster"
+  },
+  "shelf": {
+    "title": "Watch Shelf",
+      "hint": "Hover a spine, open a volume for details, or browse with arrow keys.",
+      "groups": {
+        "five": "Five-star favourites",
+        "four": "Four-star picks",
+        "three": "Three-star watches",
+        "other": "Other ratings",
+        "unrated": "Unrated"
+      },
+    "close": "Close details",
+    "openReview": "Read review",
+    "loading": "Shelving the library — {{count}} posters still loading…",
+    "noPosters": "No TMDB posters to show on this page."
+  },
     "profile": {
       "label": "Profiles",
       "douban": "Douban",

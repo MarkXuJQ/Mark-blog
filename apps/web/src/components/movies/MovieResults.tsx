@@ -8,6 +8,7 @@ import type {
   TmdbEnrichedMovie,
 } from '@/lib/movies/movieTypes'
 import { MovieCard } from './MovieCard'
+import { MovieShelf } from './MovieShelf'
 
 interface MovieResultsProps {
   movieCount: number
@@ -47,6 +48,24 @@ export function MovieResults({
       <section className="rounded-2xl border border-slate-200/70 bg-white/70 p-8 text-center text-sm text-slate-600 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] dark:border-0 dark:bg-slate-900/70 dark:text-slate-400 dark:shadow-none">
         <MovieNoResultsState />
       </section>
+    )
+  }
+
+  if (cardLayout === 'shelf') {
+    return (
+      <>
+        <MovieShelf
+          movies={pageMovies}
+          tmdbMap={tmdbMap}
+          locale={locale}
+        />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+          contentRef={listRef}
+        />
+      </>
     )
   }
 

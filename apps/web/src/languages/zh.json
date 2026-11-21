@@ -193,10 +193,29 @@
       "ratingBreakdown": "打分分布"
     },
     "layout": {
-      "label": "布局",
-      "list": "列表",
-      "grid": "网格"
+    "label": "布局",
+    "list": "列表",
+    "grid": "网格"
+  },
+  "beta": {
+    "label": "书架 Beta",
+    "description": "开启后展示 3D 书架，只收录已获取到海报的影片"
+  },
+  "shelf": {
+    "title": "观影书架",
+    "hint": "把光标移到书上，点开可查看详情；方向键也可浏览。",
+    "groups": {
+      "five": "五星珍藏",
+      "four": "四星喜爱",
+      "three": "三星观影",
+      "other": "其他评分",
+      "unrated": "未评分"
     },
+    "close": "关闭详情",
+    "openReview": "阅读影评",
+    "loading": "正在整理书架，还有 {{count}} 部影片的海报待获取…",
+    "noPosters": "当前页没有可展示的 TMDB 海报。"
+  },
     "profile": {
       "label": "主页",
       "douban": "豆瓣",
