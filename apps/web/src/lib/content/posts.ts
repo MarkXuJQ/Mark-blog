@@ -1,4 +1,5 @@
 import type { MarkdownPost } from './markdown'
+import { resolveLanguage, type PostLanguage } from './language'
 import { getAllMovieReviewBlogPosts } from './movieReviews'
 import { getAllPostSummaries } from './postSummaries'
 
@@ -23,7 +24,6 @@ export interface BlogPost extends BlogPostSummary {
   content: string
 }
 
-type PostLanguage = 'zh' | 'en'
 type PostFolder = 'chinese' | 'english'
 
 const LANGUAGE_TO_FOLDER: Record<PostLanguage, PostFolder> = {
@@ -34,10 +34,6 @@ const LANGUAGE_TO_FOLDER: Record<PostLanguage, PostFolder> = {
 const FOLDER_TO_LANGUAGE: Record<PostFolder, PostLanguage> = {
   chinese: 'zh',
   english: 'en',
-}
-
-function resolveLanguage(language?: string): PostLanguage {
-  return language?.toLowerCase().startsWith('zh') ? 'zh' : 'en'
 }
 
 function resolveFolderFromPath(path: string): PostFolder | null {
