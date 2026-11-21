@@ -12,7 +12,7 @@ import {
   type Ref,
   useRef,
 } from 'react'
-import { usePrefersReducedMotion } from '@/components/projects/text-reveal-block-utils/use-prefers-reduced-motion'
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import {
   observeWindowResize,
   waitForScrollerReady,
@@ -117,7 +117,15 @@ function setupLineReveal(container: HTMLElement, blockColor: string): LineSetup 
     : [container]
 
   for (const element of elements) {
-    const split = SplitText.create(element, { type: 'lines', linesClass: 'block-line++', lineThreshold: 0.1 })
+    const split = SplitText.create(element, {
+      type: 'lines',
+      linesClass: 'block-line++',
+      lineThreshold: 0.1,
+      // The heading remains readable as normal text while the animation is
+      // mounted. SplitText's automatic aria-label on the source span is not a
+      // valid ARIA pattern for this non-semantic wrapper.
+      aria: 'none',
+    })
     splits.push(split)
     for (const line of split.lines) {
       const parent = line.parentNode
@@ -224,6 +232,10 @@ export function TextRevealBlock({
   const resolvedChild = children ?? (text ? createElement(Component, { className }, text) : null)
 
   useGSAP(() => {
+    // The prerenderer must emit the same DOM that React hydrates. SplitText
+    // inserts line wrappers and inline styles, so mounting it during
+    // prerender would make the server HTML differ from the first client tree.
+    if (typeof window !== 'undefined' && window.__PRERENDER__) return
     const container = containerRef.current
     if (!container) return
     let disposed = false
