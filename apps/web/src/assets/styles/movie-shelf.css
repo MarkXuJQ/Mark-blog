@@ -1,0 +1,516 @@
+/* Movie shelf: a CSS-3D library view for the watch archive.
+   All colours come from the page tokens so it follows the site's light/dark theme. */
+
+.movie-shelf {
+  --ms-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ms-duration: 460ms;
+  position: relative;
+}
+
+.movie-shelf__group + .movie-shelf__group {
+  margin-top: 1.4rem;
+}
+
+.movie-shelf__group-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 0.25rem 0.35rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.movie-shelf__group-title {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.movie-shelf__group-count {
+  font-size: 0.7rem;
+  color: var(--text-disabled);
+  font-variant-numeric: tabular-nums;
+}
+
+.movie-shelf__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 1.65rem 1.05rem;
+  padding: 1.25rem 0.35rem 0.4rem;
+  list-style: none;
+  margin: 0;
+}
+
+.movie-shelf__slot {
+  position: relative;
+  min-width: 0;
+  container-type: inline-size;
+}
+
+.movie-shelf__slot[data-awake='true'] {
+  z-index: 1;
+}
+
+.movie-shelf__book {
+  /* One source for the geometry: cover width, page thickness and eye offset. */
+  --w: 100cqw;
+  --h: calc(var(--w) * 1.5);
+  --t: 0.085;
+  --depth: 7;
+  --eye: 3.4;
+  --k: calc(var(--t) / (var(--depth) + var(--t)));
+  --rx: 0deg;
+  --ry: 0deg;
+  position: relative;
+  display: block;
+  width: var(--w);
+  height: var(--h);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  perspective: calc(var(--w) * var(--depth));
+  perspective-origin: calc(var(--w) * var(--eye)) 50%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.movie-shelf__book:focus-visible {
+  outline: 2px solid var(--brand-400);
+  outline-offset: 5px;
+}
+
+.movie-shelf__shadow {
+  position: absolute;
+  inset: 2% 0 0 3%;
+  border-radius: 3px;
+  box-shadow: -7px 9px 16px -5px rgba(15, 23, 42, 0.55);
+  transition: transform var(--spring-ms) var(--spring), opacity 300ms ease;
+}
+
+.movie-shelf__book[data-pose='tilt'] .movie-shelf__shadow {
+  opacity: 0.85;
+  transform: translate(calc(var(--w) * -0.05), calc(var(--w) * 0.08)) scale(1.05);
+  transition: transform 250ms ease-out, opacity 300ms ease;
+}
+
+.movie-shelf__volume {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 50% calc(var(--w) * var(--t) / -2);
+  transition: transform var(--spring-ms) var(--spring);
+}
+
+.movie-shelf__volume[data-solid] {
+  transform-style: preserve-3d;
+}
+
+.movie-shelf__book[data-pose='tilt'] .movie-shelf__volume {
+  transform: translateZ(calc(var(--w) * var(--lift))) rotateX(var(--rx))
+    rotateY(var(--ry));
+  will-change: transform;
+  transition: transform 220ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+/* At rest the page block is drawn at the angle the perspective would show;
+   only the volume under the pointer gets real 3D faces. */
+.movie-shelf__volume:not([data-solid])::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: calc(var(--w) * (var(--eye) - 1) * var(--k));
+  height: 100%;
+  clip-path: polygon(
+    0 0,
+    100% calc(var(--h) / 2 * var(--k)),
+    100% calc(100% - var(--h) / 2 * var(--k)),
+    0 100%
+  );
+  background: repeating-linear-gradient(
+    90deg,
+    #f7f3eb 0 0.8px,
+    #d5cec1 0.8px 1.5px
+  );
+}
+
+.movie-shelf__cover {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 1px 2px 2px 1px;
+  background: linear-gradient(145deg, #24303f, #0f141b 70%);
+  box-shadow: inset 9px 0 14px -9px rgba(0, 0, 0, 0.85),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+    inset -1px 0 0 rgba(255, 255, 255, 0.16),
+    0 6px 14px rgba(15, 23, 42, 0.24);
+}
+
+/* The crease where the cover folds over the spine. */
+.movie-shelf__cover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  width: 11px;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.36),
+    rgba(0, 0, 0, 0.1) 46%,
+    transparent 100%
+  );
+}
+
+.movie-shelf__cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.movie-shelf__fallback {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.85rem 0.65rem;
+  background: radial-gradient(
+      circle at 50% 22%,
+      color-mix(in srgb, var(--brand-400) 40%, transparent),
+      transparent 60%
+    ),
+    linear-gradient(155deg, #243244, #0b1017 74%);
+  color: #f8fafc;
+  text-align: center;
+}
+
+.movie-shelf__fallback-label {
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 252, 0.5);
+}
+
+.movie-shelf__fallback-title {
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.movie-shelf__fallback-original {
+  font-size: 0.56rem;
+  line-height: 1.35;
+  color: rgba(248, 250, 252, 0.62);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.movie-shelf__fallback-rating {
+  margin-top: 0.2rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: #fbbf24;
+}
+
+/* Only the awake volume pays for real 3D faces. */
+.movie-shelf__edge,
+.movie-shelf__top,
+.movie-shelf__bottom {
+  position: absolute;
+  background: repeating-linear-gradient(
+    90deg,
+    #f7f3eb 0 0.8px,
+    #d5cec1 0.8px 1.5px
+  );
+}
+
+.movie-shelf__edge {
+  top: 0;
+  left: 100%;
+  width: calc(var(--w) * var(--t));
+  height: 100%;
+  transform-origin: 0;
+  transform: rotateY(90deg);
+}
+
+.movie-shelf__top,
+.movie-shelf__bottom {
+  left: 0;
+  width: 100%;
+  height: calc(var(--w) * var(--t));
+  background: repeating-linear-gradient(
+    #f7f3eb 0 0.8px,
+    #d5cec1 0.8px 1.5px
+  );
+}
+
+.movie-shelf__top {
+  bottom: 100%;
+  transform-origin: 50% 100%;
+  transform: rotateX(90deg);
+}
+
+.movie-shelf__bottom {
+  top: 100%;
+  transform-origin: 50% 0;
+  transform: rotateX(-90deg);
+}
+
+/* While the spread flies in, the shelf slot is empty. */
+.movie-shelf__book[data-open] .movie-shelf__volume,
+.movie-shelf__book[data-open] .movie-shelf__shadow {
+  opacity: 0;
+}
+
+.movie-shelf__cover-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    transparent 26%,
+    transparent 72%,
+    rgba(0, 0, 0, 0.22) 100%
+  );
+  opacity: 0.7;
+}
+
+.movie-shelf__cover-info {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  left: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: #fff;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 240ms ease, transform 300ms var(--ms-ease);
+}
+
+.movie-shelf__slot[data-awake='true'] .movie-shelf__cover-info {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.movie-shelf__cover-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.movie-shelf__cover-stars {
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  color: #fbbf24;
+}
+
+.movie-shelf__cover-badge {
+  align-self: flex-start;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.movie-shelf__caption {
+  display: block;
+  margin-top: 0.85rem;
+  padding: 0 0.1rem;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  color: var(--text-secondary);
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.movie-shelf__slot[data-awake='true'] .movie-shelf__caption {
+  color: var(--text-primary);
+}
+
+/* The open spread: two poster-shaped pages side by side. The cover leaf lies
+   over the right page when closed and hinges left about the centre spine. */
+.movie-shelf__dialog {
+  position: relative;
+  width: min(48rem, calc(100vw - 2rem), calc((100vh - 4rem) * 4 / 3));
+  aspect-ratio: 4 / 3;
+  perspective: 1100px;
+  perspective-origin: 50%;
+  color: var(--text-primary);
+}
+
+.movie-shelf__spread {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: 50% 0;
+  will-change: transform;
+}
+
+.movie-shelf__leaf {
+  position: absolute;
+  inset: 0 0 0 50%;
+  z-index: 2;
+  transform-origin: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transform: rotateY(-145deg);
+}
+
+.movie-shelf__leaf-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
+  backface-visibility: hidden;
+}
+
+.movie-shelf__leaf-front {
+  background: linear-gradient(150deg, #243244, #0b1017 74%);
+  box-shadow: inset 10px 0 16px -10px rgba(0, 0, 0, 0.85),
+    0 18px 32px rgba(15, 23, 42, 0.28);
+  transform: translateZ(1px);
+}
+
+.movie-shelf__leaf-inside {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 9% 8%;
+  text-align: center;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  transform: rotateY(180deg) translateZ(1px);
+}
+
+.movie-shelf__inside-art {
+  display: block;
+  width: min(84%, 16rem);
+  aspect-ratio: 2 / 3;
+  min-height: 0;
+  flex: 0 1 auto;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.5);
+}
+
+.movie-shelf__inside-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.movie-shelf__inside-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.movie-shelf__inside-note {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--text-disabled);
+}
+
+.movie-shelf__leaf-inside .movie-shelf__fallback-label {
+  color: var(--text-disabled);
+}
+
+.movie-shelf__panel-page {
+  position: absolute;
+  inset: 0 0 0 50%;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem 1.4rem;
+  overflow: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 0 3px 3px 0;
+  background: var(--surface-card);
+  box-shadow: inset 9px 0 15px -12px rgba(15, 23, 42, 0.4),
+    5px 8px 14px -10px rgba(15, 23, 42, 0.35);
+}
+
+.movie-shelf__ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 6;
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
+  opacity: 0;
+  filter: drop-shadow(0 3px 5px rgba(15, 23, 42, 0.35));
+  transition: transform 760ms var(--ms-ease), opacity 260ms ease;
+}
+
+.movie-shelf__ghost[data-visible='true'] {
+  opacity: 0.92;
+}
+
+@media (max-width: 640px) {
+  .movie-shelf__inside-art {
+    width: min(72%, 12rem);
+  }
+
+  .movie-shelf__panel-page {
+    gap: 0.5rem;
+    padding: 0.85rem;
+  }
+}
+
+@media (max-width: 540px) {
+  .movie-shelf__grid {
+    grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+    gap: 1.35rem 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .movie-shelf__shadow,
+  .movie-shelf__volume,
+  .movie-shelf__cover-info,
+  .movie-shelf__ghost {
+    transition: none !important;
+  }
+
+  .movie-shelf__book[data-pose='tilt'] .movie-shelf__volume {
+    transform: none !important;
+  }
+
+  .movie-shelf__ghost {
+    display: none;
+  }
+}

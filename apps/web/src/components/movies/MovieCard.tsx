@@ -5,7 +5,6 @@ import { RiDoubanLine } from 'react-icons/ri'
 import { cn } from '@/lib/classNames'
 import { formatMovieDate } from '@/lib/movies/movieUtils'
 import type {
-  CardLayout,
   CsvMovieItem,
   TmdbEnrichedMovie,
 } from '@/lib/movies/movieTypes'
@@ -13,37 +12,26 @@ import type {
 interface MovieCardProps {
   movie: CsvMovieItem
   tmdb: TmdbEnrichedMovie | null
-  cardLayout: CardLayout
   locale: string
 }
 
-export function MovieCard({ movie, tmdb, cardLayout, locale }: MovieCardProps) {
+export function MovieCard({ movie, tmdb, locale }: MovieCardProps) {
   const { t } = useTranslation()
-  const imageUrl = cardLayout === 'list' ? tmdb?.backdropUrl : tmdb?.posterUrl
+  const imageUrl = tmdb?.posterUrl
   const reviewPath = movie.reviewSlug
     ? `/movies/reviews/${encodeURIComponent(movie.reviewSlug)}`
     : ''
   const contentClassName = cn(
-    'relative flex h-full w-full overflow-hidden rounded-[1.4rem] border border-slate-200/70 p-3 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur transition-[transform,box-shadow,background-color] duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_28px_68px_-40px_rgba(15,23,42,0.4)] dark:border-0 dark:shadow-none',
+    'relative flex h-full w-full flex-col overflow-hidden rounded-[1.4rem] border border-slate-200/70 p-3 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] backdrop-blur transition-[transform,box-shadow,background-color] duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_28px_68px_-40px_rgba(15,23,42,0.4)] dark:border-0 dark:shadow-none',
     movie.reviewSlug
       ? 'bg-white/88 dark:bg-[#17191c]/96'
-      : 'bg-white/78 dark:bg-[#17191c]/92',
-    cardLayout === 'grid' ? 'flex-col' : 'flex-row gap-3'
+      : 'bg-white/78 dark:bg-[#17191c]/92'
   )
 
   const content = (
     <>
-      <MovieCardMedia
-        movie={movie}
-        imageUrl={imageUrl}
-        cardLayout={cardLayout}
-      />
-      <div
-        className={cn(
-          'flex min-w-0 flex-1 flex-col',
-          cardLayout === 'list' && 'pt-0.5'
-        )}
-      >
+      <MovieCardMedia movie={movie} imageUrl={imageUrl} />
+      <div className="flex min-w-0 flex-1 flex-col">
         <div className="mb-3 flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h2 className="line-clamp-2 text-left text-[1.05rem] leading-snug font-semibold text-slate-900 dark:text-slate-100">
@@ -88,11 +76,7 @@ export function MovieCard({ movie, tmdb, cardLayout, locale }: MovieCardProps) {
             <p
               className={cn(
                 'text-sm leading-6 text-slate-600 dark:text-slate-300',
-                movie.reviewSlug
-                  ? 'line-clamp-1'
-                  : cardLayout === 'list'
-                    ? 'line-clamp-3'
-                    : 'line-clamp-2'
+                movie.reviewSlug ? 'line-clamp-1' : 'line-clamp-2'
               )}
             >
               {(movie.reviewSummary || movie.note).trim()}
@@ -135,23 +119,14 @@ export function MovieCard({ movie, tmdb, cardLayout, locale }: MovieCardProps) {
 function MovieCardMedia({
   movie,
   imageUrl,
-  cardLayout,
 }: {
   movie: CsvMovieItem
   imageUrl?: string
-  cardLayout: CardLayout
 }) {
   const { t } = useTranslation()
 
   return (
-    <div
-      className={cn(
-        'relative shrink-0 overflow-hidden bg-slate-100 dark:bg-[#1f2328]',
-        cardLayout === 'grid'
-          ? 'mb-4 aspect-[2/3] w-full rounded-[1.05rem]'
-          : 'min-h-[5.5rem] w-[38%] max-w-[10rem] self-stretch rounded-[0.9rem] sm:w-[30%] sm:max-w-[12rem]'
-      )}
-    >
+    <div className="relative mb-4 aspect-[2/3] w-full shrink-0 overflow-hidden rounded-[1.05rem] bg-slate-100 dark:bg-[#1f2328]">
       {imageUrl ? (
         <img
           src={imageUrl}

@@ -194,9 +194,20 @@
     },
     "layout": {
       "label": "Layout",
-      "list": "List",
+      "shelf": "Shelf",
       "grid": "Grid"
     },
+  "shelf": {
+    "title": "Watch Shelf",
+      "hint": "Hover a spine, open a volume for details, or browse with arrow keys.",
+      "groups": {
+        "undated": "Undated"
+      },
+    "close": "Close details",
+    "openReview": "Read review",
+    "openEntry": "View entry",
+    "textCover": "Text cover"
+  },
     "profile": {
       "label": "Profiles",
       "douban": "Douban",

@@ -193,10 +193,21 @@
       "ratingBreakdown": "打分分布"
     },
     "layout": {
-      "label": "布局",
-      "list": "列表",
-      "grid": "网格"
+    "label": "布局",
+    "shelf": "书架",
+    "grid": "网格"
+  },
+  "shelf": {
+    "title": "观影书架",
+    "hint": "把光标移到书上，点开可查看详情；方向键也可浏览。",
+    "groups": {
+      "undated": "未记录日期"
     },
+    "close": "关闭详情",
+    "openReview": "阅读影评",
+    "openEntry": "影片条目",
+    "textCover": "文字封面"
+  },
     "profile": {
       "label": "主页",
       "douban": "豆瓣",

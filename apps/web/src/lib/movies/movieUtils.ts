@@ -1,5 +1,5 @@
 export const ROWS_PER_PAGE = 5
-export const LIST_ITEMS_PER_PAGE = 16
+export const SHELF_ITEMS_PER_PAGE = 24
 export const BASE_COLUMNS = 4
 export const MIN_CARD_WIDTH_MD = 190
 export const MIN_CARD_WIDTH_LG = 210
