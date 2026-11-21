@@ -22,6 +22,8 @@ import { LifeSinceClock } from './LifeSinceClock'
 const EMBED_MAP_URL =
   'https://travel.markxu.icu/?embed=1&bare=1&baseMap=liberty'
 const FULL_MAP_URL = 'https://travel.markxu.icu/'
+const MAP_PLACEHOLDER_AVIF = '/images/travel-map-placeholder.avif'
+const MAP_PLACEHOLDER_WEBP = '/images/travel-map-placeholder.webp'
 
 const SHELL_REVEAL_END = 0.28
 const WORLD_PANEL_REVEAL_START = 0.08
@@ -423,7 +425,13 @@ function TravelFootprintMapPanel({
   t: (key: string) => string
   style?: MotionStyle
 }) {
+  const [isMapLoaded, setIsMapLoaded] = useState(false)
   const [isMapInteractive, setIsMapInteractive] = useState(false)
+
+  const handleMapInteraction = () => {
+    setIsMapLoaded(true)
+    setIsMapInteractive(true)
+  }
 
   return (
     <motion.section
@@ -453,23 +461,43 @@ function TravelFootprintMapPanel({
               styles.mapActionButton,
               isMapInteractive && styles.mapActionButtonActive
             )}
-            onClick={() => setIsMapInteractive((current) => !current)}
+            onClick={() => {
+              if (!isMapLoaded) {
+                handleMapInteraction()
+                return
+              }
+              setIsMapInteractive((current) => !current)
+            }}
           >
             <MousePointer2 className={styles.mapActionIcon} />
             <span>{t('travel.interact')}</span>
           </button>
         </div>
-        <iframe
-          title={t('travel.mapTitle')}
-          src={EMBED_MAP_URL}
-          loading="lazy"
-          referrerPolicy="strict-origin-when-cross-origin"
-          className={cn(
-            styles.embedFrame,
-            !isMapInteractive && styles.embedFrameLocked
-          )}
-        />
-        {!isMapInteractive ? (
+        {isMapLoaded ? (
+          <iframe
+            title={t('travel.mapTitle')}
+            src={EMBED_MAP_URL}
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+            className={cn(
+              styles.embedFrame,
+              !isMapInteractive && styles.embedFrameLocked
+            )}
+          />
+        ) : (
+          <picture>
+            <source type="image/avif" srcSet={MAP_PLACEHOLDER_AVIF} />
+            <img
+              src={MAP_PLACEHOLDER_WEBP}
+              alt=""
+              aria-hidden="true"
+              className={styles.embedPlaceholder}
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+        )}
+        {isMapLoaded && !isMapInteractive ? (
           <div aria-hidden="true" className={styles.embedInteractionVeil} />
         ) : null}
       </div>
@@ -563,6 +591,8 @@ const styles = {
     'shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_36px_rgba(34,211,238,0.08)]',
   embedFrame:
     'relative block aspect-square w-full rounded-[20px] border-0 bg-[#10161a] shadow-[0_18px_40px_-28px_rgba(0,0,0,0.78)] lg:h-full lg:aspect-auto',
+  embedPlaceholder:
+    'relative block aspect-square w-full rounded-[20px] object-cover shadow-[0_18px_40px_-28px_rgba(0,0,0,0.78)] lg:h-full lg:aspect-auto',
   embedFrameLocked: 'pointer-events-none saturate-[0.92]',
   embedInteractionVeil:
     'absolute inset-2 rounded-[20px] bg-[radial-gradient(circle_at_50%_42%,rgba(255,255,255,0.035)_0%,rgba(255,255,255,0)_48%)]',
