@@ -70,7 +70,7 @@ function PaginationControls({
       transition={
         reduceMotion
           ? { duration: 0 }
-          : { type: 'spring', stiffness: 430, damping: 34, mass: 0.72 }
+          : { type: 'spring', stiffness: 355, damping: 31, mass: 0.72 }
       }
     >
       <button

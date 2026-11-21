@@ -8,6 +8,7 @@ import { FiSidebar } from 'react-icons/fi'
 import { RiLinksLine, RiSubwayFill } from 'react-icons/ri'
 import { cn } from '@/lib/classNames'
 import { getImageUrl } from '@/lib/image'
+import { TRAVELLINGS_URL } from '@/lib/links/socialLinks'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { FloatingControlsContext } from '@/app/providers/FloatingControlsContext'
 
@@ -17,7 +18,6 @@ interface MobileBlogDrawerProps {
 }
 
 const PORTAL_ROOT_ID = 'mobile-blog-drawer-root'
-const TRAVELLINGS_URL = 'https://www.travellings.cn/go.html'
 
 export function MobileBlogDrawer({
   simpleMode,
@@ -170,8 +170,8 @@ export function MobileBlogDrawer({
                       exit={{ x: '-100%' }}
                       transition={{
                         type: 'spring',
-                        stiffness: 420,
-                        damping: 36,
+                        stiffness: 350,
+                        damping: 33,
                       }}
                     >
                       <div className={styles.profile}>

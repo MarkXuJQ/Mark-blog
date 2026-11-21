@@ -16,6 +16,12 @@ import {
 } from '@/components/ui/Dropdown'
 import { useDropdown } from '@/hooks/useDropdown'
 
+const SORT_BUTTON_SPRING = {
+  type: 'spring',
+  stiffness: 580,
+  damping: 27,
+} as const
+
 interface BlogFilterProps {
   allCategories: string[]
   selectedCategory: string | null
@@ -221,11 +227,7 @@ function RichSortButton({
     >
       <motion.div
         layout
-        transition={{
-          type: 'spring',
-          stiffness: 700,
-          damping: 30,
-        }}
+        transition={SORT_BUTTON_SPRING}
         className="flex items-center gap-2"
       >
         <div className="relative h-4 w-4 overflow-hidden">
@@ -293,11 +295,7 @@ export function BlogFilter({
           >
             <motion.div
               layout
-              transition={{
-                type: 'spring',
-                stiffness: 700,
-                damping: 30,
-              }}
+              transition={SORT_BUTTON_SPRING}
               className="flex items-center gap-2"
             >
               <span className="min-w-[4.5rem] text-left">
