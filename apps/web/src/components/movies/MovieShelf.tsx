@@ -23,24 +23,16 @@ import type {
 } from '@/lib/movies/movieTypes'
 import '@/assets/styles/movie-shelf.css'
 
-type ShelfGroupId = 'five' | 'four' | 'three' | 'other' | 'unrated'
 type Point = { x: number; y: number }
 type Opened = { id: string; byReader: boolean }
+type ShelfGroup = { id: string; label: string; movies: CsvMovieItem[] }
 
-const GROUP_ORDER: ShelfGroupId[] = [
-  'five',
-  'four',
-  'three',
-  'other',
-  'unrated',
-]
+const UNDATED_GROUP = 'undated'
 
-function groupOf(movie: CsvMovieItem): ShelfGroupId {
-  if (movie.rating === null) return 'unrated'
-  if (movie.rating >= 5) return 'five'
-  if (movie.rating === 4) return 'four'
-  if (movie.rating === 3) return 'three'
-  return 'other'
+function monthKeyOf(movie: CsvMovieItem): string {
+  return /^\d{4}-\d{2}/.test(movie.watchDate)
+    ? movie.watchDate.slice(0, 7)
+    : UNDATED_GROUP
 }
 
 function starText(rating: number | null) {
@@ -59,6 +51,20 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
   const reduced = usePrefersReducedMotion()
   const baseId = useId().replace(/[^\w-]/g, '')
   const hintId = `${baseId}-hint`
+
+  const monthLabel = useCallback(
+    (key: string) => {
+      if (key === UNDATED_GROUP) return t('movies.shelf.groups.undated')
+      const [year, month] = key.split('-').map(Number)
+      if (!year || !month) return key
+      return new Intl.DateTimeFormat(locale, {
+        year: 'numeric',
+        month: 'long',
+        timeZone: 'UTC',
+      }).format(new Date(Date.UTC(year, month - 1, 1)))
+    },
+    [locale, t]
+  )
 
   const rootRef = useRef<HTMLDivElement>(null)
   const pointerRef = useRef<SVGSVGElement>(null)
@@ -120,19 +126,26 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
     [movies, tmdbMap]
   )
 
-  const groups = useMemo(() => {
-    const buckets = new Map<ShelfGroupId, CsvMovieItem[]>()
+  const groups = useMemo<ShelfGroup[]>(() => {
+    const buckets = new Map<string, CsvMovieItem[]>()
     for (const movie of posterMovies) {
-      const key = groupOf(movie)
+      const key = monthKeyOf(movie)
       const bucket = buckets.get(key) ?? []
       bucket.push(movie)
       buckets.set(key, bucket)
     }
-    return GROUP_ORDER.flatMap((id) => {
-      const bucket = buckets.get(id)
-      return bucket?.length ? [{ id, movies: bucket }] : []
-    })
-  }, [posterMovies])
+    return [...buckets.entries()]
+      .sort(([a], [b]) => {
+        if (a === UNDATED_GROUP) return 1
+        if (b === UNDATED_GROUP) return -1
+        return b.localeCompare(a)
+      })
+      .map(([id, bucketMovies]) => ({
+        id,
+        label: monthLabel(id),
+        movies: bucketMovies,
+      }))
+  }, [posterMovies, monthLabel])
 
   const allMovies = useMemo(
     () => groups.flatMap((group) => group.movies),
@@ -413,13 +426,13 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
               id={`${baseId}-${group.id}`}
               className="movie-shelf__group-title"
             >
-              {t(`movies.shelf.groups.${group.id}`)}
+              {group.label}
             </h3>
             <span className="movie-shelf__group-count">
               {group.movies.length}
             </span>
           </div>
-          <ul className="movie-shelf__grid" aria-label={t(`movies.shelf.groups.${group.id}`)}>
+          <ul className="movie-shelf__grid" aria-label={group.label}>
             {group.movies.map((movie) => {
               const solid = hovered === movie.id || settling.has(movie.id)
               const tmdb = tmdbMap[movie.id] ?? null
@@ -507,7 +520,9 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                           ) : null}
                         </span>
                       </span>
+                      <span className="movie-shelf__paper movie-shelf__paper--top" />
                       <span className="movie-shelf__pages" />
+                      <span className="movie-shelf__paper movie-shelf__paper--bottom" />
                       <span className="movie-shelf__spine" />
                     </span>
                   </button>
@@ -597,7 +612,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                     <div className="flex min-w-0 flex-col">
                       <div className="mb-3 flex items-start justify-between gap-3">
                         <span className="rounded-full bg-amber-400/15 px-2.5 py-1 text-[0.65rem] font-medium tracking-[0.16em] text-amber-600 uppercase dark:text-amber-300">
-                          {t(`movies.shelf.groups.${groupOf(openedMovie)}`)}
+                          {monthLabel(monthKeyOf(openedMovie))}
                         </span>
                         <button
                           ref={closeButtonRef}

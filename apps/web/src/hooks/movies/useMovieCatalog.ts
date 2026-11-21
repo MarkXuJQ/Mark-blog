@@ -5,7 +5,6 @@ import { buildCsvMovies } from '@/lib/movies/movieCsv'
 import {
   BASE_COLUMNS,
   calculateMovieColumns,
-  LIST_ITEMS_PER_PAGE,
   ROWS_PER_PAGE,
   SHELF_ITEMS_PER_PAGE,
   toDateKey,
@@ -17,13 +16,10 @@ import type {
 } from '@/lib/movies/movieTypes'
 
 const movieOverrides = movieOverridesRaw as Record<string, MovieOverride>
-const BETA_SHELF_STORAGE_KEY = 'movie-shelf-beta'
 
 export function useMovieCatalog() {
   const [keyword, setKeyword] = useState('')
-  const [cardLayout, setCardLayout] = useState<CardLayout>('grid')
-  const [betaEnabled, setBetaEnabled] = useState(false)
-  const [betaHydrated, setBetaHydrated] = useState(false)
+  const [cardLayout, setCardLayout] = useState<CardLayout>('shelf')
   const [movieFilter, setMovieFilter] = useState<MovieFilter>('all')
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null)
@@ -31,28 +27,6 @@ export function useMovieCatalog() {
   const [columns, setColumns] = useState(BASE_COLUMNS)
   const [gridNode, setGridNode] = useState<HTMLDivElement | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
-  const previousListStateRef = useRef<{
-    cardLayout: CardLayout
-    currentPage: number
-  } | null>(null)
-
-  const activeLayout: CardLayout = betaEnabled ? 'shelf' : cardLayout
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || window.__PRERENDER__) return
-    setBetaEnabled(window.localStorage.getItem(BETA_SHELF_STORAGE_KEY) === 'true')
-    setBetaHydrated(true)
-  }, [])
-
-  useEffect(() => {
-    if (!betaHydrated || typeof window === 'undefined' || window.__PRERENDER__) {
-      return
-    }
-    window.localStorage.setItem(
-      BETA_SHELF_STORAGE_KEY,
-      betaEnabled ? 'true' : 'false'
-    )
-  }, [betaEnabled, betaHydrated])
 
   const movieItems = useMemo(
     () => buildCsvMovies(movieCsvRaw, movieOverrides),
@@ -86,11 +60,7 @@ export function useMovieCatalog() {
   }, [keyword, movieFilter, movieItems, selectedDateKey, selectedRating])
 
   const itemsPerPage =
-    activeLayout === 'shelf'
-      ? SHELF_ITEMS_PER_PAGE
-      : activeLayout === 'list'
-        ? LIST_ITEMS_PER_PAGE
-        : columns * ROWS_PER_PAGE
+    cardLayout === 'shelf' ? SHELF_ITEMS_PER_PAGE : columns * ROWS_PER_PAGE
   const totalPages = Math.max(
     1,
     Math.ceil(filteredMovies.length / itemsPerPage)
@@ -107,21 +77,6 @@ export function useMovieCatalog() {
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages)
   }, [currentPage, totalPages])
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || window.__PRERENDER__) return
-    const previousState = previousListStateRef.current
-    previousListStateRef.current = { cardLayout, currentPage }
-    if (
-      cardLayout !== 'list' ||
-      !previousState ||
-      (previousState.cardLayout === cardLayout &&
-        previousState.currentPage === currentPage)
-    ) {
-      return
-    }
-    listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [cardLayout, currentPage])
 
   useEffect(() => {
     if (typeof window === 'undefined' || window.__PRERENDER__ || !gridNode) {
@@ -153,9 +108,6 @@ export function useMovieCatalog() {
     setKeyword,
     cardLayout,
     setCardLayout,
-    activeLayout,
-    betaEnabled,
-    setBetaEnabled,
     movieFilter,
     setMovieFilter,
     selectedRating,

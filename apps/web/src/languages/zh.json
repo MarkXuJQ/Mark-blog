@@ -194,22 +194,14 @@
     },
     "layout": {
     "label": "布局",
-    "list": "列表",
+    "shelf": "书架",
     "grid": "网格"
-  },
-  "beta": {
-    "label": "书架 Beta",
-    "description": "开启后展示 3D 书架，只收录已获取到海报的影片"
   },
   "shelf": {
     "title": "观影书架",
     "hint": "把光标移到书上，点开可查看详情；方向键也可浏览。",
     "groups": {
-      "five": "五星珍藏",
-      "four": "四星喜爱",
-      "three": "三星观影",
-      "other": "其他评分",
-      "unrated": "未评分"
+      "undated": "未记录日期"
     },
     "close": "关闭详情",
     "openReview": "阅读影评",

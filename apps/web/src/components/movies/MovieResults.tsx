@@ -1,7 +1,6 @@
 import { Clapperboard } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Pagination } from '@/components/ui/Pagination'
-import { cn } from '@/lib/classNames'
 import type {
   CardLayout,
   CsvMovieItem,
@@ -76,22 +75,14 @@ export function MovieResults({
           setGridNode(node)
           listRef.current = node
         }}
-        className={cn(
-          'scroll-mt-28',
-          cardLayout === 'grid' ? 'grid gap-3 lg:gap-4' : 'space-y-3'
-        )}
-        style={
-          cardLayout === 'grid'
-            ? { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }
-            : undefined
-        }
+        className="scroll-mt-28 grid gap-3 lg:gap-4"
+        style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
       >
         {pageMovies.map((movie) => (
           <MovieCard
             key={movie.id}
             movie={movie}
             tmdb={tmdbMap[movie.id] ?? null}
-            cardLayout={cardLayout}
             locale={locale}
           />
         ))}
