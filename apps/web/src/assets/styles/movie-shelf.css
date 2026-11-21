@@ -4,6 +4,8 @@
 .movie-shelf {
   --ms-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --ms-duration: 460ms;
+  --spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --spring-ms: 560ms;
   position: relative;
 }
 
@@ -62,8 +64,6 @@
   grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
   gap: 1.65rem 1.05rem;
   padding: 1.25rem 0.35rem 0.4rem;
-  perspective: 1400px;
-  perspective-origin: 50% 30%;
   list-style: none;
   margin: 0;
 }
@@ -71,30 +71,35 @@
 .movie-shelf__slot {
   position: relative;
   min-width: 0;
+  container-type: inline-size;
+}
+
+.movie-shelf__slot[data-awake='true'] {
+  z-index: 1;
 }
 
 .movie-shelf__book {
+  /* One source for the geometry: cover width, page thickness and eye offset. */
+  --w: 100cqw;
+  --h: calc(var(--w) * 1.5);
+  --t: 0.085;
+  --depth: 7;
+  --eye: 3.4;
+  --k: calc(var(--t) / (var(--depth) + var(--t)));
   --rx: 0deg;
   --ry: 0deg;
   --lift: 0;
   position: relative;
   display: block;
-  width: 100%;
-  aspect-ratio: 2 / 3;
+  width: var(--w);
+  height: var(--h);
   padding: 0;
   border: 0;
-  border-radius: 0.55rem 0.8rem 0.8rem 0.55rem;
   background: transparent;
   cursor: pointer;
-  transform: translate3d(0, calc(var(--lift) * -7px), 0)
-    rotateX(var(--rx)) rotateY(var(--ry));
-  transform-style: preserve-3d;
-  transition: transform var(--ms-duration) var(--ms-ease);
+  perspective: calc(var(--w) * var(--depth));
+  perspective-origin: calc(var(--w) * var(--eye)) 50%;
   -webkit-tap-highlight-color: transparent;
-}
-
-.movie-shelf__slot[data-awake='true'] .movie-shelf__book {
-  will-change: transform;
 }
 
 .movie-shelf__book:focus-visible {
@@ -104,56 +109,68 @@
 
 .movie-shelf__shadow {
   position: absolute;
-  right: -9%;
-  bottom: -12px;
-  left: 6%;
-  height: 16px;
-  border-radius: 50%;
-  background: rgba(15, 23, 42, 0.55);
-  filter: blur(12px);
-  opacity: 0.24;
-  transform: scaleX(0.86);
-  transition: opacity var(--ms-duration) var(--ms-ease),
-    transform var(--ms-duration) var(--ms-ease);
+  inset: 2% 0 0 3%;
+  border-radius: 3px;
+  box-shadow: -7px 9px 16px -5px rgba(15, 23, 42, 0.55);
+  transition: transform var(--spring-ms) var(--spring), opacity 300ms ease;
 }
 
-.movie-shelf__slot[data-awake='true'] .movie-shelf__shadow {
-  opacity: 0.42;
-  transform: scaleX(1.08) translateY(3px);
+.movie-shelf__book[data-pose='tilt'] .movie-shelf__shadow {
+  opacity: 0.85;
+  transform: translate(calc(var(--w) * -0.05), calc(var(--w) * 0.08)) scale(1.05);
+  transition: transform 250ms ease-out, opacity 300ms ease;
 }
 
 .movie-shelf__volume {
   position: absolute;
   inset: 0;
-  border-radius: inherit;
+  transform-origin: 50% 50% calc(var(--w) * var(--t) / -2);
+  transition: transform var(--spring-ms) var(--spring);
+}
+
+.movie-shelf__volume[data-solid] {
   transform-style: preserve-3d;
 }
 
-/* The back board sits behind the pages, so the volume has real thickness. */
-.movie-shelf__volume::before {
+.movie-shelf__book[data-pose='tilt'] .movie-shelf__volume {
+  transform: translateZ(calc(var(--w) * var(--lift))) rotateX(var(--rx))
+    rotateY(var(--ry));
+  will-change: transform;
+  transition: transform 220ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+/* At rest the page block is drawn at the angle the perspective would show;
+   only the volume under the pointer gets real 3D faces. */
+.movie-shelf__volume:not([data-solid])::after {
   content: '';
   position: absolute;
-  inset: 2px -1px 2px 1px;
-  border-radius: 0.45rem 0.2rem 0.2rem 0.45rem;
-  background: linear-gradient(135deg, #1f2937, #0b1017 72%);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
-  transform: translateZ(-6px);
+  top: 0;
+  left: 100%;
+  width: calc(var(--w) * (var(--eye) - 1) * var(--k));
+  height: 100%;
+  clip-path: polygon(
+    0 0,
+    100% calc(var(--h) / 2 * var(--k)),
+    100% calc(100% - var(--h) / 2 * var(--k)),
+    0 100%
+  );
+  background: repeating-linear-gradient(
+    90deg,
+    #f7f3eb 0 0.8px,
+    #d5cec1 0.8px 1.5px
+  );
 }
 
 .movie-shelf__cover {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  border-radius: 0.5rem 0.25rem 0.25rem 0.5rem;
+  border-radius: 1px 2px 2px 1px;
   background: linear-gradient(145deg, #24303f, #0f141b 70%);
   box-shadow: inset 9px 0 14px -9px rgba(0, 0, 0, 0.85),
     inset 0 0 0 1px rgba(255, 255, 255, 0.12),
     inset -1px 0 0 rgba(255, 255, 255, 0.16),
     0 6px 14px rgba(15, 23, 42, 0.24);
-  transform: translateZ(8px);
-  transition: transform var(--ms-duration) var(--ms-ease),
-    box-shadow var(--ms-duration) var(--ms-ease);
-  backface-visibility: hidden;
 }
 
 /* The crease where the cover folds over the spine. */
@@ -237,97 +254,54 @@
   color: #fbbf24;
 }
 
-.movie-shelf__pages {
+/* Only the awake volume pays for real 3D faces. */
+.movie-shelf__edge,
+.movie-shelf__top,
+.movie-shelf__bottom {
   position: absolute;
-  top: 5px;
-  right: -13px;
-  bottom: 5px;
-  width: 15px;
-  border-radius: 0 4px 4px 0;
   background: repeating-linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.85) 0,
-      rgba(255, 255, 255, 0.85) 1px,
-      transparent 1px,
-      transparent 4px
-    ),
-    linear-gradient(to right, #f7f4eb, #d5cfbe 70%, #bdb6a4);
-  box-shadow: inset -3px 0 4px rgba(15, 23, 42, 0.2),
-    2px 0 6px rgba(15, 23, 42, 0.18);
-  transform: skewY(-9deg) translateZ(1px);
-  transform-origin: left center;
-  transition: transform var(--ms-duration) var(--ms-ease);
-}
-
-.movie-shelf__paper {
-  position: absolute;
-  left: 5px;
-  right: -11px;
-  height: 7px;
-  background: repeating-linear-gradient(
-      to right,
-      #fbf8f0 0,
-      #fbf8f0 2px,
-      #d5cfbe 3px,
-      #fbf8f0 4px
-    );
-  opacity: 0.94;
-  transform: skewX(-38deg) translateZ(0);
-  transition: transform var(--ms-duration) var(--ms-ease);
-}
-
-.movie-shelf__paper--top {
-  top: -2px;
-  border-radius: 2px 3px 0 0;
-}
-
-.movie-shelf__paper--bottom {
-  bottom: -2px;
-  border-radius: 0 0 3px 2px;
-}
-
-.movie-shelf__spine {
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
-  left: -7px;
-  width: 10px;
-  border-radius: 5px 0 0 5px;
-  background: linear-gradient(
-    to right,
-    #0f172a 0%,
-    #334155 44%,
-    rgba(255, 255, 255, 0.24) 76%,
-    #111827 100%
+    90deg,
+    #f7f3eb 0 0.8px,
+    #d5cec1 0.8px 1.5px
   );
-  box-shadow: inset 2px 0 3px rgba(255, 255, 255, 0.08);
-  transform: skewY(-9deg) translateZ(1px);
-  transform-origin: right center;
-  transition: transform var(--ms-duration) var(--ms-ease);
 }
 
-.movie-shelf__slot[data-awake='true'] .movie-shelf__cover {
-  transform: translateZ(15px);
-  box-shadow: inset 9px 0 14px -9px rgba(0, 0, 0, 0.85),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
-    inset -1px 0 0 rgba(255, 255, 255, 0.22),
-    0 16px 26px rgba(15, 23, 42, 0.32);
+.movie-shelf__edge {
+  top: 0;
+  left: 100%;
+  width: calc(var(--w) * var(--t));
+  height: 100%;
+  transform-origin: 0;
+  transform: rotateY(90deg);
 }
 
-.movie-shelf__slot[data-awake='true'] .movie-shelf__pages {
-  transform: rotateY(56deg) skewY(-4deg) translateZ(1px);
+.movie-shelf__top,
+.movie-shelf__bottom {
+  left: 0;
+  width: 100%;
+  height: calc(var(--w) * var(--t));
+  background: repeating-linear-gradient(
+    #f7f3eb 0 0.8px,
+    #d5cec1 0.8px 1.5px
+  );
 }
 
-.movie-shelf__slot[data-awake='true'] .movie-shelf__paper--top {
-  transform: skewX(-52deg) translateZ(2px);
+.movie-shelf__top {
+  bottom: 100%;
+  transform-origin: 50% 100%;
+  transform: rotateX(90deg);
 }
 
-.movie-shelf__slot[data-awake='true'] .movie-shelf__paper--bottom {
-  transform: skewX(52deg) translateZ(2px);
+.movie-shelf__bottom {
+  top: 100%;
+  transform-origin: 50% 0;
+  transform: rotateX(-90deg);
 }
 
-.movie-shelf__slot[data-awake='true'] .movie-shelf__spine {
-  transform: rotateY(-24deg) skewY(-4deg) translateZ(2px);
+/* While the spread flies in, the shelf slot is empty. */
+.movie-shelf__book[data-open] .movie-shelf__volume,
+.movie-shelf__book[data-open] .movie-shelf__shadow {
+  opacity: 0;
 }
 
 .movie-shelf__cover-shade {
@@ -409,38 +383,41 @@
   color: var(--text-primary);
 }
 
+/* The open spread: two poster-shaped pages side by side. The cover leaf lies
+   over the right page when closed and hinges left about the centre spine. */
 .movie-shelf__dialog {
   position: relative;
-  width: min(100%, 54rem);
-  perspective: 1400px;
+  width: min(48rem, calc(100vw - 2rem), calc((100vh - 4rem) * 4 / 3));
+  aspect-ratio: 4 / 3;
+  perspective: 1100px;
+  perspective-origin: 50%;
+  color: var(--text-primary);
 }
 
 .movie-shelf__spread {
-  display: grid;
-  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
-  align-items: stretch;
-  min-height: 25rem;
-  border: 1px solid var(--border-color);
-  border-radius: 1.5rem;
-  background: var(--surface-card);
-  box-shadow: 0 32px 90px -36px rgba(15, 23, 42, 0.65);
+  position: absolute;
+  inset: 0;
   transform-style: preserve-3d;
-  overflow: visible;
+  transform-origin: 50% 0;
+  will-change: transform;
 }
 
 .movie-shelf__leaf {
-  position: relative;
+  position: absolute;
+  inset: 0 0 0 50%;
   z-index: 2;
-  min-height: 25rem;
-  transform-origin: left center;
+  transform-origin: 0;
   transform-style: preserve-3d;
+  will-change: transform;
+  transform: rotateY(-145deg);
 }
 
 .movie-shelf__leaf-face {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  border-radius: 1.45rem 0.35rem 0.35rem 1.45rem;
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
   backface-visibility: hidden;
 }
 
@@ -448,6 +425,7 @@
   background: linear-gradient(150deg, #243244, #0b1017 74%);
   box-shadow: inset 10px 0 16px -10px rgba(0, 0, 0, 0.85),
     0 18px 32px rgba(15, 23, 42, 0.28);
+  transform: translateZ(1px);
 }
 
 .movie-shelf__leaf-inside {
@@ -456,11 +434,27 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  padding: 1.5rem;
+  padding: 9% 8%;
   text-align: center;
   background: linear-gradient(150deg, #16202c, #0b1017 78%);
   color: #f8fafc;
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) translateZ(1px);
+}
+
+.movie-shelf__inside-art {
+  display: block;
+  width: min(62%, 8rem);
+  aspect-ratio: 2 / 3;
+  min-height: 0;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.5);
+}
+
+.movie-shelf__inside-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .movie-shelf__inside-title {
@@ -477,14 +471,19 @@
 }
 
 .movie-shelf__panel-page {
-  position: relative;
+  position: absolute;
+  inset: 0 0 0 50%;
   display: flex;
   min-width: 0;
   flex-direction: column;
-  padding: 1.5rem 1.6rem;
-  border-radius: 0 1.45rem 1.45rem 0;
+  gap: 0.75rem;
+  padding: 1.25rem 1.4rem;
+  overflow: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 0 3px 3px 0;
   background: var(--surface-card);
-  transform: translateZ(-1px);
+  box-shadow: inset 9px 0 15px -12px rgba(15, 23, 42, 0.4),
+    5px 8px 14px -10px rgba(15, 23, 42, 0.35);
 }
 
 .movie-shelf__ghost {
@@ -505,20 +504,9 @@
 }
 
 @media (max-width: 640px) {
-  .movie-shelf__spread {
-    grid-template-columns: 1fr;
-  }
-
-  .movie-shelf__leaf {
-    width: min(62vw, 12rem);
-    min-height: auto;
-    aspect-ratio: 2 / 3;
-    margin: 0 auto;
-  }
-
   .movie-shelf__panel-page {
-    border-radius: 0 0 1.45rem 1.45rem;
-    padding: 1.25rem;
+    gap: 0.5rem;
+    padding: 0.85rem;
   }
 }
 
@@ -530,18 +518,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .movie-shelf__book,
-  .movie-shelf__cover,
-  .movie-shelf__pages,
-  .movie-shelf__paper,
-  .movie-shelf__spine,
   .movie-shelf__shadow,
+  .movie-shelf__volume,
   .movie-shelf__cover-info,
   .movie-shelf__ghost {
     transition: none !important;
   }
 
-  .movie-shelf__book {
+  .movie-shelf__book[data-pose='tilt'] .movie-shelf__volume {
     transform: none !important;
   }
 

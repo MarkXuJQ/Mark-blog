@@ -219,7 +219,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
     const y = Math.min(1, Math.max(0, at.y))
     button.style.setProperty('--rx', `${((y - 0.5) * 2 * 11).toFixed(2)}deg`)
     button.style.setProperty('--ry', `${(-(x - 0.5) * 2 * 15).toFixed(2)}deg`)
-    button.style.setProperty('--lift', '1')
+    button.style.setProperty('--lift', '0.26')
   }, [])
 
   const hover = useCallback(
@@ -292,7 +292,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
         return
       }
       runningAnimations.current.forEach((animation) => animation.cancel())
-      const cover = buttons.current.get(movie.id)?.querySelector('.movie-shelf__cover')
+      const cover = buttons.current.get(movie.id)?.querySelector('[data-cover]')
       departureRef.current = cover ? cover.getBoundingClientRect() : null
       interruptedRef.current = null
       interruptedLeafRef.current = null
@@ -360,7 +360,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
   const playClosing = useCallback(() => {
     const current = openedRef.current
     const cover = current
-      ? buttons.current.get(current.id)?.querySelector('.movie-shelf__cover')
+      ? buttons.current.get(current.id)?.querySelector('[data-cover]')
       : null
     if (!current) return
     const box = slotRef.current?.getBoundingClientRect()
@@ -629,6 +629,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                     aria-label={`${movie.title}. ${starText(movie.rating)}`}
                     aria-describedby={hintId}
                     data-pose={hovered === movie.id ? 'tilt' : 'rest'}
+                    data-open={opened?.id === movie.id || undefined}
                     tabIndex={tabStop === movie.id ? 0 : -1}
                     onClick={() => {
                       take()
@@ -659,8 +660,12 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                     onKeyDown={(event) => onBookKey(event, movie.id)}
                   >
                     <span className="movie-shelf__shadow" aria-hidden="true" />
-                    <span className="movie-shelf__volume" aria-hidden="true">
-                      <span className="movie-shelf__cover">
+                    <span
+                      className="movie-shelf__volume"
+                      data-solid={solid || undefined}
+                      aria-hidden="true"
+                    >
+                      <span className="movie-shelf__cover" data-cover="">
                         {poster ? (
                           <img
                             src={poster}
@@ -703,10 +708,13 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                           ) : null}
                         </span>
                       </span>
-                      <span className="movie-shelf__paper movie-shelf__paper--top" />
-                      <span className="movie-shelf__pages" />
-                      <span className="movie-shelf__paper movie-shelf__paper--bottom" />
-                      <span className="movie-shelf__spine" />
+                      {solid ? (
+                        <>
+                          <span className="movie-shelf__edge" />
+                          <span className="movie-shelf__top" />
+                          <span className="movie-shelf__bottom" />
+                        </>
+                      ) : null}
                     </span>
                   </button>
                   <span className="movie-shelf__caption" title={movie.title}>
@@ -742,13 +750,13 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                 <motion.div
                   key="movie-shelf-panel"
                   className="fixed inset-0 z-[120] overflow-y-auto"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: reduced ? 0 : 0.22 }}
                 >
-                  <div
+                  <motion.div
                     className="fixed inset-0 bg-slate-950/55 backdrop-blur-[3px]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: reduced ? 0 : 0.22 }}
                     onClick={() => close(true)}
                     aria-hidden="true"
                   />
@@ -794,9 +802,19 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                             <span className="movie-shelf__cover-shade" />
                           </div>
                           <div className="movie-shelf__leaf-face movie-shelf__leaf-inside">
-                            <span className="movie-shelf__fallback-label">
-                              {t('movies.shelf.textCover')}
-                            </span>
+                            {openedTmdb?.posterUrl ? (
+                              <span className="movie-shelf__inside-art">
+                                <img
+                                  src={openedTmdb.posterUrl}
+                                  alt=""
+                                  referrerPolicy="no-referrer"
+                                />
+                              </span>
+                            ) : (
+                              <span className="movie-shelf__fallback-label">
+                                {t('movies.shelf.textCover')}
+                              </span>
+                            )}
                             <span className="movie-shelf__inside-title">
                               {openedMovie.title}
                             </span>
