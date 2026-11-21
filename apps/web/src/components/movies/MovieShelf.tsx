@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -12,7 +13,7 @@ import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Clapperboard, Star, X } from 'lucide-react'
+import { Star, X } from 'lucide-react'
 import { RiDoubanLine } from 'react-icons/ri'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { cn } from '@/lib/classNames'
@@ -24,10 +25,13 @@ import type {
 import '@/assets/styles/movie-shelf.css'
 
 type Point = { x: number; y: number }
-type Opened = { id: string; byReader: boolean }
+type Phase = 'opening' | 'open' | 'closing'
+type Opened = { id: string; phase: Phase; byReader: boolean }
 type ShelfGroup = { id: string; label: string; movies: CsvMovieItem[] }
 
 const UNDATED_GROUP = 'undated'
+const FLIGHT_MS = 520
+const FLIGHT_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
 
 function monthKeyOf(movie: CsvMovieItem): string {
   return /^\d{4}-\d{2}/.test(movie.watchDate)
@@ -72,11 +76,19 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const reviewLinkRef = useRef<HTMLAnchorElement>(null)
   const doubanLinkRef = useRef<HTMLAnchorElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const flyerRef = useRef<HTMLDivElement>(null)
+  const leafRef = useRef<HTMLDivElement>(null)
+  const slotRef = useRef<HTMLDivElement>(null)
   const hoveredRef = useRef<string | null>(null)
   const openedRef = useRef<Opened | null>(null)
   const interactedRef = useRef(false)
   const lastFocusedRef = useRef<string | null>(null)
   const settleTimers = useRef(new Map<string, number>())
+  const departureRef = useRef<DOMRect | null>(null)
+  const interruptedRef = useRef<string | null>(null)
+  const interruptedLeafRef = useRef<string | null>(null)
+  const runningAnimations = useRef(new Set<Animation>())
 
   const [mounted, setMounted] = useState(false)
   const [visible, setVisible] = useState(false)
@@ -109,26 +121,21 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
 
   useEffect(() => {
     const timers = settleTimers.current
-    return () => timers.forEach((timer) => window.clearTimeout(timer))
+    const animations = runningAnimations.current
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer))
+      animations.forEach((animation) => animation.cancel())
+    }
   }, [])
 
-  // The shelf only has room for volumes with a real TMDB poster. Entries still
-  // being fetched are counted separately so the shelf can show a small hint.
-  const posterMovies = useMemo(
-    () => movies.filter((movie) => Boolean(tmdbMap[movie.id]?.posterUrl)),
-    [movies, tmdbMap]
-  )
-  const pendingCount = useMemo(
-    () =>
-      movies.filter(
-        (movie) => !Object.prototype.hasOwnProperty.call(tmdbMap, movie.id)
-      ).length,
-    [movies, tmdbMap]
+  const hasPoster = useCallback(
+    (movie: CsvMovieItem) => Boolean(tmdbMap[movie.id]?.posterUrl),
+    [tmdbMap]
   )
 
   const groups = useMemo<ShelfGroup[]>(() => {
     const buckets = new Map<string, CsvMovieItem[]>()
-    for (const movie of posterMovies) {
+    for (const movie of movies) {
       const key = monthKeyOf(movie)
       const bucket = buckets.get(key) ?? []
       bucket.push(movie)
@@ -143,14 +150,59 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
       .map(([id, bucketMovies]) => ({
         id,
         label: monthLabel(id),
-        movies: bucketMovies,
+        // Text-only spines go to the end of the month, keeping watch-date order.
+        movies: [...bucketMovies].sort(
+          (a, b) => Number(!hasPoster(a)) - Number(!hasPoster(b))
+        ),
       }))
-  }, [posterMovies, monthLabel])
+  }, [movies, monthLabel, hasPoster])
 
   const allMovies = useMemo(
     () => groups.flatMap((group) => group.movies),
     [groups]
   )
+
+  const seen = useCallback((element: Element | null) => {
+    if (
+      !element ||
+      !element.getAnimations().some((animation) => animation.playState === 'running')
+    ) {
+      return null
+    }
+    return getComputedStyle(element).transform
+  }, [])
+
+  const play = useCallback(
+    (
+      element: Element | null,
+      keyframes: Keyframe[],
+      options: KeyframeAnimationOptions
+    ) => {
+      if (!element) return null
+      const animation = element.animate(keyframes, options)
+      runningAnimations.current.add(animation)
+      const forget = () => runningAnimations.current.delete(animation)
+      animation.finished.then(forget, forget)
+      return animation
+    },
+    []
+  )
+
+  const allDone = useCallback(
+    (animations: (Animation | null)[]) =>
+      Promise.all(animations.map((animation) => animation?.finished)).then(
+        () => true,
+        () => false
+      ),
+    []
+  )
+
+  const scaleOf = useCallback(() => {
+    const element = rootRef.current
+    return element
+      ? element.getBoundingClientRect().width / element.offsetWidth || 1
+      : 1
+  }, [])
 
   const rest = useCallback((id: string) => {
     const button = buttons.current.get(id)
@@ -206,30 +258,162 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
     [reduced, rest]
   )
 
-  const close = useCallback((byReader = false) => {
-    const current = openedRef.current
-    if (!current) return
-    if (byReader && current.byReader) {
-      const id = lastFocusedRef.current
-      window.setTimeout(() => {
-        buttons.current.get(id ?? '')?.focus({ preventScroll: true })
-      }, 0)
-    }
-    openedRef.current = null
-    setOpened(null)
-  }, [])
+  const close = useCallback(
+    (byReader = false) => {
+      const current = openedRef.current
+      if (!current || current.phase === 'closing') return
+      if (!byReader && current.byReader) return
+      if (byReader || panelRef.current?.contains(document.activeElement)) {
+        lastFocusedRef.current = current.id
+      }
+      if (reduced) {
+        openedRef.current = null
+        setOpened(null)
+        return
+      }
+      interruptedRef.current = seen(flyerRef.current)
+      interruptedLeafRef.current = seen(leafRef.current)
+      runningAnimations.current.forEach((animation) => animation.cancel())
+      const next: Opened = { ...current, phase: 'closing' }
+      openedRef.current = next
+      setOpened(next)
+    },
+    [reduced, seen]
+  )
 
   const open = useCallback(
     (movie: CsvMovieItem, byReader: boolean) => {
-      if (openedRef.current?.id === movie.id) return
+      const current = openedRef.current
+      if (current?.byReader || (current && !byReader)) return
+      if (current?.id === movie.id && current.phase !== 'closing') {
+        const next: Opened = { ...current, byReader }
+        openedRef.current = next
+        setOpened(next)
+        return
+      }
+      runningAnimations.current.forEach((animation) => animation.cancel())
+      const cover = buttons.current.get(movie.id)?.querySelector('.movie-shelf__cover')
+      departureRef.current = cover ? cover.getBoundingClientRect() : null
+      interruptedRef.current = null
+      interruptedLeafRef.current = null
       if (byReader) lastFocusedRef.current = movie.id
-      const next: Opened = { id: movie.id, byReader }
+      const next: Opened = {
+        id: movie.id,
+        phase: reduced ? 'open' : 'opening',
+        byReader,
+      }
       openedRef.current = next
       setOpened(next)
       hover(null)
     },
-    [hover]
+    [hover, reduced]
   )
+
+  const claimPanel = useCallback(() => {
+    const current = openedRef.current
+    if (!current || current.byReader) return
+    const next: Opened = { ...current, byReader: true }
+    openedRef.current = next
+    setOpened(next)
+  }, [])
+
+  const playOpening = useCallback(() => {
+    const element = flyerRef.current
+    const current = openedRef.current
+    if (!element || !current) return
+    const from = departureRef.current
+    const box = slotRef.current?.getBoundingClientRect()
+    if (!box) return
+    const scale = scaleOf()
+    const animations = [
+      play(panelRef.current, [{ opacity: 0 }, { opacity: 1 }], {
+        duration: 120,
+        easing: 'ease-out',
+      }),
+      from
+        ? play(
+            element,
+            [
+              {
+                transform: `translate(${(from.left - box.left) / scale}px, ${(from.top - box.top) / scale}px) scale(${from.width / box.width})`,
+              },
+              { transform: 'none' },
+            ],
+            { duration: FLIGHT_MS, easing: FLIGHT_EASE }
+          )
+        : null,
+      play(
+        leafRef.current,
+        [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(-145deg)' }],
+        { duration: FLIGHT_MS, delay: 80, easing: FLIGHT_EASE, fill: 'backwards' }
+      ),
+    ]
+    allDone(animations).then((done) => {
+      const later = openedRef.current
+      if (!done || later?.id !== current.id || later.phase !== 'opening') return
+      const next: Opened = { ...later, phase: 'open' }
+      openedRef.current = next
+      setOpened(next)
+    })
+  }, [allDone, play, scaleOf])
+
+  const playClosing = useCallback(() => {
+    const current = openedRef.current
+    const cover = current
+      ? buttons.current.get(current.id)?.querySelector('.movie-shelf__cover')
+      : null
+    if (!current) return
+    const box = slotRef.current?.getBoundingClientRect()
+    if (!box) return
+    const scale = scaleOf()
+    const to = cover?.getBoundingClientRect()
+    const animations = [
+      play(
+        panelRef.current,
+        [
+          { opacity: 1, offset: 0 },
+          { opacity: 1, offset: 0.86 },
+          { opacity: 0, offset: 1 },
+        ],
+        { duration: FLIGHT_MS, delay: 80, easing: 'ease-in', fill: 'forwards' }
+      ),
+      to
+        ? play(
+            flyerRef.current,
+            [
+              { transform: interruptedRef.current ?? 'none' },
+              {
+                transform: `translate(${(to.left - box.left) / scale}px, ${(to.top - box.top) / scale}px) scale(${to.width / box.width})`,
+              },
+            ],
+            { duration: FLIGHT_MS, delay: 80, easing: FLIGHT_EASE, fill: 'forwards' }
+          )
+        : play(flyerRef.current, [{ opacity: 1 }, { opacity: 0 }], {
+            duration: 220,
+            fill: 'forwards',
+          }),
+      play(
+        leafRef.current,
+        [
+          { transform: interruptedLeafRef.current ?? 'rotateY(-145deg)' },
+          { transform: 'rotateY(0deg)' },
+        ],
+        { duration: 300, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'forwards' }
+      ),
+    ]
+    allDone(animations).then((done) => {
+      if (!done || openedRef.current?.id !== current.id) return
+      openedRef.current = null
+      setOpened(null)
+      const id = lastFocusedRef.current
+      buttons.current.get(id ?? '')?.focus({ preventScroll: true })
+    })
+  }, [allDone, play, scaleOf])
+
+  useLayoutEffect(() => {
+    if (opened?.phase === 'opening') playOpening()
+    else if (opened?.phase === 'closing') playClosing()
+  }, [opened?.phase, opened?.id, playOpening, playClosing])
 
   const take = useCallback(() => {
     interactedRef.current = true
@@ -248,12 +432,12 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
   }, [movies, close])
 
   useEffect(() => {
-    if (!opened?.byReader) return
+    if (!opened?.byReader || opened.phase === 'closing') return
     const timer = window.setTimeout(() => {
       closeButtonRef.current?.focus({ preventScroll: true })
     }, 0)
     return () => window.clearTimeout(timer)
-  }, [opened?.id, opened?.byReader])
+  }, [opened?.id, opened?.byReader, opened?.phase])
 
   // The ghost pointer is a one-off demo: it stops permanently on the first
   // real input, and never runs during prerender or with reduced motion.
@@ -306,7 +490,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
         }
         if (cancelled) return
         const pick = ids[ids.length - 1]
-        const movie = posterMovies.find((item) => item.id === pick)
+        const movie = movies.find((item) => item.id === pick)
         if (movie) open(movie, false)
         await wait(1600)
         if (cancelled) return
@@ -326,7 +510,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
       window.removeEventListener('keydown', stop)
       window.removeEventListener('scroll', stop)
     }
-  }, [mounted, visible, reduced, allMovies, posterMovies, hover, lean, open, close, take])
+  }, [mounted, visible, reduced, allMovies, movies, hover, lean, open, close, take])
 
   const tabStop = allMovies.some((movie) => movie.id === focusId)
     ? focusId
@@ -406,14 +590,6 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
       <p id={hintId} className="sr-only">
         {t('movies.shelf.hint')}
       </p>
-
-      {posterMovies.length === 0 ? (
-        <p className="movie-shelf__empty">
-          {pendingCount > 0
-            ? t('movies.shelf.loading', { count: pendingCount })
-            : t('movies.shelf.noPosters')}
-        </p>
-      ) : null}
 
       {groups.map((group) => (
         <section
@@ -496,12 +672,19 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                           />
                         ) : (
                           <span className="movie-shelf__fallback">
-                            <Clapperboard
-                              size={18}
-                              className="movie-shelf__fallback-icon"
-                            />
+                            <span className="movie-shelf__fallback-label">
+                              {t('movies.shelf.textCover')}
+                            </span>
                             <span className="movie-shelf__fallback-title">
                               {movie.title}
+                            </span>
+                            {movie.originalTitle ? (
+                              <span className="movie-shelf__fallback-original">
+                                {movie.originalTitle}
+                              </span>
+                            ) : null}
+                            <span className="movie-shelf__fallback-rating">
+                              {starText(movie.rating)}
                             </span>
                           </span>
                         )}
@@ -558,146 +741,163 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
               {openedMovie ? (
                 <motion.div
                   key="movie-shelf-panel"
-                  className="fixed inset-0 z-[120] flex items-center justify-center p-4 sm:p-6"
+                  className="fixed inset-0 z-[120] overflow-y-auto"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: reduced ? 0 : 0.22 }}
                 >
                   <div
-                    className="absolute inset-0 bg-slate-950/55 backdrop-blur-[3px]"
+                    className="fixed inset-0 bg-slate-950/55 backdrop-blur-[3px]"
                     onClick={() => close(true)}
                     aria-hidden="true"
                   />
-                  <motion.div
-                    role="dialog"
-                    aria-modal={opened?.byReader || undefined}
-                    aria-labelledby={`${baseId}-panel-title`}
-                    className="relative z-10 grid max-h-[88vh] w-full max-w-3xl grid-cols-1 gap-6 overflow-y-auto rounded-[1.8rem] border border-slate-200/80 bg-[var(--surface-card)] p-5 shadow-2xl sm:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] sm:p-6 dark:border-[#2b2f36]"
-                    style={{ perspective: '1200px' }}
-                    initial={reduced ? undefined : { opacity: 0, scale: 0.96, rotateY: -10 }}
-                    animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-                    exit={reduced ? undefined : { opacity: 0, scale: 0.97, rotateY: 6 }}
-                    transition={{ duration: reduced ? 0 : 0.34, ease: [0.22, 1, 0.36, 1] }}
-                    onKeyDown={onPanelKey}
+                  <div
+                    role="presentation"
+                    className="relative flex min-h-full items-center justify-center p-4 sm:p-6"
+                    onPointerDownCapture={claimPanel}
+                    onFocusCapture={claimPanel}
                   >
-                    <motion.div
-                      className="relative mx-auto aspect-[2/3] w-full max-w-[15rem] overflow-hidden rounded-xl bg-slate-900 shadow-xl"
-                      initial={reduced ? undefined : { rotateY: -22 }}
-                      animate={{ rotateY: 0 }}
-                      transition={{ duration: reduced ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
-                      style={{ transformStyle: 'preserve-3d' }}
+                    {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- dialog owns Esc/Tab handling */}
+                    <div
+                      ref={panelRef}
+                      role="dialog"
+                      aria-modal={opened?.byReader || undefined}
+                      aria-labelledby={`${baseId}-panel-title`}
+                      data-phase={opened?.phase}
+                      className="movie-shelf__dialog"
+                      onKeyDown={onPanelKey}
                     >
-                      {openedTmdb?.posterUrl ? (
-                        <img
-                          src={openedTmdb.posterUrl}
-                          alt={openedMovie.title}
-                          className="h-full w-full object-cover"
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[radial-gradient(circle_at_top,rgba(78,152,186,0.35),transparent_60%),linear-gradient(150deg,#1f2937,#0b1017)] text-slate-200">
-                          <Clapperboard size={28} />
-                          <span className="px-4 text-center text-sm">
-                            {t('movies.tmdb.noPoster')}
-                          </span>
+                      <div ref={flyerRef} className="movie-shelf__spread">
+                        <div ref={leafRef} className="movie-shelf__leaf" aria-hidden="true">
+                          <div className="movie-shelf__leaf-face movie-shelf__leaf-front">
+                            {openedTmdb?.posterUrl ? (
+                              <img
+                                src={openedTmdb.posterUrl}
+                                alt=""
+                                className="h-full w-full object-cover"
+                                referrerPolicy="no-referrer"
+                              />
+                            ) : (
+                              <span className="movie-shelf__fallback">
+                                <span className="movie-shelf__fallback-label">
+                                  {t('movies.shelf.textCover')}
+                                </span>
+                                <span className="movie-shelf__fallback-title">
+                                  {openedMovie.title}
+                                </span>
+                                <span className="movie-shelf__fallback-rating">
+                                  {starText(openedMovie.rating)}
+                                </span>
+                              </span>
+                            )}
+                            <span className="movie-shelf__cover-shade" />
+                          </div>
+                          <div className="movie-shelf__leaf-face movie-shelf__leaf-inside">
+                            <span className="movie-shelf__fallback-label">
+                              {t('movies.shelf.textCover')}
+                            </span>
+                            <span className="movie-shelf__inside-title">
+                              {openedMovie.title}
+                            </span>
+                            <span className="movie-shelf__inside-note">
+                              {monthLabel(monthKeyOf(openedMovie))} ·{' '}
+                              {starText(openedMovie.rating)}
+                            </span>
+                          </div>
                         </div>
-                      )}
-                      <span className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/75 to-transparent" />
-                      <span className="absolute bottom-3 left-4 text-sm font-semibold tracking-wide text-white/90">
-                        {starText(openedMovie.rating)}
-                      </span>
-                    </motion.div>
 
-                    <div className="flex min-w-0 flex-col">
-                      <div className="mb-3 flex items-start justify-between gap-3">
-                        <span className="rounded-full bg-amber-400/15 px-2.5 py-1 text-[0.65rem] font-medium tracking-[0.16em] text-amber-600 uppercase dark:text-amber-300">
-                          {monthLabel(monthKeyOf(openedMovie))}
-                        </span>
-                        <button
-                          ref={closeButtonRef}
-                          type="button"
-                          aria-label={t('movies.shelf.close')}
-                          onClick={() => close(true)}
-                          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
-                        >
-                          <X size={18} />
-                        </button>
-                      </div>
+                        <div ref={slotRef} className="movie-shelf__panel-page">
+                          <div className="mb-3 flex items-start justify-between gap-3">
+                            <span className="rounded-full bg-amber-400/15 px-2.5 py-1 text-[0.65rem] font-medium tracking-[0.16em] text-amber-600 uppercase dark:text-amber-300">
+                              {monthLabel(monthKeyOf(openedMovie))}
+                            </span>
+                            <button
+                              ref={closeButtonRef}
+                              type="button"
+                              aria-label={t('movies.shelf.close')}
+                              onClick={() => close(true)}
+                              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
+                            >
+                              <X size={18} />
+                            </button>
+                          </div>
 
-                      <h2
-                        id={`${baseId}-panel-title`}
-                        className="text-2xl leading-tight font-semibold text-slate-900 dark:text-slate-50"
-                      >
-                        {openedMovie.title}
-                      </h2>
-                      {openedMovie.originalTitle ? (
-                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                          {openedMovie.originalTitle}
-                        </p>
-                      ) : null}
-
-                      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-600 dark:text-slate-300">
-                        <span className="inline-flex items-center gap-1.5 text-amber-500">
-                          {Array.from({ length: 5 }).map((_, index) => (
-                            <Star
-                              key={index}
-                              size={14}
-                              className={cn(
-                                openedMovie.rating !== null &&
-                                  index < openedMovie.rating
-                                  ? 'fill-amber-400 text-amber-400'
-                                  : 'text-slate-300 dark:text-slate-600'
-                              )}
-                            />
-                          ))}
-                          <span className="ml-1 text-slate-500 dark:text-slate-400">
-                            {openedMovie.rating === null
-                              ? '--'
-                              : t('movies.rating.value', { rating: openedMovie.rating })}
-                          </span>
-                        </span>
-                        <span>
-                          {t('movies.watchDate')}:{' '}
-                          {formatMovieDate(openedMovie.watchDate, locale) || '--'}
-                        </span>
-                        {openedMovie.platform ? (
-                          <span>{openedMovie.platform}</span>
-                        ) : null}
-                      </div>
-
-                      {(openedMovie.reviewSummary || openedMovie.note).trim() ? (
-                        <p className="mt-5 border-l-2 border-[var(--brand-400)]/50 pl-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
-                          {(openedMovie.reviewSummary || openedMovie.note).trim()}
-                        </p>
-                      ) : null}
-
-                      <div className="mt-auto flex flex-wrap gap-2 pt-6">
-                        {openedMovie.reviewSlug ? (
-                          <Link
-                            ref={reviewLinkRef}
-                            to={`/movies/reviews/${encodeURIComponent(openedMovie.reviewSlug)}`}
-                            className="inline-flex h-10 items-center justify-center rounded-full bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
-                            onClick={() => close(false)}
+                          <h2
+                            id={`${baseId}-panel-title`}
+                            className="text-2xl leading-tight font-semibold text-slate-900 dark:text-slate-50"
                           >
-                            {t('movies.shelf.openReview')}
-                          </Link>
-                        ) : null}
-                        {openedMovie.link ? (
-                          <a
-                            ref={doubanLinkRef}
-                            href={openedMovie.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-full border border-slate-200 px-4 text-sm text-slate-600 transition hover:border-[var(--brand-400)] hover:text-[var(--brand-600)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:border-[#363b43] dark:text-slate-300 dark:hover:text-white"
-                          >
-                            <RiDoubanLine size={15} />
-                            {t('movies.actions.openDouban')}
-                          </a>
-                        ) : null}
+                            {openedMovie.title}
+                          </h2>
+                          {openedMovie.originalTitle ? (
+                            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                              {openedMovie.originalTitle}
+                            </p>
+                          ) : null}
+
+                          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-600 dark:text-slate-300">
+                            <span className="inline-flex items-center gap-1.5 text-amber-500">
+                              {Array.from({ length: 5 }).map((_, index) => (
+                                <Star
+                                  key={index}
+                                  size={14}
+                                  className={cn(
+                                    openedMovie.rating !== null &&
+                                      index < openedMovie.rating
+                                      ? 'fill-amber-400 text-amber-400'
+                                      : 'text-slate-300 dark:text-slate-600'
+                                  )}
+                                />
+                              ))}
+                              <span className="ml-1 text-slate-500 dark:text-slate-400">
+                                {openedMovie.rating === null
+                                  ? '--'
+                                  : t('movies.rating.value', { rating: openedMovie.rating })}
+                              </span>
+                            </span>
+                            <span>
+                              {t('movies.watchDate')}:{' '}
+                              {formatMovieDate(openedMovie.watchDate, locale) || '--'}
+                            </span>
+                            {openedMovie.platform ? (
+                              <span>{openedMovie.platform}</span>
+                            ) : null}
+                          </div>
+
+                          {(openedMovie.reviewSummary || openedMovie.note).trim() ? (
+                            <p className="mt-5 border-l-2 border-[var(--brand-400)]/50 pl-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
+                              {(openedMovie.reviewSummary || openedMovie.note).trim()}
+                            </p>
+                          ) : null}
+
+                          <div className="mt-auto flex flex-wrap gap-2 pt-6">
+                            {openedMovie.reviewSlug ? (
+                              <Link
+                                ref={reviewLinkRef}
+                                to={`/movies/reviews/${encodeURIComponent(openedMovie.reviewSlug)}`}
+                                className="inline-flex h-10 items-center justify-center rounded-full bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+                                onClick={() => close(false)}
+                              >
+                                {t('movies.shelf.openReview')}
+                              </Link>
+                            ) : null}
+                            {openedMovie.link ? (
+                              <a
+                                ref={doubanLinkRef}
+                                href={openedMovie.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex h-10 items-center justify-center gap-1.5 rounded-full border border-slate-200 px-4 text-sm text-slate-600 transition hover:border-[var(--brand-400)] hover:text-[var(--brand-600)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:border-[#363b43] dark:text-slate-300 dark:hover:text-white"
+                              >
+                                <RiDoubanLine size={15} />
+                                {t('movies.actions.openDouban')}
+                              </a>
+                            ) : null}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 </motion.div>
               ) : null}
             </AnimatePresence>,

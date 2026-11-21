@@ -205,8 +205,7 @@
       },
     "close": "Close details",
     "openReview": "Read review",
-    "loading": "Shelving the library — {{count}} posters still loading…",
-    "noPosters": "No TMDB posters to show on this page."
+    "textCover": "Text cover"
   },
     "profile": {
       "label": "Profiles",

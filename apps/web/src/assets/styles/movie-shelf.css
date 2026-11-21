@@ -187,30 +187,54 @@
   display: flex;
   height: 100%;
   flex-direction: column;
-  justify-content: flex-end;
-  gap: 0.4rem;
-  padding: 0.75rem 0.6rem;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.85rem 0.65rem;
   background: radial-gradient(
-      circle at 28% 18%,
-      color-mix(in srgb, var(--brand-400) 45%, transparent),
-      transparent 58%
+      circle at 50% 22%,
+      color-mix(in srgb, var(--brand-400) 40%, transparent),
+      transparent 60%
     ),
-    linear-gradient(150deg, #1f2937, #0b1017 72%);
+    linear-gradient(155deg, #243244, #0b1017 74%);
   color: #f8fafc;
+  text-align: center;
 }
 
-.movie-shelf__fallback-icon {
-  opacity: 0.72;
+.movie-shelf__fallback-label {
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 252, 0.5);
 }
 
 .movie-shelf__fallback-title {
-  font-size: 0.76rem;
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
   font-weight: 600;
-  line-height: 1.35;
+  line-height: 1.4;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
+}
+
+.movie-shelf__fallback-original {
+  font-size: 0.56rem;
+  line-height: 1.35;
+  color: rgba(248, 250, 252, 0.62);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.movie-shelf__fallback-rating {
+  margin-top: 0.2rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: #fbbf24;
 }
 
 .movie-shelf__pages {
@@ -385,14 +409,82 @@
   color: var(--text-primary);
 }
 
-.movie-shelf__empty {
-  margin: 1.5rem 0;
+.movie-shelf__dialog {
+  position: relative;
+  width: min(100%, 54rem);
+  perspective: 1400px;
+}
+
+.movie-shelf__spread {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  align-items: stretch;
+  min-height: 25rem;
+  border: 1px solid var(--border-color);
+  border-radius: 1.5rem;
+  background: var(--surface-card);
+  box-shadow: 0 32px 90px -36px rgba(15, 23, 42, 0.65);
+  transform-style: preserve-3d;
+  overflow: visible;
+}
+
+.movie-shelf__leaf {
+  position: relative;
+  z-index: 2;
+  min-height: 25rem;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+}
+
+.movie-shelf__leaf-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 1.45rem 0.35rem 0.35rem 1.45rem;
+  backface-visibility: hidden;
+}
+
+.movie-shelf__leaf-front {
+  background: linear-gradient(150deg, #243244, #0b1017 74%);
+  box-shadow: inset 10px 0 16px -10px rgba(0, 0, 0, 0.85),
+    0 18px 32px rgba(15, 23, 42, 0.28);
+}
+
+.movie-shelf__leaf-inside {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
   padding: 1.5rem;
-  border: 1px dashed var(--border-color);
-  border-radius: 1rem;
   text-align: center;
-  font-size: 0.82rem;
-  color: var(--text-secondary);
+  background: linear-gradient(150deg, #16202c, #0b1017 78%);
+  color: #f8fafc;
+  transform: rotateY(180deg);
+}
+
+.movie-shelf__inside-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.movie-shelf__inside-note {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: rgba(248, 250, 252, 0.62);
+}
+
+.movie-shelf__panel-page {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 1.5rem 1.6rem;
+  border-radius: 0 1.45rem 1.45rem 0;
+  background: var(--surface-card);
+  transform: translateZ(-1px);
 }
 
 .movie-shelf__ghost {
@@ -410,6 +502,24 @@
 
 .movie-shelf__ghost[data-visible='true'] {
   opacity: 0.92;
+}
+
+@media (max-width: 640px) {
+  .movie-shelf__spread {
+    grid-template-columns: 1fr;
+  }
+
+  .movie-shelf__leaf {
+    width: min(62vw, 12rem);
+    min-height: auto;
+    aspect-ratio: 2 / 3;
+    margin: 0 auto;
+  }
+
+  .movie-shelf__panel-page {
+    border-radius: 0 0 1.45rem 1.45rem;
+    padding: 1.25rem;
+  }
 }
 
 @media (max-width: 540px) {

@@ -205,8 +205,7 @@
     },
     "close": "关闭详情",
     "openReview": "阅读影评",
-    "loading": "正在整理书架，还有 {{count}} 部影片的海报待获取…",
-    "noPosters": "当前页没有可展示的 TMDB 海报。"
+    "textCover": "文字封面"
   },
     "profile": {
       "label": "主页",
