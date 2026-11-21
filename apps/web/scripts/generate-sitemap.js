@@ -3,7 +3,11 @@ import path from 'node:path'
 import process from 'node:process'
 import matter from 'gray-matter'
 import { fileURLToPath } from 'node:url'
-import { collectMarkdownFiles, collectPostMarkdownFiles } from './post-files.js'
+import {
+  collectMarkdownFiles,
+  collectPostMarkdownFiles,
+  resolvePostSlug,
+} from './post-files.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -22,12 +26,6 @@ console.log(`Scanning posts in: ${POSTS_DIR}`)
 if (!fs.existsSync(POSTS_DIR)) {
   console.error(`Posts directory not found: ${POSTS_DIR}`)
   process.exit(1)
-}
-
-function resolvePostSlug(filePath, data) {
-  return typeof data.slug === 'string' && data.slug.trim()
-    ? data.slug.trim()
-    : path.basename(filePath, '.md')
 }
 
 const files = collectPostMarkdownFiles(POSTS_DIR)

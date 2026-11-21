@@ -24,6 +24,11 @@ export function collectMarkdownFiles(dirPath) {
   return files.sort()
 }
 
+export function resolvePostSlug(filePath, data) {
+  const slug = typeof data?.slug === 'string' ? data.slug.trim() : ''
+  return slug || path.basename(filePath, '.md')
+}
+
 export function collectPostMarkdownFiles(postsDir) {
   if (!fs.existsSync(postsDir)) return []
 
