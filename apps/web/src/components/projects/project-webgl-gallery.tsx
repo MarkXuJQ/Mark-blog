@@ -365,7 +365,7 @@ export function ProjectWebglGallery({
       document.removeEventListener('visibilitychange', onVisibilityChange)
       cancelTick()
     }
-  }, [reduced, total])
+  }, [reduced, total, sectionRef])
 
   // 1:1 drag with a locked pivot. Page scroll (the sticky track) drives the
   // fan forward; a drag adds a free offset on top, pivoting from where the

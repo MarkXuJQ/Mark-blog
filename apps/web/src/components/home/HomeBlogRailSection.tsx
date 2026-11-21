@@ -390,6 +390,11 @@ function BlogRailItem({
           decoding="async"
           referrerPolicy="no-referrer"
           onError={(event) => {
+            // During prerendering external images are intentionally blocked.
+            // Keep the optimized src in the emitted HTML so real browsers do
+            // not download both the original and the optimized variant.
+            if (window.__PRERENDER__) return
+
             const image = event.currentTarget
             const original = image.dataset.originalSrc
             if (original && image.src !== original) {
