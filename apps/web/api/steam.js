@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createResponseCache } from '../server/responseCache.js'
+import { createJsonResponder } from './http.js'
 import {
   createSteamLiveDashboard,
   createSteamStaticLibrary,
@@ -20,75 +22,16 @@ const LIVE_DASHBOARD_CACHE_TTL_MS = 1000 * 60 * 60 * 2
 const FALLBACK_DASHBOARD_CACHE_TTL_MS = 1000 * 60 * 60 * 24
 
 const responseCache = {
-  live: new Map(),
-  fallback: new Map(),
+  live: createResponseCache(),
+  fallback: createResponseCache(),
 }
 
-const inflightRequests = {
-  live: new Map(),
-  fallback: new Map(),
-}
-
-function json(res, status, body) {
-  res.statusCode = status
-  res.setHeader('Content-Type', 'application/json; charset=utf-8')
-  res.setHeader('Cache-Control', 'public, max-age=7200, must-revalidate')
-  res.setHeader(
-    'CDN-Cache-Control',
-    'public, s-maxage=86400, stale-while-revalidate=86400'
-  )
-  res.setHeader(
-    'Vercel-CDN-Cache-Control',
-    'public, s-maxage=86400, stale-while-revalidate=86400'
-  )
-  res.end(JSON.stringify(body))
-}
-
-function getCachedValue(cacheMap, key) {
-  const entry = cacheMap.get(key)
-  if (!entry) return { hit: false }
-
-  if (entry.expiresAt > Date.now()) {
-    return {
-      hit: true,
-      value: entry.value,
-    }
-  }
-
-  cacheMap.delete(key)
-  return { hit: false }
-}
-
-async function getOrCreateCachedValue(options) {
-  const { cacheMap, inflightMap, key, ttlMs, fetcher } = options
-  const cached = getCachedValue(cacheMap, key)
-  if (cached.hit) {
-    return cached.value
-  }
-
-  const existingRequest = inflightMap.get(key)
-  if (existingRequest) {
-    return existingRequest
-  }
-
-  const request = Promise.resolve()
-    .then(fetcher)
-    .then((value) => {
-      cacheMap.set(key, {
-        value,
-        expiresAt: Date.now() + ttlMs,
-      })
-      inflightMap.delete(key)
-      return value
-    })
-    .catch((error) => {
-      inflightMap.delete(key)
-      throw error
-    })
-
-  inflightMap.set(key, request)
-  return request
-}
+const cdnCacheControl = 'public, s-maxage=86400, stale-while-revalidate=86400'
+const json = createJsonResponder({
+  cacheControl: 'public, max-age=7200, must-revalidate',
+  cdnCacheControl,
+  vercelCacheControl: cdnCacheControl,
+})
 
 async function readStoredLibrary() {
   const raw = await fs.readFile(STATIC_LIBRARY_FILE_PATH, 'utf-8')
@@ -105,9 +48,7 @@ async function resolveDashboardFromStaticLibrary(staticLibrary, config) {
   const cacheKey = `${steamId}:${apiKey ? 'webapi' : 'community_xml'}:${staticLibrary.generatedAt || 'static'}`
 
   try {
-    return await getOrCreateCachedValue({
-      cacheMap: responseCache.live,
-      inflightMap: inflightRequests.live,
+    return await responseCache.live.getOrCreate({
       key: cacheKey,
       ttlMs: LIVE_DASHBOARD_CACHE_TTL_MS,
       fetcher: () => createSteamLiveDashboard(staticLibrary, config),
@@ -133,9 +74,7 @@ async function resolveDashboardPayload() {
 
     const cacheKey = `${config.steamId}:${config.apiKey ? 'webapi' : 'community_xml'}`
 
-    return getOrCreateCachedValue({
-      cacheMap: responseCache.fallback,
-      inflightMap: inflightRequests.fallback,
+    return responseCache.fallback.getOrCreate({
       key: cacheKey,
       ttlMs: FALLBACK_DASHBOARD_CACHE_TTL_MS,
       fetcher: () => createSteamStaticLibrary(config),

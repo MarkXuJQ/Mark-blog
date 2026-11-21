@@ -1,4 +1,5 @@
 import process from 'node:process'
+import { createJsonResponder } from './http.js'
 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3'
 const DEFAULT_LANGUAGE = 'en-US'
@@ -44,12 +45,7 @@ function getCacheControl(request) {
   return 'no-store'
 }
 
-function json(res, status, body, cacheControl = 'no-store') {
-  res.statusCode = status
-  res.setHeader('Content-Type', 'application/json; charset=utf-8')
-  res.setHeader('Cache-Control', cacheControl)
-  res.end(JSON.stringify(body))
-}
+const json = createJsonResponder()
 
 function buildTmdbRequest(searchParams) {
   const action = (searchParams.get('action') || '').trim()
