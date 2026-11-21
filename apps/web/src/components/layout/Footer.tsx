@@ -1,4 +1,11 @@
+import type { ReactNode } from 'react'
 import { cn } from '@/lib/classNames'
+import {
+  CC_LICENSE_URL,
+  getFeedBasePath,
+  SOCIAL_LINKS,
+  type SocialLinkId,
+} from '@/lib/links/socialLinks'
 import { Trans, useTranslation } from 'react-i18next'
 import { LuGithub } from 'react-icons/lu'
 import {
@@ -10,7 +17,14 @@ import {
 import { RiRssLine } from 'react-icons/ri'
 import { SiXiaohongshu } from 'react-icons/si'
 
-const TRAVELLINGS_URL = 'https://www.travellings.cn/go.html'
+const SOCIAL_ICONS: Record<SocialLinkId, ReactNode> = {
+  github: <LuGithub size={20} aria-hidden="true" />,
+  bilibili: <RiBilibiliLine size={20} aria-hidden="true" />,
+  twitter: <RiTwitterXFill size={20} aria-hidden="true" />,
+  zhihu: <RiZhihuFill size={20} aria-hidden="true" />,
+  xiaohongshu: <SiXiaohongshu size={20} aria-hidden="true" />,
+  travellings: <RiSubwayFill size={20} aria-hidden="true" />,
+}
 
 export function Footer({
   className,
@@ -21,7 +35,7 @@ export function Footer({
 }) {
   const { t, i18n } = useTranslation()
   const year = new Date().getFullYear()
-  const feedPath = i18n.language?.startsWith('zh') ? '/feeds/zh/' : '/feeds/en/'
+  const feedPath = getFeedBasePath(i18n.language)
   const isHomeVariant = variant === 'home'
 
   return (
@@ -35,91 +49,28 @@ export function Footer({
     >
       <div className="mx-auto max-w-3xl space-y-4">
         <div className="flex justify-center gap-4">
-          <a
-            href="https://github.com/MarkXuJQ"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              'transition-colors',
-              isHomeVariant
-                ? 'hover:text-white'
-                : 'hover:text-[var(--text-primary)]'
-            )}
-            aria-label="GitHub"
-          >
-            <LuGithub size={20} />
-          </a>
-          <a
-            href="https://space.bilibili.com/351772037"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              'transition-colors',
-              isHomeVariant
-                ? 'hover:text-white'
-                : 'hover:text-[var(--text-primary)]'
-            )}
-            aria-label="Bilibili"
-          >
-            <RiBilibiliLine size={20} />
-          </a>
-          <a
-            href="https://x.com/MXu269/articles"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              'transition-colors',
-              isHomeVariant
-                ? 'hover:text-white'
-                : 'hover:text-[var(--text-primary)]'
-            )}
-            aria-label="X (Twitter)"
-          >
-            <RiTwitterXFill size={20} />
-          </a>
-          <a
-            href="https://www.zhihu.com/people/mark-81-75"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              'transition-colors',
-              isHomeVariant
-                ? 'hover:text-white'
-                : 'hover:text-[var(--text-primary)]'
-            )}
-            aria-label="Zhihu"
-          >
-            <RiZhihuFill size={20} />
-          </a>
-          <a
-            href="https://www.xiaohongshu.com/user/profile/62f4f889000000001e01e89e"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              'transition-colors',
-              isHomeVariant
-                ? 'hover:text-white'
-                : 'hover:text-[var(--text-primary)]'
-            )}
-            aria-label="小红书"
-          >
-            <SiXiaohongshu size={20} />
-          </a>
-          <a
-            href={TRAVELLINGS_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              'transition-colors',
-              isHomeVariant
-                ? 'hover:text-white'
-                : 'hover:text-[var(--text-primary)]'
-            )}
-            aria-label={t('travellings.aria')}
-            title={t('travellings.aria')}
-          >
-            <RiSubwayFill size={20} />
-          </a>
+          {SOCIAL_LINKS.map((link) => {
+            const label =
+              link.id === 'travellings' ? t('travellings.aria') : link.label
+            return (
+              <a
+                key={link.id}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  'transition-colors',
+                  isHomeVariant
+                    ? 'hover:text-white'
+                    : 'hover:text-[var(--text-primary)]'
+                )}
+                aria-label={label}
+                title={link.id === 'travellings' ? label : undefined}
+              >
+                {SOCIAL_ICONS[link.id]}
+              </a>
+            )
+          })}
           <a
             href={feedPath}
             target="_blank"
@@ -132,7 +83,7 @@ export function Footer({
             )}
             aria-label="Atom"
           >
-            <RiRssLine size={20} />
+            <RiRssLine size={20} aria-hidden="true" />
           </a>
           {/* Add more social links here */}
           {/* Example:
@@ -154,7 +105,7 @@ export function Footer({
               components={[
                 <a
                   key="cc-link"
-                  href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                  href={CC_LICENSE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={cn(
@@ -172,7 +123,7 @@ export function Footer({
           <p
             className={cn(
               'text-xs',
-              isHomeVariant ? 'text-white/34' : 'text-[var(--text-disabled)]'
+              isHomeVariant ? 'text-white/34' : 'text-[var(--text-secondary)]'
             )}
           >
             {t('footer.builtWith')}

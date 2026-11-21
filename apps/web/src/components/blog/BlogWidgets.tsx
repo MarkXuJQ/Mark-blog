@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SearchTriggerInput } from '@/components/search/SearchTriggerInput'
 import { Card } from '@/components/ui/Card'
@@ -10,6 +10,11 @@ import {
 } from '@/components/ui/tooltip'
 import { cn } from '@/lib/classNames'
 import { getImageUrl } from '@/lib/image'
+import {
+  SOCIAL_LINKS,
+  TRAVELLINGS_URL,
+  type SocialLinkId,
+} from '@/lib/links/socialLinks'
 import { widgetCardClass } from '@/lib/styles'
 import { Link } from 'react-router-dom'
 import { Clock, FileText, Activity, Layers } from 'lucide-react'
@@ -23,9 +28,26 @@ import {
 } from 'react-icons/ri'
 import type { BlogPostSummary } from '@/lib/content/posts'
 
-const TRAVELLINGS_URL = 'https://www.travellings.cn/go.html'
+// --- Social Links ---
+type SidebarSocialLinkId = Extract<
+  SocialLinkId,
+  'github' | 'bilibili' | 'twitter' | 'zhihu'
+>
 
-// --- Profile Content (Internal) ---
+const SOCIAL_ICONS: Record<SidebarSocialLinkId, ReactNode> = {
+  github: <LuGithub size={20} aria-hidden="true" />,
+  bilibili: <RiBilibiliLine size={20} aria-hidden="true" />,
+  twitter: <RiTwitterXFill size={20} aria-hidden="true" />,
+  zhihu: <RiZhihuFill size={20} aria-hidden="true" />,
+}
+
+const STATIC_SOCIAL_LINKS = (
+  ['github', 'bilibili', 'twitter', 'zhihu'] as const
+).map((id) => {
+  const link = SOCIAL_LINKS.find((item) => item.id === id)
+  if (!link) throw new Error(`Missing social link: ${id}`)
+  return { href: link.href, label: link.label, icon: SOCIAL_ICONS[id] }
+})
 function ProfileContent() {
   const { t, i18n } = useTranslation()
   const signatureOptions = useMemo(
@@ -106,30 +128,6 @@ function ProfileContent() {
     </>
   )
 }
-
-// --- Social Links ---
-const STATIC_SOCIAL_LINKS = [
-  {
-    href: 'https://github.com/MarkXuJQ',
-    label: 'GitHub',
-    icon: <LuGithub size={20} aria-hidden="true" />,
-  },
-  {
-    href: 'https://space.bilibili.com/351772037',
-    label: 'Bilibili',
-    icon: <RiBilibiliLine size={20} aria-hidden="true" />,
-  },
-  {
-    href: 'https://x.com/MXu269/articles',
-    label: 'X (Twitter)',
-    icon: <RiTwitterXFill size={20} aria-hidden="true" />,
-  },
-  {
-    href: 'https://www.zhihu.com/people/mark-81-75',
-    label: 'Zhihu',
-    icon: <RiZhihuFill size={20} aria-hidden="true" />,
-  },
-]
 
 function SocialLinks() {
   const { t } = useTranslation()

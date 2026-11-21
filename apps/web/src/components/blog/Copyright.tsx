@@ -6,6 +6,7 @@ import {
   FaCreativeCommonsSa,
 } from 'react-icons/fa'
 import { SignatureAnimation } from '@/components/blog/SignatureAnimation'
+import { CC_LICENSE_URL } from '@/lib/links/socialLinks'
 
 export function Copyright() {
   const { t } = useTranslation()
@@ -63,7 +64,7 @@ export function Copyright() {
                   components={[
                     <a
                       key="license-link"
-                      href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                      href={CC_LICENSE_URL}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="CC BY-NC-SA 4.0"

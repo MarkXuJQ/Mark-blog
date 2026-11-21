@@ -396,8 +396,8 @@ export function preloadTwikooScript() {
   })
 }
 
-/** Default backend used when `VITE_TWIKOO_ENV_ID` is not configured. */
-const TWIKOO_ENV_ID_FALLBACK = 'https://comments.markxu.icu/api/twikoo'
+export const TWIKOO_ENV_ID_FALLBACK =
+  'https://comments.markxu.icu/api/twikoo'
 
 /** Resolved Twikoo env id (a CloudBase id or a self-hosted function URL). */
 export function getTwikooEnvId(): string {
