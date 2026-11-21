@@ -1,5 +1,14 @@
 [
   {
+    "id": "qf-20261121",
+    "date": "2026-11-21",
+    "content": [
+      "Homepage backgrounds now use preblurred images, and project previews are served as responsive AVIF variants to cut image payloads",
+      "The travel map loads only on interaction, and the project gallery pauses its animation loop when offscreen",
+      "Consolidated duplicate logic for scroll progress, motion, theme, reader mode, and API caching"
+    ]
+  },
+  {
     "id": "qf-20261119",
     "date": "2026-11-19",
     "content": [
