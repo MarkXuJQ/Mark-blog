@@ -6,6 +6,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent,
   type PointerEvent,
 } from 'react'
@@ -30,8 +31,45 @@ type Opened = { id: string; phase: Phase; byReader: boolean }
 type ShelfGroup = { id: string; label: string; movies: CsvMovieItem[] }
 
 const UNDATED_GROUP = 'undated'
-const FLIGHT_MS = 520
-const FLIGHT_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
+
+/** Damped spring, sampled into a CSS linear() easing. From the reference shelf. */
+function spring(damping: number, duration: number) {
+  const a = 1 - damping
+  const omega = (2 * Math.PI * 1000) / duration
+  const at = (t: number) => {
+    if (a >= 1) return 1 - Math.exp(-omega * t) * (1 + omega * t)
+    const w = omega * Math.sqrt(1 - a * a)
+    return (
+      1 -
+      Math.exp(-a * omega * t) *
+        (Math.cos(w * t) + ((a * omega) / w) * Math.sin(w * t))
+    )
+  }
+  let settle = 0
+  for (let t = 0; t < 3; t += 0.002) {
+    if (Math.abs(1 - at(t)) > 0.001) settle = t
+  }
+  const points = Array.from({ length: 41 }, (_, index) =>
+    index === 40 ? 1 : Math.round(at((index / 40) * settle) * 1e4) / 1e4
+  )
+  return {
+    easing: `linear(${points.join(', ')})`,
+    duration: Math.round(settle * 1000),
+  }
+}
+
+const BACK = spring(0.3, 560)
+const FLIGHT = spring(0.14, 520)
+const ROOT_VARS = {
+  '--spring': BACK.easing,
+  '--spring-ms': `${BACK.duration}ms`,
+  '--lift': 0.26,
+} as CSSProperties
+
+const easingOf = ({ easing }: { easing: string }) =>
+  typeof CSS !== 'undefined' && CSS.supports('transition-timing-function', easing)
+    ? easing
+    : 'cubic-bezier(0.2, 0.8, 0.2, 1)'
 
 function monthKeyOf(movie: CsvMovieItem): string {
   return /^\d{4}-\d{2}/.test(movie.watchDate)
@@ -54,7 +92,6 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
   const { t } = useTranslation()
   const reduced = usePrefersReducedMotion()
   const baseId = useId().replace(/[^\w-]/g, '')
-  const hintId = `${baseId}-hint`
 
   const monthLabel = useCallback(
     (key: string) => {
@@ -75,7 +112,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
   const buttons = useRef(new Map<string, HTMLButtonElement>())
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const reviewLinkRef = useRef<HTMLAnchorElement>(null)
-  const doubanLinkRef = useRef<HTMLAnchorElement>(null)
+  const entryLinkRef = useRef<HTMLAnchorElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const flyerRef = useRef<HTMLDivElement>(null)
   const leafRef = useRef<HTMLDivElement>(null)
@@ -209,7 +246,6 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
     if (!button) return
     button.style.setProperty('--rx', '0deg')
     button.style.setProperty('--ry', '0deg')
-    button.style.setProperty('--lift', '0')
   }, [])
 
   const lean = useCallback((id: string, at: Point) => {
@@ -219,7 +255,6 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
     const y = Math.min(1, Math.max(0, at.y))
     button.style.setProperty('--rx', `${((y - 0.5) * 2 * 11).toFixed(2)}deg`)
     button.style.setProperty('--ry', `${(-(x - 0.5) * 2 * 15).toFixed(2)}deg`)
-    button.style.setProperty('--lift', '0.26')
   }, [])
 
   const hover = useCallback(
@@ -251,7 +286,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
               next.delete(before)
               return next
             })
-          }, reduced ? 0 : 560)
+          }, reduced ? 0 : BACK.duration + 80)
         )
       }
     },
@@ -339,13 +374,18 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
               },
               { transform: 'none' },
             ],
-            { duration: FLIGHT_MS, easing: FLIGHT_EASE }
+            { duration: FLIGHT.duration, easing: easingOf(FLIGHT) }
           )
         : null,
       play(
         leafRef.current,
         [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(-145deg)' }],
-        { duration: FLIGHT_MS, delay: 80, easing: FLIGHT_EASE, fill: 'backwards' }
+        {
+          duration: FLIGHT.duration,
+          delay: 80,
+          easing: easingOf(FLIGHT),
+          fill: 'backwards',
+        }
       ),
     ]
     allDone(animations).then((done) => {
@@ -375,7 +415,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
           { opacity: 1, offset: 0.86 },
           { opacity: 0, offset: 1 },
         ],
-        { duration: FLIGHT_MS, delay: 80, easing: 'ease-in', fill: 'forwards' }
+        { duration: FLIGHT.duration, delay: 100, easing: 'ease-in', fill: 'forwards' }
       ),
       to
         ? play(
@@ -386,7 +426,12 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                 transform: `translate(${(to.left - box.left) / scale}px, ${(to.top - box.top) / scale}px) scale(${to.width / box.width})`,
               },
             ],
-            { duration: FLIGHT_MS, delay: 80, easing: FLIGHT_EASE, fill: 'forwards' }
+            {
+              duration: FLIGHT.duration,
+              delay: 100,
+              easing: easingOf(FLIGHT),
+              fill: 'forwards',
+            }
           )
         : play(flyerRef.current, [{ opacity: 1 }, { opacity: 0 }], {
             duration: 220,
@@ -563,7 +608,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
     const stops = [
       closeButtonRef.current,
       reviewLinkRef.current,
-      doubanLinkRef.current,
+      entryLinkRef.current,
     ].filter(
       (element): element is HTMLButtonElement | HTMLAnchorElement =>
         Boolean(element)
@@ -582,15 +627,12 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
   const openedTmdb = openedMovie ? (tmdbMap[openedMovie.id] ?? null) : null
 
   return (
-    <div ref={rootRef} className="movie-shelf">
-      <div className="movie-shelf__intro">
-        <h2 className="movie-shelf__intro-title">{t('movies.shelf.title')}</h2>
-        <p className="movie-shelf__hint">{t('movies.shelf.hint')}</p>
-      </div>
-      <p id={hintId} className="sr-only">
-        {t('movies.shelf.hint')}
-      </p>
-
+    <div
+      ref={rootRef}
+      className="movie-shelf"
+      style={ROOT_VARS}
+      inert={Boolean(opened?.byReader && opened.phase !== 'closing')}
+    >
       {groups.map((group) => (
         <section
           key={group.id}
@@ -627,7 +669,6 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                     type="button"
                     className="movie-shelf__book"
                     aria-label={`${movie.title}. ${starText(movie.rating)}`}
-                    aria-describedby={hintId}
                     data-pose={hovered === movie.id ? 'tilt' : 'rest'}
                     data-open={opened?.id === movie.id || undefined}
                     tabIndex={tabStop === movie.id ? 0 : -1}
@@ -877,7 +918,8 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                               {t('movies.watchDate')}:{' '}
                               {formatMovieDate(openedMovie.watchDate, locale) || '--'}
                             </span>
-                            {openedMovie.platform ? (
+                            {openedMovie.platform &&
+                            !/^(douban|豆瓣)$/i.test(openedMovie.platform.trim()) ? (
                               <span>{openedMovie.platform}</span>
                             ) : null}
                           </div>
@@ -888,30 +930,32 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                             </p>
                           ) : null}
 
-                          <div className="mt-auto flex flex-wrap gap-2 pt-6">
-                            {openedMovie.reviewSlug ? (
-                              <Link
-                                ref={reviewLinkRef}
-                                to={`/movies/reviews/${encodeURIComponent(openedMovie.reviewSlug)}`}
-                                className="inline-flex h-10 items-center justify-center rounded-full bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
-                                onClick={() => close(false)}
-                              >
-                                {t('movies.shelf.openReview')}
-                              </Link>
-                            ) : null}
-                            {openedMovie.link ? (
-                              <a
-                                ref={doubanLinkRef}
-                                href={openedMovie.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex h-10 items-center justify-center gap-1.5 rounded-full border border-slate-200 px-4 text-sm text-slate-600 transition hover:border-[var(--brand-400)] hover:text-[var(--brand-600)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:border-[#363b43] dark:text-slate-300 dark:hover:text-white"
-                              >
-                                <RiDoubanLine size={15} />
-                                {t('movies.actions.openDouban')}
-                              </a>
-                            ) : null}
-                          </div>
+                          {openedMovie.reviewSlug || openedMovie.link ? (
+                            <div className="mt-auto flex flex-wrap gap-2 pt-6">
+                              {openedMovie.reviewSlug ? (
+                                <Link
+                                  ref={reviewLinkRef}
+                                  to={`/movies/reviews/${encodeURIComponent(openedMovie.reviewSlug)}`}
+                                  className="inline-flex h-10 items-center justify-center rounded-full bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+                                  onClick={() => close(false)}
+                                >
+                                  {t('movies.shelf.openReview')}
+                                </Link>
+                              ) : null}
+                              {openedMovie.link ? (
+                                <a
+                                  ref={entryLinkRef}
+                                  href={openedMovie.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex h-10 items-center justify-center gap-1.5 rounded-full border border-slate-200 px-4 text-sm text-slate-600 transition hover:border-[var(--brand-400)] hover:text-[var(--brand-600)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:border-[#363b43] dark:text-slate-300 dark:hover:text-white"
+                                >
+                                  <RiDoubanLine size={15} />
+                                  {t('movies.shelf.openEntry')}
+                                </a>
+                              ) : null}
+                            </div>
+                          ) : null}
                         </div>
                       </div>
                     </div>
