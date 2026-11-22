@@ -71,6 +71,21 @@ const easingOf = ({ easing }: { easing: string }) =>
     ? easing
     : 'cubic-bezier(0.2, 0.8, 0.2, 1)'
 
+function pointerAngle(element: HTMLElement, clientX: number, clientY: number) {
+  const box = element.getBoundingClientRect()
+  return Math.atan2(
+    clientY - (box.top + box.height / 2),
+    clientX - (box.left + box.width / 2)
+  )
+}
+
+function shortestAngle(from: number, to: number) {
+  let delta = to - from
+  while (delta > Math.PI) delta -= Math.PI * 2
+  while (delta < -Math.PI) delta += Math.PI * 2
+  return delta
+}
+
 function monthKeyOf(movie: CsvMovieItem): string {
   return /^\d{4}-\d{2}/.test(movie.watchDate)
     ? movie.watchDate.slice(0, 7)
@@ -120,7 +135,8 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
   const discRef = useRef<HTMLSpanElement>(null)
   const discDragRef = useRef<{
     id: number
-    x: number
+    angle: number
+    total: number
     rotation: number
     started: boolean
   } | null>(null)
@@ -366,9 +382,11 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
     (event: PointerEvent<HTMLSpanElement>) => {
       event.preventDefault()
       event.currentTarget.setPointerCapture(event.pointerId)
+      const angle = pointerAngle(event.currentTarget, event.clientX, event.clientY)
       discDragRef.current = {
         id: event.pointerId,
-        x: event.clientX,
+        angle,
+        total: 0,
         rotation: discRotationRef.current,
         started: false,
       }
@@ -380,13 +398,12 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
     (event: PointerEvent<HTMLSpanElement>) => {
       const drag = discDragRef.current
       if (!drag || drag.id !== event.pointerId) return
-      const distance = event.clientX - drag.x
-      if (!drag.started) {
-        if (Math.abs(distance) < 4) return
-        drag.started = true
-        drag.x = event.clientX
-      }
-      const rotation = drag.rotation - (event.clientX - drag.x) * 0.35
+      const angle = pointerAngle(event.currentTarget, event.clientX, event.clientY)
+      drag.total += shortestAngle(drag.angle, angle)
+      drag.angle = angle
+      if (!drag.started && Math.abs(drag.total) < (3 * Math.PI) / 180) return
+      drag.started = true
+      const rotation = drag.rotation + (drag.total * 180) / Math.PI
       discRotationRef.current = rotation
       discRef.current?.style.setProperty('--disc-rotation', `${rotation}deg`)
     },
