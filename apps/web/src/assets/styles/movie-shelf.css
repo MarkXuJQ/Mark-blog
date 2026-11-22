@@ -381,7 +381,7 @@
   transform-origin: 0;
   transform-style: preserve-3d;
   will-change: transform;
-  transform: rotateY(-165deg);
+  transform: rotateY(-155deg);
 }
 
 .movie-shelf__leaf-face {

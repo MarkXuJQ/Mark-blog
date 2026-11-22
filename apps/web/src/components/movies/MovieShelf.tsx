@@ -374,7 +374,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
     (event: PointerEvent<HTMLSpanElement>) => {
       const drag = discDragRef.current
       if (!drag || drag.id !== event.pointerId) return
-      const rotation = drag.rotation + (event.clientX - drag.x) * 0.55
+      const rotation = drag.rotation - (event.clientX - drag.x) * 0.55
       discRotationRef.current = rotation
       discRef.current?.style.setProperty('--disc-rotation', `${rotation}deg`)
     },
@@ -419,7 +419,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
         : null,
       play(
         leafRef.current,
-        [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(-165deg)' }],
+        [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(-155deg)' }],
         {
           duration: FLIGHT.duration,
           delay: 80,
@@ -480,7 +480,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
       play(
         leafRef.current,
         [
-          { transform: interruptedLeafRef.current ?? 'rotateY(-165deg)' },
+          { transform: interruptedLeafRef.current ?? 'rotateY(-155deg)' },
           { transform: 'rotateY(0deg)' },
         ],
         { duration: 300, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'forwards' }
