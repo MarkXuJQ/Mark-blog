@@ -71,6 +71,21 @@ const easingOf = ({ easing }: { easing: string }) =>
     ? easing
     : 'cubic-bezier(0.2, 0.8, 0.2, 1)'
 
+function pointerAngle(element: HTMLElement, clientX: number, clientY: number) {
+  const box = element.getBoundingClientRect()
+  return Math.atan2(
+    clientY - (box.top + box.height / 2),
+    clientX - (box.left + box.width / 2)
+  )
+}
+
+function shortestAngle(from: number, to: number) {
+  let delta = to - from
+  while (delta > Math.PI) delta -= Math.PI * 2
+  while (delta < -Math.PI) delta += Math.PI * 2
+  return delta
+}
+
 function monthKeyOf(movie: CsvMovieItem): string {
   return /^\d{4}-\d{2}/.test(movie.watchDate)
     ? movie.watchDate.slice(0, 7)
@@ -117,6 +132,15 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
   const flyerRef = useRef<HTMLDivElement>(null)
   const leafRef = useRef<HTMLDivElement>(null)
   const slotRef = useRef<HTMLDivElement>(null)
+  const discRef = useRef<HTMLSpanElement>(null)
+  const discDragRef = useRef<{
+    id: number
+    angle: number
+    total: number
+    rotation: number
+    started: boolean
+  } | null>(null)
+  const discRotationRef = useRef(0)
   const hoveredRef = useRef<string | null>(null)
   const openedRef = useRef<Opened | null>(null)
   const interactedRef = useRef(false)
@@ -331,6 +355,8 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
       departureRef.current = cover ? cover.getBoundingClientRect() : null
       interruptedRef.current = null
       interruptedLeafRef.current = null
+      discDragRef.current = null
+      discRotationRef.current = 0
       if (byReader) lastFocusedRef.current = movie.id
       const next: Opened = {
         id: movie.id,
@@ -351,6 +377,49 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
     openedRef.current = next
     setOpened(next)
   }, [])
+
+  const onDiscPointerDown = useCallback(
+    (event: PointerEvent<HTMLSpanElement>) => {
+      event.preventDefault()
+      event.currentTarget.setPointerCapture(event.pointerId)
+      const angle = pointerAngle(event.currentTarget, event.clientX, event.clientY)
+      discDragRef.current = {
+        id: event.pointerId,
+        angle,
+        total: 0,
+        rotation: discRotationRef.current,
+        started: false,
+      }
+    },
+    []
+  )
+
+  const onDiscPointerMove = useCallback(
+    (event: PointerEvent<HTMLSpanElement>) => {
+      const drag = discDragRef.current
+      if (!drag || drag.id !== event.pointerId) return
+      const angle = pointerAngle(event.currentTarget, event.clientX, event.clientY)
+      drag.total += shortestAngle(drag.angle, angle)
+      drag.angle = angle
+      if (!drag.started && Math.abs(drag.total) < (3 * Math.PI) / 180) return
+      drag.started = true
+      const rotation = drag.rotation + (drag.total * 180) / Math.PI
+      discRotationRef.current = rotation
+      discRef.current?.style.setProperty('--disc-rotation', `${rotation}deg`)
+    },
+    []
+  )
+
+  const onDiscPointerUp = useCallback(
+    (event: PointerEvent<HTMLSpanElement>) => {
+      if (discDragRef.current?.id !== event.pointerId) return
+      discDragRef.current = null
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId)
+      }
+    },
+    []
+  )
 
   const playOpening = useCallback(() => {
     const element = flyerRef.current
@@ -379,7 +448,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
         : null,
       play(
         leafRef.current,
-        [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(-145deg)' }],
+        [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(-155deg)' }],
         {
           duration: FLIGHT.duration,
           delay: 80,
@@ -440,7 +509,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
       play(
         leafRef.current,
         [
-          { transform: interruptedLeafRef.current ?? 'rotateY(-145deg)' },
+          { transform: interruptedLeafRef.current ?? 'rotateY(-155deg)' },
           { transform: 'rotateY(0deg)' },
         ],
         { duration: 300, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'forwards' }
@@ -803,7 +872,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                   />
                   <div
                     role="presentation"
-                    className="relative flex min-h-full items-center justify-center p-4 sm:p-6"
+                    className="pointer-events-none relative flex min-h-full items-center justify-center p-4 sm:p-6"
                     onPointerDownCapture={claimPanel}
                     onFocusCapture={claimPanel}
                   >
@@ -814,7 +883,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                       aria-modal={opened?.byReader || undefined}
                       aria-labelledby={`${baseId}-panel-title`}
                       data-phase={opened?.phase}
-                      className="movie-shelf__dialog"
+                      className="movie-shelf__dialog pointer-events-auto"
                       onKeyDown={onPanelKey}
                     >
                       <div ref={flyerRef} className="movie-shelf__spread">
@@ -843,40 +912,46 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                             <span className="movie-shelf__cover-shade" />
                           </div>
                           <div className="movie-shelf__leaf-face movie-shelf__leaf-inside">
-                            {openedTmdb?.posterUrl ? (
-                              <span className="movie-shelf__inside-art">
-                                <img
-                                  src={openedTmdb.posterUrl}
-                                  alt=""
-                                  referrerPolicy="no-referrer"
-                                />
+                            <span
+                              ref={discRef}
+                              className="movie-shelf__disc"
+                              onPointerDown={onDiscPointerDown}
+                              onPointerMove={onDiscPointerMove}
+                              onPointerUp={onDiscPointerUp}
+                              onPointerCancel={onDiscPointerUp}
+                            >
+                              <span className="movie-shelf__disc-face">
+                                {openedTmdb?.posterUrl ? (
+                                  <span className="movie-shelf__disc-label">
+                                    <img
+                                      src={openedTmdb.posterUrl}
+                                      alt=""
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  </span>
+                                ) : (
+                                  <span className="movie-shelf__disc-label movie-shelf__disc-label--laser" />
+                                )}
                               </span>
-                            ) : (
-                              <span className="movie-shelf__fallback-label">
-                                {t('movies.shelf.textCover')}
-                              </span>
-                            )}
+                              <span className="movie-shelf__disc-shine" />
+                            </span>
                             <span className="movie-shelf__inside-title">
                               {openedMovie.title}
-                            </span>
-                            <span className="movie-shelf__inside-note">
-                              {monthLabel(monthKeyOf(openedMovie))} ·{' '}
-                              {starText(openedMovie.rating)}
                             </span>
                           </div>
                         </div>
 
                         <div ref={slotRef} className="movie-shelf__panel-page">
-                          <div className="mb-3 flex items-start justify-between gap-3">
-                            <span className="rounded-full bg-amber-400/15 px-2.5 py-1 text-[0.65rem] font-medium tracking-[0.16em] text-amber-600 uppercase dark:text-amber-300">
-                              {monthLabel(monthKeyOf(openedMovie))}
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="hidden text-[0.62rem] font-medium tracking-[0.18em] text-slate-400 uppercase sm:inline dark:text-slate-500">
+                              {t('movies.shelf.detailLabel')}
                             </span>
                             <button
                               ref={closeButtonRef}
                               type="button"
                               aria-label={t('movies.shelf.close')}
                               onClick={() => close(true)}
-                              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
+                              className="ml-auto inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white sm:h-9 sm:w-9"
                             >
                               <X size={18} />
                             </button>
@@ -884,18 +959,26 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
 
                           <h2
                             id={`${baseId}-panel-title`}
-                            className="text-2xl leading-tight font-semibold text-slate-900 dark:text-slate-50"
+                            className="text-sm leading-snug font-semibold break-words text-slate-900 dark:text-slate-50 sm:text-2xl sm:leading-tight"
                           >
                             {openedMovie.title}
                           </h2>
                           {openedMovie.originalTitle ? (
-                            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                            <p className="hidden text-sm text-slate-500 sm:block dark:text-slate-400">
                               {openedMovie.originalTitle}
                             </p>
                           ) : null}
 
-                          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-600 dark:text-slate-300">
-                            <span className="inline-flex items-center gap-1.5 text-amber-500">
+                          <div className="movie-shelf__panel-meta flex flex-col gap-1 text-xs text-slate-600 sm:gap-2 sm:text-sm dark:text-slate-300">
+                            <span
+                              role="img"
+                              aria-label={
+                                openedMovie.rating === null
+                                  ? starText(null)
+                                  : t('movies.rating.value', { rating: openedMovie.rating })
+                              }
+                              className="inline-flex items-center gap-1 text-amber-500 sm:gap-1.5"
+                            >
                               {Array.from({ length: 5 }).map((_, index) => (
                                 <Star
                                   key={index}
@@ -908,35 +991,46 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                                   )}
                                 />
                               ))}
-                              <span className="ml-1 text-slate-500 dark:text-slate-400">
+                              <span className="hidden text-slate-500 sm:inline dark:text-slate-400">
                                 {openedMovie.rating === null
                                   ? '--'
                                   : t('movies.rating.value', { rating: openedMovie.rating })}
                               </span>
                             </span>
                             <span>
-                              {t('movies.watchDate')}:{' '}
+                              <span className="hidden sm:inline">
+                                {t('movies.watchDate')}:{' '}
+                              </span>
                               {formatMovieDate(openedMovie.watchDate, locale) || '--'}
                             </span>
+                            {openedTmdb?.releaseDate &&
+                            openedTmdb.releaseDate.slice(0, 10) !== openedMovie.watchDate ? (
+                              <span className="hidden sm:inline">
+                                {t('movies.releaseDate')}:{' '}
+                                {formatMovieDate(openedTmdb.releaseDate, locale)}
+                              </span>
+                            ) : null}
                             {openedMovie.platform &&
                             !/^(douban|豆瓣)$/i.test(openedMovie.platform.trim()) ? (
-                              <span>{openedMovie.platform}</span>
+                              <span className="hidden sm:inline">
+                                {openedMovie.platform}
+                              </span>
                             ) : null}
                           </div>
 
                           {(openedMovie.reviewSummary || openedMovie.note).trim() ? (
-                            <p className="mt-5 border-l-2 border-[var(--brand-400)]/50 pl-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
+                            <p className="movie-shelf__panel-note hidden border-l-2 border-[var(--brand-400)]/50 pl-3 text-sm leading-7 text-slate-600 sm:block dark:text-slate-300">
                               {(openedMovie.reviewSummary || openedMovie.note).trim()}
                             </p>
                           ) : null}
 
                           {openedMovie.reviewSlug || openedMovie.link ? (
-                            <div className="mt-auto flex flex-wrap gap-2 pt-6">
+                            <div className="mt-auto flex flex-wrap gap-1.5 pt-2 sm:gap-2 sm:pt-6">
                               {openedMovie.reviewSlug ? (
                                 <Link
                                   ref={reviewLinkRef}
                                   to={`/movies/reviews/${encodeURIComponent(openedMovie.reviewSlug)}`}
-                                  className="inline-flex h-10 items-center justify-center rounded-full bg-slate-900 px-4 text-sm font-medium text-white transition hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+                                  className="inline-flex h-8 items-center justify-center rounded-full bg-slate-900 px-3 text-xs font-medium text-white transition hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white sm:h-10 sm:px-4 sm:text-sm"
                                   onClick={() => close(false)}
                                 >
                                   {t('movies.shelf.openReview')}
@@ -948,7 +1042,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                                   href={openedMovie.link}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="inline-flex h-10 items-center justify-center gap-1.5 rounded-full border border-slate-200 px-4 text-sm text-slate-600 transition hover:border-[var(--brand-400)] hover:text-[var(--brand-600)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:border-[#363b43] dark:text-slate-300 dark:hover:text-white"
+                                  className="inline-flex h-8 items-center justify-center gap-1 rounded-full border border-slate-200 px-3 text-xs text-slate-600 transition hover:border-[var(--brand-400)] hover:text-[var(--brand-600)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-400)] dark:border-[#363b43] dark:text-slate-300 dark:hover:text-white sm:h-10 sm:gap-1.5 sm:px-4 sm:text-sm"
                                 >
                                   <RiDoubanLine size={15} />
                                   {t('movies.shelf.openEntry')}

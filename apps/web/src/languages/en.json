@@ -204,6 +204,7 @@
         "undated": "Undated"
       },
     "close": "Close details",
+    "detailLabel": "Details",
     "openReview": "Read review",
     "openEntry": "View entry",
     "textCover": "Text cover"
@@ -244,6 +245,7 @@
       "value": "{{rating}} stars"
     },
     "watchDate": "Watch date",
+    "releaseDate": "Release date",
     "actions": {
       "openDouban": "Douban"
     },
