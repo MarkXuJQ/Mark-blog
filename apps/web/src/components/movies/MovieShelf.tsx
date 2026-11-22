@@ -118,7 +118,12 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
   const leafRef = useRef<HTMLDivElement>(null)
   const slotRef = useRef<HTMLDivElement>(null)
   const discRef = useRef<HTMLSpanElement>(null)
-  const discDragRef = useRef<{ id: number; x: number; rotation: number } | null>(null)
+  const discDragRef = useRef<{
+    id: number
+    x: number
+    rotation: number
+    started: boolean
+  } | null>(null)
   const discRotationRef = useRef(0)
   const hoveredRef = useRef<string | null>(null)
   const openedRef = useRef<Opened | null>(null)
@@ -365,6 +370,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
         id: event.pointerId,
         x: event.clientX,
         rotation: discRotationRef.current,
+        started: false,
       }
     },
     []
@@ -374,7 +380,13 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
     (event: PointerEvent<HTMLSpanElement>) => {
       const drag = discDragRef.current
       if (!drag || drag.id !== event.pointerId) return
-      const rotation = drag.rotation - (event.clientX - drag.x) * 0.55
+      const distance = event.clientX - drag.x
+      if (!drag.started) {
+        if (Math.abs(distance) < 4) return
+        drag.started = true
+        drag.x = event.clientX
+      }
+      const rotation = drag.rotation - (event.clientX - drag.x) * 0.35
       discRotationRef.current = rotation
       discRef.current?.style.setProperty('--disc-rotation', `${rotation}deg`)
     },
@@ -843,7 +855,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                   />
                   <div
                     role="presentation"
-                    className="relative flex min-h-full items-center justify-center p-4 sm:p-6"
+                    className="pointer-events-none relative flex min-h-full items-center justify-center p-4 sm:p-6"
                     onPointerDownCapture={claimPanel}
                     onFocusCapture={claimPanel}
                   >
@@ -854,7 +866,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                       aria-modal={opened?.byReader || undefined}
                       aria-labelledby={`${baseId}-panel-title`}
                       data-phase={opened?.phase}
-                      className="movie-shelf__dialog"
+                      className="movie-shelf__dialog pointer-events-auto"
                       onKeyDown={onPanelKey}
                     >
                       <div ref={flyerRef} className="movie-shelf__spread">

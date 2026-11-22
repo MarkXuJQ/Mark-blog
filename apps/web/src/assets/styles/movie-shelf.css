@@ -476,6 +476,8 @@
   border-radius: 50%;
   cursor: grab;
   touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
   background: #cbd5e1;
   outline: 1px solid rgba(148, 163, 184, 0.22);
   outline-offset: 8px;
