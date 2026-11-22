@@ -379,7 +379,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
         : null,
       play(
         leafRef.current,
-        [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(-145deg)' }],
+        [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(-180deg)' }],
         {
           duration: FLIGHT.duration,
           delay: 80,
@@ -440,7 +440,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
       play(
         leafRef.current,
         [
-          { transform: interruptedLeafRef.current ?? 'rotateY(-145deg)' },
+          { transform: interruptedLeafRef.current ?? 'rotateY(-180deg)' },
           { transform: 'rotateY(0deg)' },
         ],
         { duration: 300, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'forwards' }
@@ -859,6 +859,9 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                                 </span>
                               ) : null}
                               <span className="movie-shelf__disc-shine" />
+                            </span>
+                            <span className="movie-shelf__inside-title">
+                              {openedMovie.title}
                             </span>
                           </div>
                         </div>
