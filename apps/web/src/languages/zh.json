@@ -204,6 +204,7 @@
       "undated": "未记录日期"
     },
     "close": "关闭详情",
+    "detailLabel": "影片信息",
     "openReview": "阅读影评",
     "openEntry": "影片条目",
     "textCover": "文字封面"
@@ -244,6 +245,7 @@
       "value": "{{rating}} 星"
     },
     "watchDate": "观看日期",
+    "releaseDate": "上映日期",
     "actions": {
       "openDouban": "豆瓣条目"
     },
