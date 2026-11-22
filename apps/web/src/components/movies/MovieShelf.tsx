@@ -117,6 +117,9 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
   const flyerRef = useRef<HTMLDivElement>(null)
   const leafRef = useRef<HTMLDivElement>(null)
   const slotRef = useRef<HTMLDivElement>(null)
+  const discRef = useRef<HTMLSpanElement>(null)
+  const discDragRef = useRef<{ id: number; x: number; rotation: number } | null>(null)
+  const discRotationRef = useRef(0)
   const hoveredRef = useRef<string | null>(null)
   const openedRef = useRef<Opened | null>(null)
   const interactedRef = useRef(false)
@@ -331,6 +334,8 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
       departureRef.current = cover ? cover.getBoundingClientRect() : null
       interruptedRef.current = null
       interruptedLeafRef.current = null
+      discDragRef.current = null
+      discRotationRef.current = 0
       if (byReader) lastFocusedRef.current = movie.id
       const next: Opened = {
         id: movie.id,
@@ -351,6 +356,41 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
     openedRef.current = next
     setOpened(next)
   }, [])
+
+  const onDiscPointerDown = useCallback(
+    (event: PointerEvent<HTMLSpanElement>) => {
+      event.preventDefault()
+      event.currentTarget.setPointerCapture(event.pointerId)
+      discDragRef.current = {
+        id: event.pointerId,
+        x: event.clientX,
+        rotation: discRotationRef.current,
+      }
+    },
+    []
+  )
+
+  const onDiscPointerMove = useCallback(
+    (event: PointerEvent<HTMLSpanElement>) => {
+      const drag = discDragRef.current
+      if (!drag || drag.id !== event.pointerId) return
+      const rotation = drag.rotation + (event.clientX - drag.x) * 0.55
+      discRotationRef.current = rotation
+      discRef.current?.style.setProperty('--disc-rotation', `${rotation}deg`)
+    },
+    []
+  )
+
+  const onDiscPointerUp = useCallback(
+    (event: PointerEvent<HTMLSpanElement>) => {
+      if (discDragRef.current?.id !== event.pointerId) return
+      discDragRef.current = null
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId)
+      }
+    },
+    []
+  )
 
   const playOpening = useCallback(() => {
     const element = flyerRef.current
@@ -379,7 +419,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
         : null,
       play(
         leafRef.current,
-        [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(-180deg)' }],
+        [{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(-165deg)' }],
         {
           duration: FLIGHT.duration,
           delay: 80,
@@ -440,7 +480,7 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
       play(
         leafRef.current,
         [
-          { transform: interruptedLeafRef.current ?? 'rotateY(-180deg)' },
+          { transform: interruptedLeafRef.current ?? 'rotateY(-165deg)' },
           { transform: 'rotateY(0deg)' },
         ],
         { duration: 300, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'forwards' }
@@ -844,20 +884,26 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                           </div>
                           <div className="movie-shelf__leaf-face movie-shelf__leaf-inside">
                             <span
-                              className={cn(
-                                'movie-shelf__disc',
-                                !openedTmdb?.posterUrl && 'movie-shelf__disc--laser'
-                              )}
+                              ref={discRef}
+                              className="movie-shelf__disc"
+                              onPointerDown={onDiscPointerDown}
+                              onPointerMove={onDiscPointerMove}
+                              onPointerUp={onDiscPointerUp}
+                              onPointerCancel={onDiscPointerUp}
                             >
-                              {openedTmdb?.posterUrl ? (
-                                <span className="movie-shelf__disc-label">
-                                  <img
-                                    src={openedTmdb.posterUrl}
-                                    alt=""
-                                    referrerPolicy="no-referrer"
-                                  />
-                                </span>
-                              ) : null}
+                              <span className="movie-shelf__disc-face">
+                                {openedTmdb?.posterUrl ? (
+                                  <span className="movie-shelf__disc-label">
+                                    <img
+                                      src={openedTmdb.posterUrl}
+                                      alt=""
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  </span>
+                                ) : (
+                                  <span className="movie-shelf__disc-label movie-shelf__disc-label--laser" />
+                                )}
+                              </span>
                               <span className="movie-shelf__disc-shine" />
                             </span>
                             <span className="movie-shelf__inside-title">

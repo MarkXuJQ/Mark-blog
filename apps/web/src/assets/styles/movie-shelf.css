@@ -359,8 +359,8 @@
    over the right page when closed and hinges left about the centre spine. */
 .movie-shelf__dialog {
   position: relative;
-  width: min(48rem, calc(100vw - 2rem), calc((100vh - 4rem) * 8 / 5));
-  aspect-ratio: 8 / 5;
+  width: min(48rem, calc(100vw - 2rem), calc((100vh - 4rem) * 4 / 3));
+  aspect-ratio: 4 / 3;
   perspective: 1100px;
   perspective-origin: 50%;
   color: var(--text-primary);
@@ -381,7 +381,7 @@
   transform-origin: 0;
   transform-style: preserve-3d;
   will-change: transform;
-  transform: rotateY(-180deg);
+  transform: rotateY(-165deg);
 }
 
 .movie-shelf__leaf-face {
@@ -474,6 +474,8 @@
   flex: 0 0 auto;
   overflow: hidden;
   border-radius: 50%;
+  cursor: grab;
+  touch-action: none;
   background: #cbd5e1;
   outline: 1px solid rgba(148, 163, 184, 0.22);
   outline-offset: 8px;
@@ -482,7 +484,19 @@
     inset 0 0 22px rgba(15, 23, 42, 0.16);
 }
 
-.movie-shelf__disc--laser {
+.movie-shelf__disc:active {
+  cursor: grabbing;
+}
+
+.movie-shelf__disc-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  transform: rotate(var(--disc-rotation, 0deg));
+}
+
+.movie-shelf__disc-label--laser {
   background: radial-gradient(
       circle at 34% 26%,
       rgba(255, 255, 255, 0.7),
