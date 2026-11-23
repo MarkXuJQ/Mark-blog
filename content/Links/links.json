@@ -177,6 +177,19 @@
       "avatar": "https://ragnote.top/favicon.ico",
       "description": "Life is code. I will debug it.",
       "comment": "网站的各种效果很帅，文章以笔记为主，也很全面。"
+    },
+    {
+      "name": "SlowMo's 办事处",
+      "url": "https://www.theslowmo.com/",
+      "avatar": "https://www.theslowmo.com/icons/avatar.png",
+      "description": "我们的头脑比天空更辽阔。",
+      "comment": "SlowMo 的个人博客，用 Astro 搭建，记录博客工程、AI 自动化与树莓派折腾，蛮有审美，期待多多更新。"
+    },
+    {
+      "name": "四通八達",
+      "url": "https://www.ooowl.net/",
+      "avatar": "https://www.ooowl.net/favicon.svg",
+      "comment": "分享自托管工具、编辑器与效率软件的使用心得，偶尔也会写一些自己读过看过的东西。"
     }
   ]
 }

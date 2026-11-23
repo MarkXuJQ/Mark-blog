@@ -1,5 +1,14 @@
 [
   {
+    "id": "qf-20261122",
+    "date": "2026-11-22",
+    "content": [
+      "Added a 3D bookshelf to the movies page with month-by-month volumes that open into an optical-disc detail spread: covers fill the disc, and movies without one show the iridescent reverse side",
+      "The disc can be dragged to rotate based on the pointer's angle around its center, and clicking outside the book closes the detail view",
+      "The detail panel now adapts by screen size: phones show only the title, rating, watch date, and links, while desktops add the original title, release date, and a review excerpt"
+    ]
+  },
+  {
     "id": "qf-20261121",
     "date": "2026-11-21",
     "content": [
