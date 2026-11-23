@@ -23,6 +23,19 @@ import 'prismjs/components/prism-yaml'
 import 'prismjs/plugins/line-numbers/prism-line-numbers'
 
 const COLLAPSE_LINE_THRESHOLD = 10
+let codeBodyId = 0
+
+const TERMINAL_LANGUAGES = new Set([
+  'bash',
+  'cmd',
+  'console',
+  'fish',
+  'powershell',
+  'shell',
+  'sh',
+  'terminal',
+  'zsh',
+])
 
 const LANGUAGE_ALIASES: Record<string, string> = {
   'c++': 'cpp',
@@ -115,8 +128,12 @@ function updateExpandButton(
   isExpanded: boolean,
   labels: CodeBlockEnhancementLabels
 ) {
-  button.textContent = isExpanded ? labels.collapse : labels.expand
+  const label = isExpanded ? labels.collapse : labels.expand
+  button.textContent = label
   button.setAttribute('aria-expanded', String(isExpanded))
+  button.setAttribute('aria-label', label)
+  button.title = label
+  button.dataset.state = isExpanded ? 'expanded' : 'collapsed'
 }
 
 export function useArticleCodeBlockEnhancements(
@@ -188,8 +205,20 @@ export function useArticleCodeBlockEnhancements(
 
           const frame = document.createElement('div')
           frame.className = 'md-code-frame not-prose'
-          frame.setAttribute('data-code-language', prismLanguage || 'plain')
+          const normalizedLanguage = prismLanguage || 'plain'
+          frame.setAttribute('data-code-language', normalizedLanguage)
           frame.setAttribute('data-wrap', 'true')
+          if (
+            TERMINAL_LANGUAGES.has(normalizedLanguage) ||
+            TERMINAL_LANGUAGES.has(originalLanguage.toLowerCase())
+          ) {
+            frame.classList.add('is-terminal')
+            // A one-line shell command reads better with a `$` prompt than
+            // with a line number, like 纸鹿's line indicator approach.
+            if (lineCount === 1) {
+              frame.classList.add('is-single-command')
+            }
+          }
 
           const toolbar = document.createElement('div')
           toolbar.className = 'md-code-toolbar'
@@ -200,6 +229,21 @@ export function useArticleCodeBlockEnhancements(
 
           const actions = document.createElement('div')
           actions.className = 'md-code-actions'
+
+          let footerCollapseButton: HTMLButtonElement | null = null
+          const bodyId = `md-code-body-${++codeBodyId}`
+
+          if (lineCount > COLLAPSE_LINE_THRESHOLD) {
+            frame.classList.add('is-collapsible', 'is-collapsed')
+
+            // A single control at the end of the visible block — the toolbar
+            // stays dedicated to the language label and the copy/wrap actions.
+            footerCollapseButton = document.createElement('button')
+            footerCollapseButton.type = 'button'
+            footerCollapseButton.className = 'md-code-expand'
+            footerCollapseButton.setAttribute('aria-controls', bodyId)
+            updateExpandButton(footerCollapseButton, false, activeLabels)
+          }
 
           const wrapButton = document.createElement('button')
           wrapButton.type = 'button'
@@ -218,21 +262,13 @@ export function useArticleCodeBlockEnhancements(
 
           const body = document.createElement('div')
           body.className = 'md-code-body'
-
-          let expandButton: HTMLButtonElement | null = null
-          if (lineCount > COLLAPSE_LINE_THRESHOLD) {
-            frame.classList.add('is-collapsible', 'is-collapsed')
-            expandButton = document.createElement('button')
-            expandButton.type = 'button'
-            expandButton.className = 'md-code-expand'
-            updateExpandButton(expandButton, false, activeLabels)
-          }
+          body.id = bodyId
 
           pre.replaceWith(frame)
           body.append(pre)
           frame.append(toolbar, body)
-          if (expandButton) {
-            frame.append(expandButton)
+          if (footerCollapseButton) {
+            frame.append(footerCollapseButton)
           }
 
           if (prismLanguage && Prism.languages[prismLanguage]) {
@@ -269,16 +305,38 @@ export function useArticleCodeBlockEnhancements(
             }
           }
 
-          const handleExpandToggle = () => {
-            if (!expandButton) return
-            const nextExpanded = frame.classList.contains('is-collapsed')
+          const handleCollapseToggle = () => {
+            if (!footerCollapseButton) return
+
+            const wasCollapsed = frame.classList.contains('is-collapsed')
+            const nextExpanded = wasCollapsed
+
+            // Only collapsing follows the control. Expanding keeps the current
+            // scroll position so the top of the code stays in view — anchoring
+            // the footer button there would scroll the new code above the
+            // viewport.
+            const triggerRect = nextExpanded
+              ? null
+              : footerCollapseButton.getBoundingClientRect()
+
             frame.classList.toggle('is-collapsed', !nextExpanded)
-            updateExpandButton(expandButton, nextExpanded, activeLabels)
+            updateExpandButton(footerCollapseButton, nextExpanded, activeLabels)
+
+            if (!triggerRect) return
+            const triggerTop = triggerRect.top
+            if (triggerTop >= window.innerHeight || triggerRect.bottom <= 0) {
+              return
+            }
+            const nextTop = footerCollapseButton.getBoundingClientRect().top
+            const shift = nextTop - triggerTop
+            if (Math.abs(shift) > 1) {
+              window.scrollBy(0, shift)
+            }
           }
 
           wrapButton.addEventListener('click', handleWrapToggle)
           copyButton.addEventListener('click', handleCopy)
-          expandButton?.addEventListener('click', handleExpandToggle)
+          footerCollapseButton?.addEventListener('click', handleCollapseToggle)
         } catch (error) {
           console.error('Failed to enhance code block', error)
         }
