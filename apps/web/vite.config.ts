@@ -45,7 +45,7 @@ function markdownItArticleTables(md: MarkdownIt) {
   md.core.ruler.after('inline', 'article_table_metadata', (state: StateCore) => {
     let pendingWidths: string[] | null = null
 
-    state.tokens.forEach((token) => {
+    state.tokens.forEach((token, index) => {
       if (token.type === 'html_block') {
         const match = token.content.trim().match(TABLE_WIDTHS_PATTERN)
 
@@ -63,12 +63,31 @@ function markdownItArticleTables(md: MarkdownIt) {
       if (token.type === 'table_open') {
         token.attrJoin('class', 'md-table')
 
+        // Column count drives the narrow-screen minimum width, so wide tables
+        // pan sideways instead of crushing every cell into the viewport.
+        let columns = 0
+        for (let cursor = index + 1; cursor < state.tokens.length; cursor += 1) {
+          const next = state.tokens[cursor]
+          if (next.type === 'table_close' || next.type === 'thead_close') break
+          if (next.type === 'th_open') columns += 1
+        }
+
+        const styles: string[] = []
         if (pendingWidths?.length) {
           token.meta = {
             ...(token.meta ?? {}),
             columnWidths: pendingWidths,
           }
-          token.attrSet('style', '--md-table-layout: fixed;')
+          // Author-set widths already describe the intended proportions, so
+          // these opt out of the narrow-screen column floor.
+          token.attrJoin('class', 'md-table-fixed')
+          styles.push('--md-table-layout: fixed')
+        }
+        if (columns > 0) {
+          styles.push(`--md-table-columns: ${columns}`)
+        }
+        if (styles.length > 0) {
+          token.attrSet('style', `${styles.join('; ')};`)
         }
 
         pendingWidths = null

@@ -40,6 +40,7 @@ import { useArticleCodeBlockEnhancements } from '@/hooks/article/useArticleCodeB
 import { useArticleImageLightbox } from '@/hooks/article/useArticleImageLightbox'
 import { useArticlePhotoScroll } from '@/hooks/article/useArticlePhotoScroll'
 import { useArticlePhotoRoutes } from '@/hooks/article/useArticlePhotoRoutes'
+import { useArticleTableEnhancements } from '@/hooks/article/useArticleTableEnhancements'
 import { decorateArticleContent } from '@/lib/article/decorateArticleContent'
 import {
   countWords,
@@ -104,6 +105,14 @@ export function BlogPost() {
       plainText: t('codeBlock.plainText'),
       scroll: t('codeBlock.scroll'),
       wrap: t('codeBlock.wrap'),
+    },
+    `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`
+  )
+  useArticleTableEnhancements(
+    contentRef,
+    {
+      collapse: t('tableBlock.collapse'),
+      expand: t('tableBlock.expand'),
     },
     `${contentHtml}:${simpleMode ? 'simple' : 'rich'}`
   )

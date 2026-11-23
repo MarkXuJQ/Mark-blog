@@ -33,6 +33,13 @@ i {
   font-size: 0.95em;
   color: var(--article-muted);
   opacity: 1;
+  border-left-width: 2px;
+  border-left-color: color-mix(
+    in srgb,
+    var(--brand-500) 58%,
+    var(--border-color)
+  );
+  padding-left: 1rem;
 }
 .markdown-body blockquote em,
 .markdown-body blockquote i,
@@ -41,14 +48,60 @@ i {
   font-style: normal !important;
 }
 
+/* Keep paragraph endings from stranding one or two characters on their own
+   line. Headings already use `text-wrap: balance` above. */
+.article-rich .markdown-body :where(p, li, dd, blockquote),
+.simple-reading .markdown-body :where(p, li, dd, blockquote) {
+  text-wrap: pretty;
+}
+
+/* Shared image treatment: a quiet radius only. No hairline — screenshots
+   already carry their own edges, and the border read as a picture frame. */
+.markdown-body,
+.prose {
+  --article-media-radius: 0.5rem;
+  --article-link-underline: color-mix(
+    in srgb,
+    var(--article-link) 22%,
+    transparent
+  );
+  --inline-code-bg: rgba(15, 23, 42, 0.05);
+  --inline-code-border: rgba(15, 23, 42, 0.1);
+  --inline-code-color: var(--text-primary);
+}
+
+html.dark .markdown-body,
+html.dark .prose {
+  --inline-code-bg: rgba(230, 230, 230, 0.05);
+  --inline-code-border: rgba(230, 230, 230, 0.1);
+  --inline-code-color: var(--text-primary);
+}
+
+.markdown-body :where(.post-image-figure, figure) > img,
+.markdown-body > p > img:only-child,
+.prose :where(.post-image-figure, figure) > img,
+.prose > p > img:only-child {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--article-media-radius);
+}
+
+/* 纸鹿-style inline code: a translucent wash plus a hairline, rather than a
+   solid chip. Kept at 0.85em/400 so it reads as code without shouting. */
 .markdown-body :not(pre) > code,
 .prose :not(pre) > code {
-  border-radius: 0.5rem;
-  padding: 0.16rem 0.4rem;
-  background: color-mix(in srgb, var(--surface-0) 84%, #0f172a 16%);
-  color: color-mix(in srgb, var(--text-primary) 82%, #2563eb 18%);
-  font-size: 0.92em;
-  font-weight: 600;
+  border: 1px solid var(--inline-code-border);
+  border-radius: 4px;
+  padding: 0.1em 0.3em;
+  background: var(--inline-code-bg);
+  color: var(--inline-code-color);
+  font-family: var(--font-code);
+  font-size: 0.85em;
+  font-weight: 400;
+  line-height: inherit;
+  -webkit-box-decoration-break: slice;
+  box-decoration-break: slice;
 }
 
 .markdown-body :not(pre) > code::before,
@@ -56,12 +109,6 @@ i {
 .prose :not(pre) > code::before,
 .prose :not(pre) > code::after {
   content: none !important;
-}
-
-.dark .markdown-body :not(pre) > code,
-.dark .prose :not(pre) > code {
-  background: color-mix(in srgb, var(--surface-card) 76%, #0f172a 24%);
-  color: #dbeafe;
 }
 
 .markdown-body pre,
@@ -183,9 +230,6 @@ i {
     color-mix(in srgb, var(--brand-500) 22%, white),
     rgba(255, 255, 255, 0.94)
   );
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    0 10px 24px rgba(46, 126, 163, 0.12);
   color: color-mix(in srgb, var(--brand-600) 76%, #0f172a 24%);
   font-family: 'JetBrains Mono Nerd Web', 'JetBrains Mono', monospace;
   font-size: 0.72rem;
@@ -221,7 +265,7 @@ i {
     var(--brand-500),
     color-mix(in srgb, var(--brand-400) 60%, white)
   );
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+  outline: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .article-rich .markdown-body a {
@@ -233,6 +277,55 @@ i {
 
 .article-rich .markdown-body a:hover {
   text-decoration: none;
+}
+
+/* Link favicons: injected as a background on a pseudo-element so the anchor
+   keeps only its text children and hover previews still recognize it. */
+.markdown-body a[data-link-favicon]::before,
+.prose a[data-link-favicon]::before {
+  content: '';
+  display: inline-block;
+  width: 0.95em;
+  height: 0.95em;
+  margin-right: 0.3em;
+  vertical-align: -0.14em;
+  border-radius: 2px;
+  background-image: var(--link-favicon-url);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+/* 纸鹿-style ProseA: a soft underline that blooms into a full highlight on
+   hover. Scoped to links that already carry a favicon, so heading anchors,
+   website cards and embed controls keep their own treatment. */
+.article-rich .markdown-body a[data-link-favicon],
+.simple-reading .markdown-body a[data-link-favicon],
+.prose a[data-link-favicon] {
+  margin: -0.1em -0.2em;
+  padding: 0.1em 0.2em;
+  border-radius: 0;
+  background: linear-gradient(
+      var(--article-link-underline),
+      var(--article-link-underline)
+    )
+    no-repeat bottom / 100% 0.1em;
+  color: var(--article-link);
+  transition:
+    background-size 200ms ease,
+    border-radius 200ms ease,
+    color 200ms ease;
+}
+
+.article-rich .markdown-body a[data-link-favicon]:hover,
+.article-rich .markdown-body a[data-link-favicon]:focus-visible,
+.simple-reading .markdown-body a[data-link-favicon]:hover,
+.simple-reading .markdown-body a[data-link-favicon]:focus-visible,
+.prose a[data-link-favicon]:hover,
+.prose a[data-link-favicon]:focus-visible {
+  border-radius: 0.3em;
+  background-size: 100% 100%;
+  color: var(--article-link-hover);
 }
 
 .article-rich
@@ -258,38 +351,78 @@ i {
 .article-rich .markdown-body strong,
 .article-rich .markdown-body b {
   font-family: inherit;
-  font-weight: 800;
-  color: var(--article-strong);
-  background-image: linear-gradient(
-    180deg,
-    transparent 50%,
-    var(--article-strong-highlight) 50%,
-    var(--article-strong-highlight) 90%,
-    transparent 90%
+  font-weight: 600;
+  color: inherit;
+  background-image: none;
+}
+
+.markdown-body .md-table-block,
+.prose .md-table-block,
+.markdown-body .md-table-frame,
+.prose .md-table-frame {
+  --md-table-frame-bg: color-mix(in srgb, var(--surface-card) 97%, #f8fafc 3%);
+  --md-table-border: var(--border-color);
+  /* Opaque so the header band never lets rows show through. */
+  --md-table-head-bg: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--surface-card) 92%, var(--brand-400) 8%),
+    color-mix(in srgb, var(--surface-card) 96%, white 4%)
   );
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
+  --md-table-row-bg: color-mix(
+    in srgb,
+    var(--surface-card) 94%,
+    var(--brand-400) 6%
+  );
+  /* Footer bar that closes the box, a step darker than the table surface. */
+  --md-table-bar-bg: color-mix(in srgb, var(--surface-card) 90%, #94a3b8 10%);
+}
+
+.markdown-body .md-table-block,
+.prose .md-table-block {
+  margin: 1.7rem 0;
+  max-width: 100%;
 }
 
 .markdown-body .md-table-frame,
 .prose .md-table-frame {
   margin: 1.7rem 0;
   max-width: 100%;
+  /* Tables are never a fixed-height scrolling box. Wide ones still pan
+     sideways, but height always follows the content — long tables fold
+     through the collapse control instead of an inner scrollbar. */
   overflow-x: auto;
   overflow-y: hidden;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--md-table-border);
   border-radius: 0.75rem;
-  background: color-mix(in srgb, var(--surface-card) 97%, #f8fafc 3%);
-  box-shadow: var(--shadow-card);
+  background: var(--md-table-frame-bg);
   scrollbar-color: color-mix(in srgb, var(--article-muted) 36%, transparent)
     transparent;
   scrollbar-width: thin;
 }
 
+.markdown-body .md-table-block .md-table-frame,
+.prose .md-table-block .md-table-frame {
+  margin: 0;
+  /* The footer bar closes the box, so only the top corners stay round. */
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+/* Dark mode needs a slightly lifted surface: the old table background sat
+   only ~1.1:1 against the article background and visually melted into it. */
+html.dark .markdown-body .md-table-block,
+html.dark .prose .md-table-block,
+html.dark .markdown-body .md-table-frame,
+html.dark .prose .md-table-frame {
+  --md-table-frame-bg: #2a2e36;
+  --md-table-border: #414852;
+  --md-table-head-bg: #343a43;
+  --md-table-row-bg: #2d323b;
+  --md-table-bar-bg: #23262d;
+}
+
 .markdown-body .md-table-frame::-webkit-scrollbar,
 .prose .md-table-frame::-webkit-scrollbar {
+  width: 0.42rem;
   height: 0.42rem;
 }
 
@@ -302,6 +435,85 @@ i {
 .prose .md-table-frame::-webkit-scrollbar-thumb {
   border-radius: 999px;
   background: color-mix(in srgb, var(--article-muted) 34%, transparent);
+}
+
+/* Collapsed state: clamp the frame and fade its last visible row into the
+   surface so the cut reads as "there is more", not as a broken border. */
+.markdown-body .md-table-block.is-collapsed .md-table-frame,
+.prose .md-table-block.is-collapsed .md-table-frame {
+  max-height: min(58vh, 21rem);
+}
+
+.markdown-body .md-table-block.is-collapsed .md-table-frame::after,
+.prose .md-table-block.is-collapsed .md-table-frame::after {
+  content: '';
+  pointer-events: none;
+  position: sticky;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+  height: 3.4rem;
+  margin-top: -3.4rem;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    var(--md-table-frame-bg) 82%
+  );
+}
+
+/* Full-width footer bar that closes the frame — same affordance as the code
+   block's expand control, not a floating pill under the table. */
+.markdown-body .md-table-footer,
+.prose .md-table-footer {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--md-table-border);
+  border-top: 0;
+  border-radius: 0 0 0.75rem 0.75rem;
+  background: var(--md-table-bar-bg);
+}
+
+.markdown-body .md-table-toggle,
+.prose .md-table-toggle {
+  appearance: none;
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: var(--article-muted);
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  opacity: 0.6;
+  transition:
+    opacity 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.markdown-body .md-table-toggle:hover,
+.prose .md-table-toggle:hover {
+  background: color-mix(
+    in srgb,
+    var(--md-table-bar-bg) 84%,
+    var(--brand-400) 16%
+  );
+  color: var(--article-heading);
+  opacity: 1;
+}
+
+.markdown-body .md-table-toggle:focus-visible,
+.prose .md-table-toggle:focus-visible {
+  color: var(--article-heading);
+  opacity: 1;
+  outline: 2px solid color-mix(in srgb, var(--brand-400) 55%, transparent);
+  outline-offset: -2px;
 }
 
 .markdown-body .md-table,
@@ -317,17 +529,19 @@ i {
 
 .markdown-body .md-table thead,
 .prose .md-table thead {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--brand-400) 10%, transparent),
-    color-mix(in srgb, var(--surface-card) 94%, transparent)
-  );
+  background: var(--md-table-head-bg);
+}
+
+.markdown-body .md-table thead th,
+.prose .md-table thead th {
+  background: var(--md-table-head-bg);
+  border-bottom: 1px solid var(--md-table-border) !important;
 }
 
 .markdown-body .md-table :where(th, td),
 .prose .md-table :where(th, td) {
   min-width: 0;
-  border-color: var(--border-color) !important;
+  border-color: var(--md-table-border) !important;
   padding: 0.72rem 0.86rem;
   vertical-align: top;
   line-height: 1.62;
@@ -357,17 +571,20 @@ i {
 
 .markdown-body .md-table tbody tr:nth-child(even),
 .prose .md-table tbody tr:nth-child(even) {
-  background: color-mix(in srgb, var(--surface-card) 94%, var(--brand-400) 6%);
-}
-
-.markdown-body .md-table tbody tr:hover,
-.prose .md-table tbody tr:hover {
-  background: color-mix(in srgb, var(--surface-card) 90%, var(--brand-400) 10%);
+  background: var(--md-table-row-bg);
 }
 
 .simple-reading .markdown-body .md-table-frame {
   border-radius: 0.5rem;
-  box-shadow: none;
+}
+
+/* Reader mode uses a tighter radius; keep the frame + footer bar joined. */
+.simple-reading .markdown-body .md-table-block .md-table-frame {
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.simple-reading .markdown-body .md-table-footer {
+  border-radius: 0 0 0.5rem 0.5rem;
 }
 
 .simple-reading .markdown-body .md-table :where(th, td) {
@@ -375,15 +592,33 @@ i {
 }
 
 @media (max-width: 640px) {
+  /* A table squeezed into a phone viewport breaks every column into
+     three-line cells. Give it a per-column floor and let it pan instead.
+     Tables with author-set widths keep their own proportions. */
+  .markdown-body .md-table:not(.md-table-fixed),
+  .prose .md-table:not(.md-table-fixed) {
+    min-width: min(42rem, calc(var(--md-table-columns, 2) * 8.5rem));
+  }
+
   .markdown-body .md-table :where(th, td),
   .prose .md-table :where(th, td) {
     padding: 0.6rem 0.45rem;
-    overflow-wrap: anywhere;
+    /* `break-word` (not `anywhere`) so long words still count toward the
+       column's minimum width — otherwise the table crushes "SIGHUP" in two. */
+    overflow-wrap: break-word;
   }
 
   .markdown-body .md-table th,
   .prose .md-table th {
-    white-space: normal;
+    /* Keep headers on one line: a wrapped header is the main reason narrow
+       tables look broken, and it also props up the column's minimum width. */
+    white-space: nowrap;
+  }
+
+  /* Rows are shorter on phones, so the preview can be too. */
+  .markdown-body .md-table-block.is-collapsed .md-table-frame,
+  .prose .md-table-block.is-collapsed .md-table-frame {
+    max-height: min(52vh, 17rem);
   }
 }
 
@@ -398,11 +633,8 @@ i {
 }
 
 .dark .article-rich .markdown-body h2::before {
-  background: color-mix(in srgb, var(--surface-card) 86%, var(--brand-500) 14%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 10px 20px rgba(0, 0, 0, 0.18);
-  color: var(--article-muted);
+  background: color-mix(in srgb, var(--surface-card) 72%, var(--brand-400) 28%);
+  color: color-mix(in srgb, var(--brand-400) 72%, var(--article-heading) 28%);
 }
 
 .dark .article-rich .markdown-body h3 {
@@ -412,15 +644,15 @@ i {
 .dark .article-rich .markdown-body h3::before {
   background: color-mix(
     in srgb,
-    var(--article-muted) 72%,
-    var(--brand-500) 28%
+    var(--article-muted) 45%,
+    var(--brand-400) 55%
   );
 }
 
 .dark .article-rich .markdown-body strong,
 .dark .article-rich .markdown-body b {
-  color: var(--article-strong);
-  font-weight: 800;
+  color: inherit;
+  font-weight: 600;
 }
 
 .article-rich .markdown-body .article-reference-panel {
@@ -435,28 +667,25 @@ i {
 
 .markdown-body .article-website-card {
   display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 32rem;
-  min-height: 8rem;
   margin: 1.75rem auto !important;
   overflow: hidden;
   border: 1px solid rgb(226 232 240);
   border-radius: 0.5rem;
   background: #fff;
-  box-shadow: 0 10px 28px -24px rgba(15, 23, 42, 0.34);
   color: rgb(15 23 42) !important;
   text-decoration: none !important;
   transition:
     border-color 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease;
+    background-color 180ms ease;
 }
 
 .markdown-body .article-website-card:hover {
   border-color: rgb(203 213 225);
-  box-shadow: 0 16px 34px -24px rgba(15, 23, 42, 0.44);
+  background: color-mix(in srgb, #fff 94%, #0f172a 6%);
   color: rgb(15 23 42) !important;
-  transform: translateY(-2px);
 }
 
 .markdown-body .article-website-card:focus-visible {
@@ -467,8 +696,9 @@ i {
 .article-website-card__media {
   position: relative;
   display: block;
-  width: 12rem;
-  flex: 0 0 12rem;
+  width: 100%;
+  flex: 0 0 auto;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   background: rgb(241 245 249);
 }
@@ -479,7 +709,7 @@ i {
   height: 100%;
   margin: 0 !important;
   object-fit: cover;
-  object-position: top;
+  object-position: center top;
   transition: transform 500ms ease;
 }
 
@@ -492,8 +722,10 @@ i {
   min-width: 0;
   flex: 1;
   flex-direction: column;
-  justify-content: center;
-  padding: 1rem;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0.2rem;
+  padding: 1.05rem 1.15rem 1.15rem;
 }
 
 .article-website-card__host,
@@ -517,9 +749,9 @@ i {
 .article-website-card__heading {
   display: flex;
   min-width: 0;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.4rem;
-  margin-top: 0.3rem;
+  margin-top: 0.35rem;
   color: rgb(15 23 42);
   font-size: 1rem;
   font-weight: 700;
@@ -527,13 +759,15 @@ i {
 }
 
 .article-website-card__title {
+  display: -webkit-box;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .article-website-card__arrow {
   flex: 0 0 auto;
+  margin-top: 0.05rem;
   color: rgb(100 116 139);
   font-size: 0.82rem;
   transition:
@@ -554,15 +788,12 @@ i {
   font-size: 0.875rem;
   line-height: 1.5;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
 }
 
 .dark .markdown-body .article-website-card {
   border-color: rgba(255, 255, 255, 0.09);
   background: #202328;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.025),
-    0 14px 30px -24px rgba(0, 0, 0, 0.82);
   color: rgb(241 245 249) !important;
 }
 
@@ -590,13 +821,12 @@ i {
 }
 
 @media (max-width: 479px) {
-  .article-website-card__media {
-    width: 7rem;
-    flex-basis: 7rem;
+  .article-website-card__body {
+    padding: 0.9rem;
   }
 
-  .article-website-card__body {
-    padding: 0.8rem;
+  .article-website-card__heading {
+    font-size: 0.95rem;
   }
 
   .article-website-card__description {
@@ -633,7 +863,7 @@ i {
 .simple-reading .markdown-body strong,
 .simple-reading .markdown-body b {
   color: inherit;
-  font-weight: 700;
+  font-weight: 600;
   background-image: none;
 }
 
@@ -666,7 +896,6 @@ i {
   border: 1px solid var(--border-color);
   border-radius: 0.75rem;
   background: color-mix(in srgb, var(--surface-card) 96%, #f8fafc 4%);
-  box-shadow: var(--shadow-card);
 }
 
 .article-reference-panel__header {
@@ -753,15 +982,116 @@ i {
   background: color-mix(in srgb, var(--surface-card) 94%, #0f172a 6%);
 }
 
+/* Code frames use the same two Shiki themes as 纸鹿:
+   - light: Catppuccin Latte (#eff1f5 / #4c4f69)
+   - dark:  One Dark Pro      (#282c34 / #abb2bf)
+   Prism still produces the token classes, but the palette below is theirs. */
 .md-code-frame {
+  --md-code-bg: #282c34;
+  --md-code-fade: #282c34;
+  --md-code-language-color: rgba(171, 178, 191, 0.4);
+  --md-code-action-color: rgba(171, 178, 191, 0.62);
+  --md-code-action-hover-bg: rgba(255, 255, 255, 0.08);
+  --md-code-action-hover-color: #ffffff;
+  --md-code-copied-color: #61afef;
+  --md-code-code-color: #abb2bf;
+  --md-code-expand-bg: #21252b;
+  --md-code-expand-color: rgba(171, 178, 191, 0.66);
+  --md-code-line-border: rgba(171, 178, 191, 0.12);
+  --md-code-line-number: rgba(171, 178, 191, 0.5);
+
+  --md-code-token-comment: #7f848e;
+  --md-code-token-punctuation: #abb2bf;
+  --md-code-token-namespace: #c678dd;
+  --md-code-token-property: #e06c75;
+  --md-code-token-tag: #e06c75;
+  --md-code-token-constant: #e5c07b;
+  --md-code-token-symbol: #e5c07b;
+  --md-code-token-deleted: #e06c75;
+  --md-code-token-number: #d19a66;
+  --md-code-token-selector: #e06c75;
+  --md-code-token-string: #98c379;
+  --md-code-token-builtin: #e5c07b;
+  --md-code-token-inserted: #98c379;
+  --md-code-token-operator: #56b6c2;
+  --md-code-token-entity: #e06c75;
+  --md-code-token-url: #61afef;
+  --md-code-token-variable: #e06c75;
+  --md-code-token-atrule: #c678dd;
+  --md-code-token-keyword: #c678dd;
+  --md-code-token-function: #61afef;
+  --md-code-token-class-name: #e5c07b;
+  --md-code-token-regex: #56b6c2;
+  --md-code-token-important: #56b6c2;
+  --md-code-token-interpolation: #e06c75;
+
+  /* Code type metrics live here so the collapsed clamp below stays in sync
+     with whatever size we settle on. 0.86rem sits just under the body size
+     and matches inline code, which keeps dense blocks from shouting. */
+  --md-code-font-size: 0.86rem;
+  --md-code-line-height: 1.55;
+
   position: relative;
-  margin: 1.7rem 0;
+  margin: 1.2rem 0;
   overflow: hidden;
   border-radius: 0.5rem;
-  background: #1e2227;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 18px 42px rgba(15, 23, 42, 0.12);
+  /* Flat panel, no shadow — matches 纸鹿's ProsePre: the code sits on the
+     page instead of floating above it as a card. */
+  background: var(--md-code-bg);
+}
+
+/* Keep the One Dark Pro token palette, but lift the surface a little so the
+   frame separates from the #141414 article background in dark mode. */
+html.dark .md-code-frame {
+  /* One Dark Pro's real surface. The earlier lift to #30353e separated the
+     frame from the page but read as washed-out gray, so separation now comes
+     from a hairline instead of a lighter fill. */
+  --md-code-bg: #282c34;
+  --md-code-fade: #282c34;
+  --md-code-expand-bg: #21252b;
+  --md-code-line-border: rgba(203, 213, 225, 0.14);
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+html.light .md-code-frame {
+  --md-code-bg: #eff1f5;
+  --md-code-fade: #eff1f5;
+  --md-code-language-color: rgba(76, 79, 105, 0.42);
+  --md-code-action-color: rgba(76, 79, 105, 0.62);
+  --md-code-action-hover-bg: rgba(76, 79, 105, 0.08);
+  --md-code-action-hover-color: #4c4f69;
+  --md-code-copied-color: #1e66f5;
+  --md-code-code-color: #4c4f69;
+  --md-code-expand-bg: #e6e9ef;
+  --md-code-expand-color: rgba(76, 79, 105, 0.66);
+  --md-code-line-border: rgba(76, 79, 105, 0.12);
+  --md-code-line-number: rgba(76, 79, 105, 0.42);
+
+  --md-code-token-comment: #7c7f93;
+  --md-code-token-punctuation: #7c7f93;
+  --md-code-token-namespace: #8839ef;
+  --md-code-token-property: #1e66f5;
+  --md-code-token-tag: #1e66f5;
+  --md-code-token-constant: #fe640b;
+  --md-code-token-symbol: #fe640b;
+  --md-code-token-deleted: #d20f39;
+  --md-code-token-number: #fe640b;
+  --md-code-token-selector: #1e66f5;
+  --md-code-token-string: #40a02b;
+  --md-code-token-builtin: #8839ef;
+  --md-code-token-inserted: #40a02b;
+  --md-code-token-operator: #179299;
+  --md-code-token-entity: #ea76cb;
+  --md-code-token-url: #7287fd;
+  --md-code-token-variable: #e64553;
+  --md-code-token-atrule: #df8e1d;
+  --md-code-token-keyword: #8839ef;
+  --md-code-token-function: #1e66f5;
+  --md-code-token-class-name: #df8e1d;
+  --md-code-token-regex: #ea76cb;
+  --md-code-token-important: #ea76cb;
+  --md-code-token-interpolation: #ea76cb;
 }
 
 .md-code-body {
@@ -772,7 +1102,11 @@ i {
 }
 
 .md-code-frame.is-collapsed .md-code-body {
-  max-height: calc(10 * 1.72em + 2.1rem);
+  /* Ten lines of code plus the pre's 0.9rem top/bottom padding. */
+  max-height: calc(
+    10 * var(--md-code-font-size, 0.86rem) * var(--md-code-line-height, 1.55) +
+      1.8rem
+  );
   overflow-y: hidden;
 }
 
@@ -786,7 +1120,11 @@ i {
   display: block;
   height: 3.4rem;
   margin-top: -3.4rem;
-  background: linear-gradient(180deg, rgba(30, 34, 39, 0), #1e2227 82%);
+  background: linear-gradient(
+    180deg,
+    transparent,
+    var(--md-code-fade, #1e2227) 82%
+  );
 }
 
 .md-code-toolbar {
@@ -809,10 +1147,11 @@ i {
 
 .md-code-language {
   font-family: var(--font-code);
-  font-size: 0.88rem;
-  font-weight: 700;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   line-height: 1.35;
-  color: rgba(203, 213, 225, 0.46);
+  color: var(--md-code-language-color, rgba(203, 213, 225, 0.46));
 }
 
 .md-code-actions {
@@ -842,20 +1181,21 @@ i {
   appearance: none;
   border: 0;
   border-radius: 0.35rem;
-  background: rgba(15, 23, 42, 0.72);
-  color: rgba(226, 232, 240, 0.88);
-  font-size: 0.72rem;
-  font-weight: 650;
+  background: transparent;
+  color: var(--md-code-action-color, rgba(226, 232, 240, 0.62));
+  font-size: 0.74rem;
+  font-weight: 600;
   line-height: 1.2;
   cursor: pointer;
   transition:
     background-color 150ms ease,
     color 150ms ease,
+    opacity 150ms ease,
     transform 150ms ease;
 }
 
 .md-code-action {
-  padding: 0.34rem 0.48rem;
+  padding: 0.3rem 0.46rem;
   white-space: nowrap;
 }
 
@@ -863,8 +1203,8 @@ i {
 .md-code-action:focus-visible,
 .md-code-expand:hover,
 .md-code-expand:focus-visible {
-  background: rgba(51, 65, 85, 0.92);
-  color: #ffffff;
+  background: var(--md-code-action-hover-bg, rgba(255, 255, 255, 0.08));
+  color: var(--md-code-action-hover-color, #ffffff);
   outline: none;
 }
 
@@ -874,7 +1214,7 @@ i {
 }
 
 .md-code-action[data-copy-state='copied'] {
-  color: #93c5fd;
+  color: var(--md-code-copied-color, #93c5fd);
 }
 
 .md-code-action:disabled {
@@ -885,11 +1225,18 @@ i {
 .md-code-expand {
   display: block;
   width: 100%;
-  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  border-top: 1px solid var(--md-code-line-border, rgba(148, 163, 184, 0.12));
   border-radius: 0;
-  padding: 0.66rem 1rem;
-  background: #1a1e23;
-  color: rgba(203, 213, 225, 0.82);
+  padding: 0.5rem 1rem;
+  background: var(--md-code-expand-bg, rgba(255, 255, 255, 0.04));
+  color: var(--md-code-expand-color, rgba(203, 213, 225, 0.66));
+  opacity: 0.55;
+  transition: opacity 150ms ease;
+}
+
+.md-code-expand:hover,
+.md-code-expand:focus-visible {
+  opacity: 1;
 }
 
 .markdown-body .md-code-frame pre,
@@ -899,7 +1246,7 @@ i {
   overflow: visible !important;
   border-radius: 0;
   background: transparent;
-  padding: 1.05rem 3.85rem 1.05rem 1rem;
+  padding: 0.9rem 3.2rem 0.9rem 0.9rem;
 }
 
 .markdown-body .md-code-frame pre::before,
@@ -909,82 +1256,115 @@ i {
   content: none !important;
 }
 
-.md-code-pre code {
+/* Specificity must beat Tailwind's `.prose pre code` line-height: 1.75. */
+.md-code-frame .md-code-pre code {
   display: block;
   min-width: max-content;
   padding: 0;
   background: transparent;
-  color: #c9d1d9;
-  font-size: 0.92rem;
-  line-height: 1.72;
+  color: var(--md-code-code-color, #c9d1d9);
+  font-size: var(--md-code-font-size, 0.86rem);
+  line-height: var(--md-code-line-height, 1.55);
   font-family: var(--font-code);
   font-variant-ligatures: none;
   text-shadow: none;
 }
 
-/* Prism token colours for the site's own code frames. These used to come from
-   Twikoo's globally injected Prism theme; keeping them scoped here means the
-   comment widget can no longer restyle article code blocks (and vice versa). */
+/* Prism tokens mapped onto 纸鹿's Shiki scopes. All colours come from the
+   theme variables above, so light/dark switch without duplicate rule blocks. */
 .md-code-frame .token.comment,
 .md-code-frame .token.prolog,
 .md-code-frame .token.doctype,
 .md-code-frame .token.cdata {
-  color: #8b98a5;
+  color: var(--md-code-token-comment);
 }
 
 .md-code-frame .token.punctuation {
-  color: #c9d1d9;
+  color: var(--md-code-token-punctuation);
 }
 
 .md-code-frame .token.namespace {
-  opacity: 0.75;
+  color: var(--md-code-token-namespace);
+  opacity: 0.85;
 }
 
 .md-code-frame .token.property,
-.md-code-frame .token.tag,
+.md-code-frame .token.attr-name,
+.md-code-frame .token.selector {
+  color: var(--md-code-token-property);
+}
+
+.md-code-frame .token.tag {
+  color: var(--md-code-token-tag);
+}
+
 .md-code-frame .token.constant,
-.md-code-frame .token.symbol,
+.md-code-frame .token.symbol {
+  color: var(--md-code-token-constant);
+}
+
 .md-code-frame .token.deleted {
-  color: #f2777a;
+  color: var(--md-code-token-deleted);
 }
 
 .md-code-frame .token.boolean,
 .md-code-frame .token.number {
-  color: #f99157;
+  color: var(--md-code-token-number);
 }
 
-.md-code-frame .token.selector,
-.md-code-frame .token.attr-name,
 .md-code-frame .token.string,
 .md-code-frame .token.char,
-.md-code-frame .token.builtin,
-.md-code-frame .token.inserted {
-  color: #99cc99;
-}
-
-.md-code-frame .token.operator,
-.md-code-frame .token.entity,
-.md-code-frame .token.url,
 .md-code-frame .language-css .token.string,
 .md-code-frame .style .token.string,
-.md-code-frame .token.variable {
-  color: #66cccc;
+.md-code-frame .token.inserted {
+  color: var(--md-code-token-string);
 }
 
-.md-code-frame .token.atrule,
-.md-code-frame .token.attr-value,
+.md-code-frame .token.builtin {
+  color: var(--md-code-token-builtin);
+}
+
+.md-code-frame .token.operator {
+  color: var(--md-code-token-operator);
+}
+
+.md-code-frame .token.entity {
+  color: var(--md-code-token-entity);
+}
+
+.md-code-frame .token.url {
+  color: var(--md-code-token-url);
+}
+
+.md-code-frame .token.variable,
+.md-code-frame .token.interpolation,
+.md-code-frame .token.interpolation-punctuation {
+  color: var(--md-code-token-variable);
+}
+
+.md-code-frame .token.atrule {
+  color: var(--md-code-token-atrule);
+}
+
+.md-code-frame .token.attr-value {
+  color: var(--md-code-token-string);
+}
+
 .md-code-frame .token.keyword {
-  color: #cc99cc;
+  color: var(--md-code-token-keyword);
 }
 
-.md-code-frame .token.function,
+.md-code-frame .token.function {
+  color: var(--md-code-token-function);
+}
+
 .md-code-frame .token.class-name {
-  color: #6699cc;
+  color: var(--md-code-token-class-name);
 }
 
 .md-code-frame .token.regex,
 .md-code-frame .token.important {
-  color: #f99157;
+  color: var(--md-code-token-regex);
 }
 
 .md-code-frame .token.important,
@@ -1014,7 +1394,8 @@ i {
 
 .md-code-pre.line-numbers {
   position: relative;
-  padding-left: 4.85rem !important;
+  /* 纸鹿-style narrow gutter: just enough for the numbers, no wide dead space. */
+  padding-left: 2.6rem !important;
   counter-reset: linenumber;
   white-space: pre;
 }
@@ -1028,9 +1409,9 @@ i {
   pointer-events: none;
   position: absolute;
   top: 0;
-  left: -3.85rem;
-  width: 3rem;
-  border-right: 1px solid rgba(148, 163, 184, 0.18);
+  left: -2.05rem;
+  width: 1.7rem;
+  border-right: 1px solid var(--md-code-line-border, rgba(148, 163, 184, 0.18));
   font-family: var(--font-code);
   font-size: 100%;
   line-height: inherit;
@@ -1045,65 +1426,26 @@ i {
 .md-code-pre.line-numbers .line-numbers-rows > span::before {
   content: counter(linenumber);
   display: block;
-  padding-right: 0.75rem;
-  color: rgba(148, 163, 184, 0.58);
+  padding-right: 0.5rem;
+  color: var(--md-code-line-number, rgba(148, 163, 184, 0.58));
   text-align: right;
 }
 
-.md-code-pre .token.comment,
-.md-code-pre .token.prolog,
-.md-code-pre .token.doctype,
-.md-code-pre .token.cdata {
-  color: #8b949e;
+/* Single-line shell commands use a `$` prompt instead of a line number. */
+.md-code-frame.is-terminal.is-single-command
+  .md-code-pre.line-numbers
+  .line-numbers-rows
+  > span::before {
+  content: '$';
+  color: color-mix(
+    in srgb,
+    var(--md-code-line-number, rgba(148, 163, 184, 0.58)) 82%,
+    var(--md-code-code-color, #c9d1d9)
+  );
 }
 
-.md-code-pre .token.punctuation {
-  color: #a7b0bd;
-}
-
-.md-code-pre .token.property,
-.md-code-pre .token.tag,
-.md-code-pre .token.boolean,
-.md-code-pre .token.number,
-.md-code-pre .token.constant,
-.md-code-pre .token.symbol,
-.md-code-pre .token.deleted {
-  color: #ff7b91;
-}
-
-.md-code-pre .token.selector,
-.md-code-pre .token.attr-name,
-.md-code-pre .token.string,
-.md-code-pre .token.char,
-.md-code-pre .token.builtin,
-.md-code-pre .token.inserted {
-  color: #a5d6a7;
-}
-
-.md-code-pre .token.operator,
-.md-code-pre .token.entity,
-.md-code-pre .token.url,
-.md-code-pre .language-css .token.string,
-.md-code-pre .style .token.string {
-  color: #79c0ff;
-}
-
-.md-code-pre .token.atrule,
-.md-code-pre .token.attr-value,
-.md-code-pre .token.keyword {
-  color: #ff7b72;
-}
-
-.md-code-pre .token.function,
-.md-code-pre .token.class-name {
-  color: #d2a8ff;
-}
-
-.md-code-pre .token.regex,
-.md-code-pre .token.important,
-.md-code-pre .token.variable {
-  color: #ffa657;
-}
+/* Terminal frames keep the exact same Shiki surface and palette as ordinary
+   code — the only terminal-specific cue is the `$` prompt on single commands. */
 
 @media (max-width: 640px) {
   .article-reference-panel__link {

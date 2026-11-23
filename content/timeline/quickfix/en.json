@@ -1,5 +1,14 @@
 [
   {
+    "id": "qf-20261123",
+    "date": "2026-11-23",
+    "content": [
+      "Long code blocks and long tables are now collapsible: fully expanded by default, with an expand/collapse bar at the bottom instead of a fixed-height inner scroll area",
+      "Code blocks adopt the One Dark Pro / Catppuccin Latte palettes with a slightly smaller type size; inline code, link underlines, and link cards were retuned, and images lost their hairline border",
+      "Long tables pan sideways on phones instead of crushing their columns, and the dark-mode code surface and TOC selection were recolored"
+    ]
+  },
+  {
     "id": "qf-20261122",
     "date": "2026-11-22",
     "content": [
@@ -120,7 +129,7 @@
       "optimize the concise mode to display cover images",
       "add a background image to the movie review page for a more immersive atmosphere"
     ]
-  },  
+  },
   {
     "id": "qf-20260916",
     "date": "2026-09-16",
@@ -129,12 +138,12 @@
     ]
   },
   {
-  "id": "qf-20260915",
-  "date": "2026-09-15",
-  "content": [
-    "Removed the global RSS feed; switched to language-specific RSS feeds",
-    "Improved scroll position restoration when navigating back to the article list after reading an article"
-  ]
+    "id": "qf-20260915",
+    "date": "2026-09-15",
+    "content": [
+      "Removed the global RSS feed; switched to language-specific RSS feeds",
+      "Improved scroll position restoration when navigating back to the article list after reading an article"
+    ]
   },
   {
     "id": "qf-20260822",

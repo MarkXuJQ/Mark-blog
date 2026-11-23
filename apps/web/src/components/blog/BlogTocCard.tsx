@@ -64,7 +64,10 @@ const styles = {
   ),
   tocItemActive: cn(
     'whitespace-normal break-words bg-blue-50/80 text-blue-600',
-    'dark:bg-[color-mix(in_srgb,var(--surface-card)_72%,var(--brand-500)_28%)] dark:text-blue-300'
+    // The dark pill must stay in the same hue family as its own label and the
+    // rail indicator. It used to mix in --brand-500 (teal), which produced a
+    // teal box with blue text.
+    'dark:bg-[color-mix(in_srgb,var(--surface-card)_74%,var(--article-link)_26%)] dark:text-blue-300'
   ),
   tocLevel1: 'px-2 font-semibold',
   tocLevel2: 'px-2 font-medium',

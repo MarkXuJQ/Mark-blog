@@ -44,6 +44,10 @@
     "expand": "展开代码",
     "collapse": "收起代码"
   },
+  "tableBlock": {
+    "collapse": "收起表格",
+    "expand": "展开表格"
+  },
   "lightbox": {
     "viewOriginal": "查看原图",
     "loadingOriginal": "正在加载原图…",

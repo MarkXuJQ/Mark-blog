@@ -44,6 +44,10 @@
     "expand": "Expand Code",
     "collapse": "Collapse Code"
   },
+  "tableBlock": {
+    "collapse": "Collapse Table",
+    "expand": "Expand Table"
+  },
   "lightbox": {
     "viewOriginal": "View original",
     "loadingOriginal": "Loading original…",
