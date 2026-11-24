@@ -48,6 +48,43 @@ i {
   font-style: normal !important;
 }
 
+/* One muted panel surface shared by quotes and code frames, so the article
+   doesn't carry two near-identical grays for the same kind of inset block. */
+html.light {
+  --article-muted-surface: #eff1f5;
+}
+html.dark {
+  --article-muted-surface: #282c34;
+}
+
+/* Rich mode only: borrow 纸鹿's quote treatment — a neutral surface fill, a
+   quiet 4px inline-start rule, small radius and tight padding. The earlier
+   contrast lift stays, and code blocks inside a quote bleed back to the quote
+   edges and drop their own vertical margin. */
+.article-rich .markdown-body blockquote {
+  --article-quote-bg: var(--article-muted-surface, #eff1f5);
+  --article-quote-fg: color-mix(in srgb, var(--text-primary) 72%, transparent);
+  background: var(--article-quote-bg);
+  color: var(--article-quote-fg);
+  border-inline-start: 4px solid var(--border-color);
+  border-radius: 4px;
+  margin-block: 1rem;
+  padding: 0.2rem 0.8rem;
+  font-size: 0.9rem;
+}
+
+.article-rich .markdown-body blockquote > .md-code-frame {
+  margin: 0 -0.8rem;
+}
+
+html.dark .article-rich .markdown-body blockquote {
+  --article-quote-fg: color-mix(
+    in srgb,
+    var(--article-text) 82%,
+    var(--article-muted)
+  );
+}
+
 /* Keep paragraph endings from stranding one or two characters on their own
    line. Headings already use `text-wrap: balance` above. */
 .article-rich .markdown-body :where(p, li, dd, blockquote),
@@ -182,6 +219,75 @@ html.dark .prose {
   --tw-prose-invert-code: var(--article-strong);
   --tw-prose-invert-th-borders: var(--border-color);
   --tw-prose-invert-td-borders: var(--border-color);
+}
+
+/* Rich mode only: ordered-list numbers pick up the theme color and a little
+   extra weight so multi-step lists are easier to scan. Bullets stay quiet. */
+.article-rich.prose {
+  --tw-prose-counters: color-mix(in srgb, var(--brand-600) 82%, #0f172a);
+  --tw-prose-invert-counters: color-mix(
+    in srgb,
+    var(--brand-400) 84%,
+    var(--article-heading)
+  );
+}
+
+.article-rich .markdown-body ol > li::marker {
+  font-weight: 700;
+}
+
+/* Task lists: the checkboxes are rendered by markdown-it from `- [ ]` /
+   `- [x]`. They are state indicators, so they stay disabled. */
+.markdown-body .md-task-list,
+.prose .md-task-list {
+  list-style: none;
+  padding-left: 0.25rem;
+}
+
+.markdown-body .md-task-list > li,
+.prose .md-task-list > li {
+  position: relative;
+  padding-left: 1.6rem;
+}
+
+.markdown-body .md-task-checkbox,
+.prose .md-task-checkbox {
+  appearance: none;
+  position: absolute;
+  top: 0.24em;
+  left: 0;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  border: 1.5px solid
+    color-mix(in srgb, var(--brand-500) 58%, var(--border-color));
+  border-radius: 4px;
+  background: var(--surface-card);
+}
+
+.markdown-body .md-task-checkbox:checked,
+.prose .md-task-checkbox:checked {
+  border-color: var(--brand-500);
+  background: var(--brand-500);
+}
+
+.markdown-body .md-task-checkbox:checked::after,
+.prose .md-task-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 0.05rem;
+  left: 0.23rem;
+  width: 0.3rem;
+  height: 0.55rem;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+html.dark .markdown-body .md-task-checkbox:checked,
+html.dark .prose .md-task-checkbox:checked {
+  border-color: var(--brand-400);
+  background: var(--brand-400);
 }
 
 .article-rich .markdown-body h2,
@@ -602,6 +708,41 @@ html.dark .prose .md-table-frame {
   padding: 0.64rem 0.72rem;
 }
 
+/* Reader mode uses an academic three-line table: only a top rule, a header
+   divider and a bottom rule. No frame, no fills, no zebra striping. */
+.simple-reading .markdown-body .md-table-frame,
+.simple-reading .markdown-body .md-table-block .md-table-frame {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.simple-reading .markdown-body .md-table {
+  border-top: 2px solid var(--article-heading);
+  border-bottom: 2px solid var(--article-heading);
+}
+
+.simple-reading .markdown-body .md-table thead,
+.simple-reading .markdown-body .md-table thead th,
+.simple-reading .markdown-body .md-table tbody tr:nth-child(even) {
+  background: transparent;
+}
+
+.simple-reading .markdown-body .md-table :where(th, td) {
+  border: 0 !important;
+}
+
+.simple-reading .markdown-body .md-table thead th {
+  border-bottom: 1px solid var(--article-heading) !important;
+}
+
+.simple-reading .markdown-body .md-table-footer {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
 @media (max-width: 640px) {
   /* A table squeezed into a phone viewport breaks every column into
      three-line cells. Give it a per-column floor and let it pan instead.
@@ -998,8 +1139,8 @@ html.dark .prose .md-table-frame {
    - dark:  One Dark Pro      (#282c34 / #abb2bf)
    Prism still produces the token classes, but the palette below is theirs. */
 .md-code-frame {
-  --md-code-bg: #282c34;
-  --md-code-fade: #282c34;
+  --md-code-bg: var(--article-muted-surface, #282c34);
+  --md-code-fade: var(--article-muted-surface, #282c34);
   --md-code-language-color: rgba(171, 178, 191, 0.4);
   --md-code-action-color: rgba(171, 178, 191, 0.62);
   --md-code-action-hover-bg: rgba(255, 255, 255, 0.08);
@@ -1043,7 +1184,7 @@ html.dark .prose .md-table-frame {
   --md-code-line-height: 1.55;
 
   position: relative;
-  margin: 1.2rem 0;
+  margin: 1rem 0;
   overflow: hidden;
   border-radius: 0.5rem;
   /* Flat panel, no shadow — matches 纸鹿's ProsePre: the code sits on the
@@ -1051,14 +1192,9 @@ html.dark .prose .md-table-frame {
   background: var(--md-code-bg);
 }
 
-/* Keep the One Dark Pro token palette, but lift the surface a little so the
-   frame separates from the #141414 article background in dark mode. */
+/* Keep the One Dark Pro token palette; the shared muted surface above now
+   also backs quote blocks, and a hairline separates the frame from the page. */
 html.dark .md-code-frame {
-  /* One Dark Pro's real surface. The earlier lift to #30353e separated the
-     frame from the page but read as washed-out gray, so separation now comes
-     from a hairline instead of a lighter fill. */
-  --md-code-bg: #282c34;
-  --md-code-fade: #282c34;
   --md-code-expand-bg: #21252b;
   --md-code-line-border: rgba(203, 213, 225, 0.14);
 
@@ -1066,8 +1202,6 @@ html.dark .md-code-frame {
 }
 
 html.light .md-code-frame {
-  --md-code-bg: #eff1f5;
-  --md-code-fade: #eff1f5;
   --md-code-language-color: rgba(76, 79, 105, 0.42);
   --md-code-action-color: rgba(76, 79, 105, 0.62);
   --md-code-action-hover-bg: rgba(76, 79, 105, 0.08);

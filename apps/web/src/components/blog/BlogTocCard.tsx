@@ -78,6 +78,14 @@ const styles = {
   tocChildList: 'mt-1 space-y-0.5 list-none pl-2',
 }
 
+function replaceUrlHash(hash: string) {
+  const url = new URL(window.location.href)
+  url.hash = hash
+  // Keep the current history entry (and its router state) intact — TOC jumps
+  // should only update the visible hash, not create a back-navigation stop.
+  window.history.replaceState(window.history.state, '', url)
+}
+
 function handleLinkClick(
   e: React.MouseEvent<HTMLAnchorElement>,
   id: string,
@@ -86,15 +94,14 @@ function handleLinkClick(
   e.preventDefault()
   if (id === 'page-top') {
     window.scrollTo({ top: 0, behavior: 'smooth' })
-    window.history.pushState({}, '', window.location.pathname)
+    replaceUrlHash('')
     return
   }
   const element = document.getElementById(id) || findHeadingByText(text)
   if (element) {
     const top = element.getBoundingClientRect().top + window.scrollY - 100 // Offset for sticky header
     window.scrollTo({ top, behavior: 'smooth' })
-    // Update URL hash without scrolling
-    window.history.pushState({}, '', `#${id}`)
+    replaceUrlHash(`#${id}`)
   }
 }
 
