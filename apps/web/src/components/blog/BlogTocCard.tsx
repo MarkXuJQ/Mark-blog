@@ -36,7 +36,7 @@ const styles = {
   tocCard:
     'overflow-visible border border-slate-200/70 p-4 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-shadow hover:shadow-[0_18px_42px_-32px_rgba(15,23,42,0.45)] dark:border-0 dark:shadow-none',
   tocPlainCard:
-    'border-0 bg-transparent p-0 shadow-none backdrop-blur-0 dark:bg-transparent',
+    'border-0 bg-transparent p-0 shadow-none hover:shadow-none backdrop-blur-0 dark:bg-transparent',
   tocHeader:
     'mb-3 flex items-center justify-between gap-2 text-sm font-semibold text-[var(--text-secondary)]',
   tocActions: 'flex items-center gap-2 text-[var(--text-disabled)]',

@@ -210,23 +210,25 @@ h6 {
    display faces. Every heading / brand / UI label inside the column falls back
    to the document default (--font-body inherited from :root). Code / math faces
    are left alone — they are functional, not decorative. */
-html[data-simple-reading] #main-content :where(
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  .heading-brand,
-  .heading-display,
-  .font-round,
-  .font-brand,
-  .hero-title,
-  [data-article-heading='true'],
-  [data-article-list-title='true'],
-  [data-post-meta='true'],
-  [data-post-meta='true'] *
-) {
+html[data-simple-reading]
+  #main-content
+  :where(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .heading-brand,
+    .heading-display,
+    .font-round,
+    .font-brand,
+    .hero-title,
+    [data-article-heading='true'],
+    [data-article-list-title='true'],
+    [data-post-meta='true'],
+    [data-post-meta='true'] *
+  ) {
   font-family: inherit !important;
 }
 
