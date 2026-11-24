@@ -2,30 +2,17 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import movieCsvRaw from '@content/movies/movie.csv?raw'
 import movieOverridesRaw from '@content/movies/movie-overrides.json'
 import { buildCsvMovies } from '@/lib/movies/movieCsv'
-import {
-  BASE_COLUMNS,
-  calculateMovieColumns,
-  ROWS_PER_PAGE,
-  SHELF_ITEMS_PER_PAGE,
-  toDateKey,
-} from '@/lib/movies/movieUtils'
-import type {
-  CardLayout,
-  MovieFilter,
-  MovieOverride,
-} from '@/lib/movies/movieTypes'
+import { SHELF_ITEMS_PER_PAGE, toDateKey } from '@/lib/movies/movieUtils'
+import type { MovieFilter, MovieOverride } from '@/lib/movies/movieTypes'
 
 const movieOverrides = movieOverridesRaw as Record<string, MovieOverride>
 
 export function useMovieCatalog() {
   const [keyword, setKeyword] = useState('')
-  const [cardLayout, setCardLayout] = useState<CardLayout>('shelf')
   const [movieFilter, setMovieFilter] = useState<MovieFilter>('all')
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
-  const [columns, setColumns] = useState(BASE_COLUMNS)
-  const [gridNode, setGridNode] = useState<HTMLDivElement | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
 
   const movieItems = useMemo(
@@ -59,8 +46,7 @@ export function useMovieCatalog() {
     })
   }, [keyword, movieFilter, movieItems, selectedDateKey, selectedRating])
 
-  const itemsPerPage =
-    cardLayout === 'shelf' ? SHELF_ITEMS_PER_PAGE : columns * ROWS_PER_PAGE
+  const itemsPerPage = SHELF_ITEMS_PER_PAGE
   const totalPages = Math.max(
     1,
     Math.ceil(filteredMovies.length / itemsPerPage)
@@ -78,36 +64,9 @@ export function useMovieCatalog() {
     if (currentPage > totalPages) setCurrentPage(totalPages)
   }, [currentPage, totalPages])
 
-  useEffect(() => {
-    if (typeof window === 'undefined' || window.__PRERENDER__ || !gridNode) {
-      return
-    }
-
-    const updateColumns = () => {
-      const width = gridNode.getBoundingClientRect().width
-      const nextColumns = calculateMovieColumns(width, window.innerWidth)
-      setColumns((current) => (current === nextColumns ? current : nextColumns))
-    }
-
-    updateColumns()
-    const resizeObserver =
-      typeof ResizeObserver === 'undefined'
-        ? null
-        : new ResizeObserver(updateColumns)
-    resizeObserver?.observe(gridNode)
-    window.addEventListener('resize', updateColumns)
-
-    return () => {
-      resizeObserver?.disconnect()
-      window.removeEventListener('resize', updateColumns)
-    }
-  }, [gridNode])
-
   return {
     keyword,
     setKeyword,
-    cardLayout,
-    setCardLayout,
     movieFilter,
     setMovieFilter,
     selectedRating,
@@ -116,8 +75,6 @@ export function useMovieCatalog() {
     setSelectedDateKey,
     currentPage,
     setCurrentPage,
-    columns,
-    setGridNode,
     listRef,
     movieItems,
     filteredMovies,

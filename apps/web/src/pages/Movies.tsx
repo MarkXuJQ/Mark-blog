@@ -98,24 +98,16 @@ export function Movies() {
               onKeywordChange={catalog.setKeyword}
               movieFilter={catalog.movieFilter}
               onMovieFilterChange={catalog.setMovieFilter}
-              cardLayout={catalog.cardLayout}
-              onCardLayoutChange={(layout) => {
-                catalog.setCardLayout(layout)
-                catalog.setCurrentPage(1)
-              }}
             />
             <MovieResults
               movieCount={catalog.movieItems.length}
               filteredCount={catalog.filteredMovies.length}
               pageMovies={catalog.pageMovies}
               tmdbMap={tmdbMap}
-              cardLayout={catalog.cardLayout}
-              columns={catalog.columns}
               locale={locale}
               currentPage={catalog.currentPage}
               totalPages={catalog.totalPages}
               onPageChange={catalog.setCurrentPage}
-              setGridNode={catalog.setGridNode}
               listRef={catalog.listRef}
             />
           </div>

@@ -1,12 +1,7 @@
 import { Clapperboard } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Pagination } from '@/components/ui/Pagination'
-import type {
-  CardLayout,
-  CsvMovieItem,
-  TmdbEnrichedMovie,
-} from '@/lib/movies/movieTypes'
-import { MovieCard } from './MovieCard'
+import type { CsvMovieItem, TmdbEnrichedMovie } from '@/lib/movies/movieTypes'
 import { MovieShelf } from './MovieShelf'
 
 interface MovieResultsProps {
@@ -14,13 +9,10 @@ interface MovieResultsProps {
   filteredCount: number
   pageMovies: CsvMovieItem[]
   tmdbMap: Record<string, TmdbEnrichedMovie | null>
-  cardLayout: CardLayout
-  columns: number
   locale: string
   currentPage: number
   totalPages: number
   onPageChange: (page: number) => void
-  setGridNode: (node: HTMLDivElement | null) => void
   listRef: React.MutableRefObject<HTMLDivElement | null>
 }
 
@@ -29,13 +21,10 @@ export function MovieResults({
   filteredCount,
   pageMovies,
   tmdbMap,
-  cardLayout,
-  columns,
   locale,
   currentPage,
   totalPages,
   onPageChange,
-  setGridNode,
   listRef,
 }: MovieResultsProps) {
   if (movieCount === 0) {
@@ -50,43 +39,9 @@ export function MovieResults({
     )
   }
 
-  if (cardLayout === 'shelf') {
-    return (
-      <>
-        <MovieShelf
-          movies={pageMovies}
-          tmdbMap={tmdbMap}
-          locale={locale}
-        />
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={onPageChange}
-          contentRef={listRef}
-        />
-      </>
-    )
-  }
-
   return (
     <>
-      <div
-        ref={(node) => {
-          setGridNode(node)
-          listRef.current = node
-        }}
-        className="scroll-mt-28 grid gap-3 lg:gap-4"
-        style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
-      >
-        {pageMovies.map((movie) => (
-          <MovieCard
-            key={movie.id}
-            movie={movie}
-            tmdb={tmdbMap[movie.id] ?? null}
-            locale={locale}
-          />
-        ))}
-      </div>
+      <MovieShelf movies={pageMovies} tmdbMap={tmdbMap} locale={locale} />
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
