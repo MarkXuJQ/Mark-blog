@@ -60,9 +60,7 @@ export function BlogPost() {
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
-  const postMatch = slug
-    ? getPostSummaryMatch(slug, i18n.language)
-    : undefined
+  const postMatch = slug ? getPostSummaryMatch(slug, i18n.language) : undefined
   const postLanguage = postMatch?.language ?? i18n.language
   const postPromise =
     slug && !postMatch?.summary.movieSubjectId
@@ -491,7 +489,7 @@ export function BlogPost() {
                 html={contentHtml}
               />
 
-              <Copyright />
+              <Copyright key={post.slug} />
               <PostNavigation
                 prev={adjacentPosts.prev}
                 next={adjacentPosts.next}
@@ -562,7 +560,7 @@ export function BlogPost() {
                 html={contentHtml}
               />
 
-              <Copyright />
+              <Copyright key={post.slug} />
               <PostNavigation
                 prev={adjacentPosts.prev}
                 next={adjacentPosts.next}
@@ -697,8 +695,7 @@ const styles = {
     'not-prose mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[var(--article-muted)]',
   simpleReadingTitle:
     'mb-4 text-4xl font-bold tracking-tight text-[var(--article-heading)] md:text-5xl',
-  simpleReadingCover:
-    'not-prose mb-10 w-full overflow-hidden rounded-xl',
+  simpleReadingCover: 'not-prose mb-10 w-full overflow-hidden rounded-xl',
   simpleReadingCoverImage: 'block h-auto w-full object-contain',
   simpleReadingComments: 'not-prose mt-16 mb-4',
 }
