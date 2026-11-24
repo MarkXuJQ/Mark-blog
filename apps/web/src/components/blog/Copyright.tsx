@@ -11,7 +11,7 @@ export function Copyright() {
   const { t } = useTranslation()
 
   return (
-    <div className="font-round relative my-4 overflow-hidden rounded-xl border border-slate-200/70 bg-gradient-to-br from-slate-50 via-white to-slate-50/60 px-4 py-2 dark:border-0 dark:from-[#17191c] dark:via-[#14171a] dark:to-[#17191c]">
+    <div className="font-round relative my-4 overflow-hidden rounded-xl border border-slate-200/70 bg-gradient-to-br from-slate-50 via-white to-slate-50/60 px-4 py-2 dark:border-[#2b2f36] dark:from-[#17191c] dark:via-[#14171a] dark:to-[#17191c]">
       <div className="pointer-events-none absolute -top-6 -right-7 rotate-[-35deg] opacity-[0.08] dark:opacity-[0.12]">
         <div className="relative h-[209px] w-[224px]">
           <FaCreativeCommonsBy className="absolute top-0 left-0 h-28 w-28 text-slate-700 dark:text-slate-200" />

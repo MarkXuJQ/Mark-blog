@@ -5,6 +5,7 @@ import { plugin as markdown, Mode } from 'vite-plugin-markdown'
 import MarkdownIt from 'markdown-it'
 import type { RenderRule } from 'markdown-it/lib/renderer.mjs'
 import type StateCore from 'markdown-it/lib/rules_core/state_core.mjs'
+import Token from 'markdown-it/lib/token.mjs'
 import katex from 'katex'
 import markdownItTexmath from 'markdown-it-texmath'
 import fs from 'node:fs'
@@ -123,6 +124,47 @@ function markdownItArticleTables(md: MarkdownIt) {
     `${defaultTableClose(tokens, idx, options, env, self)}</div>`) satisfies RenderRule
 }
 
+const TASK_MARKER_PATTERN = /^\[([ xX])\][ \t]+/
+
+function markdownItTaskLists(md: MarkdownIt) {
+  md.core.ruler.after('inline', 'article_task_lists', (state: StateCore) => {
+    state.tokens.forEach((token, index) => {
+      if (token.type !== 'inline') return
+
+      const first = token.children?.[0]
+      if (!first || first.type !== 'text') return
+      const match = first.content.match(TASK_MARKER_PATTERN)
+      if (!match) return
+
+      let listItemIndex = index - 1
+      while (listItemIndex >= 0 && state.tokens[listItemIndex].type !== 'list_item_open') listItemIndex -= 1
+      if (listItemIndex < 0) return
+
+      const checked = match[1].toLowerCase() === 'x'
+      const listItem = state.tokens[listItemIndex]
+      listItem.attrJoin('class', 'md-task-item')
+      listItem.attrSet('data-checked', checked ? 'true' : 'false')
+
+      let listIndex = listItemIndex - 1
+      while (listIndex >= 0 && state.tokens[listIndex].type !== 'bullet_list_open' && state.tokens[listIndex].type !== 'ordered_list_open') listIndex -= 1
+      if (listIndex >= 0) {
+        const listClasses = state.tokens[listIndex].attrGet('class')?.split(/\s+/) ?? []
+        if (!listClasses.includes('md-task-list')) state.tokens[listIndex].attrJoin('class', 'md-task-list')
+      }
+
+      first.content = first.content.slice(match[0].length)
+
+      const checkbox = new Token('html_inline', '', 0)
+      checkbox.content = `<input type="checkbox" class="md-task-checkbox"${checked ? ' checked' : ''} disabled>`
+      const spacing = new Token('text', '', 0)
+      spacing.content = ' '
+
+      token.children?.unshift(spacing)
+      token.children?.unshift(checkbox)
+    })
+  })
+}
+
 const markdownIt = new MarkdownIt({ html: true })
   .use(markdownItTexmath, {
     engine: katex,
@@ -132,6 +174,7 @@ const markdownIt = new MarkdownIt({ html: true })
     },
   })
   .use(markdownItArticleTables)
+  .use(markdownItTaskLists)
 
 function vercelApiDevPlugin(): Plugin {
   const apiHandlers = {

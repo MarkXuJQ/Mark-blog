@@ -34,7 +34,7 @@ function usePreviewSource(
 function useHoverState(followMouse: boolean) {
   const [isPeeking, setPeeking] = useState(false)
   const mouseX = useMotionValue(0)
-  const springConfig = { stiffness: 120, damping: 20 }
+  const springConfig = { stiffness: 260, damping: 26 }
   const followX = useSpring(mouseX, springConfig)
 
   const handlePointerMove = useCallback(
@@ -118,13 +118,13 @@ export type LinkPreviewMetadataCardProps = {
 }
 
 const cardMotionVariants = {
-  initial: { opacity: 0, rotateY: -90, transition: { duration: 0.15 } },
+  initial: { opacity: 0, rotateY: -90, transition: { duration: 0.12 } },
   animate: {
     opacity: 1,
     rotateY: 0,
-    transition: { type: 'spring' as const, stiffness: 200, damping: 18 },
+    transition: { type: 'spring' as const, stiffness: 320, damping: 28 },
   },
-  exit: { opacity: 0, rotateY: 90, transition: { duration: 0.15 } },
+  exit: { opacity: 0, rotateY: 90, transition: { duration: 0.08 } },
 }
 
 const lensMotionVariants = {
@@ -174,14 +174,14 @@ function PreviewMotionFrame({
 export function LinkPreviewCard({
   url,
   previewUrl,
-  peekWidth = 200,
-  peekHeight = 125,
+  peekWidth = 230,
+  peekHeight = 144,
   imageQuality = 50,
   isStatic = false,
   imageSrc = '',
   enableLensEffect = true,
   lensZoomFactor = 1.75,
-  lensSize = 100,
+  lensSize = 112,
   followX = 0,
   clickable = true,
   openInNewTab = true,
@@ -340,7 +340,7 @@ export function LinkPreviewMetadataCard({
   className,
 }: LinkPreviewMetadataCardProps) {
   const cardClassName = cn(
-    'group block w-[22rem] overflow-hidden rounded-[18px] border border-slate-200/90 bg-white shadow-[0_18px_50px_-28px_rgba(15,23,42,0.45)] backdrop-blur-sm',
+    'group block w-[24rem] overflow-hidden rounded-[18px] border border-slate-200/90 bg-white shadow-[0_18px_50px_-28px_rgba(15,23,42,0.45)] backdrop-blur-sm',
     'dark:border-[#2b2f36] dark:bg-[#17191c]',
     className
   )
@@ -348,7 +348,7 @@ export function LinkPreviewMetadataCard({
   const content = (
     <>
       {imageSrc ? (
-        <div className="relative h-36 overflow-hidden bg-slate-100 dark:bg-[#23262c]">
+        <div className="relative h-40 overflow-hidden bg-slate-100 dark:bg-[#23262c]">
           <img
             src={imageSrc}
             alt={title}
@@ -422,15 +422,15 @@ export const HoverPeek = ({
   url,
   previewUrl,
   className,
-  peekWidth = 200,
-  peekHeight = 125,
+  peekWidth = 230,
+  peekHeight = 144,
   imageQuality = 50,
   isStatic = false,
   imageSrc = '',
   enableMouseFollow = true,
   enableLensEffect = true,
   lensZoomFactor = 1.75,
-  lensSize = 100,
+  lensSize = 112,
 }: HoverPeekProps) => {
   const { isPeeking, handleOpenChange, handlePointerMove, followX } =
     useHoverState(enableMouseFollow)

@@ -53,7 +53,11 @@ export const websiteCardEmbed: ArticleEmbedDefinition = {
     screenshot.height = 128
     screenshot.loading = 'lazy'
     screenshot.decoding = 'async'
-    media.append(screenshot)
+    const scrim = document.createElement('span')
+    scrim.className = 'article-website-card__scrim'
+    scrim.setAttribute('aria-hidden', 'true')
+
+    media.append(screenshot, scrim)
 
     const body = document.createElement('span')
     body.className = 'article-website-card__body'

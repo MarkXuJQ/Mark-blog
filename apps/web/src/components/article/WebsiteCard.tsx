@@ -69,91 +69,50 @@ export function WebsiteCard({
     )
   }
 
-  if (variant === 'horizontal') {
-    return (
-      <a
-        href={resolvedUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={cn(
-          'group flex h-32 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-all hover:border-slate-300 hover:shadow-md dark:border-0 dark:bg-[#17191c] dark:shadow-none',
-          className
-        )}
-      >
-        {showScreenshot && (
-          <div className="relative w-48 flex-shrink-0 overflow-hidden bg-slate-100 dark:bg-slate-800">
-            <img
-              src={getWebsiteScreenshotUrl(resolvedUrl, 400)}
-              alt={`Screenshot of ${resolvedTitle}`}
-              width={192}
-              height={128}
-              className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-              loading="lazy"
-              decoding="async"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-          </div>
-        )}
-
-        <div className="flex min-w-0 flex-1 flex-col justify-center p-4">
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-            <Globe className="h-3 w-3" />
-            <span>{hostname}</span>
-          </div>
-
-          <div className="mt-1 flex items-center gap-1.5 text-base font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-slate-100 dark:group-hover:text-blue-400">
-            <span className="truncate">{resolvedTitle}</span>
-            <ExternalLink className="h-3.5 w-3.5 flex-shrink-0 -translate-y-0.5 opacity-0 transition-opacity group-hover:opacity-100" />
-          </div>
-
-          {resolvedDescription && (
-            <p className="mt-1.5 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">
-              {resolvedDescription}
-            </p>
-          )}
-        </div>
-      </a>
-    )
-  }
-
+  // Both card sizes now share the same image-first treatment: the screenshot
+  // fills the frame and the copy sits on a shadowed bottom scrim.
   return (
     <a
       href={resolvedUrl}
       target="_blank"
       rel="noopener noreferrer"
+      aria-label={`${resolvedTitle} · ${hostname}`}
       className={cn(
-        'group block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] transition-all hover:border-slate-300 hover:shadow-md dark:border-0 dark:bg-[#17191c] dark:shadow-none',
+        'group relative block overflow-hidden rounded-xl bg-slate-900 text-white shadow-[0_18px_38px_-28px_rgba(15,23,42,0.7)] transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4e98ba]',
+        variant === 'horizontal'
+          ? 'aspect-[16/10] sm:aspect-[2.2/1]'
+          : 'aspect-[16/10]',
         className
       )}
     >
       {showScreenshot && (
-        <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+        <>
           <img
             src={getWebsiteScreenshotUrl(resolvedUrl, 800)}
             alt={`Screenshot of ${resolvedTitle}`}
             width={800}
             height={500}
-            className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+            className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
             decoding="async"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-        </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/35 to-transparent" />
+        </>
       )}
 
-      <div className="p-4">
-        <div className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
+      <div className="absolute inset-x-0 bottom-0 z-10 p-4 [text-shadow:0_1px_2px_rgba(0,0,0,0.55),0_2px_12px_rgba(0,0,0,0.35)]">
+        <div className="flex items-center gap-1.5 text-xs font-medium text-white/70">
           <Globe className="h-3.5 w-3.5" />
-          <span>{hostname}</span>
+          <span className="truncate">{hostname}</span>
         </div>
 
-        <div className="mt-1 flex items-center gap-1.5 text-base font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-slate-100 dark:group-hover:text-blue-400">
-          {resolvedTitle}
-          <ExternalLink className="h-3.5 w-3.5 -translate-y-0.5 opacity-0 transition-opacity group-hover:opacity-100" />
+        <div className="mt-1 flex items-center gap-1.5 text-base font-semibold text-white">
+          <span className="line-clamp-2">{resolvedTitle}</span>
+          <ExternalLink className="h-3.5 w-3.5 flex-shrink-0 -translate-y-0.5 opacity-0 transition-opacity group-hover:opacity-100" />
         </div>
 
         {resolvedDescription && (
-          <p className="mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">
+          <p className="mt-1.5 line-clamp-2 text-sm text-white/80">
             {resolvedDescription}
           </p>
         )}

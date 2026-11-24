@@ -282,9 +282,22 @@ export function useArticleCodeBlockEnhancements(
             const nextWrapped = frame.getAttribute('data-wrap') !== 'true'
             frame.setAttribute('data-wrap', String(nextWrapped))
             updateWrapButton(wrapButton, nextWrapped, activeLabels)
-            if (showLineNumbers) {
+            if (!showLineNumbers) return
+
+            if (nextWrapped) {
               Prism.plugins.lineNumbers?.resize?.(pre)
+              return
             }
+
+            // Prism only resizes line-number rows while the pre is in
+            // pre-wrap/pre-line mode. Going back to `pre` would otherwise keep
+            // the taller inline heights measured for wrapped lines, so every
+            // number after a wrapped line stays shifted downwards.
+            pre
+              .querySelectorAll<HTMLElement>('.line-numbers-rows > span')
+              .forEach((row) => {
+                row.style.removeProperty('height')
+              })
           }
 
           const handleCopy = async () => {
