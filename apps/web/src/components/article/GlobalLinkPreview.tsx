@@ -7,11 +7,17 @@ import { useLocation } from 'react-router-dom'
 import { getSiteUrl, toAbsoluteUrl } from '@/lib/seo'
 import { LinkPreviewCard, LinkPreviewMetadataCard } from './link-preview'
 
-const PREVIEW_WIDTH = 220
-const PREVIEW_HEIGHT = 138
-const PREVIEW_OFFSET = 40
+const PREVIEW_WIDTH = 250
+const PREVIEW_HEIGHT = 156
+const METADATA_PREVIEW_WIDTH = 384
+const METADATA_PREVIEW_HEIGHT = 292
+const METADATA_NO_IMAGE_HEIGHT = 180
+const PREVIEW_OFFSET = 28
 const VIEWPORT_GUTTER = 12
-const CLOSE_DELAY_MS = 220
+// Only long enough to let the pointer cross the gap between a link and the
+// preview card. Once a close is scheduled, further movement must not restart
+// it, otherwise the card lingers while the mouse keeps moving.
+const CLOSE_DELAY_MS = 70
 
 type ActiveLinkState = {
   key: string
@@ -132,21 +138,18 @@ function isPreviewContentTarget(target: EventTarget | null) {
   return Boolean(element?.closest('[data-link-preview-content="true"]'))
 }
 
-function getPlacement(rect: DOMRect) {
+function getPlacement(rect: DOMRect, width: number, height: number) {
   const viewportWidth = window.innerWidth
   const viewportHeight = window.innerHeight
-  const topCandidate = rect.top - PREVIEW_HEIGHT - PREVIEW_OFFSET
+  const topCandidate = rect.top - height - PREVIEW_OFFSET
   const bottomCandidate = rect.bottom + PREVIEW_OFFSET
   const canPlaceAbove = topCandidate >= VIEWPORT_GUTTER
   const top = canPlaceAbove
     ? topCandidate
-    : Math.min(
-        bottomCandidate,
-        viewportHeight - PREVIEW_HEIGHT - VIEWPORT_GUTTER
-      )
+    : Math.min(bottomCandidate, viewportHeight - height - VIEWPORT_GUTTER)
   const left = Math.min(
-    Math.max(rect.left + rect.width / 2 - PREVIEW_WIDTH / 2, VIEWPORT_GUTTER),
-    viewportWidth - PREVIEW_WIDTH - VIEWPORT_GUTTER
+    Math.max(rect.left + rect.width / 2 - width / 2, VIEWPORT_GUTTER),
+    viewportWidth - width - VIEWPORT_GUTTER
   )
 
   return { top, left }
@@ -161,7 +164,7 @@ export function GlobalLinkPreview() {
   const activeAnchorRef = useRef<HTMLAnchorElement | null>(null)
   const closeTimerRef = useRef<number | null>(null)
   const mouseX = useMotionValue(0)
-  const followX = useSpring(mouseX, { stiffness: 120, damping: 20 })
+  const followX = useSpring(mouseX, { stiffness: 260, damping: 26 })
 
   const siteUrl = useMemo(() => getSiteUrl(), [])
 
@@ -217,7 +220,8 @@ export function GlobalLinkPreview() {
     }
 
     const scheduleClose = () => {
-      clearCloseTimer()
+      if (closeTimerRef.current !== null) return
+
       closeTimerRef.current = window.setTimeout(() => {
         if (!isPreviewHoveredRef.current) {
           closePreview()
@@ -247,7 +251,7 @@ export function GlobalLinkPreview() {
 
       const rect = anchor.getBoundingClientRect()
       if (clientX !== undefined) {
-        mouseX.set((clientX - rect.left - rect.width / 2) * 0.18)
+        mouseX.set((clientX - rect.left - rect.width / 2) * 0.3)
       } else {
         mouseX.set(0)
       }
@@ -303,7 +307,7 @@ export function GlobalLinkPreview() {
 
       if (activeAnchorRef.current === anchor) {
         const rect = anchor.getBoundingClientRect()
-        mouseX.set((event.clientX - rect.left - rect.width / 2) * 0.18)
+        mouseX.set((event.clientX - rect.left - rect.width / 2) * 0.3)
         clearCloseTimer()
         return
       }
@@ -389,6 +393,18 @@ export function GlobalLinkPreview() {
     return null
   }
 
+  const placement = activeLink
+    ? getPlacement(
+        activeLink.rect,
+        activeLink.mode === 'metadata' ? METADATA_PREVIEW_WIDTH : PREVIEW_WIDTH,
+        activeLink.mode === 'metadata'
+          ? activeLink.imageSrc
+            ? METADATA_PREVIEW_HEIGHT
+            : METADATA_NO_IMAGE_HEIGHT
+          : PREVIEW_HEIGHT
+      )
+    : null
+
   return createPortal(
     <div
       className="pointer-events-none fixed inset-0 z-[140]"
@@ -398,7 +414,7 @@ export function GlobalLinkPreview() {
         {activeLink ? (
           <div
             className="pointer-events-none absolute"
-            style={getPlacement(activeLink.rect)}
+            style={placement ?? undefined}
           >
             <div
               className="pointer-events-auto cursor-pointer"
@@ -411,6 +427,8 @@ export function GlobalLinkPreview() {
               }}
               onPointerLeave={() => {
                 isPreviewHoveredRef.current = false
+                if (closeTimerRef.current !== null) return
+
                 closeTimerRef.current = window.setTimeout(() => {
                   activeAnchorRef.current = null
                   mouseX.set(0)
