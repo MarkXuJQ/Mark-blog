@@ -90,8 +90,7 @@ function syncEmotionPanelPlacement(wrap: HTMLElement) {
     // 48px of hysteresis keeps the panel from flickering while scrolling near
     // the flip threshold.
     const placement =
-      (!fitsBelow && fitsAbove) ||
-      (isFlipped && spaceBelow < height + gap + 48)
+      (!fitsBelow && fitsAbove) || (isFlipped && spaceBelow < height + gap + 48)
         ? 'top'
         : 'bottom'
     if (owo.dataset.owoPlacement !== placement) {
@@ -141,10 +140,6 @@ const EMOTION_CDN =
     ? '/emotions/owo.json'
     : new URL('/emotions/owo.json', window.location.origin).toString())
 
-// Shared cadence for both rotating texts: the composer placeholder and the
-// empty-state message in the comments list.
-const ROTATE_INTERVAL_MS = 15_000
-
 export function Comments({
   containerId = 'twikoo-container',
   path,
@@ -175,6 +170,9 @@ export function Comments({
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [commentCount, setCommentCount] = useState(0)
   const commentCountRef = useRef(0)
+  // One random line per page load, reused across Twikoo re-renders.
+  const placeholderPickRef = useRef<number | null>(null)
+  const emptyPickRef = useRef<number | null>(null)
 
   const TWIKOO_ENV_ID = getTwikooEnvId()
 
@@ -246,7 +244,9 @@ export function Comments({
         )
         .forEach((icon) => {
           const path = icon.querySelector('svg path')?.getAttribute('d') ?? ''
-          const label = iconLabels.find(([prefix]) => path.startsWith(prefix))?.[1]
+          const label = iconLabels.find(([prefix]) =>
+            path.startsWith(prefix)
+          )?.[1]
           if (!label) return
           if (icon.title !== label) icon.title = label
           if (icon.getAttribute('aria-label') !== label) {
@@ -277,7 +277,7 @@ export function Comments({
         buttons[buttons.length - 2].dataset.tkDislike = 'true'
       })
 
-      // --- rotating fun placeholder for the comment box (every 10s) ---
+      // --- one fun placeholder, picked once per page load ---
       const textarea =
         wrap.querySelector<HTMLTextAreaElement>('.tk-input textarea')
       if (textarea) {
@@ -288,24 +288,17 @@ export function Comments({
           t('comments.placeholder4', '你猜我的评论区在等谁？'),
           t('comments.placeholder5', '其实，才不是不想评论呢'),
         ]
-        if (!textarea.dataset.rotatorBound) {
-          textarea.dataset.rotatorBound = 'true'
-          let i = 0
-          textarea.placeholder = lines[0]
-          const timer = window.setInterval(() => {
-            // Stop once Twikoo re-rendered/replaced the composer textarea.
-            if (!textarea.isConnected) {
-              window.clearInterval(timer)
-              return
-            }
-            i = (i + 1) % lines.length
-            // Don't overwrite while the visitor is actively typing.
-            if (!textarea.value) textarea.placeholder = lines[i]
-          }, ROTATE_INTERVAL_MS)
-        } else if (!textarea.value && !lines.includes(textarea.placeholder)) {
-          // Twikoo rebinds the server-side COMMENT_PLACEHOLDER on re-render, so
-          // restore ours whenever it gets clobbered (keeps the rotation alive).
-          textarea.placeholder = lines[0]
+        let pick = placeholderPickRef.current
+        if (pick === null) {
+          pick = Math.floor(Math.random() * lines.length)
+          placeholderPickRef.current = pick
+        }
+        const picked = lines[pick]
+        textarea.dataset.hintText = picked
+        // Twikoo rebinds the server-side COMMENT_PLACEHOLDER on re-render, so
+        // restore our pick whenever it gets clobbered. Never overwrite typing.
+        if (!textarea.value && textarea.placeholder !== picked) {
+          textarea.placeholder = picked
         }
       }
 
@@ -386,7 +379,7 @@ export function Comments({
       // nodes here is unreliable across Twikoo rerenders, so CSS hides it.
       // (no JS node removal for action buttons)
 
-      // --- creative rotating empty-state message ---
+      // --- one creative empty-state message, picked once per page load ---
       const emptyEl = wrap.querySelector<HTMLElement>('.tk-comments-no')
       if (emptyEl) {
         const lines = [
@@ -395,31 +388,17 @@ export function Comments({
           t('comments.empty3', '此刻的评论区一片宁静...'),
           t('comments.empty4', '期待你的第一条留言 🌱'),
         ]
-        if (!emptyEl.dataset.rotatorBound) {
-          let i = 0
-          emptyEl.dataset.rotatorBound = 'true'
-          emptyEl.dataset.rotatorText = lines[0]
-          // Show a friendly line right away instead of Twikoo's bare
-          // "没有评论" for the first 15 seconds.
-          setVueText(emptyEl, lines[0])
-          const timer = window.setInterval(() => {
-            // Stop once Twikoo replaced the empty-state node (comments arrived).
-            if (!emptyEl.isConnected) {
-              window.clearInterval(timer)
-              return
-            }
-            i = (i + 1) % lines.length
-            emptyEl.dataset.rotatorText = lines[i]
-            // Never replace the container's children: Vue keeps anchor comment
-            // nodes in there and needs them on the next patch.
-            setVueText(emptyEl, lines[i])
-          }, ROTATE_INTERVAL_MS)
-        } else if (
-          emptyEl.dataset.rotatorText &&
-          emptyEl.textContent?.trim() !== emptyEl.dataset.rotatorText
-        ) {
-          // Twikoo re-rendered the node back to its default text; restore ours.
-          setVueText(emptyEl, emptyEl.dataset.rotatorText)
+        let pick = emptyPickRef.current
+        if (pick === null) {
+          pick = Math.floor(Math.random() * lines.length)
+          emptyPickRef.current = pick
+        }
+        const picked = lines[pick]
+        emptyEl.dataset.rotatorText = picked
+        // Never replace the container's children: Vue keeps anchor comment
+        // nodes in there and needs them on the next patch.
+        if (emptyEl.textContent?.trim() !== picked) {
+          setVueText(emptyEl, picked)
         }
       }
     },
@@ -589,7 +568,7 @@ export function Comments({
             childList: true,
             subtree: true,
             // characterData: false — text-value churn (placeholders, counts,
-            // rotating empty-state) shouldn't re-trigger applyCustomizations.
+            // empty-state copy) shouldn't re-trigger applyCustomizations.
           })
 
           pollTimer = window.setInterval(() => {
@@ -632,26 +611,29 @@ export function Comments({
         // that Twikoo mounts its shell but never renders the list; a manual
         // page refresh fixes it because init runs again. Do that automatically
         // once instead of leaving an empty section on the very first visit.
-        fallbackTimer = window.setTimeout(() => {
-          if (cancelled) return
-          if (noteListPresent()) {
-            applyCustomizationsRef.current(host)
-            return
-          }
-          // A list has already been rendered once: this is a transient reload,
-          // so leave the widget alone and let Twikoo finish the request.
-          if (hasRenderedList) {
-            markReady()
-            applyCustomizationsRef.current(host)
-            return
-          }
-          if (initAttempts < 1 && !host.querySelector('.tk-error')) {
-            initAttempts += 1
-            void initTwikoo()
-            return
-          }
-          setStatus('error')
-        }, eager ? 7000 : 10000)
+        fallbackTimer = window.setTimeout(
+          () => {
+            if (cancelled) return
+            if (noteListPresent()) {
+              applyCustomizationsRef.current(host)
+              return
+            }
+            // A list has already been rendered once: this is a transient reload,
+            // so leave the widget alone and let Twikoo finish the request.
+            if (hasRenderedList) {
+              markReady()
+              applyCustomizationsRef.current(host)
+              return
+            }
+            if (initAttempts < 1 && !host.querySelector('.tk-error')) {
+              initAttempts += 1
+              void initTwikoo()
+              return
+            }
+            setStatus('error')
+          },
+          eager ? 7000 : 10000
+        )
       } catch (error) {
         console.error('Twikoo init error:', error)
         if (!cancelled) {
@@ -676,14 +658,7 @@ export function Comments({
       // unmount/remount under StrictMode); wiping the mounted Vue tree here is
       // what made the comment area disappear until a full page refresh.
     }
-  }, [
-    TWIKOO_ENV_ID,
-    containerId,
-    eager,
-    path,
-    variant,
-    currentLang,
-  ])
+  }, [TWIKOO_ENV_ID, containerId, eager, path, variant, currentLang])
 
   const statusMessage = !TWIKOO_ENV_ID
     ? null
