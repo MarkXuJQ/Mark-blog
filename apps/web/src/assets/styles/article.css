@@ -197,7 +197,7 @@ html.dark .prose {
   margin-bottom: 1.25rem;
   padding-top: 1.15rem;
   padding-left: clamp(1.15rem, 2.5vw, 1.45rem);
-  font-size: clamp(1.55rem, 1.16rem + 1.28vw, 2.15rem);
+  font-size: clamp(1.45rem, 1.12rem + 0.9vw, 1.85rem);
   line-height: 1.18;
   font-weight: 700;
   color: color-mix(in srgb, var(--text-primary) 92%, #0f172a 8%);
@@ -281,8 +281,8 @@ html.dark .prose {
 
 /* Link favicons: injected as a background on a pseudo-element so the anchor
    keeps only its text children and hover previews still recognize it. */
-.markdown-body a[data-link-favicon]::before,
-.prose a[data-link-favicon]::before {
+.article-rich .markdown-body a[data-link-favicon]::before,
+.prose:not(.simple-reading) a[data-link-favicon]::before {
   content: '';
   display: inline-block;
   width: 0.95em;
@@ -300,8 +300,7 @@ html.dark .prose {
    hover. Scoped to links that already carry a favicon, so heading anchors,
    website cards and embed controls keep their own treatment. */
 .article-rich .markdown-body a[data-link-favicon],
-.simple-reading .markdown-body a[data-link-favicon],
-.prose a[data-link-favicon] {
+.prose:not(.simple-reading) a[data-link-favicon] {
   margin: -0.1em -0.2em;
   padding: 0.1em 0.2em;
   border-radius: 0;
@@ -319,13 +318,25 @@ html.dark .prose {
 
 .article-rich .markdown-body a[data-link-favicon]:hover,
 .article-rich .markdown-body a[data-link-favicon]:focus-visible,
-.simple-reading .markdown-body a[data-link-favicon]:hover,
-.simple-reading .markdown-body a[data-link-favicon]:focus-visible,
-.prose a[data-link-favicon]:hover,
-.prose a[data-link-favicon]:focus-visible {
+.prose:not(.simple-reading) a[data-link-favicon]:hover,
+.prose:not(.simple-reading) a[data-link-favicon]:focus-visible {
   border-radius: 0.3em;
   background-size: 100% 100%;
   color: var(--article-link-hover);
+}
+
+/* Simple reading mode keeps plain links: no favicon, no underline bloom, no
+   hover animation. The prose link colors (including the hover change) still
+   apply so links remain distinguishable. */
+.simple-reading .markdown-body a[data-link-favicon]::before {
+  content: none;
+}
+.simple-reading .markdown-body a[data-link-favicon] {
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  transition: none;
 }
 
 .article-rich

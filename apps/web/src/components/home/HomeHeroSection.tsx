@@ -357,8 +357,8 @@ const styles = {
   titleRotateBadge:
     'relative mx-[0.1em] inline-flex items-baseline align-baseline',
   titleRotateWrap:
-    'inline-flex min-h-[1.12em] flex-nowrap items-center justify-center overflow-hidden whitespace-nowrap rounded-[0.18em] bg-[#ff5941] px-[0.25em] py-[0.07em] pr-[0.4em] align-baseline leading-none text-white shadow-[0_0.1em_0_rgba(190,55,34,0.28)]',
-  titleRotateSplit: 'overflow-hidden pb-[0.03em]',
+    'inline-flex min-h-[1.12em] flex-nowrap items-center justify-center overflow-hidden whitespace-nowrap rounded-[0.18em] bg-[#ff5941] px-[0.25em] py-[0.14em] pr-[0.4em] align-baseline leading-none text-white shadow-[0_0.1em_0_rgba(190,55,34,0.28)]',
+  titleRotateSplit: 'overflow-hidden pb-[0.16em] -mb-[0.07em]',
   titleRotateGlyph: 'leading-[0.98] text-white',
   titleRotateStar:
     'pointer-events-none absolute right-[0.18em] top-[0.14em] z-10 text-[0.42em] font-black leading-none text-white/95 drop-shadow-[0_1px_0_rgba(154,52,18,0.4)]',

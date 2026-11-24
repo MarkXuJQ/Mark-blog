@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
-import { NavLink, Link, useLocation } from 'react-router-dom'
+import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronDown, Menu, X, Sun, Moon, Monitor } from 'lucide-react'
 import { FaPhotoFilm } from 'react-icons/fa6'
 import { HiMiniBeaker } from 'react-icons/hi2'
@@ -10,6 +10,7 @@ import { RiLinksLine, RiMovie2Line } from 'react-icons/ri'
 import { TbTimeline } from 'react-icons/tb'
 import type { IconType } from 'react-icons'
 import { cn } from '@/lib/classNames'
+import { getPairedPostSlug } from '@/lib/content/postSummaries'
 import type { ThemeMode } from '@/hooks/useTheme'
 import { SearchTriggerInput } from '@/components/search/SearchTriggerInput'
 import { SegmentedToggle } from '../ui/SegmentedToggle'
@@ -88,6 +89,7 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
   const { t, i18n } = useTranslation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -95,6 +97,21 @@ export function NavBar({ mode, onModeChange }: NavBarProps) {
   }, [location])
 
   const changeLanguage = (lng: string) => {
+    // On a blog post, switch to the paired translation instead of keeping the
+    // same URL and only changing the UI language.
+    const postMatch = location.pathname.match(/^\/blog\/([^/]+)\/?$/)
+    if (postMatch) {
+      const pairedSlug = getPairedPostSlug(
+        decodeURIComponent(postMatch[1]),
+        i18n.language,
+        lng
+      )
+      if (pairedSlug) {
+        i18n.changeLanguage(lng)
+        navigate(`/blog/${pairedSlug}${location.search}${location.hash}`)
+        return
+      }
+    }
     i18n.changeLanguage(lng)
   }
 

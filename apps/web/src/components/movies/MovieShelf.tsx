@@ -787,9 +787,6 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                           />
                         ) : (
                           <span className="movie-shelf__fallback">
-                            <span className="movie-shelf__fallback-label">
-                              {t('movies.shelf.textCover')}
-                            </span>
                             <span className="movie-shelf__fallback-title">
                               {movie.title}
                             </span>
@@ -898,9 +895,6 @@ export function MovieShelf({ movies, tmdbMap, locale }: MovieShelfProps) {
                               />
                             ) : (
                               <span className="movie-shelf__fallback">
-                                <span className="movie-shelf__fallback-label">
-                                  {t('movies.shelf.textCover')}
-                                </span>
                                 <span className="movie-shelf__fallback-title">
                                   {openedMovie.title}
                                 </span>

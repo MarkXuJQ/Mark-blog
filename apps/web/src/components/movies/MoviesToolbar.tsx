@@ -1,18 +1,13 @@
 import { Search } from 'lucide-react'
-import { LuBookOpen } from 'react-icons/lu'
-import { RiGalleryView2 } from 'react-icons/ri'
 import { useTranslation } from 'react-i18next'
 import { SelectMenu } from '@/components/ui/SelectMenu'
-import { SegmentedToggle } from '@/components/ui/SegmentedToggle'
-import type { CardLayout, MovieFilter } from '@/lib/movies/movieTypes'
+import type { MovieFilter } from '@/lib/movies/movieTypes'
 
 interface MoviesToolbarProps {
   keyword: string
   onKeywordChange: (value: string) => void
   movieFilter: MovieFilter
   onMovieFilterChange: (value: MovieFilter) => void
-  cardLayout: CardLayout
-  onCardLayoutChange: (value: CardLayout) => void
 }
 
 export function MoviesToolbar({
@@ -20,8 +15,6 @@ export function MoviesToolbar({
   onKeywordChange,
   movieFilter,
   onMovieFilterChange,
-  cardLayout,
-  onCardLayoutChange,
 }: MoviesToolbarProps) {
   const { t } = useTranslation()
 
@@ -64,32 +57,6 @@ export function MoviesToolbar({
               labelClassName="hidden sm:inline"
               buttonClassName="max-w-[5.25rem] gap-1 text-sm sm:max-w-[6.8rem]"
               menuClassName="w-52 max-w-[calc(100vw-2rem)]"
-            />
-            <SegmentedToggle
-              value={cardLayout}
-              onValueChange={onCardLayoutChange}
-              ariaLabel={t('movies.layout.label')}
-              size="sm"
-              className="shrink-0"
-              buttonClassName="h-8 w-8 px-0"
-              items={[
-                {
-                  value: 'shelf',
-                  ariaLabel: t('movies.layout.shelf'),
-                  tooltip: t('movies.layout.shelf'),
-                  content: (
-                    <LuBookOpen className="h-4 w-4" aria-hidden="true" />
-                  ),
-                },
-                {
-                  value: 'grid',
-                  ariaLabel: t('movies.layout.grid'),
-                  tooltip: t('movies.layout.grid'),
-                  content: (
-                    <RiGalleryView2 className="h-4 w-4" aria-hidden="true" />
-                  ),
-                },
-              ]}
             />
           </div>
         </div>

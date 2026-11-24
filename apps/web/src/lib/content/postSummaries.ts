@@ -40,11 +40,40 @@ export function getPostSummaryMatch(
   )
   if (exact) return { summary: exact, language: normalizedLanguage }
 
-  const fallbackLanguage: PostLanguage = normalizedLanguage === 'zh' ? 'en' : 'zh'
+  const fallbackLanguage: PostLanguage =
+    normalizedLanguage === 'zh' ? 'en' : 'zh'
   const fallback = getAllPostSummaries(fallbackLanguage).find(
     (post) => post.slug === slug || post.aliases?.includes(slug)
   )
-  return fallback ? { summary: fallback, language: fallbackLanguage } : undefined
+  return fallback
+    ? { summary: fallback, language: fallbackLanguage }
+    : undefined
+}
+
+/**
+ * Resolve the canonical slug of the same article in the target language.
+ * Bilingual posts share an alias (e.g. `behind-localhost`) even though their
+ * actual slugs carry a language suffix (`-cn` / `-en`).
+ */
+export function getPairedPostSlug(
+  slug: string,
+  fromLanguage?: string,
+  targetLanguage?: string
+): string | undefined {
+  const current = getPostSummaryMatch(slug, fromLanguage)
+  if (!current) return undefined
+
+  const target = resolveLanguage(targetLanguage)
+  if (current.language === target) return undefined
+
+  const keys = new Set([
+    current.summary.slug,
+    ...(current.summary.aliases ?? []),
+  ])
+  const paired = getAllPostSummaries(target).find(
+    (post) => keys.has(post.slug) || post.aliases?.some((a) => keys.has(a))
+  )
+  return paired?.slug
 }
 
 export function getAdjacentPostSummaries(
@@ -90,7 +119,8 @@ export function getSharedPostCommentPath(post: BlogPostSummary): string {
   })
 
   const neutralSlug = post.slug.replace(/-(cn|en)$/i, '')
-  if (neutralSlug !== post.slug) return '/blog/' + encodeURIComponent(neutralSlug)
+  if (neutralSlug !== post.slug)
+    return '/blog/' + encodeURIComponent(neutralSlug)
 
   const pairedNeutralSlug = pairedChinesePost?.slug.replace(/-(cn|en)$/i, '')
   const canonicalSlug =

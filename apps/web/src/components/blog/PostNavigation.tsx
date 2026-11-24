@@ -1,6 +1,6 @@
-import type { MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { BlogPostSummary } from '@/lib/content/posts'
 
 interface PostNavigationProps {
@@ -10,83 +10,74 @@ interface PostNavigationProps {
 
 type Direction = 'prev' | 'next'
 
-function handleCardMouseEnter(event: MouseEvent<HTMLAnchorElement>) {
-  event.currentTarget.style.transform =
-    'perspective(1200px) rotateX(0deg) rotateY(0deg) translateY(-2px)'
-}
-
-function handleCardMouseMove(event: MouseEvent<HTMLAnchorElement>) {
-  const card = event.currentTarget
-  const rect = card.getBoundingClientRect()
-  const x = (event.clientX - rect.left) / rect.width
-  const y = (event.clientY - rect.top) / rect.height
-  const rotateY = (x - 0.5) * 8.5
-  const rotateX = (0.5 - y) * 8.5
-
-  card.style.transform = `perspective(1200px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-2px)`
-}
-
-function handleCardMouseLeave(event: MouseEvent<HTMLAnchorElement>) {
-  event.currentTarget.style.transform = ''
-}
-
-function NavigationCard({
+function NavigationLink({
   post,
   direction,
 }: {
-  post: BlogPostSummary
+  post?: BlogPostSummary
   direction: Direction
 }) {
+  const { t } = useTranslation()
   const isPrev = direction === 'prev'
   const ArrowIcon = isPrev ? ChevronLeft : ChevronRight
+  const label = isPrev ? t('blog.nav.noPrev') : t('blog.nav.noNext')
+  const inner = (
+    <>
+      {post && (
+        <ArrowIcon
+          size={32}
+          aria-hidden="true"
+          className={[
+            'shrink-0 opacity-50 transition-all delay-100 duration-200 group-hover:delay-0',
+            'group-hover:scale-[2] group-hover:opacity-20',
+            isPrev ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1',
+          ].join(' ')}
+        />
+      )}
+      <span className="min-w-0">
+        <strong
+          className={[
+            'text-base leading-5 font-semibold',
+            'text-[var(--text-primary)]',
+            'transition-[font-size,line-height,color] delay-100 duration-200 group-hover:delay-0',
+            'group-hover:text-lg group-hover:leading-6',
+            'group-hover:text-[color-mix(in_srgb,var(--brand-600)_82%,var(--text-primary)_18%)]',
+            'dark:group-hover:text-[color-mix(in_srgb,var(--brand-400)_82%,var(--text-primary)_18%)]',
+          ].join(' ')}
+        >
+          {post?.title || label}
+        </strong>
+        {post?.date && (
+          <time className="mt-0.5 block text-xs text-[var(--text-disabled)]">
+            {post.date}
+          </time>
+        )}
+      </span>
+    </>
+  )
 
-  return (
+  return post ? (
     <Link
       to={`/blog/${post.slug}`}
       data-link-preview="off"
-      onMouseEnter={handleCardMouseEnter}
-      onMouseMove={handleCardMouseMove}
-      onMouseLeave={handleCardMouseLeave}
       className={[
-        'group relative overflow-hidden rounded-[1.75rem] border border-slate-200/70 p-5 shadow-[0_10px_28px_-24px_rgba(15,23,42,0.34)] dark:border-0 dark:shadow-none',
-        'bg-slate-100/88 dark:bg-[#20242a]',
-        'transition-[transform,box-shadow,background-color] duration-200 ease-out will-change-transform',
-        'hover:bg-slate-100 dark:hover:bg-[#23282f]',
-        'hover:shadow-[0_16px_26px_-18px_rgba(15,23,42,0.22),0_2px_0_rgba(255,255,255,0.94)_inset,0_-2px_0_rgba(148,163,184,0.16)_inset]',
-        'dark:hover:shadow-[0_18px_28px_-18px_rgba(0,0,0,0.62),0_-2px_0_rgba(0,0,0,0.24)_inset]',
-        isPrev ? 'pl-16 text-left' : 'pr-16 text-right',
+        'group flex min-w-0 items-center gap-2.5 py-1.5',
+        'focus:outline-none focus-visible:ring-2',
+        'focus-visible:ring-[var(--brand-400)] focus-visible:ring-inset',
+        isPrev ? 'flex-row text-left' : 'ml-auto flex-row-reverse text-right',
       ].join(' ')}
     >
-      <div
-        className={[
-          'pointer-events-none absolute inset-0 rounded-[inherit]',
-          isPrev
-            ? 'bg-[linear-gradient(135deg,rgba(255,255,255,0.42),transparent_38%)] dark:bg-[linear-gradient(135deg,rgba(0,0,0,0.14),transparent_42%)]'
-            : 'bg-[linear-gradient(225deg,rgba(255,255,255,0.42),transparent_38%)] dark:bg-[linear-gradient(225deg,rgba(0,0,0,0.14),transparent_42%)]',
-        ].join(' ')}
-      />
-      <span
-        className={[
-          'absolute top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full',
-          'bg-white/80 text-slate-500 shadow-[0_8px_20px_-18px_rgba(15,23,42,0.3)] dark:shadow-none',
-          'transition-[transform,color,background-color,box-shadow] duration-200 group-hover:bg-white group-hover:text-slate-700 group-hover:shadow-[0_8px_16px_-12px_rgba(15,23,42,0.35)]',
-          'dark:bg-[#171b20] dark:text-slate-300 dark:group-hover:bg-[#1b2026] dark:group-hover:text-slate-100 dark:group-hover:shadow-[0_8px_16px_-12px_rgba(0,0,0,0.45)]',
-          isPrev
-            ? 'left-4 group-hover:-translate-x-0.5'
-            : 'right-4 group-hover:translate-x-0.5',
-        ].join(' ')}
-      >
-        <ArrowIcon size={17} />
-      </span>
-      <div className="relative space-y-1.5">
-        <span className="line-clamp-2 text-[1.02rem] leading-6 font-semibold text-slate-900 transition-colors group-hover:text-slate-950 dark:text-slate-100 dark:group-hover:text-white">
-          {post.title}
-        </span>
-        <time className="block text-xs tracking-[0.08em] text-slate-500 dark:text-slate-400">
-          {post.date}
-        </time>
-      </div>
+      {inner}
     </Link>
+  ) : (
+    <span
+      className={[
+        'flex min-w-0 items-center gap-2.5 py-1.5 opacity-40 select-none',
+        isPrev ? 'flex-row text-left' : 'ml-auto flex-row-reverse text-right',
+      ].join(' ')}
+    >
+      {inner}
+    </span>
   )
 }
 
@@ -94,9 +85,11 @@ export function PostNavigation({ prev, next }: PostNavigationProps) {
   if (!prev && !next) return null
 
   return (
-    <nav className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2">
-      {prev ? <NavigationCard post={prev} direction="prev" /> : <div />}
-      {next ? <NavigationCard post={next} direction="next" /> : <div />}
+    <nav aria-label="Post navigation" className="font-round mt-8">
+      <div className="flex flex-col gap-y-4">
+        <NavigationLink post={prev} direction="prev" />
+        <NavigationLink post={next} direction="next" />
+      </div>
     </nav>
   )
 }

@@ -10,7 +10,6 @@ import {
 import { motion, useMotionValue } from 'framer-motion'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import batmanSticker from '@/assets/home/stickers/batman.webp'
-import playstationSticker from '@/assets/home/stickers/playstation-symbols.webp'
 import chatGptSticker from '@/assets/home/stickers/think-less-more-chatgpt.webp'
 
 const MIN_SIDE_SPACE = 260
@@ -21,12 +20,6 @@ const INITIAL_VERTICAL_MIN = 0.2
 const INITIAL_VERTICAL_MAX = 0.8
 
 const STICKERS = [
-  {
-    src: playstationSticker,
-    alt: { zh: 'PlayStation 按键符号贴纸', en: 'PlayStation symbols sticker' },
-    side: 'left',
-    className: 'w-[102px]',
-  },
   {
     src: batmanSticker,
     alt: { zh: '蝙蝠侠贴纸', en: 'Batman sticker' },

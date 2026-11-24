@@ -189,14 +189,6 @@
   text-align: center;
 }
 
-.movie-shelf__fallback-label {
-  font-size: 0.5rem;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(248, 250, 252, 0.5);
-}
-
 .movie-shelf__fallback-title {
   font-family: var(--font-heading);
   font-size: 0.82rem;

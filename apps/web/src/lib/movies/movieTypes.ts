@@ -1,4 +1,3 @@
-export type CardLayout = 'shelf' | 'grid'
 export type MovieFilter = 'all' | 'reviews'
 
 export interface MovieOverride {

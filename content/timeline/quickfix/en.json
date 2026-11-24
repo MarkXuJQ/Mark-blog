@@ -1,5 +1,17 @@
 [
   {
+    "id": "qf-20261124",
+    "date": "2026-11-24",
+    "content": [
+      "License card: fixed the signature not redrawing across posts and switched it to an 8-second loop; tightened the layout with a right-centered signature on wide screens and a top-right signature on narrow screens, non-wrapping labels, unified ChillRound, a lower watermark, and no hover preview on the CC link",
+      "Pagination: hover now moves, scales and fades the directional arrow while titles only grow in size; a 100ms leave delay reduces flicker when switching between posts",
+      "Reading modes: simple-mode links dropped favicons, underlines and animations but keep color changes, plain TOC cards lost their hover shadow, and rich-mode h2 size was reduced",
+      "Article interactions: comment hints are now picked once per page load instead of rotating, and language switching follows paired bilingual articles via shared slugs and aliases",
+      "Homepage hero: fixed English y / p descenders being clipped in the rotating badge and made its top and bottom padding symmetric",
+      "Movies: removed the grid/card layout and its state, component and copy, leaving the 3D shelf and pagination as the only view"
+    ]
+  },
+  {
     "id": "qf-20261123",
     "date": "2026-11-23",
     "content": [
