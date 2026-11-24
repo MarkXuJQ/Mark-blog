@@ -142,6 +142,12 @@
     "recommend": {
       "title": "Recommended"
     },
+    "nav": {
+      "prev": "Previous",
+      "next": "Next",
+      "noPrev": "Reached the end of time",
+      "noNext": "You're all caught up — hang tight!"
+    },
     "filter": {
       "allCategories": "All Posts"
     },
@@ -169,6 +175,7 @@
       "noResults": "No articles found"
     },
     "copyright": {
+      "title": "Copyright",
       "author": "Author",
       "license": "Copyright",
       "statement": "All articles in this blog are licensed under <0>{{license}}</0> unless stating otherwise."
@@ -196,23 +203,17 @@
       "watchedCount": "Watched Movies",
       "ratingBreakdown": "Rating Distribution"
     },
-    "layout": {
-      "label": "Layout",
-      "shelf": "Shelf",
-      "grid": "Grid"
-    },
-  "shelf": {
-    "title": "Watch Shelf",
+    "shelf": {
+      "title": "Watch Shelf",
       "hint": "Hover a spine, open a volume for details, or browse with arrow keys.",
       "groups": {
         "undated": "Undated"
       },
-    "close": "Close details",
-    "detailLabel": "Details",
-    "openReview": "Read review",
-    "openEntry": "View entry",
-    "textCover": "Text cover"
-  },
+      "close": "Close details",
+      "detailLabel": "Details",
+      "openReview": "Read review",
+      "openEntry": "View entry"
+    },
     "profile": {
       "label": "Profiles",
       "douban": "Douban",
@@ -231,9 +232,6 @@
         "fri": "Fri"
       }
     },
-    "tmdb": {
-      "noPoster": "No poster"
-    },
     "searchPlaceholder": "Search title, original title, platform, or notes...",
     "filters": {
       "label": "Filter",
@@ -250,9 +248,6 @@
     },
     "watchDate": "Watch date",
     "releaseDate": "Release date",
-    "actions": {
-      "openDouban": "Douban"
-    },
     "reviews": {
       "pageTitle": "Movie Reviews",
       "backToMovies": "Back to Movies",
