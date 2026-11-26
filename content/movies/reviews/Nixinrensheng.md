@@ -7,7 +7,6 @@ movieTitle: "逆行人生"
 rating: 4
 tags: ["Movies", "Review"]
 image: "https://image.tmdb.org/t/p/original/zYpdT02cJJrNaOD0I9lq30e9GY5.jpg"
-background: "https://image.tmdb.org/t/p/original/yrsYzg3ImML2X3aNcytDSruG3mX.jpg"
 ---
 片子总体不错，我认为是有值4颗星的水平的，但我还是想要给结尾扣一颗星，但同时由于电影立意，再加一个，达到了一种平衡吧。
 
