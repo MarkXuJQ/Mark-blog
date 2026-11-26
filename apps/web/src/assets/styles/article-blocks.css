@@ -251,14 +251,24 @@
   clear: both;
 }
 
+/* The video embed is just the player frame: no caption, no floating labels,
+   no shadow, full column width. */
 .article-video-player {
   clear: both;
+  isolation: isolate;
   width: 100%;
-  margin: 1.75rem auto;
+  margin: 1.75rem 0;
   overflow: hidden;
-  border: 1px solid rgb(226 232 240);
-  border-radius: 0.5rem;
-  background: #fff;
+  border: 0;
+  border-radius: 0.85rem;
+  background: #0f172a;
+}
+
+.article-video-player__media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: #111827;
 }
 
 .article-video-player__frame {
@@ -267,61 +277,6 @@
   aspect-ratio: 16 / 9;
   border: 0;
   background: #111;
-}
-
-.article-video-player__caption {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-}
-
-.article-video-player__title {
-  overflow: hidden;
-  color: rgb(30 41 59);
-  font-size: 0.875rem;
-  font-weight: 650;
-  line-height: 1.4;
-  text-overflow: ellipsis;
-}
-
-.article-video-player__link {
-  flex: 0 0 auto;
-  color: rgb(37 99 235) !important;
-  font-size: 0.8125rem;
-  font-weight: 650;
-  text-decoration: none !important;
-}
-
-.article-video-player__link:hover {
-  text-decoration: underline !important;
-  text-underline-offset: 0.18em;
-}
-
-.article-video-player__link:focus-visible {
-  border-radius: 0.15rem;
-  outline: 3px solid color-mix(in srgb, var(--brand-500) 42%, transparent);
-  outline-offset: 3px;
-}
-
-.dark .article-video-player {
-  border-color: rgba(255, 255, 255, 0.1);
-  background: #202328;
-}
-
-.dark .article-video-player__title {
-  color: rgb(241 245 249);
-}
-
-@media (max-width: 479px) {
-  .article-video-player__caption {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0.4rem;
-    padding: 0.7rem 0.8rem;
-  }
 }
 
 @media (max-width: 639px) {
@@ -381,10 +336,9 @@
   max-width: 100%;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
-  padding: 1.55rem 0 0.85rem;
-  scrollbar-color: color-mix(in srgb, var(--article-muted) 42%, transparent)
-    transparent;
-  scrollbar-width: thin;
+  padding: 1.55rem 0 0.2rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   touch-action: pan-y;
   user-select: none;
   -webkit-overflow-scrolling: touch;
@@ -400,10 +354,9 @@
   max-width: 100%;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
-  padding: 1.55rem 0 0.85rem;
-  scrollbar-color: color-mix(in srgb, var(--article-muted) 42%, transparent)
-    transparent;
-  scrollbar-width: thin;
+  padding: 1.55rem 0 0.2rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   touch-action: pan-y;
   user-select: none;
   -webkit-overflow-scrolling: touch;
@@ -452,54 +405,9 @@
   transform: translateY(-1.35rem);
 }
 
-.photo-scroll::-webkit-scrollbar {
-  height: 0.42rem;
-}
-
+.photo-scroll::-webkit-scrollbar,
 .photo-scroll-vertical::-webkit-scrollbar {
-  height: 0.42rem;
-}
-
-.photo-scroll::-webkit-scrollbar-button {
   display: none;
-  width: 0;
-  height: 0;
-}
-
-.photo-scroll-vertical::-webkit-scrollbar-button {
-  display: none;
-  width: 0;
-  height: 0;
-}
-
-.photo-scroll::-webkit-scrollbar-track {
-  margin-inline: 0.25rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--article-muted) 10%, transparent);
-}
-
-.photo-scroll-vertical::-webkit-scrollbar-track {
-  margin-inline: 0.25rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--article-muted) 10%, transparent);
-}
-
-.photo-scroll::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--article-muted) 34%, transparent);
-}
-
-.photo-scroll-vertical::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--article-muted) 34%, transparent);
-}
-
-.photo-scroll::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--article-muted) 48%, transparent);
-}
-
-.photo-scroll-vertical::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--article-muted) 48%, transparent);
 }
 
 .photo-scroll.is-dragging {

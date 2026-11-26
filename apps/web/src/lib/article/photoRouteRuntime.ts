@@ -275,6 +275,12 @@ export async function mountArticlePhotoRoute(figure: HTMLElement) {
   const meta = figure.querySelector<HTMLElement>('.article-photo-route__meta')
   const playButton = figure.querySelector<HTMLButtonElement>('.article-photo-route__play')
   if (!mapContainer || !title || !meta || !playButton) return () => undefined
+  const playLabel = playButton.querySelector<HTMLElement>(
+    '.article-photo-route__play-label'
+  ) ?? playButton
+  const setPlayLabel = (label: string) => {
+    playLabel.textContent = label
+  }
 
   if (figure.dataset.photoRouteTitleOverride !== 'true') {
     title.textContent = route.title
@@ -331,12 +337,12 @@ export async function mountArticlePhotoRoute(figure: HTMLElement) {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setProgress(1)
       playButton.disabled = false
-      playButton.textContent = isZh ? '重新播放' : 'Replay route'
+      setPlayLabel(isZh ? '重新播放' : 'Replay route')
       return
     }
     const startedAt = performance.now()
     playButton.disabled = true
-    playButton.textContent = isZh ? '播放中' : 'Playing'
+    setPlayLabel(isZh ? '播放中' : 'Playing')
     setProgress(0)
     const render = (now: number) => {
       if (disposed) return
@@ -349,7 +355,7 @@ export async function mountArticlePhotoRoute(figure: HTMLElement) {
         animationFrame = window.requestAnimationFrame(render)
       } else {
         playButton.disabled = false
-        playButton.textContent = isZh ? '重新播放' : 'Replay route'
+        setPlayLabel(isZh ? '重新播放' : 'Replay route')
       }
     }
     animationFrame = window.requestAnimationFrame(render)
