@@ -1,5 +1,14 @@
 [
   {
+    "id": "qf-20261126",
+    "date": "2026-11-26",
+    "content": [
+      "Added a colorful tag cloud to the archive sidebar: tags are grouped into at most five frequency bands, the compact view caps at 30 single-select tags, and article tag chips remain multi-select",
+      "The cloud can expand into a center-out word cloud with a non-default display face and a subtle density slider; clicking a word now opens a scrollable related-post preview styled after the friend-link popover",
+      "Hovering a word draws co-occurrence lines, highlights related tags and dims the rest; drag and cluster behavior were removed in favor of a stable static layout"
+    ]
+  },
+  {
     "id": "qf-20261124",
     "date": "2026-11-24",
     "content": [

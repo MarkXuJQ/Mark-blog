@@ -28,14 +28,17 @@ export const photoRouteEmbed: ArticleEmbedDefinition = {
     const isZh = context.language?.toLowerCase().startsWith('zh')
     const routeSummary = getPhotoRouteSummary(routeKey)
     const titleOverride = source.getAttribute('title')?.trim() ?? ''
-    const description = source.getAttribute('desc')?.trim() ||
-      (isZh
-        ? '查看这段旅程的路径与停留点。'
-        : 'Explore the route and stops from this journey.')
+    const description = source.getAttribute('desc')?.trim() ?? ''
+    const size = source.getAttribute('size')?.trim().toLowerCase() ?? ''
+    const side = source.getAttribute('side')?.trim().toLowerCase() ?? ''
     const title = titleOverride || routeSummary?.title ||
       (isZh ? '旅行路线' : 'Travel route')
     const figure = document.createElement('figure')
     figure.className = 'article-photo-route not-prose'
+    if (size === 'half') figure.classList.add('article-photo-route--half')
+    if (side === 'left' || side === 'right') {
+      figure.dataset.photoRouteSide = side
+    }
     figure.dataset.articleEmbed = 'photo-route'
     figure.dataset.articlePhotoRoute = routeKey
     figure.dataset.photoRouteLanguage = isZh ? 'zh' : 'en'
@@ -61,13 +64,19 @@ export const photoRouteEmbed: ArticleEmbedDefinition = {
     const summary = document.createElement('span')
     summary.className = 'article-photo-route__summary'
     summary.append(
-      textElement(document, 'span', 'article-photo-route__title', title),
-      textElement(
-        document,
-        'span',
-        'article-photo-route__description',
-        description
-      ),
+      textElement(document, 'span', 'article-photo-route__title', title)
+    )
+    if (description) {
+      summary.append(
+        textElement(
+          document,
+          'span',
+          'article-photo-route__description',
+          description
+        )
+      )
+    }
+    summary.append(
       textElement(
         document,
         'span',
@@ -81,7 +90,17 @@ export const photoRouteEmbed: ArticleEmbedDefinition = {
     button.className = 'article-photo-route__play'
     button.type = 'button'
     button.disabled = true
-    button.textContent = isZh ? '播放路线' : 'Play route'
+    const playIcon = textElement(document, 'span', 'article-photo-route__play-icon', '▶')
+    playIcon.setAttribute('aria-hidden', 'true')
+    button.append(
+      playIcon,
+      textElement(
+        document,
+        'span',
+        'article-photo-route__play-label',
+        isZh ? '播放路线' : 'Play route'
+      )
+    )
     caption.append(summary, button)
     figure.append(map, caption)
     return figure

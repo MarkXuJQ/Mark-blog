@@ -7,8 +7,8 @@
     "title": "或许我们将来只有文科和工科，看3B1B视频有感",
     "date": "2026-10-25",
     "summary": "今天晚上看完了 3Blue1Brown 的《投身数学，从未有过比现在更好的时候》的视频，有些感触，简单记录下。",
-    "wordCount": 971,
-    "image": "https://img.markxu.icu/imge1ca44fe-e495-4e4f-951f-46ea158d947b.png",
+    "wordCount": 942,
+    "image": "https://img.markxu.icu/img9dd8f67475a728.png",
     "imageOverlay": true,
     "aliases": [
       "future-of-liberal-arts-and-engineering"
@@ -49,7 +49,7 @@
     "title": "从408操作系统到生产环境：为什么发信号的函数叫 kill，而不是send？",
     "date": "2026-10-22",
     "summary": "在408强化的阶段，我注意到进程之间的通信函数名是 kill()，让我不禁好奇其具体含义。",
-    "wordCount": 2514,
+    "wordCount": 2460,
     "aliases": [
       "why-unix-signal-sender-is-called-kill"
     ],
@@ -260,7 +260,7 @@
     "date": "2026-08-31",
     "updated": "2026-09-19",
     "summary": "我一直不看好人形机器人会成为下一代通用生产力。我想把现在的判断留个档：如果以后被打脸，也能回头看看行业究竟克服了哪些我不看好的问题。",
-    "wordCount": 5999,
+    "wordCount": 5994,
     "image": "https://img.markxu.icu/img20260915182504981.png",
     "imageOverlay": true,
     "aliases": [
@@ -436,8 +436,10 @@
     "language": "zh",
     "title": "TCP 慢启动的窗口增长：教材、RFC 与 Linux 内核实现的三层对照",
     "date": "2026-07-06",
-    "summary": "TCP 慢启动常被简化为“每个 RTT 拥塞窗口翻倍”，但教材模型、RFC 标准和 Linux 内核实现其实站在不同层面描述同一件事。我尝试把这三层放在一起对照，厘清 cwnd 到底按 ACK、字节还是完整段增长。",
+    "summary": "我由于开始没仔细看书而产生了一点误解，并在详细探究后对TCP的慢启动增长有了更为深刻的认识。",
     "wordCount": 3301,
+    "image": "https://img.markxu.icu/img68f68094-4595-4581-8776-52ee031f3ae4.png",
+    "imageOverlay": true,
     "aliases": [
       "tcp-slow-start-cwnd-growth"
     ],
@@ -518,7 +520,7 @@
     "date": "2026-06-14",
     "updated": "2026-06-17",
     "summary": "离开学校的时候，我想记录大学四年的回忆，也想记录自己如何在一次次选择中，慢慢形成了拒绝把绩点、排名和简历当作唯一目标的价值观。",
-    "wordCount": 6471,
+    "wordCount": 6369,
     "image": "https://img.markxu.icu/imgb8e606e4235578a4b05bc4b87ae8945f_720.jpg",
     "aliases": [
       "anti-reward-hacking-college"
@@ -645,11 +647,12 @@
     "updated": "2026-05-22",
     "summary": "虽然写博客的概念已经优点过时了，但是我仍然推荐，可以在理清自己思路的同时，记录下自己成长的过程，些许还会认识到志同道合的朋友。",
     "wordCount": 2468,
+    "image": "https://img.markxu.icu/img87204571e91e9.png",
     "aliases": [
       "why-I-recommend-everyone-to-write-blog"
     ],
     "tags": [
-      "Blogs",
+      "Blog",
       "College",
       "Writing"
     ],
@@ -731,7 +734,8 @@
     "tags": [
       "AI",
       "Game",
-      "Culture"
+      "Culture",
+      "Review"
     ],
     "category": "essay"
   },
@@ -812,7 +816,6 @@
     "tags": [
       "News",
       "Sources",
-      "Blogs",
       "Websites"
     ],
     "category": "Share"

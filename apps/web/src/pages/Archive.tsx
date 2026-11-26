@@ -11,9 +11,9 @@ import type { BlogPostSummary } from '@/lib/content/posts'
 
 export function Archive() {
   const { t, i18n } = useTranslation()
-  const { simpleMode = false } = useOutletContext<ArchiveOutletContext>()
+  const { simpleMode = false, selectedTags, toggleTag, clearTags } =
+    useOutletContext<ArchiveOutletContext>()
   const [hoveredTag, setHoveredTag] = useState<string | null>(null)
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
   const posts = getAllPostSummaries(i18n.language)
   const postsByYear = groupPostsByYear(posts)
   const years = getArchiveYears(postsByYear)
@@ -25,23 +25,6 @@ export function Archive() {
   const filteredYears = getArchiveYears(filteredPostsByYear)
   const hasSelectedTags = selectedTags.length > 0
   const filterMotionKey = selectedTags.map(getArchiveTagKey).join('|')
-
-  const toggleTag = (tag: string) => {
-    setSelectedTags((currentTags) => {
-      const tagKey = getArchiveTagKey(tag)
-      const isSelected = currentTags.some(
-        (currentTag) => getArchiveTagKey(currentTag) === tagKey
-      )
-
-      if (isSelected) {
-        return currentTags.filter(
-          (currentTag) => getArchiveTagKey(currentTag) !== tagKey
-        )
-      }
-
-      return [...currentTags, tag]
-    })
-  }
 
   return (
     <div className={simpleMode ? styles.simpleContainer : styles.container}>
@@ -81,10 +64,10 @@ export function Archive() {
               <button
                 type="button"
                 className={styles.clearTagsButton}
-                onClick={() => {
-                  setSelectedTags([])
-                  setHoveredTag(null)
-                }}
+              onClick={() => {
+                clearTags()
+                setHoveredTag(null)
+              }}
               >
                 {t('blog.archive.clearTags')}
               </button>

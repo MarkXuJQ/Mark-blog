@@ -33,6 +33,10 @@ imageOverlay: true
 - `image` 是列表卡片和分享信息使用的封面图。
 - `imageOverlay` 可选，设为 `true` 时会在博客文章详情页的封面背景上添加黑色半透明遮罩，适合背景较浅、需要突出标题文字的封面。
 
+## 首页精选博客
+
+首页「本站内容」轮播的文章列表维护在本目录的 `featured-posts.json`，和文章放在一起方便更新。每项包含 `href`、`title` 和 `image`，按数组顺序展示，最多取前 7 条；`href` 以 `-cn` 或 `-en` 结尾时只在对应语言下出现，没有后缀则两种语言都会显示。
+
 ## 普通图片
 
 优先使用标准 Markdown 图片语法：
@@ -185,7 +189,7 @@ imageOverlay: true
 
 ## 视频播放器
 
-`VideoEmbed` 支持 Bilibili 视频和 YouTube 视频、Shorts 与短链接。播放器按需加载，并提供打开原视频的链接。
+`VideoEmbed` 支持 Bilibili 视频和 YouTube 视频、Shorts 与短链接。播放器按需加载，只保留 16:9 播放器本体，不附加标题栏或悬浮链接。
 
 ```html
 <VideoEmbed
@@ -247,7 +251,13 @@ YouTube 也可以使用标准播放页或 `youtu.be` 短链接：
 
 - `route`：必填，对应 `content/travel/routes/<route>.json`。
 - `title`：可选，覆盖 JSON 内的路线标题。
-- `desc`：可选，显示在标题和路线统计之间。
+- `desc`：可选，只在填写时显示；不填就没有说明行。
+- `size`：可填 `half`，生成半宽的缩小地图，正文可以绕排。
+- `side`：配合 `size="half"` 使用，`left`（默认）或 `right` 控制浮动方向；窄屏自动恢复整行。
+
+```html
+<PhotoRoute route="wuhan1" title="武汉的一天" size="half" side="right" />
+```
 
 预渲染时会从 JSON 生成日期、距离、路径点和 Stop 数量；路线接近视口时才会加载
 MapLibre 和地图样式。普通文章不会加载地图代码。

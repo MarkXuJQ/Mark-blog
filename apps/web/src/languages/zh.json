@@ -131,6 +131,19 @@
         "anonymous": "匿名访客",
         "empty": "暂时还没有评论",
         "unavailable": "评论暂时无法加载"
+      },
+      "tagCloud": {
+        "title": "标签词云",
+        "postUnit": "篇",
+        "more": "还有 {{count}} 个标签",
+        "expand": "展开大词云",
+        "collapse": "收起大词云",
+        "hint": "点击标签查看相关文章，移开鼠标自动关闭，按 Esc 也可关闭",
+        "previewByTag": "查看标签 {{tag}} 的相关文章",
+        "relatedPosts": "相关文章",
+        "morePosts": "还有 {{count}} 篇",
+        "closePreview": "关闭文章预览",
+        "density": "疏密"
       }
     },
     "toc": {

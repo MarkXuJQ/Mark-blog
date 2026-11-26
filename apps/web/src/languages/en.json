@@ -131,6 +131,19 @@
         "anonymous": "Anonymous visitor",
         "empty": "No comments yet",
         "unavailable": "Comments are temporarily unavailable"
+      },
+      "tagCloud": {
+        "title": "Tag Cloud",
+        "postUnit": "posts",
+        "more": "{{count}} more tags",
+        "expand": "Expand tag cloud",
+        "collapse": "Collapse tag cloud",
+        "hint": "Click a tag to preview posts. It closes when the pointer leaves; Esc works too.",
+        "previewByTag": "Preview posts tagged {{tag}}",
+        "relatedPosts": "Related posts",
+        "morePosts": "{{count}} more",
+        "closePreview": "Close post preview",
+        "density": "Density"
       }
     },
     "toc": {

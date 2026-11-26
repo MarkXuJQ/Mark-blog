@@ -1,6 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "PUPPETEER_SKIP_DOWNLOAD=true pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm run build:vercel",
   "ignoreCommand": "node scripts/vercel-ignore-build.js",
   "redirects": [
     {

@@ -67,18 +67,6 @@ function parseVideoUrl(rawUrl: string): VideoSource | null {
   return null
 }
 
-function textElement(
-  document: Document,
-  tagName: string,
-  className: string,
-  text: string
-) {
-  const element = document.createElement(tagName)
-  element.className = className
-  element.textContent = text
-  return element
-}
-
 export const videoPlayerEmbed: ArticleEmbedDefinition = {
   name: 'VideoEmbed',
   selector: 'videoembed, video-embed',
@@ -96,6 +84,9 @@ export const videoPlayerEmbed: ArticleEmbedDefinition = {
     figure.className = 'article-video-player not-prose'
     figure.dataset.articleEmbed = 'video-player'
     figure.dataset.linkPreview = 'off'
+
+    const media = document.createElement('span')
+    media.className = 'article-video-player__media'
 
     const frame = document.createElement('iframe')
     frame.className = 'article-video-player__frame'
@@ -122,23 +113,8 @@ export const videoPlayerEmbed: ArticleEmbedDefinition = {
       frame.src = `https://www.youtube-nocookie.com/embed/${video.id}?${params.toString()}`
     }
 
-    const caption = document.createElement('figcaption')
-    caption.className = 'article-video-player__caption'
-    caption.append(
-      textElement(document, 'span', 'article-video-player__title', title)
-    )
-
-    const link = document.createElement('a')
-    link.className = 'article-video-player__link'
-    link.href = video.url
-    link.target = '_blank'
-    link.rel = 'noopener noreferrer'
-    link.textContent = isZh
-      ? `在 ${providerName} 打开`
-      : `Open on ${providerName}`
-    link.setAttribute('aria-label', `${link.textContent}: ${title}`)
-    caption.append(link)
-    figure.append(frame, caption)
+    media.append(frame)
+    figure.append(media)
     return figure
   },
 }

@@ -1,7 +1,8 @@
 import { Outlet, useLocation } from 'react-router-dom'
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LeftSidebarWidget, StatsWidget } from '@/components/blog/BlogWidgets'
+import { TagCloudWidget } from '@/components/blog/TagCloudWidget'
 import { MobileBlogDrawer } from '@/components/blog/MobileBlogDrawer'
 import { ReaderModeToggle } from '@/components/blog/ReaderModeToggle'
 import { normalizePathname } from '@/app/routing/normalizePathname'
@@ -11,6 +12,14 @@ import { useReaderMode } from '@/hooks/useReaderMode'
 
 export type ArchiveOutletContext = {
   simpleMode: boolean
+  selectedTags: string[]
+  toggleTag: (tag: string) => void
+  clearTags: () => void
+  selectCloudTag: (tag: string) => void
+}
+
+function getTagKey(tag: string) {
+  return tag.trim().toLowerCase()
 }
 
 export function ArchiveLayout() {
@@ -19,9 +28,41 @@ export function ArchiveLayout() {
   const posts = getAllPostSummaries(i18n.language)
   const isLinksPage = normalizePathname(pathname) === '/links'
   const { isMounted, simpleMode, setSimpleMode } = useReaderMode()
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+
+  // Post tags support multi-select; clicking one toggles just that tag.
+  const toggleTag = useCallback((tag: string) => {
+    setSelectedTags((current) => {
+      const key = getTagKey(tag)
+      const index = current.findIndex((item) => getTagKey(item) === key)
+      if (index === -1) return [...current, tag]
+      return current.filter((_, itemIndex) => itemIndex !== index)
+    })
+  }, [])
+
+  const clearTags = useCallback(() => setSelectedTags([]), [])
+
+  // The sidebar cloud is deliberately limited to a single active tag.
+  const selectCloudTag = useCallback((tag: string) => {
+    setSelectedTags((current) => {
+      if (current.length === 1 && getTagKey(current[0]) === getTagKey(tag)) {
+        return []
+      }
+      return [tag]
+    })
+  }, [])
+
+  const cloudSelectedTag = selectedTags.length === 1 ? selectedTags[0] : null
+
   const outletContext = useMemo(
-    () => ({ simpleMode }) satisfies ArchiveOutletContext,
-    [simpleMode]
+    () => ({
+      simpleMode,
+      selectedTags,
+      toggleTag,
+      clearTags,
+      selectCloudTag,
+    }),
+    [simpleMode, selectedTags, toggleTag, clearTags, selectCloudTag]
   )
 
   return (
@@ -55,6 +96,11 @@ export function ArchiveLayout() {
           <aside className={cn(styles.rightSidebar, simpleMode && '!hidden')}>
             <div className={styles.stickyWrapper}>
               <StatsWidget posts={posts} />
+              <TagCloudWidget
+                posts={posts}
+                selectedTag={cloudSelectedTag}
+                onToggleTag={selectCloudTag}
+              />
             </div>
           </aside>
         ) : null}
