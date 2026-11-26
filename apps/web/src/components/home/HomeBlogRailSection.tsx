@@ -6,9 +6,9 @@ import { Link } from 'react-router-dom'
 import { getAllPostSummaries } from '@/lib/content/postSummaries'
 import { getOptimizedImageUrl } from '@/lib/image'
 import { getLifeProvince } from '@/lib/life/provinces'
-import siteContent from '@content/home/site-content.json'
+import featuredPosts from '@content/posts/featured-posts.json'
 
-interface SiteContentEntry {
+interface FeaturedPostEntry {
   href: string
   title: string
   image: string
@@ -142,7 +142,7 @@ export function HomeBlogRailSection({
   }
   const posts = useMemo(
     () =>
-      (siteContent as SiteContentEntry[])
+      (featuredPosts as FeaturedPostEntry[])
         .filter((entry) => matchesCurrentLanguage(entry.href, locale))
         .slice(0, BLOG_POST_LIMIT),
     [locale]
@@ -307,7 +307,7 @@ function BlogRailRow({
   railApisRef,
   railKey,
 }: {
-  posts: Array<SiteContentEntry | LifeRailPost>
+  posts: Array<FeaturedPostEntry | LifeRailPost>
   reverse: boolean
   shouldReduceMotion: boolean
   railApisRef: React.MutableRefObject<{
@@ -370,7 +370,7 @@ function BlogRailItem({
   post,
   index,
 }: {
-  post: SiteContentEntry | LifeRailPost
+  post: FeaturedPostEntry | LifeRailPost
   index: number
 }) {
   return (
