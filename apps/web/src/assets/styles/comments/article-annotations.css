@@ -119,7 +119,8 @@
   transform: translate(-50%, -100%);
 }
 
-.annotation-bubble[data-kind='select'] {
+.annotation-bubble[data-kind='select'],
+.annotation-bubble[data-kind='view'] {
   width: min(132px, calc(100vw - 24px));
   height: 66px;
   min-height: 66px;
@@ -130,10 +131,8 @@
   box-shadow: 0 0.75rem 1.6rem -0.85rem rgba(15, 23, 42, 0.38);
 }
 
-.annotation-bubble[data-kind='view'] {
-  width: min(220px, calc(100vw - 24px));
-  min-height: 112px;
-  padding: 0.5rem;
+.annotation-bubble[data-kind='view'][data-single='true'] {
+  width: min(66px, calc(100vw - 24px));
 }
 
 .annotation-bubble[data-placement='bottom'] {
@@ -164,16 +163,19 @@
   border-left: 1px solid rgba(148, 163, 184, 0.38);
 }
 
-.annotation-bubble[data-kind='select']::after {
+.annotation-bubble[data-kind='select']::after,
+.annotation-bubble[data-kind='view']::after {
   width: 9px;
   height: 9px;
 }
 
-.annotation-bubble[data-kind='select'][data-placement='top']::after {
+.annotation-bubble[data-kind='select'][data-placement='top']::after,
+.annotation-bubble[data-kind='view'][data-placement='top']::after {
   bottom: -5px;
 }
 
-.annotation-bubble[data-kind='select'][data-placement='bottom']::after {
+.annotation-bubble[data-kind='select'][data-placement='bottom']::after,
+.annotation-bubble[data-kind='view'][data-placement='bottom']::after {
   top: -5px;
 }
 
@@ -189,7 +191,8 @@
   border-color: rgba(255, 255, 255, 0.06);
 }
 
-.dark .annotation-bubble[data-kind='select'] {
+.dark .annotation-bubble[data-kind='select'],
+.dark .annotation-bubble[data-kind='view'] {
   box-shadow: 0 0.75rem 1.6rem -0.85rem rgba(0, 0, 0, 0.7);
 }
 
@@ -213,20 +216,15 @@
   transition: background-color 0.26s ease, color 0.26s ease, transform 0.18s ease;
 }
 
-.annotation-bubble[data-kind='view'] .annotation-bubble-action {
-  flex: 1;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 0;
-  min-height: auto;
-  padding: 0.5rem 0.35rem;
-  font-size: 0.78rem;
-}
-
 .annotation-viewer-actions {
   display: flex;
   flex: 1;
-  gap: 0.35rem;
+  gap: 0;
+}
+
+.annotation-bubble[data-kind='view'][data-single='true'] .annotation-bubble-action {
+  padding: 0 0.1rem;
+  font-size: 0.68rem;
 }
 
 .annotation-bubble-danger {
@@ -248,7 +246,8 @@
   height: 1.1rem;
 }
 
-.annotation-bubble[data-kind='select'] .annotation-bubble-action {
+.annotation-bubble[data-kind='select'] .annotation-bubble-action,
+.annotation-bubble[data-kind='view'] .annotation-bubble-action {
   position: relative;
   flex: 1 1 0;
   flex-direction: column;
@@ -267,58 +266,63 @@
   transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
 
-.annotation-bubble[data-kind='select'] .annotation-bubble-action + .annotation-bubble-action::before {
+.annotation-bubble[data-kind='select'] .annotation-bubble-action + .annotation-bubble-action::before,
+.annotation-bubble[data-kind='view'] .annotation-bubble-action + .annotation-bubble-action::before {
   content: '';
   position: absolute;
   top: 50%;
   left: 0;
   width: 1px;
-  height: 1.2rem;
+  height: 1.65rem;
   background: rgba(148, 163, 184, 0.35);
   transform: translateY(-50%);
   pointer-events: none;
 }
 
-.annotation-bubble[data-kind='select'] .annotation-bubble-action:hover {
+.annotation-bubble[data-kind='select'] .annotation-bubble-action:hover,
+.annotation-bubble[data-kind='view'] .annotation-bubble-action:hover {
   background: transparent;
   color: #ff5941;
 }
 
-.annotation-bubble[data-kind='select'] .annotation-bubble-action:active {
+.annotation-bubble[data-kind='select'] .annotation-bubble-action:active,
+.annotation-bubble[data-kind='view'] .annotation-bubble-action:active {
   background: rgba(255, 89, 65, 0.14);
   color: #e8452d;
   transform: scale(0.92);
 }
 
-.annotation-bubble[data-kind='select'] .annotation-bubble-action:focus-visible {
+.annotation-bubble[data-kind='select'] .annotation-bubble-action:focus-visible,
+.annotation-bubble[data-kind='view'] .annotation-bubble-action:focus-visible {
   outline: 2px solid rgba(255, 89, 65, 0.35);
   outline-offset: 2px;
 }
 
-.annotation-bubble[data-kind='select'] .annotation-bubble-action svg {
+.annotation-bubble[data-kind='select'] .annotation-bubble-action svg,
+.annotation-bubble[data-kind='view'] .annotation-bubble-action svg {
   width: 1.15rem;
   height: 1.15rem;
 }
 
-.dark .annotation-bubble[data-kind='select'] .annotation-bubble-action {
+.dark .annotation-bubble[data-kind='select'] .annotation-bubble-action,
+.dark .annotation-bubble[data-kind='view'] .annotation-bubble-action {
   color: #cbd5e1;
 }
 
-.dark .annotation-bubble[data-kind='select'] .annotation-bubble-action + .annotation-bubble-action::before {
+.dark .annotation-bubble[data-kind='select'] .annotation-bubble-action + .annotation-bubble-action::before,
+.dark .annotation-bubble[data-kind='view'] .annotation-bubble-action + .annotation-bubble-action::before {
   background: rgba(148, 163, 184, 0.28);
 }
 
-.dark .annotation-bubble[data-kind='select'] .annotation-bubble-action:hover {
+.dark .annotation-bubble[data-kind='select'] .annotation-bubble-action:hover,
+.dark .annotation-bubble[data-kind='view'] .annotation-bubble-action:hover {
   color: #ff9b88;
 }
 
-.dark .annotation-bubble[data-kind='select'] .annotation-bubble-action:active {
+.dark .annotation-bubble[data-kind='select'] .annotation-bubble-action:active,
+.dark .annotation-bubble[data-kind='view'] .annotation-bubble-action:active {
   background: rgba(255, 89, 65, 0.2);
   color: #ff8f7a;
-}
-
-.annotation-viewer {
-  padding: 0.9rem;
 }
 
 .annotation-viewer-comment {
@@ -400,9 +404,12 @@
 }
 
 .annotation-viewer-empty {
-  margin: 0.4rem 0;
+  margin: 0;
+  padding: 0.35rem;
   color: rgba(100, 116, 139, 0.9);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  text-align: center;
 }
 
 /* Right sidebar: separate stacked cards, not one fixed-height module. */

@@ -1,10 +1,18 @@
-import { useEffect, useRef, useState, type CSSProperties, type RefObject } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type RefObject,
+} from 'react'
 import { createPortal } from 'react-dom'
 import { FiEdit, FiMessageSquare, FiTrash2 } from 'react-icons/fi'
 import { useTranslation } from 'react-i18next'
 import { useAnnotations } from './AnnotationProvider'
 import {
   anchorFromSelection,
+  loadLocalLines,
   renderAnnotationMarks,
   saveLocalLine,
   syncInlineChips,
@@ -256,15 +264,22 @@ export function ArticleAnnotationLayer({
         return
       }
       const rect = marker.getBoundingClientRect()
+      const canDeleteLine = loadLocalLines(commentPath).some(
+        (anchor) => anchor.id === id
+      )
       closeComposer()
       setBubble(null)
-      setViewer({ id, ...place(rect, 220) })
+      setViewer({ id, ...place(rect, canDeleteLine ? 132 : 66) })
     }
     root.addEventListener('click', onClick)
     return () => root.removeEventListener('click', onClick)
-  }, [contentRef, closeComposer, openComposer])
+  }, [commentPath, contentRef, closeComposer, openComposer])
 
   const group = viewer ? groupsRef.current.find((g) => g.anchor.id === viewer.id) : undefined
+  const localLineIds = useMemo(
+    () => new Set(loadLocalLines(commentPath).map((anchor) => anchor.id)),
+    [commentPath, groups, viewer]
+  )
 
   const openFromBubble = (target: TextAnchor) => {
     openComposer(target, isMobileLayout() ? 'quick' : 'detail')
@@ -327,6 +342,9 @@ export function ArticleAnnotationLayer({
           className="annotation-bubble annotation-viewer"
           data-kind="view"
           data-placement={viewer.above ? 'top' : 'bottom'}
+          data-single={
+            group && !localLineIds.has(group.anchor.id) ? 'true' : undefined
+          }
           style={
             {
               left: viewer.x,
@@ -342,25 +360,31 @@ export function ArticleAnnotationLayer({
                 <button
                   type="button"
                   className="annotation-bubble-action"
+                  aria-label={t('annotation.viewComments', '查看评论')}
+                  title={t('annotation.viewComments', '查看评论')}
                   onClick={() => {
                     openComposer(group.anchor)
                     setViewer(null)
                   }}
                 >
                   <FiMessageSquare aria-hidden="true" />
-                  {t('annotation.viewComments', '查看评论')}
+                  <span>{t('annotation.viewComments', '查看评论')}</span>
                 </button>
-                <button
-                  type="button"
-                  className="annotation-bubble-action annotation-bubble-danger"
-                  onClick={() => {
-                    deleteLine(group.anchor.id)
-                    setViewer(null)
-                  }}
-                >
-                  <FiTrash2 aria-hidden="true" />
-                  {t('annotation.deleteLine', '删除划线')}
-                </button>
+                {localLineIds.has(group.anchor.id) ? (
+                  <button
+                    type="button"
+                    className="annotation-bubble-action annotation-bubble-danger"
+                    aria-label={t('annotation.deleteLine', '删除划线')}
+                    title={t('annotation.deleteLine', '删除划线')}
+                    onClick={() => {
+                      deleteLine(group.anchor.id)
+                      setViewer(null)
+                    }}
+                  >
+                    <FiTrash2 aria-hidden="true" />
+                    <span>{t('annotation.deleteLine', '删除划线')}</span>
+                  </button>
+                ) : null}
               </div>
             </>
           ) : (
