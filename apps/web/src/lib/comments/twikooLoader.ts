@@ -1,3 +1,6 @@
+/** Fired when the mounted Twikoo widget's visible comment set changes. */
+export const TWIKOO_COMMENTS_CHANGED_EVENT = 'blog:twikoo-comments-changed'
+
 /** Payload Twikoo 2 passes to `onSubmit` right before COMMENT_SUBMIT. */
 export interface TwikooCommentPayload {
   nick: string

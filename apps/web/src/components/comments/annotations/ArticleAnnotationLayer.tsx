@@ -4,48 +4,40 @@ import { FiEdit, FiMessageSquare, FiTrash2 } from 'react-icons/fi'
 import { useTranslation } from 'react-i18next'
 import { useAnnotations } from './AnnotationProvider'
 import {
-  addInlineChip,
   anchorFromSelection,
   renderAnnotationMarks,
   saveLocalLine,
+  syncInlineChips,
   type TextAnchor,
 } from '@/lib/comments/textAnnotations'
 
-type Bubble = {
-  anchor: TextAnchor
-  x: number
-  y: number
-  above: boolean
-  arrow: number
-  /** Selection edges, used to hang the mobile quick composer nearby. */
-  selectionTop: number
-  selectionBottom: number
-}
+type Bubble = { anchor: TextAnchor; x: number; y: number; above: boolean; arrow: number }
 type Viewer = { id: string; x: number; y: number; above: boolean; arrow: number }
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)
 }
 
-function place(rect: DOMRect, preferredWidth: number) {
+function isMobileLayout() {
+  return window.innerWidth < 1024
+}
+
+function place(rect: DOMRect, preferredWidth: number, preferBelow = false) {
   const width = Math.min(preferredWidth, window.innerWidth - 24)
+  const height = preferredWidth <= 132 ? 66 : 112
   const center = rect.left + rect.width / 2
   const x = clamp(center, width / 2 + 12, window.innerWidth - width / 2 - 12)
   // Keep the arrow over the selected text even when the bubble is clamped.
   const arrow = clamp(center - (x - width / 2), 20, width - 20)
-  return {
-    x,
-    arrow,
-    y: rect.top > 190 ? rect.top - 14 : rect.bottom + 14,
-    above: rect.top > 190,
-  }
+  // Phones show their own toolbar above the text, so hang below it.
+  const above = !preferBelow && rect.top > 190
+  const y = above
+    ? clamp(rect.top - 14, height + 12, window.innerHeight - 12)
+    : clamp(rect.bottom + 14, 12, window.innerHeight - height - 12)
+  return { x, arrow, y, above }
 }
 
-/**
- * Lives next to the article body. It only draws bubbles; the dashed marks and
- * the small paragraph chip are plain DOM nodes inside the article, so they
- * survive React re-renders of the markdown container.
- */
+/** Draws the bubbles; marks and chips are plain DOM inside the article. */
 export function ArticleAnnotationLayer({
   contentRef,
   refreshKey,
@@ -56,11 +48,11 @@ export function ArticleAnnotationLayer({
   const { t } = useTranslation()
   const {
     commentPath,
-    draft,
     openComposer,
     closeComposer,
     groups,
     refresh,
+    addLocalLine,
     deleteLine,
   } = useAnnotations()
   const [bubble, setBubble] = useState<Bubble | null>(null)
@@ -68,17 +60,18 @@ export function ArticleAnnotationLayer({
   const groupsRef = useRef(groups)
   groupsRef.current = groups
 
-  // Re-draw marks and the paragraph chip whenever the data or the article DOM
-  // itself changes (content switch, reader mode, search highlighting).
+  // Reconcile marks and chips in place so a state update never rewrites the
+  // whole article DOM (content switch, reader mode, search highlighting).
   useEffect(() => {
     const root = contentRef.current
     if (!root) return
     renderAnnotationMarks(root, groups)
-    if (draft) addInlineChip(root, draft)
-    groups.forEach((group) => {
-      if (group.comments.length) addInlineChip(root, group.anchor)
-    })
-  }, [contentRef, draft, groups, refreshKey])
+    // The chip is a shortcut to posted comments, not to an empty draft.
+    syncInlineChips(
+      root,
+      groups.filter((group) => group.comments.length).map((group) => group.anchor)
+    )
+  }, [contentRef, groups, refreshKey])
 
   useEffect(() => {
     const root = contentRef.current
@@ -108,9 +101,7 @@ export function ArticleAnnotationLayer({
       if (!rect.width || !rect.height) return
       setBubble({
         anchor,
-        ...place(rect, 132),
-        selectionTop: rect.top,
-        selectionBottom: rect.bottom,
+        ...place(rect, 132, isMobileLayout()),
       })
       setViewer(null)
     }
@@ -120,8 +111,7 @@ export function ArticleAnnotationLayer({
       selectionTimer = window.setTimeout(readSelection, delay)
     }
 
-    // Keyboard selection (Shift+arrows), double/triple-click and programmatic
-    // selections never emit mouseup — selectionchange is the reliable signal.
+    // selectionchange also covers keyboard and double-click selections.
     const onSelectionChange = () => {
       if (pointerDown) return
       scheduleRead(120)
@@ -215,9 +205,7 @@ export function ArticleAnnotationLayer({
     }
   }, [contentRef])
 
-  // "Back to text" links inside bottom comments scroll to the dashed mark.
-  // Document capture runs before LinkGuard's container handler, so no external
-  // link confirmation popover appears.
+  // Capture backlinks before LinkGuard so they never open its dialog.
   useEffect(() => {
     const jumpToLine = (event: MouseEvent) => {
       const target = event.target
@@ -278,19 +266,8 @@ export function ArticleAnnotationLayer({
 
   const group = viewer ? groupsRef.current.find((g) => g.anchor.id === viewer.id) : undefined
 
-  const openFromBubble = (target: TextAnchor, source: Bubble) => {
-    const mobile = window.innerWidth < 1024
-    openComposer(
-      target,
-      mobile ? 'quick' : 'detail',
-      mobile
-        ? {
-            x: source.x,
-            y: source.above ? source.selectionTop : source.selectionBottom,
-            above: source.above,
-          }
-        : null
-    )
+  const openFromBubble = (target: TextAnchor) => {
+    openComposer(target, isMobileLayout() ? 'quick' : 'detail')
   }
 
   return createPortal(
@@ -317,8 +294,9 @@ export function ArticleAnnotationLayer({
             title={t('annotation.drawLine', '画线')}
             onClick={() => {
               saveLocalLine(commentPath, bubble.anchor)
+              addLocalLine(bubble.anchor)
               refresh()
-              openFromBubble(bubble.anchor, bubble)
+              openFromBubble(bubble.anchor)
               setBubble(null)
               window.getSelection()?.removeAllRanges()
             }}
@@ -332,7 +310,7 @@ export function ArticleAnnotationLayer({
             aria-label={t('annotation.comment', '评论')}
             title={t('annotation.comment', '评论')}
             onClick={() => {
-              openFromBubble(bubble.anchor, bubble)
+              openFromBubble(bubble.anchor)
               setBubble(null)
               window.getSelection()?.removeAllRanges()
             }}

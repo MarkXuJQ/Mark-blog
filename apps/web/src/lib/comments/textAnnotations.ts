@@ -241,15 +241,38 @@ export function locateAnchor(root: HTMLElement, anchor: TextAnchor): Range | nul
   return range
 }
 
+function markIds(mark: HTMLElement): string[] {
+  return (mark.dataset.annotationIds ?? mark.dataset.annotationId ?? '')
+    .split(',')
+    .filter(Boolean)
+}
+
+function unwrapMark(mark: HTMLElement): void {
+  const parent = mark.parentNode
+  if (!parent) return
+  while (mark.firstChild) parent.insertBefore(mark.firstChild, mark)
+  mark.remove()
+}
+
 export function unwrapAnnotationMarks(root: HTMLElement): void {
-  root.querySelectorAll<HTMLElement>('.annotation-mark').forEach((mark) => {
-    const parent = mark.parentNode
-    if (!parent) return
-    while (mark.firstChild) parent.insertBefore(mark.firstChild, mark)
-    mark.remove()
-  })
+  root.querySelectorAll<HTMLElement>('.annotation-mark').forEach(unwrapMark)
   root.querySelectorAll<HTMLElement>('.annotation-inline-chip').forEach((chip) => {
     chip.remove()
+  })
+}
+
+/** Drop marks that no longer have an annotation, leaving live marks untouched. */
+function pruneAnnotationMarks(root: HTMLElement, keepIds: Set<string>): void {
+  root.querySelectorAll<HTMLElement>('.annotation-mark').forEach((mark) => {
+    const ids = markIds(mark)
+    const next = ids.filter((id) => keepIds.has(id))
+    if (next.length === ids.length) return
+    if (next.length === 0) {
+      unwrapMark(mark)
+      return
+    }
+    mark.dataset.annotationIds = next.join(',')
+    mark.dataset.annotationId = next[0]
   })
 }
 
@@ -258,8 +281,17 @@ export function renderAnnotationMarks(
   root: HTMLElement,
   groups: AnnotationGroup[]
 ): void {
-  unwrapAnnotationMarks(root)
+  pruneAnnotationMarks(
+    root,
+    new Set(groups.map((group) => group.anchor.id))
+  )
+
   for (const group of groups) {
+    const marked = Array.from(
+      root.querySelectorAll<HTMLElement>('.annotation-mark')
+    ).some((mark) => markIds(mark).includes(group.anchor.id))
+    if (marked) continue
+
     const range = locateAnchor(root, group.anchor)
     if (!range) continue
 
@@ -267,9 +299,7 @@ export function renderAnnotationMarks(
       root.querySelectorAll<HTMLElement>('.annotation-mark')
     ).find((mark) => range.intersectsNode(mark))
     if (collision) {
-      const ids = (collision.dataset.annotationIds ?? collision.dataset.annotationId ?? '')
-        .split(',')
-        .filter(Boolean)
+      const ids = markIds(collision)
       if (!ids.includes(group.anchor.id)) {
         collision.dataset.annotationIds = [...ids, group.anchor.id].join(',')
       }
@@ -349,6 +379,15 @@ export function addInlineChip(root: HTMLElement, anchor: TextAnchor): void {
   svg.appendChild(path)
   chip.appendChild(svg)
   block.appendChild(chip)
+}
+
+/** Reconcile chips with the anchors that currently need one. */
+export function syncInlineChips(root: HTMLElement, anchors: TextAnchor[]): void {
+  const keepIds = new Set(anchors.map((anchor) => anchor.id))
+  root.querySelectorAll<HTMLElement>('.annotation-inline-chip').forEach((chip) => {
+    if (!keepIds.has(chip.dataset.annotationId ?? '')) chip.remove()
+  })
+  anchors.forEach((anchor) => addInlineChip(root, anchor))
 }
 
 /** Attach a Twikoo comment to an anchor without adding a backend. */
