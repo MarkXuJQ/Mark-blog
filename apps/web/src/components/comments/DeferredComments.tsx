@@ -4,6 +4,7 @@ import {
   getTwikooEnvId,
   preloadTwikooScript,
   warmTwikooBackend,
+  type TwikooCommentPayload,
 } from '@/lib/comments/twikooLoader'
 
 interface DeferredCommentsProps {
@@ -18,6 +19,8 @@ interface DeferredCommentsProps {
   className?: string
   showTitle?: boolean
   onCommentLoaded?: () => void
+  onSubmit?: (comment: TwikooCommentPayload) => void | Promise<void>
+  annotationQuotes?: Record<string, string>
 }
 
 export function DeferredComments({
@@ -32,6 +35,8 @@ export function DeferredComments({
   className,
   showTitle,
   onCommentLoaded,
+  onSubmit,
+  annotationQuotes,
 }: DeferredCommentsProps) {
   const placeholderRef = useRef<HTMLDivElement>(null)
   const [shouldRender, setShouldRender] = useState(false)
@@ -131,6 +136,8 @@ export function DeferredComments({
       className={className}
       showTitle={showTitle}
       onCommentLoaded={onCommentLoaded}
+      onSubmit={onSubmit}
+      annotationQuotes={annotationQuotes}
     />
   )
 }

@@ -14,6 +14,8 @@ import { CategoryLabel } from '@/components/blog/CategoryLabel'
 import { Copyright } from '@/components/blog/Copyright'
 import { PostNavigation } from '@/components/blog/PostNavigation'
 import { DeferredComments } from '@/components/comments/DeferredComments'
+import { ArticleAnnotationLayer } from '@/components/comments/annotations/ArticleAnnotationLayer'
+import { useAnnotations } from '@/components/comments/annotations/AnnotationProvider'
 import {
   applySearchHighlights,
   clearSearchHighlights,
@@ -52,10 +54,12 @@ import type { BlogPostOutletContext } from '@/layouts/BlogPostLayout'
 import { PostSharedElement } from '@/components/transitions/PostSharedElement'
 import { usePostDetailTransition } from '@/hooks/article/usePostDetailTransition'
 import '@/assets/styles/article-blocks.css'
+import '@/assets/styles/comments/article-annotations.css'
 
 export function BlogPost() {
   const { slug } = useParams()
   const { simpleMode = false } = useOutletContext<BlogPostOutletContext>()
+  const { groups: annotationGroups } = useAnnotations()
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
@@ -86,6 +90,15 @@ export function BlogPost() {
     return decorateArticleContent(post.content, articleLanguage)
   }, [articleLanguage, post])
   const hasMath = contentHtml.includes('class="katex')
+  const annotationQuotes = useMemo(
+    () =>
+      Object.fromEntries(
+        annotationGroups.flatMap((group) =>
+          group.comments.map((comment) => [comment.id, group.anchor.q])
+        )
+      ),
+    [annotationGroups]
+  )
 
   useEffect(() => {
     if (!hasMath) return
@@ -355,9 +368,15 @@ export function BlogPost() {
           key={`simple-comments-${commentPath}`}
           containerId="twikoo-container"
           path={commentPath}
+          annotationQuotes={annotationQuotes}
           eager
           showTitle={false}
           className={styles.simpleReadingComments}
+        />
+
+        <ArticleAnnotationLayer
+          contentRef={contentRef}
+          refreshKey={`simple:${contentHtml}:${highlightQuery}`}
         />
       </article>
     )
@@ -494,6 +513,11 @@ export function BlogPost() {
                 prev={adjacentPosts.prev}
                 next={adjacentPosts.next}
               />
+
+              <ArticleAnnotationLayer
+                contentRef={contentRef}
+                refreshKey={`rich:${contentHtml}:${highlightQuery}`}
+              />
             </article>
           </>
         ) : (
@@ -565,6 +589,11 @@ export function BlogPost() {
                 prev={adjacentPosts.prev}
                 next={adjacentPosts.next}
               />
+
+              <ArticleAnnotationLayer
+                contentRef={contentRef}
+                refreshKey={`rich:${contentHtml}:${highlightQuery}`}
+              />
             </article>
           </>
         )}
@@ -575,6 +604,7 @@ export function BlogPost() {
           key={commentPath}
           containerId="twikoo-container"
           path={commentPath}
+          annotationQuotes={annotationQuotes}
           eager
         />
       </Card>

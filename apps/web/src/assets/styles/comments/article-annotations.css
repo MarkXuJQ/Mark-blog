@@ -1,0 +1,1299 @@
+/* Inline dashed comments on selected article text. No font-family is set
+   anywhere here so the simple-reading mode's inherited body font is kept. */
+
+/* One place to tune the whole annotation motion system. Entrances use the
+   "out" ease (fast then settling); exits reuse the same values with the
+   reversed curve so the panel leaves exactly the way it arrived. */
+:root {
+  --annotation-motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --annotation-motion-ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --annotation-motion-panel: 0.48s;
+  --annotation-motion-card: 0.44s;
+  --annotation-motion-collapsed: 0.38s;
+  --annotation-motion-tile: 0.44s;
+  --annotation-motion-sheet: 0.36s;
+  --annotation-motion-editor: 0.4s;
+  --annotation-motion-offset-panel: 14px;
+  --annotation-motion-offset-card: 8px;
+  --annotation-motion-offset-tile: 6px;
+  --annotation-motion-offset-sheet: 28px;
+  --annotation-motion-offset-editor: 6px;
+  --annotation-motion-stagger-card: 0.09s;
+  --annotation-motion-stagger-tile: 0.08s;
+}
+
+.annotation-mark {
+  /* Same bloom as the article links: a thin wash at the bottom grows upward
+     to fill the whole mark on hover instead of lifting the text forward.
+     Negative side margins cancel the padding so wrapping text never shifts. */
+  margin: 0 -0.12em;
+  padding: 0.05em 0.12em;
+  border-bottom: 2px dashed rgba(255, 89, 65, 0.78);
+  border-radius: 0.3em;
+  background: linear-gradient(
+      rgba(255, 89, 65, 0.18),
+      rgba(255, 89, 65, 0.18)
+    )
+    no-repeat bottom / 100% 0.14em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  cursor: pointer;
+  transition: background-size 360ms ease;
+}
+
+.annotation-mark:hover,
+.annotation-mark:focus-visible {
+  background-size: 100% 100%;
+  outline: none;
+}
+
+.annotation-mark.is-jumped {
+  background-image: linear-gradient(
+    rgba(255, 89, 65, 0.38),
+    rgba(255, 89, 65, 0.38)
+  );
+  background-size: 100% 100%;
+}
+
+.dark .annotation-mark {
+  border-bottom-color: rgba(255, 128, 108, 0.85);
+  background-image: linear-gradient(
+    rgba(255, 89, 65, 0.24),
+    rgba(255, 89, 65, 0.24)
+  );
+}
+
+.dark .annotation-mark:hover,
+.dark .annotation-mark:focus-visible {
+  background-size: 100% 100%;
+}
+
+.annotation-inline-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #ff5941;
+  font-size: 1em;
+  line-height: 1;
+  vertical-align: -0.14em;
+  cursor: pointer;
+  transition: color 0.28s ease;
+}
+
+.annotation-inline-chip svg {
+  display: block;
+  width: 0.95em;
+  height: 0.95em;
+}
+
+.annotation-inline-chip:hover {
+  color: #e8452d;
+}
+
+.dark .annotation-inline-chip {
+  color: rgba(255, 128, 108, 0.9);
+}
+
+.dark .annotation-inline-chip:hover {
+  color: #ff8f7a;
+}
+
+.annotation-bubble {
+  position: fixed;
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-sizing: border-box;
+  padding: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.38);
+  border-radius: 0.9rem;
+  background: #ffffff;
+  color: #334155;
+  box-shadow: 0 1.25rem 2.6rem -1.1rem rgba(15, 23, 42, 0.42);
+  transform: translate(-50%, -100%);
+}
+
+.annotation-bubble[data-kind='select'] {
+  width: min(132px, calc(100vw - 24px));
+  height: 66px;
+  min-height: 66px;
+  flex-direction: row;
+  gap: 0;
+  padding: 0.3rem;
+  border-radius: 0.65rem;
+  box-shadow: 0 0.75rem 1.6rem -0.85rem rgba(15, 23, 42, 0.38);
+}
+
+.annotation-bubble[data-kind='view'] {
+  width: min(220px, calc(100vw - 24px));
+  min-height: 112px;
+  padding: 0.5rem;
+}
+
+.annotation-bubble[data-placement='bottom'] {
+  transform: translate(-50%, 0);
+}
+
+/* Small rotated square, matching the tag-cloud preview popover. */
+.annotation-bubble::after {
+  content: '';
+  position: absolute;
+  left: var(--annotation-arrow-left, 50%);
+  width: 11px;
+  height: 11px;
+  background-color: #ffffff;
+  transform: translateX(-50%) rotate(45deg);
+  pointer-events: none;
+}
+
+.annotation-bubble[data-placement='top']::after {
+  bottom: -6px;
+  border-right: 1px solid rgba(148, 163, 184, 0.38);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.38);
+}
+
+.annotation-bubble[data-placement='bottom']::after {
+  top: -6px;
+  border-top: 1px solid rgba(148, 163, 184, 0.38);
+  border-left: 1px solid rgba(148, 163, 184, 0.38);
+}
+
+.annotation-bubble[data-kind='select']::after {
+  width: 9px;
+  height: 9px;
+}
+
+.annotation-bubble[data-kind='select'][data-placement='top']::after {
+  bottom: -5px;
+}
+
+.annotation-bubble[data-kind='select'][data-placement='bottom']::after {
+  top: -5px;
+}
+
+.dark .annotation-bubble {
+  border-color: rgba(71, 85, 105, 0.6);
+  background: #1b1e24;
+  color: #cbd5e1;
+  box-shadow: 0 1.25rem 2.6rem -1.1rem rgba(0, 0, 0, 0.72);
+}
+
+.dark .annotation-bubble::after {
+  background-color: #1b1e24;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.dark .annotation-bubble[data-kind='select'] {
+  box-shadow: 0 0.75rem 1.6rem -0.85rem rgba(0, 0, 0, 0.7);
+}
+
+.annotation-bubble-action {
+  display: inline-flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+  min-height: auto;
+  padding: 0.5rem 0.35rem;
+  border: 0;
+  border-radius: 0.6rem;
+  background: rgba(255, 89, 65, 0.08);
+  color: #ff5941;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.26s ease, color 0.26s ease, transform 0.18s ease;
+}
+
+.annotation-bubble[data-kind='view'] .annotation-bubble-action {
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  min-height: auto;
+  padding: 0.5rem 0.35rem;
+  font-size: 0.78rem;
+}
+
+.annotation-viewer-actions {
+  display: flex;
+  flex: 1;
+  gap: 0.35rem;
+}
+
+.annotation-bubble-danger {
+  background: rgba(148, 163, 184, 0.12);
+  color: rgba(100, 116, 139, 0.95);
+}
+
+.annotation-bubble-danger:hover {
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+}
+
+.annotation-bubble-action:hover {
+  background: rgba(255, 89, 65, 0.18);
+}
+
+.annotation-bubble-action svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.annotation-bubble[data-kind='select'] .annotation-bubble-action {
+  position: relative;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 0.2rem;
+  width: auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: rgba(100, 116, 139, 0.95);
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.annotation-bubble[data-kind='select'] .annotation-bubble-action + .annotation-bubble-action::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 1px;
+  height: 1.2rem;
+  background: rgba(148, 163, 184, 0.35);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.annotation-bubble[data-kind='select'] .annotation-bubble-action:hover {
+  background: transparent;
+  color: #ff5941;
+}
+
+.annotation-bubble[data-kind='select'] .annotation-bubble-action:active {
+  background: rgba(255, 89, 65, 0.14);
+  color: #e8452d;
+  transform: scale(0.92);
+}
+
+.annotation-bubble[data-kind='select'] .annotation-bubble-action:focus-visible {
+  outline: 2px solid rgba(255, 89, 65, 0.35);
+  outline-offset: 2px;
+}
+
+.annotation-bubble[data-kind='select'] .annotation-bubble-action svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.dark .annotation-bubble[data-kind='select'] .annotation-bubble-action {
+  color: #cbd5e1;
+}
+
+.dark .annotation-bubble[data-kind='select'] .annotation-bubble-action + .annotation-bubble-action::before {
+  background: rgba(148, 163, 184, 0.28);
+}
+
+.dark .annotation-bubble[data-kind='select'] .annotation-bubble-action:hover {
+  color: #ff9b88;
+}
+
+.dark .annotation-bubble[data-kind='select'] .annotation-bubble-action:active {
+  background: rgba(255, 89, 65, 0.2);
+  color: #ff8f7a;
+}
+
+.annotation-viewer {
+  padding: 0.9rem;
+}
+
+.annotation-viewer-comment {
+  box-sizing: border-box;
+  padding: 0.7rem 0.75rem;
+  border: 0;
+  /* Soft, slightly uneven corners: a friendly gray tile, not a strict card. */
+  border-radius: 1rem 1rem 1rem 0.35rem;
+  background: rgba(148, 163, 184, 0.1);
+}
+
+.annotation-viewer-comment + .annotation-viewer-comment {
+  border-top: 0;
+}
+
+.dark .annotation-viewer-comment {
+  background: rgba(71, 85, 105, 0.18);
+}
+
+.annotation-viewer-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.annotation-viewer-avatar {
+  flex: 0 0 auto;
+  width: 1.9rem;
+  height: 1.9rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.16);
+}
+
+.annotation-viewer-avatar img,
+.annotation-viewer-avatar svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.annotation-viewer-meta {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.1rem 0.45rem;
+}
+
+.annotation-viewer-nick {
+  color: #ff5941;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.annotation-viewer-time {
+  color: rgba(100, 116, 139, 0.85);
+  font-size: 0.66rem;
+}
+
+.dark .annotation-viewer-time {
+  color: #9aa4b2;
+}
+
+.annotation-viewer-body {
+  margin-left: 2.4rem;
+}
+
+.annotation-viewer-comment-body p:empty {
+  display: none;
+}
+
+.annotation-viewer-comment p {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.annotation-viewer-empty {
+  margin: 0.4rem 0;
+  color: rgba(100, 116, 139, 0.9);
+  font-size: 0.8rem;
+}
+
+/* Right sidebar: separate stacked cards, not one fixed-height module. */
+.annotation-sidebar {
+  position: sticky;
+  top: 86px;
+  max-height: calc(100vh - 8rem);
+  overflow-y: auto;
+  padding: 0;
+  /* Keep scrolling, but never paint a bar that could flash on mount. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.annotation-sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+.annotation-sidebar-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.annotation-sidebar-card {
+  box-sizing: border-box;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.dark .annotation-sidebar-card {
+  border-color: rgba(71, 85, 105, 0.6);
+  background: rgba(23, 25, 28, 0.92);
+}
+
+/* The side composer mirrors the bottom Twikoo input: a quiet gray strip that
+   only becomes an editor after it is clicked. */
+.annotation-sidebar-card-compose {
+  padding: 0.45rem 0.7rem;
+  border-color: rgba(148, 163, 184, 0.22);
+  border-radius: 0.9rem;
+  background: rgba(148, 163, 184, 0.1);
+  transition:
+    border-color 0.32s ease,
+    background 0.32s ease;
+}
+
+.annotation-sidebar-card-compose.is-open,
+.annotation-sidebar-card-compose:focus-within {
+  border-color: rgba(148, 163, 184, 0.45);
+}
+
+.dark .annotation-sidebar-card-compose {
+  border-color: rgba(71, 85, 105, 0.45);
+  background: rgba(71, 85, 105, 0.14);
+}
+
+.dark .annotation-sidebar-card-compose.is-open,
+.dark .annotation-sidebar-card-compose:focus-within {
+  border-color: rgba(100, 116, 139, 0.6);
+}
+
+.annotation-compose-collapsed {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 2.6rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(100, 116, 139, 0.9);
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: text;
+}
+
+.annotation-compose-collapsed:hover {
+  color: rgba(51, 65, 85, 0.95);
+}
+
+.dark .annotation-compose-collapsed {
+  color: #9aa4b2;
+}
+
+.annotation-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0 0.15rem 0.45rem;
+}
+
+.annotation-sidebar-header h3 {
+  margin: 0;
+  color: #334155;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.dark .annotation-sidebar-header h3 {
+  color: #e2e8f0;
+}
+
+.annotation-sidebar-header button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: rgba(100, 116, 139, 0.9);
+  cursor: pointer;
+}
+
+.annotation-sidebar-header button:hover {
+  color: #ff5941;
+  background: rgba(255, 89, 65, 0.1);
+}
+
+.annotation-comment-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(100, 116, 139, 0.8);
+  cursor: pointer;
+}
+
+.annotation-comment-delete:hover {
+  color: #dc2626;
+}
+
+.annotation-comment-delete svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.annotation-sidebar-comments {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.annotation-viewer-comment p,
+.annotation-viewer-comment-body p {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.annotation-viewer-comment-body p + p {
+  margin-top: 0.35rem;
+}
+
+.annotation-emotion-img {
+  width: 1.35rem;
+  height: 1.35rem;
+  margin: 0 0.05rem;
+  vertical-align: -0.3rem;
+}
+
+.annotation-identity-hint {
+  margin: 0 0 0.6rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 89, 65, 0.07);
+  color: rgba(100, 116, 139, 0.95);
+  font-size: 0.74rem;
+  line-height: 1.55;
+}
+
+.dark .annotation-identity-hint {
+  color: #9aa4b2;
+}
+
+.annotation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.annotation-form-text {
+  width: 100%;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #334155;
+  font-family: inherit;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  padding: 0.4rem 0;
+  min-height: 5rem;
+  resize: none;
+  overflow: hidden;
+}
+
+.dark .annotation-form-text {
+  color: #cbd5e1;
+}
+
+.annotation-form-text:focus {
+  outline: none;
+}
+
+.annotation-form-error {
+  margin: 0;
+  color: #c9392c;
+  font-size: 0.75rem;
+}
+
+.annotation-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.annotation-form-submit {
+  padding: 0.45rem 0.95rem;
+  border: 1px solid #ff5941;
+  border-radius: 0.5rem;
+  background: #ff5941;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.annotation-form-submit:hover:not(:disabled) {
+  background: #e8452d;
+  border-color: #e8452d;
+}
+
+.annotation-form-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.annotation-emotion {
+  position: relative;
+}
+
+.annotation-emotion-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: rgba(100, 116, 139, 0.9);
+  cursor: pointer;
+}
+
+.annotation-emotion-trigger:hover,
+.annotation-emotion-trigger.is-open {
+  color: #ff5941;
+  background: rgba(255, 89, 65, 0.1);
+  border-color: rgba(255, 89, 65, 0.4);
+}
+
+.annotation-emotion-trigger:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.annotation-emotion-trigger svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.annotation-emotion-panel {
+  position: fixed;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: min(300px, calc(100vw - 24px));
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  border-radius: 0.7rem;
+  background: #ffffff;
+  box-shadow: 0 0.8rem 2rem -0.8rem rgba(15, 23, 42, 0.4);
+}
+
+.annotation-emotion-panel.is-resizing {
+  user-select: none;
+}
+
+.dark .annotation-emotion-panel {
+  border-color: rgba(71, 85, 105, 0.7);
+  background: #1b1e24;
+}
+
+.annotation-emotion-tabs {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.25rem;
+  padding: 0.35rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.annotation-emotion-tabs button {
+  flex: 0 0 auto;
+  padding: 0.2rem 0.45rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: transparent;
+  color: rgba(100, 116, 139, 0.9);
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.annotation-emotion-tabs button.is-active {
+  background: rgba(255, 89, 65, 0.12);
+  color: #ff5941;
+}
+
+.dark .annotation-emotion-tabs button {
+  color: #9aa4b2;
+}
+
+.annotation-emotion-items {
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 0.15rem;
+  align-content: start;
+  padding: 0.4rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.annotation-emotion-items button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 1.9rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: #334155;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* Kaomoji are long strings; the compact image grid clips them. */
+.annotation-emotion-items[data-type='emoticon'] {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+
+.annotation-emotion-items[data-type='emoticon'] button {
+  height: auto;
+  min-height: 2.4rem;
+  padding: 0.25rem 0.35rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.annotation-emotion-items button:hover {
+  background: rgba(255, 89, 65, 0.1);
+}
+
+.dark .annotation-emotion-items button {
+  color: #cbd5e1;
+}
+
+.annotation-emotion-items img {
+  max-width: 1.45rem;
+  max-height: 1.45rem;
+}
+
+.annotation-emotion-resize {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  height: 0.7rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(148, 163, 184, 0.08);
+  cursor: ns-resize;
+  touch-action: none;
+}
+
+.annotation-emotion-resize::after {
+  content: '';
+  width: 2.4rem;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.45);
+}
+
+.dark .annotation-emotion-resize {
+  border-top-color: rgba(71, 85, 105, 0.7);
+  background: rgba(71, 85, 105, 0.2);
+}
+
+/* WeChat-like quick composer: a small input bar hung near the selection. */
+.annotation-quick-bar {
+  position: fixed;
+  z-index: 112;
+  box-sizing: border-box;
+  width: min(320px, calc(100vw - 24px));
+  padding: 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  border-radius: 0.8rem;
+  background: #ffffff;
+  box-shadow: 0 0.8rem 2rem -0.8rem rgba(15, 23, 42, 0.45);
+  transform: translateX(-50%);
+}
+
+.dark .annotation-quick-bar {
+  border-color: rgba(71, 85, 105, 0.7);
+  background: #1b1e24;
+}
+
+.annotation-quick-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.annotation-quick-input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 2.2rem;
+  max-height: 5.5rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  color: #334155;
+  font-family: inherit;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  resize: none;
+}
+
+.dark .annotation-quick-input {
+  border-color: rgba(71, 85, 105, 0.7);
+  background: rgba(15, 17, 20, 0.6);
+  color: #cbd5e1;
+}
+
+.annotation-quick-input:focus {
+  border-color: rgba(255, 89, 65, 0.65);
+  outline: none;
+}
+
+.annotation-quick-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.annotation-modal-backdrop,
+.annotation-emotion-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  /* Invisible layer only for click-away: the sheet itself carries the UI. */
+  background: transparent;
+  backdrop-filter: none;
+}
+
+/* Each entrance/exit pair mirrors the same offset token. Separate names are
+   required: flipping animation-direction on a finished animation jumps to
+   the end instead of replaying it. */
+@keyframes annotation-sheet-up {
+  from {
+    opacity: 0;
+    transform: translateY(var(--annotation-motion-offset-sheet));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes annotation-sheet-down {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(var(--annotation-motion-offset-sheet));
+  }
+}
+
+@keyframes annotation-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--annotation-motion-offset-panel));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes annotation-panel-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(var(--annotation-motion-offset-panel));
+  }
+}
+
+@keyframes annotation-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--annotation-motion-offset-card));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes annotation-card-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(var(--annotation-motion-offset-card));
+  }
+}
+
+@keyframes annotation-tile-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--annotation-motion-offset-tile));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes annotation-tile-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(var(--annotation-motion-offset-tile));
+  }
+}
+
+@keyframes annotation-editor-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--annotation-motion-offset-editor) * -1));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes annotation-editor-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(calc(var(--annotation-motion-offset-editor) * -1));
+  }
+}
+
+.annotation-emotion-backdrop {
+  z-index: 130;
+}
+
+.annotation-modal {
+  --annotation-animation: annotation-sheet-up;
+  display: flex;
+  flex-direction: column;
+  animation: var(--annotation-animation) var(--annotation-motion-sheet) ease-out both;
+  box-sizing: border-box;
+  width: min(420px, calc(100vw - 24px));
+  max-height: min(84vh, 720px);
+  overflow: hidden;
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: 0 1.5rem 4rem -1rem rgba(15, 23, 42, 0.55);
+}
+
+.annotation-modal-backdrop.is-closing {
+  pointer-events: none;
+}
+
+/* Switching the animation-name variable restarts the mirrored keyframes;
+   only the easing needs to flip here. */
+.annotation-modal.is-closing {
+  --annotation-animation: annotation-sheet-down;
+  animation-timing-function: ease-in;
+  pointer-events: none;
+}
+
+.annotation-sidebar.is-closing {
+  --annotation-animation: annotation-panel-out;
+  animation-timing-function: var(--annotation-motion-ease-in);
+  pointer-events: none;
+}
+
+.annotation-sidebar.is-closing .annotation-sidebar-card {
+  --annotation-animation: annotation-card-out;
+  animation-timing-function: var(--annotation-motion-ease-in);
+}
+
+.annotation-sidebar.is-closing .annotation-sidebar-card-comments {
+  animation-delay: calc(var(--annotation-motion-stagger-card) * 2);
+}
+
+.annotation-sidebar.is-closing .annotation-sidebar-card-compose {
+  animation-delay: var(--annotation-motion-stagger-card);
+}
+
+.annotation-sidebar.is-closing .annotation-viewer-comment {
+  --annotation-animation: annotation-tile-out;
+  animation-timing-function: ease-in;
+  animation-delay: calc(var(--annotation-motion-stagger-tile) * 3);
+}
+
+.annotation-sidebar.is-closing .annotation-viewer-comment:nth-child(n + 4) {
+  animation-delay: 0;
+}
+
+.annotation-sidebar.is-closing .annotation-viewer-comment:nth-child(3) {
+  animation-delay: var(--annotation-motion-stagger-tile);
+}
+
+.annotation-sidebar.is-closing .annotation-viewer-comment:nth-child(2) {
+  animation-delay: calc(var(--annotation-motion-stagger-tile) * 2);
+}
+
+.annotation-sidebar.is-closing .annotation-compose-collapsed {
+  --annotation-animation: annotation-card-out;
+  animation-timing-function: ease-in;
+}
+
+.annotation-sidebar.is-closing .annotation-form {
+  --annotation-animation: annotation-editor-out;
+  animation-timing-function: var(--annotation-motion-ease-in);
+}
+
+.annotation-quick-bar.is-closing,
+.annotation-emotion-panel.is-closing {
+  --annotation-animation: annotation-editor-out;
+  animation-timing-function: var(--annotation-motion-ease-in);
+  pointer-events: none;
+}
+
+.dark .annotation-modal,
+.dark .annotation-sidebar-card {
+  background: #1b1e24;
+}
+
+/* Keep the gray composer base even though the modal rule above repaints
+   every card with the solid dark surface. */
+.dark .annotation-sidebar-card.annotation-sidebar-card-compose {
+  background: rgba(71, 85, 105, 0.16);
+}
+
+/* Only the comment tiles themselves carry a surface: no white card behind. */
+.annotation-sidebar-card.annotation-sidebar-card-comments {
+  padding: 0.35rem;
+  border-color: transparent;
+  background: transparent;
+}
+
+.dark .annotation-sidebar-card.annotation-sidebar-card-comments {
+  border-color: transparent;
+  background: transparent;
+}
+
+.annotation-emotion-modal-header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+  color: #334155;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.dark .annotation-emotion-modal-header {
+  border-bottom-color: rgba(71, 85, 105, 0.7);
+  color: #e2e8f0;
+}
+
+.annotation-emotion-modal-header button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: transparent;
+  color: rgba(100, 116, 139, 0.9);
+  cursor: pointer;
+}
+
+.annotation-emotion-modal-header button:hover {
+  background: rgba(255, 89, 65, 0.1);
+  color: #ff5941;
+}
+
+.annotation-emotion-modal-header svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+@media (max-width: 1023px) {
+  .annotation-sidebar {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 0.85rem;
+  }
+
+  .annotation-sidebar-stack {
+    max-height: calc(min(84vh, 720px) - 3.5rem);
+    padding-right: 0.2rem;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .annotation-sidebar-stack::-webkit-scrollbar {
+    display: none;
+  }
+
+  .annotation-sidebar-card {
+    background: #ffffff;
+  }
+
+  .dark .annotation-sidebar-card {
+    background: #23262d;
+  }
+
+  .annotation-sidebar-card-compose {
+    background: rgba(148, 163, 184, 0.1);
+  }
+
+  .dark .annotation-sidebar-card-compose {
+    background: rgba(71, 85, 105, 0.16);
+  }
+
+  .annotation-emotion-panel.annotation-emotion-panel-modal {
+    position: static;
+    width: min(340px, calc(100vw - 24px));
+    max-height: calc(100vh - 96px);
+    --annotation-animation: annotation-sheet-up;
+    animation: var(--annotation-animation) var(--annotation-motion-sheet) ease-out both;
+  }
+
+  /* The mobile sheet already slides in as a whole. */
+  .annotation-sidebar,
+  .annotation-sidebar-card,
+  .annotation-quick-bar {
+    animation: none;
+  }
+
+  /* On mobile the modal parent owns the exit; the inner panel stays still. */
+  .annotation-sidebar.is-closing,
+  .annotation-sidebar.is-closing .annotation-sidebar-card,
+  .annotation-sidebar.is-closing .annotation-viewer-comment,
+  .annotation-sidebar.is-closing .annotation-compose-collapsed,
+  .annotation-sidebar.is-closing .annotation-form {
+    animation: none;
+  }
+
+  .annotation-emotion-panel.annotation-emotion-panel-modal.is-closing {
+    --annotation-animation: annotation-sheet-down;
+    animation-timing-function: ease-in;
+  }
+}
+
+.annotation-sidebar {
+  --annotation-animation: annotation-panel-in;
+  animation: var(--annotation-animation) var(--annotation-motion-panel) var(--annotation-motion-ease-out) both;
+}
+
+.annotation-sidebar-card {
+  --annotation-animation: annotation-card-in;
+  animation: var(--annotation-animation) var(--annotation-motion-card) var(--annotation-motion-ease-out) both;
+}
+
+.annotation-sidebar-card-comments {
+  animation-delay: var(--annotation-motion-stagger-card);
+}
+
+.annotation-sidebar-card-compose {
+  animation-delay: calc(var(--annotation-motion-stagger-card) * 2);
+}
+
+.annotation-viewer-comment {
+  --annotation-animation: annotation-tile-in;
+  /* `backwards` only: after the entrance finishes, hover transforms apply. */
+  animation: var(--annotation-animation) var(--annotation-motion-tile) ease-out backwards;
+  transition:
+    background-color 0.32s ease,
+    transform 0.32s ease;
+}
+
+.annotation-viewer-comment:nth-child(2) {
+  animation-delay: var(--annotation-motion-stagger-tile);
+}
+
+.annotation-viewer-comment:nth-child(3) {
+  animation-delay: calc(var(--annotation-motion-stagger-tile) * 2);
+}
+
+.annotation-viewer-comment:nth-child(n + 4) {
+  animation-delay: calc(var(--annotation-motion-stagger-tile) * 3);
+}
+
+.annotation-viewer-comment:hover {
+  background: rgba(148, 163, 184, 0.16);
+  transform: translateX(2px);
+}
+
+.dark .annotation-viewer-comment:hover {
+  background: rgba(71, 85, 105, 0.26);
+}
+
+.annotation-compose-collapsed {
+  --annotation-animation: annotation-card-in;
+  animation: var(--annotation-animation) var(--annotation-motion-collapsed) ease-out both;
+}
+
+.annotation-form,
+.annotation-quick-bar,
+.annotation-emotion-panel {
+  --annotation-animation: annotation-editor-in;
+  animation: var(--annotation-animation) var(--annotation-motion-editor) var(--annotation-motion-ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .annotation-mark,
+  .annotation-inline-chip,
+  .annotation-bubble,
+  .annotation-sidebar,
+  .annotation-sidebar *,
+  .annotation-modal,
+  .annotation-modal *,
+  .annotation-quick-bar,
+  .annotation-quick-bar *,
+  .annotation-emotion-panel,
+  .annotation-emotion-panel * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

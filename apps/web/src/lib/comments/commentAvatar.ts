@@ -15,9 +15,38 @@ import Avatar from 'boring-avatars'
  */
 
 /** Palette tuned to the site: brand blues plus the coral/orange accents. */
-const AVATAR_COLORS = ['#2e7ea3', '#4e98ba', '#ff5941', '#f9a03f', '#5ad2a8']
+export const AVATAR_COLORS = ['#2e7ea3', '#4e98ba', '#ff5941', '#f9a03f', '#5ad2a8']
 
-const AVATAR_VARIANT = 'beam'
+export const AVATAR_VARIANT = 'beam'
+
+/** Twikoo's default Gravatar CDN, used when `COMMENT_GET` omits `avatar`. */
+export const TWIKOO_AVATAR_ORIGIN = 'https://weavatar.com'
+
+const MAIL_HASH = /^(?:[a-f0-9]{32}|[a-f0-9]{64})$/i
+
+/**
+ * The avatar URL Twikoo builds for a comment whose `COMMENT_GET` payload only
+ * carries `mailMd5` (self-hosted Twikoo 2 does exactly that).
+ */
+export function twikooAvatarUrl(mailMd5: string, nick = ''): string {
+  const name = nick ? `&name=${encodeURIComponent(nick)}` : ''
+  return `${TWIKOO_AVATAR_ORIGIN}/avatar/${mailMd5}?d=initials${name}`
+}
+
+/**
+ * Resolve the picture the bottom Twikoo list actually shows for a mail hash.
+ *
+ * Twikoo keeps the CDN image unless the `d=404` probe says there is none, so
+ * inline comments use the same probe instead of guessing from `avatar: null`.
+ */
+export async function resolveTwikooAvatarUrl(
+  mailMd5: string,
+  nick = ''
+): Promise<string | null> {
+  if (!MAIL_HASH.test(mailMd5)) return null
+  const presence = await getAvatarPresence(TWIKOO_AVATAR_ORIGIN, mailMd5)
+  return presence === 'none' ? null : twikooAvatarUrl(mailMd5, nick)
+}
 
 const PROBE_TIMEOUT_MS = 15000
 /** Fallback reveal delay: never leave an avatar hidden if the probe stalls. */
