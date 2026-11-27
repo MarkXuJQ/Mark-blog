@@ -1,3 +1,20 @@
+/** Payload Twikoo 2 passes to `onSubmit` right before COMMENT_SUBMIT. */
+export interface TwikooCommentPayload {
+  nick: string
+  mail: string
+  link: string
+  ua: string
+  url: string
+  href: string
+  title: string
+  /** Rendered HTML sent to the backend. */
+  comment: string
+  /** Raw markdown kept by the backend. */
+  markdown: string
+  pid?: string
+  rid?: string
+}
+
 export interface TwikooApi {
   init: (options: {
     envId: string
@@ -13,6 +30,8 @@ export interface TwikooApi {
     /** OwO emotion-pack JSON URL; replaces Twikoo's default pack. */
     EMOTION_CDN?: string
     onCommentLoaded?: () => void
+    /** Called with the mutable payload just before the comment is sent. */
+    onSubmit?: (comment: TwikooCommentPayload) => void | Promise<void>
   }) => Promise<void> | void
   getCommentsCount: (options: {
     envId: string
@@ -33,6 +52,12 @@ export interface TwikooRecentComment {
   nick: string
   created: number
   commentText?: string
+  /** HTML of the comment; used to recover inline-annotation markers. */
+  comment?: string
+  link?: string
+  mailMd5?: string
+  avatar?: string
+  relativeTime?: string
 }
 
 declare global {
@@ -402,6 +427,261 @@ export const TWIKOO_ENV_ID_FALLBACK =
 /** Resolved Twikoo env id (a CloudBase id or a self-hosted function URL). */
 export function getTwikooEnvId(): string {
   return import.meta.env.VITE_TWIKOO_ENV_ID || TWIKOO_ENV_ID_FALLBACK
+}
+
+export interface TwikooCommentRecord {
+  id: string
+  nick: string
+  link?: string
+  /** Twikoo's resolved avatar URL, when the visitor has a real one. */
+  avatar?: string
+  /** MD5 of the visitor's email, used for generated avatars. */
+  mailMd5?: string
+  /** Rendered comment HTML. */
+  comment: string
+  created: number
+  replies?: TwikooCommentRecord[]
+  /** True when the current visitor's token owns this comment. */
+  isOwner?: boolean
+}
+
+export interface TwikooConfig {
+  /** Twikoo returns a boolean, but self-hosted builds may serialize it. */
+  IS_ADMIN?: boolean | string
+  VERSION?: string
+  [key: string]: unknown
+}
+
+/** Read Twikoo's own config (e.g. whether this visitor is logged in as admin). */
+export async function getTwikooConfig(): Promise<TwikooConfig> {
+  const envId = getTwikooEnvId()
+  if (!/^https?:\/\//i.test(envId) || typeof window === 'undefined') return {}
+  try {
+    const response = await fetch(envId, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: 'GET_CONFIG', envId }),
+      credentials: 'omit',
+    })
+    if (!response.ok) return {}
+    const raw = (await response.json()) as {
+      config?: TwikooConfig
+      result?: { config?: TwikooConfig }
+    }
+    return raw.result?.config ?? raw.config ?? {}
+  } catch {
+    return {}
+  }
+}
+
+/** Delete one of the current visitor's own comments via Twikoo. */
+export async function deleteTwikooComment(id: string): Promise<void> {
+  const envId = getTwikooEnvId()
+  if (!/^https?:\/\//i.test(envId) || typeof window === 'undefined') return
+  let token: string | null = null
+  try {
+    token = window.localStorage.getItem('twikoo-access-token')
+  } catch {
+    // Token-less requests will be rejected by the backend, which is fine.
+  }
+  const response = await fetch(envId, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      event: 'COMMENT_DELETE_FOR_USER',
+      envId,
+      accessToken: token,
+      id,
+    }),
+    credentials: 'omit',
+  })
+  if (!response.ok) throw new Error(`删除失败（${response.status}）`)
+  const raw = (await response.json()) as {
+    code?: number
+    message?: string
+    result?: { code?: number; message?: string }
+  }
+  const result = raw.result ?? raw
+  if (result.code) throw new Error(result.message || '删除失败')
+}
+
+export interface TwikooUserMeta {
+  nick: string
+  mail: string
+  link: string
+}
+
+/** Twikoo stores the commenter's identity in localStorage under `twikoo`. */
+export function getTwikooUserMeta(): TwikooUserMeta {
+  const empty = { nick: '', mail: '', link: '' }
+  if (typeof window === 'undefined') return empty
+  try {
+    const raw = window.localStorage.getItem('twikoo')
+    if (!raw) return empty
+    const parsed = JSON.parse(raw) as Partial<TwikooUserMeta>
+    return {
+      nick: typeof parsed.nick === 'string' ? parsed.nick : '',
+      mail: typeof parsed.mail === 'string' ? parsed.mail : '',
+      link: typeof parsed.link === 'string' ? parsed.link : '',
+    }
+  } catch {
+    return empty
+  }
+}
+
+export function saveTwikooUserMeta(meta: TwikooUserMeta): void {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem('twikoo', JSON.stringify(meta))
+  } catch {
+    // Private browsing can block storage; the comment still gets submitted.
+  }
+}
+
+const escapeHtml = (value: string) =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+
+/**
+ * Post a comment straight to Twikoo's own backend.
+ *
+ * Twikoo 2 keeps ONE Vue app globally — calling `init()` a second time
+ * unmounts the bottom comment widget. The side panel therefore uses this
+ * lightweight submit path instead, so both comment areas stay on screen.
+ */
+export async function submitCommentToPath(
+  path: string,
+  input: {
+    nick: string
+    mail: string
+    link: string
+    /** Raw markdown (kept by Twikoo for later editing). */
+    markdown: string
+    /** Rendered HTML shown in the comment list. */
+    comment: string
+  }
+): Promise<void> {
+  const envId = getTwikooEnvId()
+  if (!/^https?:\/\//i.test(envId) || typeof window === 'undefined') {
+    throw new Error('Inline comments require a self-hosted Twikoo endpoint')
+  }
+  let token: string | null = null
+  try {
+    token = window.localStorage.getItem('twikoo-access-token')
+  } catch {
+    // Anonymous submit is fine without a token.
+  }
+  const response = await fetch(envId, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      event: 'COMMENT_SUBMIT',
+      envId,
+      accessToken: token,
+      url: path,
+      href: window.location.href,
+      title: document.title,
+      nick: input.nick,
+      mail: input.mail,
+      link: input.link,
+      ua: window.navigator.userAgent,
+      markdown: input.markdown,
+      comment: input.comment,
+      pid: '',
+      rid: '',
+    }),
+    credentials: 'omit',
+  })
+  if (!response.ok) throw new Error(`提交失败（${response.status}）`)
+  const raw = (await response.json()) as {
+    code?: number
+    message?: string
+    result?: { code?: number; message?: string; id?: string }
+    id?: string
+  }
+  const result = raw.result ?? raw
+  if (result.code) throw new Error(result.message || '评论提交失败')
+}
+
+/**
+ * Minimal renderer for the side composer. Markdown other than OwO-style
+ * images stays literal text; Twikoo renders the real markdown in the bottom
+ * widget. Only http(s) image URLs are emitted, so the generated HTML cannot
+ * smuggle in markup or script URLs.
+ */
+export function renderCommentHtml(markdown: string): string {
+  const lines = markdown.split(/\r?\n/)
+  return lines
+    .filter((line) => line.trim().length > 0)
+    .map((line) => `<p>${renderInlineMarkdown(line)}</p>`)
+    .join('')
+}
+
+function renderInlineMarkdown(line: string): string {
+  const imagePattern = /!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g
+  let html = ''
+  let cursor = 0
+  let match: RegExpExecArray | null
+  while ((match = imagePattern.exec(line))) {
+    html += escapeHtml(line.slice(cursor, match.index))
+    html += `<img class="tk-owo-emotion" src="${escapeHtml(
+      match[2]
+    )}" alt="${escapeHtml(match[1])}" />`
+    cursor = match.index + match[0].length
+  }
+  return html + escapeHtml(line.slice(cursor))
+}
+
+/**
+ * Read comments for ONE path.
+ *
+ * Twikoo's public `getRecentComments` ignores its `urls` option (2.x sends only
+ * pageSize to the backend), so it cannot answer "what was written on this
+ * article?". This is the same `COMMENT_GET` event Twikoo's own widget uses,
+ * sent directly to the configured self-hosted endpoint. No extra backend.
+ */
+export async function getTwikooCommentsByPath(
+  path: string
+): Promise<TwikooCommentRecord[]> {
+  const envId = getTwikooEnvId()
+  // CloudBase env ids need the SDK; this site uses a self-hosted HTTP function.
+  if (!/^https?:\/\//i.test(envId) || typeof window === 'undefined') return []
+  let token: string | null = null
+  try {
+    token = window.localStorage.getItem('twikoo-access-token')
+  } catch {
+    // Storage can be blocked; reading comments does not require a token.
+  }
+  const response = await fetch(envId, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      event: 'COMMENT_GET',
+      url: path,
+      page: 1,
+      per: 100,
+      sort: 'latest',
+      envId,
+      accessToken: token,
+    }),
+    credentials: 'omit',
+  })
+  if (!response.ok) throw new Error(`Twikoo COMMENT_GET failed: ${response.status}`)
+  const raw = (await response.json()) as {
+    code?: number
+    data?: TwikooCommentRecord[]
+    result?: { code?: number; data?: TwikooCommentRecord[] }
+  }
+  const result = raw.result ?? raw
+  if (result.code) throw new Error('Twikoo COMMENT_GET returned an error')
+  const comments = Array.isArray(result.data) ? result.data : []
+  return comments.flatMap((comment) => [
+    comment,
+    ...(Array.isArray(comment.replies) ? comment.replies : []),
+  ])
 }
 
 let backendWarmedFor: string | null = null

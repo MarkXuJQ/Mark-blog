@@ -5,11 +5,14 @@ import { BlogRelatedPosts } from '@/components/blog/BlogRelatedPosts'
 import { BlogTocCard, BlogTocDrawer } from '@/components/blog/BlogTocCard'
 import { LeftSidebarWidget } from '@/components/blog/BlogWidgets'
 import { ReaderModeToggle } from '@/components/blog/ReaderModeToggle'
+import { AnnotationProvider } from '@/components/comments/annotations/AnnotationProvider'
+import { AnnotationSidebar } from '@/components/comments/annotations/AnnotationSidebar'
 import { useArticleToc } from '@/hooks/article/useArticleToc'
 import { useReaderMode } from '@/hooks/useReaderMode'
 import {
   getAllPostSummaries,
   getPostSummaryMatch,
+  getSharedPostCommentPath,
 } from '@/lib/content/postSummaries'
 import { cn } from '@/lib/classNames'
 
@@ -40,6 +43,9 @@ export function BlogPostLayout() {
     postMatch?.language ?? resolvePostLanguage(slug, i18n.language)
   const posts = getAllPostSummaries(postLanguage)
   const currentPost = postMatch?.summary ?? null
+  const commentPath = currentPost
+    ? getSharedPostCommentPath(currentPost)
+    : pathname
   const outletContext = useMemo(
     () => ({ simpleMode }) satisfies BlogPostOutletContext,
     [simpleMode]
@@ -63,91 +69,98 @@ export function BlogPostLayout() {
   }, [isMobileTocOpen])
 
   return (
-    <div className={styles.container}>
-      <span id="page-top" />
-      <div
-        className={cn(styles.layoutGrid, simpleMode && styles.simpleLayoutGrid)}
-      >
-        <aside className={cn(styles.leftSidebar, simpleMode && '!hidden')}>
-          <div className={styles.stickyWrapper}>
-            <LeftSidebarWidget />
-          </div>
-        </aside>
-
-        <main
-          id="main-content"
-          ref={mainRef}
-          className={cn(
-            styles.mainContent,
-            simpleMode && styles.simpleMainContent
-          )}
+    <AnnotationProvider commentPath={commentPath}>
+      <div className={styles.container}>
+        <span id="page-top" />
+        <div
+          className={cn(styles.layoutGrid, simpleMode && styles.simpleLayoutGrid)}
         >
-          <Outlet context={outletContext} />
-        </main>
+          <aside className={cn(styles.leftSidebar, simpleMode && '!hidden')}>
+            <div className={styles.stickyWrapper}>
+              <LeftSidebarWidget />
+            </div>
+          </aside>
 
-        <aside
-          className={cn(
-            styles.rightSidebar,
-            simpleMode && styles.simpleRightSidebar
-          )}
-        >
-          <div
+          <main
+            id="main-content"
+            ref={mainRef}
             className={cn(
-              styles.stickyWrapper,
-              simpleMode && styles.simpleStickyWrapper
+              styles.mainContent,
+              simpleMode && styles.simpleMainContent
             )}
           >
-            <BlogTocCard
+            <Outlet context={outletContext} />
+          </main>
+
+          <aside
+            className={cn(
+              styles.rightSidebar,
+              simpleMode && styles.simpleRightSidebar
+            )}
+          >
+            <AnnotationSidebar
+              commentPath={commentPath}
+              fallback={
+                <div
+                  className={cn(
+                    styles.stickyWrapper,
+                    simpleMode && styles.simpleStickyWrapper
+                  )}
+                >
+                  <BlogTocCard
+                    toc={toc}
+                    activeId={activeId}
+                    variant={simpleMode ? 'plain' : 'card'}
+                  />
+                  {!simpleMode && (
+                    <BlogRelatedPosts currentPost={currentPost} posts={posts} />
+                  )}
+                </div>
+              }
+            />
+          </aside>
+        </div>
+
+        {isMounted ? (
+          <>
+            <ReaderModeToggle
+              simpleMode={simpleMode}
+              onToggle={() => setSimpleMode((prev) => !prev)}
+            />
+
+            {!isMobileTocOpen ? (
+              <button
+                type="button"
+                onClick={() => setIsMobileTocOpen(true)}
+                className="fixed right-6 bottom-6 z-[80] inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:bg-slate-50 lg:hidden dark:border-[var(--border-color)] dark:bg-[color-mix(in_srgb,var(--surface-card)_92%,transparent)] dark:text-[var(--text-secondary)] dark:hover:bg-[var(--surface-card)] dark:hover:text-[var(--text-primary)]"
+                aria-label={t('blog.toc.title')}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M4 17q-.425 0-.712-.288T3 16t.288-.712T4 15h12q.425 0 .713.288T17 16t-.288.713T16 17zm0-4q-.425 0-.712-.288T3 12t.288-.712T4 11h12q.425 0 .713.288T17 12t-.288.713T16 13zm0-4q-.425 0-.712-.288T3 8t.288-.712T4 7h12q.425 0 .713.288T17 8t-.288.713T16 9zm16 8q-.425 0-.712-.288T19 16t.288-.712T20 15t.713.288T21 16t-.288.713T20 17m0-4q-.425 0-.712-.288T19 12t.288-.712T20 11t.713.288T21 12t-.288.713T20 13m0-4q-.425 0-.712-.288T19 8t.288-.712T20 7t.713.288T21 8t-.288.713T20 9"
+                  />
+                </svg>
+              </button>
+            ) : null}
+
+            <BlogTocDrawer
               toc={toc}
               activeId={activeId}
-              variant={simpleMode ? 'plain' : 'card'}
+              open={isMobileTocOpen}
+              onClose={() => setIsMobileTocOpen(false)}
             />
-            {!simpleMode && (
-              <BlogRelatedPosts currentPost={currentPost} posts={posts} />
-            )}
-          </div>
-        </aside>
+          </>
+        ) : null}
       </div>
-
-      {isMounted ? (
-        <>
-          <ReaderModeToggle
-            simpleMode={simpleMode}
-            onToggle={() => setSimpleMode((prev) => !prev)}
-          />
-
-          {!isMobileTocOpen ? (
-            <button
-              type="button"
-              onClick={() => setIsMobileTocOpen(true)}
-              className="fixed right-6 bottom-6 z-[80] inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-sm backdrop-blur transition-colors hover:bg-slate-50 lg:hidden dark:border-[var(--border-color)] dark:bg-[color-mix(in_srgb,var(--surface-card)_92%,transparent)] dark:text-[var(--text-secondary)] dark:hover:bg-[var(--surface-card)] dark:hover:text-[var(--text-primary)]"
-              aria-label={t('blog.toc.title')}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                className="h-5 w-5"
-                aria-hidden="true"
-              >
-                <path
-                  fill="currentColor"
-                  d="M4 17q-.425 0-.712-.288T3 16t.288-.712T4 15h12q.425 0 .713.288T17 16t-.288.713T16 17zm0-4q-.425 0-.712-.288T3 12t.288-.712T4 11h12q.425 0 .713.288T17 12t-.288.713T16 13zm0-4q-.425 0-.712-.288T3 8t.288-.712T4 7h12q.425 0 .713.288T17 8t-.288.713T16 9zm16 8q-.425 0-.712-.288T19 16t.288-.712T20 15t.713.288T21 16t-.288.713T20 17m0-4q-.425 0-.712-.288T19 12t.288-.712T20 11t.713.288T21 12t-.288.713T20 13m0-4q-.425 0-.712-.288T19 8t.288-.712T20 7t.713.288T21 8t-.288.713T20 9"
-                />
-              </svg>
-            </button>
-          ) : null}
-
-          <BlogTocDrawer
-            toc={toc}
-            activeId={activeId}
-            open={isMobileTocOpen}
-            onClose={() => setIsMobileTocOpen(false)}
-          />
-        </>
-      ) : null}
-    </div>
+    </AnnotationProvider>
   )
 }
 

@@ -1,5 +1,36 @@
 [
   {
+    "date": "2026-11-27",
+    "title": "Article Component Overhaul, Inline Comments, and the Archive Tag Cloud",
+    "description": "Overhauled the article component UI and interaction logic, tightening visuals and behavior; added inline highlight comments and the archive tag cloud, and refreshed the movie page layout.",
+    "categories": [
+      {
+        "items": [
+          {
+            "id": "site-update-20261127-1",
+            "content": "Overhauled the article component UI and interaction logic, unifying visuals and behavior so the writing stays front and center and reading feels smoother.",
+            "date": "2026-11-23"
+          },
+          {
+            "id": "site-update-20261127-2",
+            "content": "Select text to draw a line or leave a comment on desktop and mobile, with quotes kept only in the bottom comment area.",
+            "date": "2026-11-27"
+          },
+          {
+            "id": "site-update-20261127-3",
+            "content": "Added an expandable archive tag cloud that opens related posts from a word, with a popup sized to its content.",
+            "date": "2026-11-26"
+          },
+          {
+            "id": "site-update-20261127-4",
+            "content": "Refreshed the movie review and movie page components for a consistent card, rating, and detail style.",
+            "date": "2026-11-21"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-11-07",
     "title": "Rebuilt the Projects Page and Refreshed Comments",
     "description": "One of the bigger rounds so far: reworked how Projects presents itself, redesigned the comment section across the site, and gave the emoji picker a lot more to offer.",

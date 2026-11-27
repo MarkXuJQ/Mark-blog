@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { LinkGuard } from './LinkGuard'
 import {
   getTwikooApi,
+  getTwikooConfig,
   getTwikooEnvId,
   installEmotionPackInterceptor,
   installTwikooStyleGuard,
   loadTwikooScript,
   TWIKOO_LOCALE_BASE_URL,
+  type TwikooCommentPayload,
 } from '@/lib/comments/twikooLoader'
 import { decorateCommentAvatars } from '@/lib/comments/commentAvatar'
 import { cn } from '@/lib/classNames'
@@ -150,6 +152,8 @@ export function Comments({
   className,
   showTitle = true,
   onCommentLoaded,
+  onSubmit,
+  annotationQuotes,
 }: {
   containerId?: string
   path?: string
@@ -160,6 +164,9 @@ export function Comments({
   className?: string
   showTitle?: boolean
   onCommentLoaded?: () => void
+  onSubmit?: (comment: TwikooCommentPayload) => void | Promise<void>
+  /** Comment id → highlighted text, rendered as a one-line quote preview. */
+  annotationQuotes?: Record<string, string>
 } = {}) {
   const { t, i18n } = useTranslation()
   // Twikoo reads `lang` from its init options; keep it in sync with the site.
@@ -167,6 +174,12 @@ export function Comments({
   const commentRef = useRef<HTMLElement>(null)
   const mountHostRef = useRef<HTMLDivElement>(null)
   const onCommentLoadedRef = useRef(onCommentLoaded)
+  // `onSubmit` may close over the currently selected annotation. Keep the
+  // function Twikoo receives stable so changing the selection never remounts
+  // the whole Vue comment widget.
+  const onSubmitRef = useRef(onSubmit)
+  const annotationQuotesRef = useRef(annotationQuotes)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [commentCount, setCommentCount] = useState(0)
   const commentCountRef = useRef(0)
@@ -233,10 +246,14 @@ export function Comments({
       // inline SVG, so match on the icon path rather than sibling order (the
       // admin cog only exists once the crypt is entered). Setting attributes
       // is safe: Vue patches class/style here, not `title` or `aria-label`.
-      const iconLabels: Array<[string, string]> = [
-        ['M416 208c0 45.9', t('comments.searchLabel', '搜索评论')],
-        ['M65.9 228.5C79.2 135.5', t('comments.refreshLabel', '刷新评论')],
-        ['M195.1 9.5c3-14.8', t('comments.adminLabel', '评论管理')],
+      const iconLabels: Array<[string, string, string]> = [
+        ['M416 208c0 45.9', t('comments.searchLabel', '搜索评论'), 'search'],
+        [
+          'M65.9 228.5C79.2 135.5',
+          t('comments.refreshLabel', '刷新评论'),
+          'refresh',
+        ],
+        ['M195.1 9.5c3-14.8', t('comments.adminLabel', '评论管理'), 'admin'],
       ]
       wrap
         .querySelectorAll<HTMLElement>(
@@ -244,13 +261,17 @@ export function Comments({
         )
         .forEach((icon) => {
           const path = icon.querySelector('svg path')?.getAttribute('d') ?? ''
-          const label = iconLabels.find(([prefix]) =>
-            path.startsWith(prefix)
-          )?.[1]
-          if (!label) return
+          const match = iconLabels.find(([prefix]) => path.startsWith(prefix))
+          if (!match) return
+          const [, label, action] = match
           if (icon.title !== label) icon.title = label
           if (icon.getAttribute('aria-label') !== label) {
             icon.setAttribute('aria-label', label)
+          }
+          // Safe Vue-DOM mutation (attribute only) and lets other UI trigger
+          // the same refresh without knowing Twikoo's icon paths.
+          if (icon.dataset.twikooAction !== action) {
+            icon.dataset.twikooAction = action
           }
         })
 
@@ -419,6 +440,31 @@ export function Comments({
         console.error('Comment avatar decoration failed:', error)
       })
 
+      // Inline comments carry an anchor marker in their body. Show the
+      // highlighted text above the comment in the bottom list too. Attribute
+      // writes only: these nodes belong to Twikoo's Vue app.
+      const quotes = annotationQuotesRef.current
+      if (quotes) {
+        wrap.querySelectorAll<HTMLElement>('.tk-comment').forEach((node) => {
+          const quote = quotes[node.id]
+          // `attr()` on `.tk-content::before` reads that element's own
+          // attributes, so mirror the quote onto the inner content block too.
+          const targets = [
+            node,
+            node.querySelector<HTMLElement>('.tk-content'),
+          ].filter((target): target is HTMLElement => !!target)
+          for (const target of targets) {
+            if (quote) {
+              if (target.dataset.annotationQuote !== quote) {
+                target.dataset.annotationQuote = quote
+              }
+            } else if (target.dataset.annotationQuote !== undefined) {
+              delete target.dataset.annotationQuote
+            }
+          }
+        })
+      }
+
       if (variant !== 'default') return
       // Guard against observer-triggered re-entry from our own DOM writes.
       if (applyingCustomizations) return
@@ -435,6 +481,28 @@ export function Comments({
   useEffect(() => {
     onCommentLoadedRef.current = onCommentLoaded
   }, [onCommentLoaded])
+
+  useEffect(() => {
+    onSubmitRef.current = onSubmit
+  }, [onSubmit])
+
+  useEffect(() => {
+    annotationQuotesRef.current = annotationQuotes
+    // Re-apply the quote attributes when annotation data arrives or changes.
+    const host = mountHostRef.current
+    if (host) applyCustomizationsRef.current(host)
+  }, [annotationQuotes])
+
+  useEffect(() => {
+    if (window.__PRERENDER__) return
+    void getTwikooConfig().then((config) => {
+      setIsAdmin(config.IS_ADMIN === true || config.IS_ADMIN === 'true')
+    })
+  }, [])
+
+  const annotationCount = annotationQuotes
+    ? Object.keys(annotationQuotes).length
+    : 0
 
   // Keep the DOM customizer fresh without making the Twikoo init effect depend
   // on `t` (whose identity changes whenever i18next re-binds). Re-running that
@@ -599,6 +667,9 @@ export function Comments({
             applyCustomizationsRef.current(host)
             onCommentLoadedRef.current?.()
           },
+          // Twikoo awaits this hook and sends the mutated payload. The wrapper
+          // stays identical across re-inits; the ref follows the live draft.
+          onSubmit: (comment) => onSubmitRef.current?.(comment),
         })
         if (initResult && typeof initResult.catch === 'function') {
           void initResult.catch((error: unknown) => {
@@ -685,6 +756,17 @@ export function Comments({
               aria-label={`${commentCount}`}
             >
               {commentCount}
+            </span>
+          ) : null}
+          {showTitle && isAdmin && annotationCount > 0 ? (
+            <span className="text-sm font-medium text-[#ff5941] opacity-90">
+              {annotationCount}{' '}
+              {t(
+                annotationCount === 1
+                  ? 'annotation.lineComment'
+                  : 'annotation.lineComments',
+                '条划线评论'
+              )}
             </span>
           ) : null}
           <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800"></div>
@@ -946,6 +1028,42 @@ export function Comments({
         /* Comment list: separated by whitespace only (no divider bar). */
         .twikoo-wrap[data-variant="default"] .tk-comments-container {
             margin-top: 1.2rem !important;
+        }
+        /* Inline comments show their highlighted sentence below the normal
+           nickname/time row and above the comment body. Attribute-only writes. */
+        .twikoo-wrap[data-variant="default"] .tk-comment[data-annotation-quote] .tk-content::before {
+            content: '❝ ' attr(data-annotation-quote);
+            display: block;
+            box-sizing: border-box;
+            width: 100%;
+            margin: 0 0 0.6rem;
+            padding: 0.35rem 0.6rem;
+            border-left: 3px solid #ff5941;
+            border-radius: 0 0.4rem 0.4rem 0;
+            background: rgba(255, 89, 65, 0.07);
+            color: #64748b;
+            font-size: 0.78rem;
+            line-height: 1.5;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .dark .twikoo-wrap[data-variant="default"] .tk-comment[data-annotation-quote] .tk-content::before {
+            background: rgba(255, 89, 65, 0.12);
+            color: #9aa4b2;
+        }
+        /* The backlink sits on its own line, quiet and link-styled. */
+        .twikoo-wrap .tk-comment a[data-annotation-link] {
+            display: inline-block;
+            margin-top: 0.2rem;
+            color: #ff5941;
+            font-size: 0.72rem;
+            opacity: 0.55;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+        .twikoo-wrap .tk-comment a[data-annotation-link]:hover {
+            opacity: 0.95;
         }
         /* ---- Hide the "X 条评论" counter with CSS, never by removing it. ----
            The comment UI is a Vue app. Detaching nodes it owns (the refresh

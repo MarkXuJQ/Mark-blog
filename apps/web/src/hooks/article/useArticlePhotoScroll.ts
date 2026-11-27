@@ -78,6 +78,8 @@ export function useArticlePhotoScroll(
       const handlePointerDown = (event: PointerEvent) => {
         if (event.button !== 0) return
 
+        if (event.pointerType === 'touch') return
+
         activePointerId = event.pointerId
         pointerOrigin = event.target
         startX = event.clientX
