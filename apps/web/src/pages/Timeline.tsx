@@ -225,9 +225,11 @@ export function Timeline() {
                           <div className={styles.categoriesWrapper}>
                             {event.categories.map((category, catIndex) => (
                               <div key={catIndex} className={styles.category}>
-                                <h4 className={styles.categoryTitle}>
-                                  {category.title}
-                                </h4>
+                                {category.title ? (
+                                  <h4 className={styles.categoryTitle}>
+                                    {category.title}
+                                  </h4>
+                                ) : null}
 
                                 <StaggeredList
                                   as="ul"

@@ -11,7 +11,8 @@ export interface TimelineItem {
 }
 
 export interface TimelineCategory {
-  title: string
+  /** Optional: flat milestones render one list without a subheading. */
+  title?: string
   items: TimelineItem[]
 }
 
