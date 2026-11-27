@@ -821,25 +821,7 @@
   background: rgba(71, 85, 105, 0.2);
 }
 
-/* WeChat-like quick composer: a small input bar hung near the selection. */
-.annotation-quick-bar {
-  position: fixed;
-  z-index: 112;
-  box-sizing: border-box;
-  width: min(320px, calc(100vw - 24px));
-  padding: 0.5rem;
-  border: 1px solid rgba(148, 163, 184, 0.4);
-  border-radius: 0.8rem;
-  background: #ffffff;
-  box-shadow: 0 0.8rem 2rem -0.8rem rgba(15, 23, 42, 0.45);
-  transform: translateX(-50%);
-}
-
-.dark .annotation-quick-bar {
-  border-color: rgba(71, 85, 105, 0.7);
-  background: #1b1e24;
-}
-
+/* The compact mobile composer reuses the centered modal shell below. */
 .annotation-quick-form {
   display: flex;
   flex-direction: column;
@@ -1019,10 +1001,24 @@
   box-sizing: border-box;
   width: min(420px, calc(100vw - 24px));
   max-height: min(84vh, 720px);
+  max-height: min(84dvh, 720px);
   overflow: hidden;
   border-radius: 1rem;
   background: #ffffff;
   box-shadow: 0 1.5rem 4rem -1rem rgba(15, 23, 42, 0.55);
+}
+
+.annotation-modal.annotation-modal-quick {
+  width: min(360px, calc(100vw - 24px));
+  padding: 0.75rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.annotation-modal.annotation-modal-quick::-webkit-scrollbar {
+  display: none;
 }
 
 .annotation-modal-backdrop.is-closing {
@@ -1084,7 +1080,6 @@
   animation-timing-function: var(--annotation-motion-ease-in);
 }
 
-.annotation-quick-bar.is-closing,
 .annotation-emotion-panel.is-closing {
   --annotation-animation: annotation-editor-out;
   animation-timing-function: var(--annotation-motion-ease-in);
@@ -1201,8 +1196,7 @@
 
   /* The mobile sheet already slides in as a whole. */
   .annotation-sidebar,
-  .annotation-sidebar-card,
-  .annotation-quick-bar {
+  .annotation-sidebar-card {
     animation: none;
   }
 
@@ -1275,7 +1269,6 @@
 }
 
 .annotation-form,
-.annotation-quick-bar,
 .annotation-emotion-panel {
   --annotation-animation: annotation-editor-in;
   animation: var(--annotation-animation) var(--annotation-motion-editor) var(--annotation-motion-ease-out) both;
@@ -1289,8 +1282,6 @@
   .annotation-sidebar *,
   .annotation-modal,
   .annotation-modal *,
-  .annotation-quick-bar,
-  .annotation-quick-bar *,
   .annotation-emotion-panel,
   .annotation-emotion-panel * {
     animation: none !important;

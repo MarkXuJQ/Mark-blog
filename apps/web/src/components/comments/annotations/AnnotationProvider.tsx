@@ -14,17 +14,12 @@ import {
   type AnnotationGroup,
   type TextAnchor,
 } from '@/lib/comments/textAnnotations'
-import { deleteTwikooComment } from '@/lib/comments/twikooLoader'
+import {
+  deleteTwikooComment,
+  TWIKOO_COMMENTS_CHANGED_EVENT,
+} from '@/lib/comments/twikooLoader'
 
 export type ComposerMode = 'detail' | 'quick'
-
-export interface ComposerPosition {
-  /** Horizontal center for the mobile quick composer. */
-  x: number
-  /** Selection edge the quick composer should hang from. */
-  y: number
-  above: boolean
-}
 
 interface AnnotationContextValue {
   commentPath: string
@@ -33,17 +28,14 @@ interface AnnotationContextValue {
   /** Keeps the panel mounted for its exit animation before it unmounts. */
   closing: boolean
   composerMode: ComposerMode
-  composerPosition: ComposerPosition | null
-  openComposer: (
-    anchor: TextAnchor,
-    mode?: ComposerMode,
-    position?: ComposerPosition | null
-  ) => void
+  openComposer: (anchor: TextAnchor, mode?: ComposerMode) => void
   closeComposer: () => void
   /** Called by the panel when its exit animation has finished. */
   finishClose: () => void
   groups: AnnotationGroup[]
   refresh: () => void
+  /** Show a freshly drawn line before the backend fetch resolves. */
+  addLocalLine: (anchor: TextAnchor) => void
   /** Called after the side-panel composer posts to Twikoo. */
   onSaved: () => void
   /** Remove a locally drawn line (no comment attached). */
@@ -72,9 +64,8 @@ export function AnnotationProvider({
   const closeTimerRef = useRef<number | null>(null)
   const closingRef = useRef(false)
   const [composerMode, setComposerMode] = useState<ComposerMode>('detail')
-  const [composerPosition, setComposerPosition] =
-    useState<ComposerPosition | null>(null)
   const [groups, setGroups] = useState<AnnotationGroup[]>([])
+  const groupsVersionRef = useRef(0)
 
   const clearCloseTimer = useCallback(() => {
     if (closeTimerRef.current === null) return
@@ -88,22 +79,24 @@ export function AnnotationProvider({
     if (!closingRef.current) return
     clearCloseTimer()
     setDraft(null)
-    setComposerPosition(null)
     setClosing(false)
     closingRef.current = false
   }, [clearCloseTimer])
 
   const reload = useCallback(() => {
-    void loadAnnotationGroups(commentPath).then(setGroups)
+    const version = ++groupsVersionRef.current
+    void loadAnnotationGroups(commentPath).then((next) => {
+      if (version === groupsVersionRef.current) setGroups(next)
+    })
   }, [commentPath])
 
   const refresh = useCallback(() => {
-    let alive = true
+    const version = ++groupsVersionRef.current
     void loadAnnotationGroups(commentPath).then((next) => {
-      if (alive) setGroups(next)
+      if (version === groupsVersionRef.current) setGroups(next)
     })
     return () => {
-      alive = false
+      if (version === groupsVersionRef.current) groupsVersionRef.current += 1
     }
   }, [commentPath])
 
@@ -112,18 +105,31 @@ export function AnnotationProvider({
     return stop
   }, [refresh])
 
+  useEffect(() => {
+    // Bottom Twikoo deletions/refreshes change its DOM; reload the side panel
+    // and article marks without touching the widget (no second Twikoo init).
+    const syncFromBottom = () => reload()
+    window.addEventListener(TWIKOO_COMMENTS_CHANGED_EVENT, syncFromBottom)
+    return () =>
+      window.removeEventListener(TWIKOO_COMMENTS_CHANGED_EVENT, syncFromBottom)
+  }, [reload])
+
+  const addLocalLine = useCallback((anchor: TextAnchor) => {
+    groupsVersionRef.current += 1
+    setGroups((prev) =>
+      prev.some((group) => group.anchor.id === anchor.id)
+        ? prev
+        : [...prev, { anchor, comments: [] }]
+    )
+  }, [])
+
   const openComposer = useCallback(
-    (
-      anchor: TextAnchor,
-      mode: ComposerMode = 'detail',
-      position: ComposerPosition | null = null
-    ) => {
+    (anchor: TextAnchor, mode: ComposerMode = 'detail') => {
       clearCloseTimer()
       closingRef.current = false
       setClosing(false)
       setDraft(anchor)
       setComposerMode(mode)
-      setComposerPosition(position)
     },
     [clearCloseTimer]
   )
@@ -138,8 +144,7 @@ export function AnnotationProvider({
       unmountComposer()
       return
     }
-    // The panel calls finishClose on animationend; this is only a safety net
-    // if the browser never fires it (e.g. animations disabled elsewhere).
+    // Safety net for browsers that never fire animationend.
     closeTimerRef.current = window.setTimeout(unmountComposer, 1200)
   }, [clearCloseTimer, unmountComposer])
 
@@ -163,6 +168,12 @@ export function AnnotationProvider({
   const deleteLine = useCallback(
     (id: string) => {
       deleteLocalLine(commentPath, id)
+      groupsVersionRef.current += 1
+      setGroups((prev) =>
+        prev.flatMap((group) =>
+          group.anchor.id === id && group.comments.length === 0 ? [] : [group]
+        )
+      )
       if (draft?.id === id) closeComposer()
       reload()
     },
@@ -172,6 +183,13 @@ export function AnnotationProvider({
   const deleteComment = useCallback(
     async (id: string) => {
       await deleteTwikooComment(id)
+      groupsVersionRef.current += 1
+      setGroups((prev) =>
+        prev.map((group) => ({
+          ...group,
+          comments: group.comments.filter((comment) => comment.id !== id),
+        }))
+      )
       if (draft?.id === id) closeComposer()
       reload()
       refreshBottomWidget()
@@ -185,12 +203,12 @@ export function AnnotationProvider({
       draft,
       closing,
       composerMode,
-      composerPosition,
       openComposer,
       closeComposer,
       finishClose: unmountComposer,
       groups,
       refresh,
+      addLocalLine,
       onSaved,
       deleteLine,
       deleteComment,
@@ -200,12 +218,12 @@ export function AnnotationProvider({
       draft,
       closing,
       composerMode,
-      composerPosition,
       openComposer,
       closeComposer,
       unmountComposer,
       groups,
       refresh,
+      addLocalLine,
       onSaved,
       deleteLine,
       deleteComment,

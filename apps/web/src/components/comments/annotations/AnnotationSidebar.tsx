@@ -68,12 +68,7 @@ function emotionImageUrl(icon: string): string | null {
 
 const MAIL_HASH = /^(?:[a-f0-9]{32}|[a-f0-9]{64})$/i
 
-/**
- * Show the very same picture the bottom Twikoo list uses. Self-hosted
- * `COMMENT_GET` returns `avatar: null` but does supply `mailMd5`, so resolve
- * Twikoo's CDN image with the same probe the bottom widget applies before it
- * decides to fall back to a locally generated avatar.
- */
+/** Resolve the same Twikoo avatar the bottom list shows from `mailMd5`. */
 function CommentAvatar({
   avatar,
   mailMd5,
@@ -141,7 +136,6 @@ export function AnnotationSidebar({
     draft,
     closing,
     composerMode,
-    composerPosition,
     openComposer,
     closeComposer,
     finishClose,
@@ -177,15 +171,13 @@ export function AnnotationSidebar({
 
   const showQuick = isMobile && composerMode === 'quick'
 
-  // Only the animated root should end the closing state; child animations
-  // finishing earlier must not unmount the panel mid-exit.
+  // Only the animated root ends the closing state; child animations must not.
   const handleExitEnd = (event: ReactAnimationEvent<HTMLElement>) => {
     if (event.target !== event.currentTarget || !closing) return
     finishClose()
   }
 
-  // The right sidebar is `hidden lg:block`; on phones both the composer and
-  // the emotion picker become centered dialogs instead of bottom sheets.
+  // Phones use centered dialogs instead of the hidden right sidebar.
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 1024)
     check()
@@ -725,83 +717,50 @@ export function AnnotationSidebar({
     </div>
   )
 
-  const quickBar =
-    showQuick && composerPosition
-      ? (() => {
-          const width = Math.min(320, window.innerWidth - 24)
-          const left = Math.min(
-            Math.max(width / 2 + 12, composerPosition.x),
-            window.innerWidth - width / 2 - 12
-          )
-          const top = Math.min(
-            Math.max(
-              12,
-              composerPosition.y + (composerPosition.above ? -76 : 8)
-            ),
-            window.innerHeight - 84
-          )
-          return createPortal(
-            <div
-              ref={quickRef}
-              className={`annotation-quick-bar${closing ? ' is-closing' : ''}`}
-              role="dialog"
-              onAnimationEnd={handleExitEnd}
-              aria-label={t('annotation.title', '评论')}
-              style={{ left, top }}
-            >
-              <form className="annotation-quick-form" onSubmit={handleSubmit}>
-                <textarea
-                  ref={textareaRef}
-                  className="annotation-quick-input"
-                  value={text}
-                  rows={1}
-                  maxLength={500}
-                  placeholder={t('annotation.placeholder', '想要说点什么？')}
-                  onFocus={() =>
-                    setHasIdentity(Boolean(getTwikooUserMeta().nick.trim()))
-                  }
-                  onChange={(event) => setText(event.target.value)}
-                />
-                {error ? (
-                  <p className="annotation-form-error">{error}</p>
-                ) : null}
-                <div className="annotation-quick-actions">
-                  <div className="annotation-emotion" ref={pickerRef}>
-                    <button
-                      ref={triggerRef}
-                      type="button"
-                      className={`annotation-emotion-trigger${
-                        emojiOpen ? ' is-open' : ''
-                      }`}
-                      aria-label={t('annotation.emotion', '插入表情')}
-                      title={t('annotation.emotion', '插入表情')}
-                      aria-expanded={emojiOpen}
-                      disabled={!pack}
-                      onClick={() => setEmojiOpen((open) => !open)}
-                    >
-                      <FiSmile aria-hidden="true" />
-                    </button>
-                  </div>
-                  <button
-                    type="submit"
-                    className="annotation-form-submit"
-                    disabled={sending || !text.trim()}
-                  >
-                    {sending
-                      ? t('annotation.sending', '发送中…')
-                      : t('annotation.submit', '发送')}
-                  </button>
-                </div>
-              </form>
-            </div>,
-            document.body
-          )
-        })()
-      : null
+  const quickForm = showQuick ? (
+    <form className="annotation-quick-form" onSubmit={handleSubmit}>
+      <textarea
+        ref={textareaRef}
+        className="annotation-quick-input"
+        value={text}
+        rows={1}
+        maxLength={500}
+        placeholder={t('annotation.placeholder', '想要说点什么？')}
+        onFocus={() => setHasIdentity(Boolean(getTwikooUserMeta().nick.trim()))}
+        onChange={(event) => setText(event.target.value)}
+      />
+      {error ? <p className="annotation-form-error">{error}</p> : null}
+      <div className="annotation-quick-actions">
+        <div className="annotation-emotion" ref={pickerRef}>
+          <button
+            ref={triggerRef}
+            type="button"
+            className={`annotation-emotion-trigger${emojiOpen ? ' is-open' : ''}`}
+            aria-label={t('annotation.emotion', '插入表情')}
+            title={t('annotation.emotion', '插入表情')}
+            aria-expanded={emojiOpen}
+            disabled={!pack}
+            onClick={() => setEmojiOpen((open) => !open)}
+          >
+            <FiSmile aria-hidden="true" />
+          </button>
+        </div>
+        <button
+          type="submit"
+          className="annotation-form-submit"
+          disabled={sending || !text.trim()}
+        >
+          {sending
+            ? t('annotation.sending', '发送中…')
+            : t('annotation.submit', '发送')}
+        </button>
+      </div>
+    </form>
+  ) : null
 
-  const dialog = showQuick
-    ? null
-    : isMobile
+  // All phone composers share one centered shell, so 发送 stays reachable.
+  const dialog =
+    draft && isMobile
       ? createPortal(
           <div
             className={`annotation-modal-backdrop${
@@ -812,13 +771,16 @@ export function AnnotationSidebar({
             }}
           >
             <div
-              className={`annotation-modal${closing ? ' is-closing' : ''}`}
+              ref={quickRef}
+              className={`annotation-modal${
+                showQuick ? ' annotation-modal-quick' : ''
+              }${closing ? ' is-closing' : ''}`}
               role="dialog"
               onAnimationEnd={handleExitEnd}
               aria-modal="true"
               aria-label={t('annotation.title', '评论')}
             >
-              {panel}
+              {showQuick ? quickForm : panel}
             </div>
           </div>,
           document.body
@@ -828,7 +790,6 @@ export function AnnotationSidebar({
   return (
     <>
       {dialog}
-      {quickBar}
       {emotionPanel}
     </>
   )

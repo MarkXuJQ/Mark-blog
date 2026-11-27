@@ -8,6 +8,7 @@ import {
   installEmotionPackInterceptor,
   installTwikooStyleGuard,
   loadTwikooScript,
+  TWIKOO_COMMENTS_CHANGED_EVENT,
   TWIKOO_LOCALE_BASE_URL,
   type TwikooCommentPayload,
 } from '@/lib/comments/twikooLoader'
@@ -183,6 +184,7 @@ export function Comments({
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [commentCount, setCommentCount] = useState(0)
   const commentCountRef = useRef(0)
+  const commentSignatureRef = useRef<string | null>(null)
   // One random line per page load, reused across Twikoo re-renders.
   const placeholderPickRef = useRef<number | null>(null)
   const emptyPickRef = useRef<number | null>(null)
@@ -563,6 +565,27 @@ export function Comments({
       return true
     }
 
+    // The side annotation panel only needs to know when the visible comment
+    // set changes (deletions, refreshes, sorts), not when Twikoo repaints
+    // attributes or avatars. Stable node ids make those signals precise.
+    const noteCommentSignature = () => {
+      const ids = Array.from(host.querySelectorAll<HTMLElement>('.tk-comment'))
+        .map((node) => node.id)
+        .join(',')
+      if (commentSignatureRef.current === null) {
+        commentSignatureRef.current = ids
+        return false
+      }
+      if (commentSignatureRef.current === ids) return false
+      commentSignatureRef.current = ids
+      return true
+    }
+    const announceCommentChange = () => {
+      if (noteCommentSignature()) {
+        window.dispatchEvent(new Event(TWIKOO_COMMENTS_CHANGED_EVENT))
+      }
+    }
+
     // Arm the emotion-pack interceptor immediately: it is synchronous now and
     // fetches the pack in the background, so mounting Twikoo does not wait on
     // that (large) JSON. The comment list itself never depends on it.
@@ -602,6 +625,7 @@ export function Comments({
         if (cancelled || !twikooApi) return
 
         host.replaceChildren()
+        commentSignatureRef.current = null
 
         const target = document.createElement('div')
         target.id = containerId
@@ -628,6 +652,7 @@ export function Comments({
               // the section never looks empty while the request is in flight.
               noteListPresent()
               applyCustomizationsRef.current(host)
+              announceCommentChange()
             })
           }
 
@@ -643,6 +668,7 @@ export function Comments({
             if (hasRenderedTwikooContent(host)) {
               noteListPresent()
               applyCustomizationsRef.current(host)
+              announceCommentChange()
             }
           }, 250)
         }
@@ -665,6 +691,7 @@ export function Comments({
             // Twikoo calls this once the list has been fetched and rendered.
             noteListPresent()
             applyCustomizationsRef.current(host)
+            announceCommentChange()
             onCommentLoadedRef.current?.()
           },
           // Twikoo awaits this hook and sends the mutated payload. The wrapper
