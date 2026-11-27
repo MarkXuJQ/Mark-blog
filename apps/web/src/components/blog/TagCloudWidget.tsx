@@ -419,8 +419,13 @@ export function TagCloudWidget({
       word.offsetHeight / 2
     const edge = 12
     const gap = 10
-    const availableAbove = wordTop - gap - edge
-    const maxHeight = Math.min(320, Math.max(96, availableAbove))
+    const wordBottom = wordTop + word.offsetHeight
+    const roomAbove = wordTop - gap - edge
+    const roomBelow = window.innerHeight - wordBottom - gap - edge
+    // Use whichever side has more room, so short popups no longer get squeezed
+    // into a scrollable sliver when the word sits near the top of the viewport.
+    const preferAbove = roomAbove >= roomBelow
+    const maxHeight = Math.min(640, Math.max(120, preferAbove ? roomAbove : roomBelow))
 
     // Set before measuring so the rect reflects the height we will actually use.
     preview.style.maxHeight = `${maxHeight}px`
@@ -432,7 +437,10 @@ export function TagCloudWidget({
     const maxLeft = Math.max(edge, window.innerWidth - previewWidth - edge)
     const left = clamp(wordCenterX - previewWidth / 2, edge, maxLeft)
     const maxTop = Math.max(edge, window.innerHeight - previewHeight - edge)
-    const top = clamp(wordTop - gap - previewHeight, edge, maxTop)
+    const desiredTop = preferAbove
+      ? wordTop - gap - previewHeight
+      : wordBottom + gap
+    const top = clamp(desiredTop, edge, maxTop)
 
     setPreviewPlacement({
       left,
@@ -946,11 +954,13 @@ const styles = {
     'tag-cloud-expanded__preview friend-link-tooltip relative rounded-xl border border-slate-200/70 bg-white/95 p-3 text-[var(--text-primary)] shadow-[0_18px_42px_-30px_rgba(15,23,42,0.45)] ring-1 ring-slate-900/5 dark:border-0 dark:bg-[#17191c] dark:shadow-none dark:ring-white/5',
   previewClose:
     'absolute top-2 right-2 z-10 inline-flex h-6 w-6 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current/40 dark:text-slate-500 dark:hover:bg-slate-700 dark:hover:text-slate-200',
-  previewBody: 'flex min-w-0 flex-col gap-1 pr-5',
+  // Reserve the close-button space on the two header lines only. Padding the
+  // whole body would stop every gray post row 20px short of the popup edge.
+  previewBody: 'flex min-w-0 flex-col gap-1',
   previewName:
-    'font-round block text-[15px] font-semibold leading-5 text-slate-900 dark:text-slate-100',
+    'font-round block pr-6 text-[15px] font-semibold leading-5 text-slate-900 dark:text-slate-100',
   previewUrl:
-    'block truncate font-mono text-[11px] leading-4 text-slate-400 dark:text-slate-500',
+    'block truncate pr-6 font-mono text-[11px] leading-4 text-slate-400 dark:text-slate-500',
   previewList: 'mt-1 space-y-1.5',
   previewComment:
     'block rounded-md bg-slate-100/80 px-2 py-1.5 text-xs leading-5 text-[var(--text-primary)] transition-colors hover:bg-slate-200/80 dark:bg-[#23262b]/70 dark:hover:bg-[#2b2f36]',

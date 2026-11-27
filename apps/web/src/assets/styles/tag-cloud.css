@@ -93,7 +93,12 @@
 .tag-cloud-expanded__preview-anchor {
   position: fixed;
   z-index: 3100;
-  width: min(22rem, calc(100vw - 24px));
+  /* Fit the post titles instead of reserving a fixed 22rem column: short
+     tags otherwise leave a large empty strip on the right of the list. */
+  box-sizing: border-box;
+  width: max-content;
+  min-width: 12rem;
+  max-width: min(20rem, calc(100vw - 24px));
   transition:
     left 420ms cubic-bezier(0.16, 1, 0.3, 1),
     top 420ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -128,25 +133,18 @@
 }
 
 .tag-cloud-expanded__preview {
-  max-height: 20rem;
+  max-height: 30rem;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--text-secondary) 40%, transparent)
-    transparent;
+  /* Still scrollable for very long lists, but never show a scrollbar. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .tag-cloud-expanded__preview::-webkit-scrollbar {
-  width: 5px;
-}
-
-.tag-cloud-expanded__preview::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--text-secondary) 40%, transparent);
-}
-
-.tag-cloud-expanded__preview::-webkit-scrollbar-track {
-  background: transparent;
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 @keyframes tag-cloud-spread {
